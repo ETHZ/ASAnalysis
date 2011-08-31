@@ -14,12 +14,24 @@ using namespace std;
 #define metMax 30
 #define rMax 30
 
-string sjzbversion="$Revision: 1.47 $";
+string sjzbversion="$Revision: 1.51 $";
 string sjzbinfo="";
 
 /*
 
 $Log: JZBAnalysis.cc,v $
+Revision 1.51  2011/08/30 14:06:38  buchmann
+Bringing mSUGRA scans to JZB: Parameters introduced, PDF weights implemented for PDF systematics; also had to deactivate some PF variables as they are no longer in the NTuple
+
+Revision 1.50  2011/08/16 12:33:19  buchmann
+Updated trigger paths
+
+Revision 1.49  2011/08/11 17:03:19  fronga
+Only keep "empty" events for MC.
+
+Revision 1.48  2011/08/10 16:02:45  fronga
+Switch stats back on (you better have a very good reason to turn it off :) )
+
 Revision 1.47  2011/08/10 15:28:33  fronga
 Remove full-blown PF leptons and just store some PF lepton info.
 Add isolation information.
@@ -251,13 +263,19 @@ public:
   float sumJetPt[rMax];
 
   float weight;
+  int NPdfs;
+  float pdfW[100];
+  float pdfWsum;
   float PUweight;
   bool passed_triggers;
   int trigger_bit;
   float mGlu;
   float mChi;
   float mLSP;
-
+  float M0;
+  float A0;
+  float M12;
+  float signMu;
 };
 
 nanoEvent::nanoEvent(){};
@@ -269,6 +287,8 @@ void nanoEvent::reset()
   phi=0;
 
   is_data=false;
+  NPdfs=0;
+  pdfWsum=0;
 
   pt1=0;
   pt2=0;
@@ -333,6 +353,8 @@ void nanoEvent::reset()
   ch2=-9;
   chid1=0;
   chid2=0;
+
+  for(int i=0;i<100;i++) pdfW[i]=1.0;
 
   for(int jCounter=0;jCounter<jMax;jCounter++){
     jetpt[jCounter]=0; // jets in barrel + endcaps
@@ -456,6 +478,10 @@ void nanoEvent::reset()
   mGlu=0;
   mChi=0;
   mLSP=0;
+  A0=0;
+  M0=0;
+  M12=0;
+  signMu=0;
 }
 
 
@@ -693,6 +719,13 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("MassGlu",&nEvent.mGlu,"MassGlu/F");
   myTree->Branch("MassChi",&nEvent.mChi,"MassChi/F");
   myTree->Branch("MassLSP",&nEvent.mLSP,"MassLSP/F");
+  myTree->Branch("M0",&nEvent.M0,"M0/F");
+  myTree->Branch("A0",&nEvent.A0,"A0/F");
+  myTree->Branch("M12",&nEvent.M12,"M12/F");
+  myTree->Branch("signMu",&nEvent.signMu,"signMu/F");
+  myTree->Branch("pdfW",nEvent.pdfW,"pdfW[100]/F");
+  myTree->Branch("pdfWsum",&nEvent.pdfWsum,"pdfWsum/F");
+  myTree->Branch("NPdfs",&nEvent.NPdfs,"NPdfs/I");
 
   counters[EV].setName("Events");
   counters[TR].setName("Triggers");
@@ -707,7 +740,6 @@ void JZBAnalysis::Begin(TFile *f){
     counters[EV].fill("... pass electron triggers",0.);
     counters[EV].fill("... pass muon triggers",0.);
     counters[EV].fill("... pass EM triggers",0.);
-    counters[EV].fill("... pass all trigger requirements",0.);
   }
   std::string types[3] = { "ee","mm","em" };
   for ( size_t itype=0; itype<3; ++itype ) {
@@ -736,6 +768,8 @@ vector<lepton> JZBAnalysis::sortLeptonsByPt(vector<lepton>& leptons) {
 
 
 //------------------------------------------------------------------------------
+//for triggers, check out
+// http://fwyzard.web.cern.ch/fwyzard/hlt/summary
 const bool JZBAnalysis::passElTriggers() {
   if ( GetHLTResult("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2") )        return true;
@@ -743,11 +777,15 @@ const bool JZBAnalysis::passElTriggers() {
   if ( GetHLTResult("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6") )        return true;
+  if ( GetHLTResult("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v7") )        return true;
+  if ( GetHLTResult("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v8") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v1") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v2") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v3") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") )        return true;
+  if ( GetHLTResult("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") )        return true;
+  if ( GetHLTResult("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v1") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2") )        return true;
   if ( GetHLTResult("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v3") )        return true;
@@ -762,17 +800,28 @@ const bool JZBAnalysis::passMuTriggers() {
   if ( GetHLTResult("HLT_DoubleMu6_v1") )        return true;
   if ( GetHLTResult("HLT_DoubleMu6_v2") )        return true;
   if ( GetHLTResult("HLT_DoubleMu6_v3") )        return true;
+  if ( GetHLTResult("HLT_DoubleMu6_v4") )        return true;
+  if ( GetHLTResult("HLT_DoubleMu6_v5") )        return true;
+  if ( GetHLTResult("HLT_DoubleMu6_v6") )        return true;
+  if ( GetHLTResult("HLT_DoubleMu6_v7") )        return true;
+
   if ( GetHLTResult("HLT_DoubleMu7_v1") )        return true;
   if ( GetHLTResult("HLT_DoubleMu7_v2") )        return true;
   if ( GetHLTResult("HLT_DoubleMu7_v3") )        return true;
   if ( GetHLTResult("HLT_DoubleMu7_v4") )        return true;
   if ( GetHLTResult("HLT_DoubleMu7_v5") )        return true;
+  if ( GetHLTResult("HLT_DoubleMu7_v6") )        return true;
+  if ( GetHLTResult("HLT_DoubleMu7_v7") )        return true;
+
   if ( GetHLTResult("HLT_DoubleMu8_v1") )        return true;
   if ( GetHLTResult("HLT_DoubleMu8_v2") )        return true;
+
   if ( GetHLTResult("HLT_Mu13_Mu8_v1") )        return true;
   if ( GetHLTResult("HLT_Mu13_Mu8_v2") )        return true;
   if ( GetHLTResult("HLT_Mu13_Mu8_v3") )        return true;
   if ( GetHLTResult("HLT_Mu13_Mu8_v4") )        return true;
+  if ( GetHLTResult("HLT_Mu13_Mu8_v5") )        return true;
+  if ( GetHLTResult("HLT_Mu13_Mu8_v6") )        return true;
   return false;
 } 
 
@@ -784,12 +833,17 @@ const bool JZBAnalysis::passEMuTriggers() {
   if ( GetHLTResult("HLT_Mu17_Ele8_CaloIdL_v4") )        return true;
   if ( GetHLTResult("HLT_Mu17_Ele8_CaloIdL_v5") )        return true;
   if ( GetHLTResult("HLT_Mu17_Ele8_CaloIdL_v6") )        return true;
+  if ( GetHLTResult("HLT_Mu17_Ele8_CaloIdL_v7") )        return true;
+  if ( GetHLTResult("HLT_Mu17_Ele8_CaloIdL_v8") )        return true;
+
   if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v1") )        return true;
   if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v2") )        return true;
   if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v3") )        return true;
   if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v4") )        return true;
   if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v5") )        return true;
   if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v6") )        return true;
+  if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v7") )        return true; 
+  if ( GetHLTResult("HLT_Mu8_Ele17_CaloIdL_v8") )        return true;
   return false;
 }
 
@@ -815,6 +869,13 @@ void JZBAnalysis::Analyze() {
         nEvent.mGlu=fTR->MassGlu;
         nEvent.mChi=fTR->MassChi;
         nEvent.mLSP=fTR->MassLSP;
+        nEvent.A0=fTR->A0;
+        nEvent.M0=fTR->M0;
+        nEvent.signMu=fTR->signMu;
+        nEvent.M12=fTR->M12;
+        nEvent.NPdfs=fTR->NPdfs;
+        for(int i=0;i<fTR->NPdfs;i++) nEvent.pdfW[i]=fTR->pdfW[i];
+	nEvent.pdfWsum=fTR->pdfWsum; 
       }
     }
   // Trigger information
@@ -856,7 +917,7 @@ void JZBAnalysis::Analyze() {
   
   // Good event requirement: essentially vertex requirements
   if ( !IsGoodEvent() ) {
-    myTree->Fill();
+    if (isMC) myTree->Fill();
     return;
   }
   counters[EV].fill("... pass good event requirements");
@@ -951,7 +1012,7 @@ void JZBAnalysis::Analyze() {
   // Sort the leptons by Pt and select the two opposite-signed ones with highest Pt
   vector<lepton> sortedGoodLeptons = sortLeptonsByPt(leptons);
   if(sortedGoodLeptons.size() < 2) {
-    myTree->Fill();
+    if (isMC) myTree->Fill();
     return;
   }
     
@@ -964,7 +1025,7 @@ void JZBAnalysis::Analyze() {
     if(sortedGoodLeptons[0].charge*sortedGoodLeptons[PosLepton2].charge<0) break;
   }
   if(PosLepton2 == sortedGoodLeptons.size()) {
-    myTree->Fill();
+    if (isMC) myTree->Fill();
     return;
   }
   counters[EV].fill("... has at least 2 OS leptons");
@@ -999,7 +1060,7 @@ void JZBAnalysis::Analyze() {
   } else {
       
     //If there are less than two leptons the event is not considered
-    myTree->Fill();
+    if (isMC) myTree->Fill();
     return;
     
   }
@@ -1036,7 +1097,7 @@ void JZBAnalysis::Analyze() {
   for(int i =0 ; i<fTR->NJets;i++) // PF jet loop
     {
       counters[PJ].fill("All PF jets");
-      if(i==jMax){cout<<"max Num was reached"<<endl; return;}
+      if(i==jMax){cout<<"max Num was reached"<<endl; break;}
 	
       float jpt = fTR->JPt[i];
       float jeta = fTR->JEta[i];
@@ -1140,7 +1201,7 @@ void JZBAnalysis::Analyze() {
   for(int i =0 ; i<fTR->NJets;i++) // CALO jet loop
     {
       counters[JE].fill("All Calo jets");
-      if(i==jMax) { cout<<"max Num was reached"<<endl; return; }
+      if(i==jMax) { cout<<"max Num was reached"<<endl; break; }
 	
       float jpt  = fTR->CAJPt[i];
       float jeta = fTR->CAJEta[i];
@@ -1441,11 +1502,11 @@ const bool JZBAnalysis::IsCustomPfMu(const int index, const int pftype){
   //VERY TEMPORARY !!!!
   // Basic muon cleaning and ID
   // Acceptance cuts
-  if (pftype==1 && !(fTR->PfMuPt[index] > 10) )       return false;
+//  if (pftype==1 && !(fTR->PfMuPt[index] > 10) )       return false;
   if (pftype==2 && !(fTR->PfMu2Pt[index] > 10) )       return false;
   if (pftype==3 && !(fTR->PfMu3Pt[index] > 10) )       return false;
   counters[MU].fill(" ... PF pt > 10");
-  if (pftype==1 && !(fabs(fTR->PfMuEta[index])<2.4) ) return false;
+//  if (pftype==1 && !(fabs(fTR->PfMuEta[index])<2.4) ) return false;
   if (pftype==2 && !(fabs(fTR->PfMu2Eta[index])<2.4) ) return false;
   if (pftype==3 && !(fabs(fTR->PfMu3Eta[index])<2.4) ) return false;
   counters[MU].fill(" ... PF |eta| < 2.4");
@@ -1485,19 +1546,19 @@ const bool JZBAnalysis::IsCustomPfMu(const int index, const int pftype){
 
 
 const bool JZBAnalysis::IsCustomPfEl(const int index, const int pftype){
-
+  std::cout << "IF YOU USE THIS FUNCTION YOU NEED TO REVISE IT - PfElPt and other branches are no longer available" << std::endl;
   // kinematic acceptance
-  if(pftype==1&&!(fTR->PfElPt[index]>10) )return false;
+//  if(pftype==1&&!(fTR->PfElPt[index]>10) )return false;
   if(pftype==2&&!(fTR->PfEl2Pt[index]>10) )return false;
   if(pftype==3&&!(fTR->PfEl3Pt[index]>10) )return false;
   counters[EL].fill(" ... PF pt > 10");
-  if(pftype==1&&!(fabs(fTR->PfElEta[index]) < 2.4) ) return false;
+//  if(pftype==1&&!(fabs(fTR->PfElEta[index]) < 2.4) ) return false;
   if(pftype==2&&!(fabs(fTR->PfEl2Eta[index]) < 2.4) ) return false;
   if(pftype==3&&!(fabs(fTR->PfEl3Eta[index]) < 2.4) ) return false;
   counters[EL].fill(" ... PF |eta| < 2.4");
-  if(pftype==1&&!((fTR->PfElID95[index]))) return false;
-  if(pftype==2&&!((fTR->PfElID95[index]))) return false;
-  if(pftype==3&&!((fTR->PfElID95[index]))) return false;
+//  if(pftype==1&&!((fTR->PfElID95[index]))) return false;
+//  if(pftype==2&&!((fTR->PfElID95[index]))) return false;
+//  if(pftype==3&&!((fTR->PfElID95[index]))) return false;
   //if(!(fTR->PfElID80[index])) return false;
   /*
     if ( !(fTR->ElNumberOfMissingInnerHits[index] <= 1 ) ) return false;
