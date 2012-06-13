@@ -15,7 +15,6 @@
 *                                          Updated: 01 November 2008
 *                                          Updated: 13 December 2010 (P.Nef)
 *                                          Updated: 09 February 2011
-*                                          Updated: 26 September 2011 (P.Nef)
 */
 
 
@@ -156,7 +155,6 @@ void RejectISRDRmax(float drmax) {
 
 // controls the level of debug prints
 void SetDebug(int debug)  { dbg = debug; } 
-int  GetNumLoop(){return numLoop;}
  
  
 private:
@@ -164,7 +162,6 @@ private:
 // the hemisphere separation algorithm
 int Reconstruct();
 int RejectISR(); 
-
 
 vector<float> Object_Px;
 vector<float> Object_Py;
@@ -193,7 +190,6 @@ float rejectISRPtmax;
 int rejectISRDR;
 float rejectISRDRmax;
 int dbg;
-int numLoop;
 
 };
 

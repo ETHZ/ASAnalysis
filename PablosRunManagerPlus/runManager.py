@@ -79,7 +79,7 @@ def checklist(joblist,currlist):
       jobfinished.append(int(i)) 
   for job in jobfinished:
     joblist.remove(int(job))
-  print "Jobs left:"+str(len(joblist))+" / "+str(totaljobnumber)
+  print "\033[0F\033[2K Jobs left:"+str(len(joblist))+" / "+str(totaljobnumber)
 
 #-------------------------------------------------------------#
 # getFiles method: Obtains a list with the name of the files  #
@@ -138,8 +138,7 @@ def fixPath(path):
 # createCMSConf method: creates CMS configuration file        #
 #                                                             #
 #-------------------------------------------------------------# 
-def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, executablePath, nameOfSRM, hpname, task):
-
+def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, executablePath, nameOfSRM, hpname, nameOfFolder, arguments):
   CFGFile = open(nameOfConf)
   cfgText = CFGFile.read()
 
@@ -148,7 +147,6 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
     cadFile = cadFile + file + " " 
   cadFile = cadFile + "\"" 
 
-  nameOfFolder = task[0]
   if(nameOfFolder[len(nameOfFolder)-1] == "/"):
     nameOfFolder = nameOfFolder[0:len(nameOfFolder)-1]
   value = nameOfFolder.rfind("/")
@@ -160,20 +158,21 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
   newcfgText3 = newcfgText2.replace("exefile", executablePath)
   newcfgText4 = newcfgText3.replace("srmdir", nameOfSRM + "/" + taskName)
   newcfgText5 = newcfgText4.replace("hpname", hpname)
-  newcfgText6 = newcfgText5.replace("argumentsname", "\"" + task[1] + "\"")
+  newcfgText6 = newcfgText5.replace("argumentsname", "\"" + arguments + "\"")
   newcfgText7 = newcfgText6.replace("therelease", releasePath)
 
   nameOfConf2 = nameOfConf.replace(".", "_"+str(step)+ ".")
  
+  ensure_dir(str(nameOfDirectory + taskName + "/"))
   outputCFGFile = open(nameOfDirectory + taskName + "/" + nameOfConf2, "w")
   outputCFGFile.write(newcfgText7)
   CFGFile.close()
   outputCFGFile.close()
 
-
   outputName = "output_" + str(step) + ".root"
   stderr = nameOfDirectory + taskName + '/job_' + str(step) + '.err'
   stdout = nameOfDirectory + taskName + '/job_' + str(step) + '.out'
+  
   thisjobnumber=0
 
   cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
@@ -190,7 +189,7 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
 # createJob method: Prepares everything for a single job      #
 #                                                             #
 ############################################################### 
-def createJob(step, FilesPerJob, NumberOfJobs, OverloadedJobs, stringInfo, listOfFiles, task):
+def createJob(step, FilesPerJob, NumberOfJobs, OverloadedJobs, stringInfo, listOfFiles, nameOfFolder, arguments):
  
   #Definition of the different substrings needed
   nameOfSourceFile = stringInfo[0]
@@ -204,9 +203,8 @@ def createJob(step, FilesPerJob, NumberOfJobs, OverloadedJobs, stringInfo, listO
   inputFilesForCMS = getFiles(step, FilesPerJob, NumberOfJobs, OverloadedJobs, listOfFiles)
   if(inputFilesForCMS == ""):
     return "Error: No input files available"
-  
   result = createCMSConf(step, nameOfCurrentDirectory, releasePath, 
-           nameOfConfigurationFile, inputFilesForCMS, executablePath, nameOfSRMPath, hpname, task)
+           nameOfConfigurationFile, inputFilesForCMS, executablePath, nameOfSRMPath, hpname, nameOfFolder, arguments)
   return result
 
 ###############################################################
@@ -282,10 +280,10 @@ def getListOfTasks(nameOfFile):
       arguments = line[argumentBegin+1:argumentEnd]
       endLine = line[argumentEnd+1:len(line)]
       splitedEndLine = endLine.split()
-      folder = splitedLine[0] 
+      dataset = splitedLine[0] 
       numberOfJobs = splitedEndLine[0]
       numberOfFilesPerJob = splitedEndLine[1]
-      task = [folder, arguments, numberOfJobs, numberOfFilesPerJob]
+      task = [dataset, arguments, numberOfJobs, numberOfFilesPerJob]
       if(numberOfJobs == '-1' or numberOfFilesPerJob == '-1'):
         tasks.append(task)
 
@@ -297,43 +295,36 @@ def getListOfTasks(nameOfFile):
 #                                                             #
 ###############################################################
 def process(task, conf):
-  dcapPath = "dcap://t3se01.psi.ch:22125/"
-  srmPath = "srm://t3se01.psi.ch:8443/srm/managerv2?SFN=/pnfs/psi.ch/cms/trivcat/store/user/"
-  folderToList = srmPath + task[0]
+  dcapPath = "dcap://t3se01.psi.ch:22125/pnfs/psi.ch/cms/trivcat"
+  dbsUrl = 'http://cmsdbsprod.cern.ch/cms_dbs_ph_analysis_02/servlet/DBSServlet'
   list = [] # Initialize file list
 
+  dataset = task[0]
+
   # Check if cache file exists and if we should use it
-  cacheFile = '.'+folderToList.replace('/','_').replace('?','_')
+  cacheFile = '.'+dataset.replace('/','_').replace('?','_')
   allmyfiles=[]
   if not options.renew and os.path.isfile(cacheFile):
       print "Reading from cached file"
       f = open(cacheFile)
-      showMessage('Reading files pertaining to '+str(task[0])+'from cache file '+cacheFile)
+      showMessage('Reading files pertaining to '+dataset+'from cache file '+cacheFile)
       allmyfiles = f.readlines()
       f.close()
   else:
       # If not: rebuild the list
-      showMessage("Going to fetch list of files pertaining to "+str(task[0]))
-      doloop=True
-      offset=0
-      while(doloop) :
-	      command = 'srmls --offset '+str(offset)+ ' --count 1000 ' + folderToList + " 2>&1 | grep root | awk '{print $2}'"
-	      theList = os.popen(command)
-	      list = theList.readlines()
-	      for li in list:
-		      allmyfiles.append(li)
-	      if(len(list)==1000):
-		      doloop=True;
-		      offset=offset+1000
-		      print "Need to fetch more files ... hold on (currently have a list of "+str(len(allmyfiles))+" files)"
-	      else:
-		      doloop=False;
+      showMessage("Going to fetch list of files pertaining to "+str(dataset))
+      command = 'dbs search --query="find file where dataset='+dataset+'" --noheader --url='+dbsUrl
+      print command
+      theList = os.popen(command)
+      list = theList.readlines()
+      for li in list:
+              allmyfiles.append(li)
       f = open(cacheFile,'w')
       f.write(''.join(allmyfiles))
   
   numberOfFiles = len(allmyfiles)
   if(numberOfFiles == 0):
-    showMessage("No files found")
+    showMessage("No files found in "+str(fask[0]))
     return "Error"
 
   correctList = [];
@@ -356,11 +347,15 @@ def process(task, conf):
     NumberOfJobs = numberOfFiles
     OverloadedJobs = 0
 
-  nameOfFolder = task[0]
-  if(nameOfFolder[len(nameOfFolder)-1] == "/"):
-    nameOfFolder = nameOfFolder[0:len(nameOfFolder)-1]
-  value = nameOfFolder.rfind("/")
-  taskName = nameOfFolder[value+1:len(nameOfFolder)] 
+  #FR FIXME: this part is tricky and might be fragile
+  # Task[0] is now a dataset: /DATASET/USER-TAG_DATASET-TYPE-AOD-HASH/USER
+  # Extract useful information (DATASET-TYPE-AOD)
+  primaryDataset = dataset.lstrip('/').split('/')[0]
+  fullName = dataset.lstrip('/').split('/')[1]
+  index1 = fullName.index(primaryDataset)
+  index2 = fullName.rindex('-')
+  nameOfFolder = fullName[index1:index2]
+  taskName = nameOfFolder
   os.system("mkdir -p " + taskName)
 #  os.system("mkdir -p ../" + taskName)
 
@@ -368,7 +363,7 @@ def process(task, conf):
   jobnumbercollection=[]
   if(FilesPerJob > 0):
     for step in range(0, NumberOfJobs):
-      result=createJob(step, FilesPerJob, NumberOfJobs, OverloadedJobs, conf, correctList, task)
+      result=createJob(step, FilesPerJob, NumberOfJobs, OverloadedJobs, conf, correctList, nameOfFolder, task[1])
       jobnumbercollection.append(result)
   return jobnumbercollection
 
@@ -417,7 +412,7 @@ def check_directory(path,username) :
 				supposedtobejoined=True
 				listoffiles.append(currentline[currentline.find(path):])
 	if supposedtobejoined==True:
-		join_directory(path,listoffiles,username)
+	 	join_directory(path,listoffiles,username)
 
 
 ##################################################################################
@@ -444,6 +439,13 @@ if __name__ == '__main__' :
         if len(args) != 1:
                 parser.print_usage()
                 sys.exit(-1)
+        
+        timeleft=commands.getoutput("timeleft=`voms-proxy-info -valid -timeleft | grep timeleft | awk '{ print $3 }'` && pos=`expr index "+'"$timeleft" :`&& timelefth=${timeleft:0:$pos-1} && echo $timelefth');
+        if(timeleft<2): 
+		print "You need to refresh your proxy! (will run voms-proxy-init -voms cms for you)"
+		os.system("voms-proxy-init -voms cms");
+	else:
+		print "Proxy lifetime is acceptable (more than "+str(timeleft)+" hours)"
         
         result = parseInputFile(args[0])
         if(result == "Error"):
@@ -472,7 +474,7 @@ if __name__ == '__main__' :
 
         totaljobnumber=len(jobnumbers)
         counter=0
-        print 'Total job numbers:',totaljobnumber
+        print 'Total number of jobs:',totaljobnumber
         while(len(jobnumbers)>0 and counter<300) :
                 time.sleep(60)
                 counter+=1

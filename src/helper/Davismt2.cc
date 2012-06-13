@@ -42,7 +42,6 @@ Davismt2::Davismt2(){
 	momenta_set = false;
 	mt2_b  = 0.;
 	scale = 1.;
-	verbose = 1;
 }
 
 Davismt2::~Davismt2(){}
@@ -233,7 +232,7 @@ void Davismt2::mt2_massless(){
 		if(foundhigh==0) 
 		{
 
-			if(verbose > 0) cout << "Davismt2::mt2_massless() ==> Deltasq_high not found at event " << nevt <<endl;
+			cout << "Davismt2::mt2_massless() ==> Deltasq_high not found at event " << nevt <<endl;
 
 
 			mt2_b = (double)sqrt(Deltasq_low+mnsq);
@@ -243,9 +242,9 @@ void Davismt2::mt2_massless(){
 
 	if(nsols_high == nsols_low)
 	{ 
-		if(verbose > 0) cout << "Davismt2::mt2_massless() ==> error: nsols_low=nsols_high=" << nsols_high << endl;
-		if(verbose > 0) cout << "Davismt2::mt2_massless() ==> Deltasq_high=" << Deltasq_high << endl;
-		if(verbose > 0) cout << "Davismt2::mt2_massless() ==> Deltasq_low= "<< Deltasq_low << endl;
+		cout << "Davismt2::mt2_massless() ==> error: nsols_low=nsols_high=" << nsols_high << endl;
+		cout << "Davismt2::mt2_massless() ==> Deltasq_high=" << Deltasq_high << endl;
+		cout << "Davismt2::mt2_massless() ==> Deltasq_low= "<< Deltasq_low << endl;
 
 		mt2_b = sqrt(mnsq + Deltasq_low);
 		return;
@@ -447,7 +446,7 @@ void Davismt2::mt2_bisect(){
 		foundhigh = find_high(Deltasq_high);
 		if(foundhigh == 0) 
 		{
-			if(verbose > 0) cout << "Davismt2::mt2_bisect() ==> Deltasq_high not found at event " << nevt << endl;
+			cout << "Davismt2::mt2_bisect() ==> Deltasq_high not found at event " << nevt << endl;
 			mt2_b = sqrt( Deltasq_low + mnsq );
 			return;
 		}

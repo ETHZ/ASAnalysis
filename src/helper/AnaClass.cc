@@ -2154,6 +2154,7 @@ void AnaClass::plotEffOverlayEE(TEfficiency *h1in, TString tag1, TEfficiency *h2
 /*****************************************************************************
 ###################| Utilities |##############################################
 *****************************************************************************/
+
 //____________________________________________________________________________
 TTree* AnaClass::getTree(TString treename, TString filename, TString subdir){
 	TFile *file = NULL;
@@ -2186,6 +2187,8 @@ TH1D* AnaClass::drawTree1D(const char* arg, const TCut reqs, const char* histn, 
 	if(draw) h1->Draw(drawopt);
 	return h1;
 }
+
+//____________________________________________________________________________
 TH1D* AnaClass::drawTree1D(const char* arg, const TCut reqs, const char* histn, const int nbins, const double *xbins, TTree* tree, bool draw, const char* drawopt){
 	int nbins_auto = nbins;
 	if(nbins == 0)	nbins_auto = OptNBins(tree->Draw(arg, reqs, "goff"));
@@ -2195,6 +2198,8 @@ TH1D* AnaClass::drawTree1D(const char* arg, const TCut reqs, const char* histn, 
 	if(draw) h1->Draw(drawopt);
 	return h1;
 }
+
+//____________________________________________________________________________
 TH2D* AnaClass::drawTree2D(const char* arg1, const char* arg2, const TCut reqs, const char* histn, const int nbinsx, const double xmin, const double xmax, const int nbinsy, const double ymin, const double ymax, TTree* tree, bool draw, const char* drawopt){
 	char out[1000];
 	int nbinsx_auto(nbinsx), nbinsy_auto(nbinsy);
@@ -2220,6 +2225,8 @@ TString AnaClass::convertVarName(const char* var){
 	}
 	else return outp;
 }
+
+//____________________________________________________________________________
 TString AnaClass::convertVarName2(const char* var){
 /*  - Removes bracket signs from filenames to enable saving as .eps files  */
 	TString out_str = TString(var);
@@ -2253,6 +2260,8 @@ for( int i = 0; i < ihist->GetNbinsX()+2; i++ ){
 }
 return ohist;
 }
+
+//____________________________________________________________________________
 TH2D* AnaClass::normHist(const TH2D *ihist){
 /*		-	Normalizes a histogram (incl. errors) to unit integral
 I.e. divides each entry by the integral									*/
@@ -2266,6 +2275,8 @@ for( int i = 0; i < ihist->GetNbinsX()+2; i++ ){
 }
 return ohist;
 }
+
+//____________________________________________________________________________
 TH1D* AnaClass::normHistBW(const TH1D *ihist, float scale){
 /*		-	Normalizes a histogram (incl. errors) with variable binwidth.
 			I.e. divides each entry by the binwidth									*/
@@ -2307,6 +2318,8 @@ void AnaClass::setPlottingRange(TH1D *&h1, float margin, bool logy){
 	h1->SetMinimum(min);
 	h1->SetMaximum(max);
 }
+
+//____________________________________________________________________________
 void AnaClass::setPlottingRange(TH1D *&h1, TH1D *&h2, float margin, bool logy){
 	// Determine plotting range
 	// Default margin is 0.05	
@@ -2341,6 +2354,8 @@ void AnaClass::setPlottingRange(TH1D *&h1, TH1D *&h2, float margin, bool logy){
 	h2->SetMinimum(min);
 	h2->SetMaximum(max);
 }
+
+//____________________________________________________________________________
 void AnaClass::setPlottingRange(TH1D *&h1, TH1D *&h2, TH1D *&h3, float margin, bool logy){
 	// Determine plotting range
 	// Default margin is 0.05
@@ -2382,6 +2397,8 @@ void AnaClass::setPlottingRange(TH1D *&h1, TH1D *&h2, TH1D *&h3, float margin, b
 	h3->SetMinimum(min);
 	h3->SetMaximum(max);
 }
+
+//____________________________________________________________________________
 void AnaClass::setPlottingRange(std::vector<TH1D*> &hists, float margin, bool logy){
 	// Determine plotting range
 	// Default margin is 0.05
@@ -2417,74 +2434,25 @@ void AnaClass::setPlottingRange(std::vector<TH1D*> &hists, float margin, bool lo
 		hists[i]->SetMaximum(max);
 	}
 }
-void AnaClass::getPlottingRange(float &minopt, float &maxopt, std::vector<TH1D*> hists, float margin, bool logy){
-	// Determine plotting range
-	// Default margin is 0.05
-	float max = hists[0]->GetBinContent(1);
-	float min = hists[0]->GetBinContent(1);
-	for(size_t i = 0; i < hists.size(); ++i){
-		float tempmax = getMaxYExtension(hists[i]);
-		float tempmin = getMinYExtension(hists[i]);
-		if(tempmax > max) max = tempmax;
-		if(tempmin < min) min = tempmin;
-	}
-	float range = max-min;
-
-	if(logy){
-		max *= 1.5;
-		if(min <= 0.){
-			float minval = hists[0]->GetBinContent(hists[0]->GetMinimumBin());
-			for(size_t i = 0; i < hists.size(); ++i){
-				float tempval = hists[i]->GetBinContent(hists[i]->GetMinimumBin());
-				if(tempval < minval) minval = tempval;
-			}
-			min = minval/1.5;
-		}
-		else min /= 1.5;
-	}
-	else{
-		max = max + margin * range;
-		min = min - margin * range;
-	}
-
-	minopt = min;
-	maxopt = max;
-	return;
-}
 
 //____________________________________________________________________________
 float AnaClass::getMaxYExtension(TH1 *h){
-	float max = h->GetBinContent(1);
-	// float max = h->GetMaximum();
+	float max = h->GetMaximum();
 	for(size_t i = 1; i <= h->GetNbinsX(); ++i){
 		float temp = h->GetBinContent(i) + h->GetBinError(i);
 		if(temp > max) max = temp;
 	}
 	return max;
 }
+
+//____________________________________________________________________________
 float AnaClass::getMinYExtension(TH1 *h){
-	float min = h->GetBinContent(1);
-	// float min = h->GetMinimum();
+	float min = h->GetMinimum();
 	for(size_t i = 1; i <= h->GetNbinsX(); ++i){
 		float temp = h->GetBinContent(i) - h->GetBinError(i);
 		if(temp < min) min = temp;
 	}
 	return min;
-}
-
-//____________________________________________________________________________
-void AnaClass::setZeroBinError(TH1D *ihist){
-//    - Sets all bin errors to zero
-	for( int i = 0; i < ihist->GetNbinsX()+2; i++ ) ihist->SetBinError(i,0.);
-}
-
-//____________________________________________________________________________
-void AnaClass::fillWithoutOF(TH1D *&ihist, double x, double w){
-	double xmax = ihist->GetBinLowEdge(ihist->GetNbinsX());
-	// double xmax = ihist->GetBinLowEdge(ihist->GetMaximumBin());
-	double bw = ihist->GetBinWidth(ihist->GetMaximumBin());
-	if(x > xmax) ihist->Fill(xmax + bw*0.5, w); // always increment last bin (i.e. never the overflow)
-	else ihist->Fill(x, w);
 }
 
 //____________________________________________________________________________
@@ -2497,16 +2465,15 @@ TCanvas* AnaClass::makeCanvas(const char* name){
 }
 
 //____________________________________________________________________________
-void AnaClass::printObject(TObject* o, TString name, Option_t *drawopt, bool logy){
-	TCanvas *col = new TCanvas(o->GetName(), o->GetTitle(), 0, 0, 900, 700);
+void AnaClass::printObject(TObject* o, TString canvname, TString canvtitle, Option_t *drawopt){
+	TCanvas *col = new TCanvas(canvname, canvtitle, 0, 0, 900, 700);
 	col->SetFillStyle(0);
 	col->SetFrameFillStyle(0);
 	col->cd();
 	gPad->SetFillStyle(0);
 	o->Draw(drawopt);
 	gPad->RedrawAxis();
-	if(logy) gPad->SetLogy(1);
-	Util::PrintNoEPS(col, name, fOutputDir + fOutputSubDir, fOutputFile);
+	Util::PrintNoEPS(col, canvname, fOutputDir + fOutputSubDir, fOutputFile);
 }
 
 //____________________________________________________________________________
@@ -2550,8 +2517,7 @@ void AnaClass::printProgress(int entry, const int nentries, TString header, int 
 	float progress_f = (float)(entry+1)/(float)(nentries)*100.;
 	char progress[10];
 	sprintf(progress, "%5.1f", progress_f);
-	cout << " Processing " << setw(50) << left << header << setw(6) << right << progress << " %      \r" << flush;
-	if(entry+1 == nentries) cout << endl;
+	cout << " Processing " << setw(40) << left << header << setw(6) << right << progress << " %      \r" << flush;
 }
 
 //____________________________________________________________________________
@@ -2578,20 +2544,6 @@ void AnaClass::refValues(const char* var, TH1D* h){
 		tailFraction(h, percent1);
 		tailFraction(h, percent2);
 	}
-}
-
-//____________________________________________________________________________
-void AnaClass::getWeightedYMeanRMS(TH1D *h, double &mean, double &rms){
-	vector<double> values;
-	vector<double> weights;
-	for(size_t i = 1; i <= h->GetNbinsX(); ++i){
-		if(h->GetBinError(i) == 0.) continue;
-		values.push_back(h->GetBinContent(i));
-		weights.push_back(1./h->GetBinError(i));
-	}
-	mean = TMath::Mean(values.begin(), values.end(), weights.begin());
-	rms = TMath::RMS(values.begin(), values.end());
-	return;
 }
 
 //____________________________________________________________________________
@@ -2629,6 +2581,8 @@ double AnaClass::tailFraction(TH1D* h, double frac){
 
 	return binValue;
 }
+
+//____________________________________________________________________________
 void AnaClass::printCheckList(const char* var, TH1D* h, const char* filename){
 // Prints the CheckList to file filename
 	ofstream file;
@@ -2681,6 +2635,8 @@ void AnaClass::printCheckList(const char* var, TH1D* h, const char* filename){
 		file << printRatio(var, h, 0., isoLow, 0., isoHigh) << endl;
 	}
 }
+
+//____________________________________________________________________________
 TString AnaClass::printTailFraction(const char* var, TH1D* h, double frac){
 // Prints the value of the variable for which frac remains in the tail
 
@@ -2722,6 +2678,8 @@ TString AnaClass::printTailFraction(const char* var, TH1D* h, double frac){
 	TString result = Form("  For %f of tail %s = %f +- %f", frac, var, binValue, dbinValue);
 	return result;
 }
+
+//____________________________________________________________________________
 TString AnaClass::printAverage(const char* var, TH1D* h) {
 // Prints the average of the histogram
 
@@ -2738,6 +2696,8 @@ TString AnaClass::printAverage(const char* var, TH1D* h) {
 	TString result = Form("  Mean value of %s = %f +- %f", var, aver, daver);
 	return result;
 }
+
+//____________________________________________________________________________
 TString AnaClass::printRatio(const char* var, TH1D* h, double x1, double x2, double y1, double y2){
 // Prints the ratio of entries for which (x1<var<x2) / (y1<var<y2)
 

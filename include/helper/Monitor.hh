@@ -37,6 +37,7 @@
 //       for ( counters_t iCount=count_begin; iCount<count_end; 
 ///            iCount = counters_t(iCount+1) ) {
 //         counters[iCount].print();
+//         std::cout << setfill('-') << std::setw(70) << "" << setfill(' ') << std::endl;    
 //       }
 //     ...
 //    }
@@ -60,27 +61,12 @@ struct eqstr
 
 class Monitor {
 
-  //typedef std::map<const std::string, float, eqstr> Cmap;
-  typedef std::map<const std::string, double, eqstr> Cmap;
+  typedef std::map<const std::string, float, eqstr> Cmap;
 
 public:
-  Monitor() : maxLength(50),name("") {}
+  Monitor() : maxLength(50) {}
 
-  void setName( const std::string& s ) { name = s; }
-
-  /*
   void fill( const std::string& counter, const float& weight=1. ) {
-    Cmap::iterator it;
-    if ( ( it = counters.find(counter)) == counters.end() ) {
-      countNames.push_back( counter ); // Store name in ordered list
-      if ( counter.length()>maxLength ) maxLength = counter.length();
-      counters.insert( make_pair(counter,weight) ); // Increment counter
-    } else {
-      (*it).second += weight;
-    }
-  }
-  */
-  void fill( const std::string& counter, const double& weight=1. ) {
     Cmap::iterator it;
     if ( ( it = counters.find(counter)) == counters.end() ) {
       countNames.push_back( counter ); // Store name in ordered list
@@ -95,20 +81,19 @@ public:
      return counters[counter];
   }
 
-  friend ostream& operator<<( ostream& os, Monitor m ) {
+  void print() {
     using namespace std;
-    if ( !(m.countNames.size()>0) ) return os;
+    if ( !(countNames.size()>0) ) return;
     // This needs to be improved
-    float maxc = m.counters[m.countNames[0]];
+    float maxc = counters[countNames[0]];
     float prev = maxc;
     ostringstream maxclen; maxclen << maxc;
     size_t maxwidth = maxclen.str().length();
-    os << left << "COUNTER> " << m.name << endl;
-    for ( vector<string>::const_iterator it = m.countNames.begin();
-          it != m.countNames.end(); ++it ) {
-      float count = m.counters[*it];
-      os << setw(m.maxLength+5) << left << (*it)
-                << setw(maxwidth) << right << count << " "
+    for ( vector<string>::const_iterator it = countNames.begin(); 
+          it != countNames.end(); ++it ) {
+      float count = counters[*it];
+      cout << setw(maxLength+5) << left << (*it) 
+                << setw(maxwidth) << right << count << " " 
                 << setw(3) << right
                 << static_cast<int>(maxc>0.?count/maxc*100.:0.) << "% "
                 << setw(3) << right
@@ -116,18 +101,12 @@ public:
                 << endl;
       prev = count;
     }
-    os << setfill('-') << std::setw(70) << "" << setfill(' ') << std::endl;
-
-    return os;
   }
-
-  void print() { std::cout << *this; }
 
 public:
   std::vector<std::string> countNames;
   Cmap counters;
   int maxLength;
-  std::string name;
 
 };
 #endif

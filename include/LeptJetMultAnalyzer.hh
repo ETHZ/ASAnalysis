@@ -6,22 +6,25 @@
 
 #include "base/TreeAnalyzerBase.hh"
 #include "base/TreeReader.hh"
+#include "MultiplicityAnalysis.hh"
 #include "MassAnalysis.hh"
+#include "RatioAnalysis.hh"
+
 
 
 class LeptJetMultAnalyzer : public TreeAnalyzerBase {
 public:
 	LeptJetMultAnalyzer(TTree *tree = 0);
 	virtual ~LeptJetMultAnalyzer();
-	void BeginJob(TString filename="Multiplicity.root" , TString setofcuts="default", float lumi=-999.99, 
-	              bool isData=false, string data_PileUp="", string mc_PileUp="");
+	void BeginJob(TString filename="Multiplicity.root" , TString setofcuts="default", float lumi=-999.99);
 	void EndJob();
 	void Loop();
 	void SetMaxEvents(int a){fMaxEvents=a;}
-  	bool isS3;
-  bool noPU;  
+
 private:
+	MultiplicityAnalysis     *fMultiplicityAnalysis;
 	MassAnalysis             *fMassAnalysis;
+	RatioAnalysis            *fRatioAnalysis;		
   	int fMaxEvents;
 };
 #endif

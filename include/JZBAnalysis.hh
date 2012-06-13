@@ -25,54 +25,54 @@ struct lepton {
   int type; //0==electron 1==muon 2==tau 
   int index;
   float genPt;
-  float iso;
-  bool ElCInfoIsGsfCtfCons;
-  bool ElCInfoIsGsfCtfScPixCons;
-  bool ElCInfoIsGsfScPixCons;
 };
 
 
 class JZBAnalysis : public UserAnalysisBase{
 public:
-  JZBAnalysis(TreeReader *tr=NULL, std::string dataType="mc", bool fullCleaning=false, bool isModelScan=false, bool makeSmall=false);
+  JZBAnalysis(TreeReader *tr=NULL, std::string dataType="mc", bool fullCleaning=false);
   virtual ~JZBAnalysis();
   const bool IsCustomMu(const int);
   const bool IsCustomEl(const int);
-  const bool IsCustomPfMu(const int, const int);
-  const bool IsCustomPfEl(const int, const int);
-  const bool IsCustomJet(const int);
-  const bool IsConvertedPhoton( const int eIndex );
-  const bool passTriggers(std::vector<std::string>& triggerPaths);
+  const bool IsCustomJet(const int index);
+  const bool passElTriggers(void);
+  const bool passEMuTriggers(void);
+  const bool passMuTriggers(void);
 
   string outputFileName_; // public name of the output file name
 
-  void Begin(TFile *f);
+  void Begin();
   void Analyze();
-  void End(TFile *f);
+  void End();
 
   // Fill generator information
   void GeneratorInfo();
 
 private:
 
-  //enum counters_t { count_begin, EV=count_begin, TR, MU, EL, JE, PJ, count_end };
-  enum counters_t { count_begin, EV=count_begin, TR, MU, PFMU, EL, PFEL, JE, PJ, count_end };
-
+  enum counters_t { count_begin, EV=count_begin, MU, EL, JE, PJ, count_end };
   Monitor counters[count_end];
 
   vector<lepton> sortLeptonsByPt(vector<lepton>&);
-  // Add a set of paths to path container
-  void addPath(std::vector<std::string>& paths,std::string base, 
-               unsigned int start, unsigned int end);
 
   template<class T> std::string any2string(T i);
+  // file for histograms:
+  TFile *fHistFile;
+	
+
+  TH1F *fHMee[20];
+
+  TH2F *fHElectronPtEta;
+  TH2F *fHElectronIDPtEta;
+  TH2F *fHElectronIDIsoPtEta;
+  TH2F *fHMeeDPhi;
+  TH2F *fHMeePt;
+  TH2F *fHMDPhiPt;
+  TH2F *fHMZPtJ1Pt;
+  TH2F *fHMZPtuJ1Pt;
 
   std::string fDataType_;
   bool fFullCleaning_;
-  bool fisModelScan;
-  bool fmakeSmall;
-
-  std::vector<std::string> elTriggerPaths, muTriggerPaths, emTriggerPaths;
 
   TRandom* rand_;
 
