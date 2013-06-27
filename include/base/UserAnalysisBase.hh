@@ -66,6 +66,8 @@ public:
     vector<string>   fHLTLabels;   // Vector with current HLT names
 	
 	virtual int getSusyMass(int, int=1);
+	virtual float getSusySystemPt(int, int=-1);
+	virtual float getISRWeight(float, int);
 
     // Jet Selectors
 //     virtual bool IsGoodBasicJet(int);
