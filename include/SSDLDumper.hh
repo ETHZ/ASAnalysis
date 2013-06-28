@@ -15,6 +15,13 @@
 #include "TRandom3.h"
 #include "TLorentzVector.h"
 
+// BDT THINGS ---------------
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+#include "TMVA/MethodCuts.h"
+// --------------------------
+
+
 using namespace std;
 
 class SSDLDumper : public AnaClass{
@@ -144,6 +151,15 @@ public:
 	struct ValueAndError {
 		float val;
 		float err;
+	};
+	struct ValueAndIndex {
+		float val;
+		int ind;
+	};
+	struct by_val { 
+		bool operator()(ValueAndIndex const &a, ValueAndIndex const &b) { 
+			return a.val > b.val;
+		}
 	};
 	struct lepton{
 		lepton(){};
@@ -739,12 +755,14 @@ public:
 	virtual float getMET();
 	virtual float getMETPhi();
 	virtual int getNJets(float = 0.);
+	virtual float getNthJetPt(int = 0);
 	virtual int getNBTags();
 	virtual int getNBTagsMed();
 	virtual std::vector< int > getNBTagsMedIndices();
 	virtual float getHT();
 	virtual float getWeightedHT();
 	virtual float getMT(int, gChannel);
+	virtual float getDPhiMLs(int, int, gChannel);
 	virtual float getMT2(int, int, gChannel);
 	virtual float getMll(int, int, gChannel);
 	virtual int   getClosestJet(int, gChannel, float = 20.);
@@ -866,6 +884,7 @@ public:
         float getTriggerSFElEl(float);
         float getTriggerSFMuEl();
         float getLeptonSystematic(float, float, gChannel);
+        float getISRSystematic(float, int);
 	float diMuonHLTSF2012();
 	float muEleHLTSF2012();
 	float diEleHLTSF2012();
@@ -969,11 +988,19 @@ public:
 	float       fSETree_MET;
 	int         fSETree_NM; // number of tight muons
 	int         fSETree_NE; // number of tight electrons
+	int         fSETree_NMus; // number of muons
+	int         fSETree_NEls; // number of electrons
 	int         fSETree_NJ;
+	float       fSETree_Jet0Pt;
+	float       fSETree_Jet1Pt;
 	int         fSETree_NbJ;
 	int         fSETree_NbJmed;
 	float       fSETree_M3;
 	float       fSETree_MT2;
+	float       fSETree_MT1;
+	float       fSETree_dPhiML1;
+	float       fSETree_dPhiMLs;
+	float       fSETree_BDTVal;
 	float       fSETree_Mll;
 	float       fSETree_pT1;
 	float       fSETree_pT2;
@@ -1009,6 +1036,29 @@ public:
         GoodRunList *fGoodRunList;
 	TRandom3 *fRand3;
 	TRandom3 *fRand3Normal;
+
+	// FOR THE BDT
+	// ---------------------------------------
+	TMVA::Reader *fReader;
+	float fHT_bdt     ;
+	float fpT1_bdt    ;
+	float fpT2_bdt    ;
+	float fNJ_bdt     ;
+	float fMll_bdt    ;
+	float fMT1_bdt    ;
+	float fMET_bdt    ;
+	float fJet0Pt_bdt ;
+	float feta1_bdt   ;
+	float fNbJ_bdt    ;
+	float fNbJmed_bdt ;
+	float fMT2_bdt    ;
+	float fdPhiMLs_bdt;
+	float fNMus_bdt   ;
+	float fPFIso1_bdt ;
+	float fPFIso2_bdt ;
+	float fCharge_bdt ;
+	// ---------------------------------------
+
 
         Int_t fCurRun;
         Int_t fCurLumi;

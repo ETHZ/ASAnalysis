@@ -65,7 +65,10 @@ public:
     map<string, int> fHLTLabelMap; // Mapping of HLT trigger bit names
     vector<string>   fHLTLabels;   // Vector with current HLT names
 	
-	virtual int getSusyMass(int, int=1);
+	virtual int   getNParticle(int, int=3);
+	virtual int   getSusyMass(int, int=1);
+	virtual float getSusySystemPt(int, int=-1);
+	virtual float getISRWeight(float, int);
 
     // Jet Selectors
 //     virtual bool IsGoodBasicJet(int);

@@ -204,6 +204,16 @@ void UserAnalysisBase::GetEvtEmChFrac(double & fracEm, double & fracCh){
     return;
 
 }
+int UserAnalysisBase::getNParticle(int pdgid, int status){
+	int npart(0);
+	for (int i = 0; i < fTR->nGenParticles; ++i){
+		if (fabs(fTR->genInfoId[i]) != pdgid || fTR->genInfoStatus[i] != status) continue;
+		else {
+			npart++;
+		}
+	}
+	return npart;
+}
 int UserAnalysisBase::getSusyMass(int pdgid, int round){
 	float mpart(0.);
 	int npart(0);
@@ -217,6 +227,61 @@ int UserAnalysisBase::getSusyMass(int pdgid, int round){
 	mpart = mpart/npart; // averaging over both particles in the event
 	int roundmass = round * (int) (mpart/round + 0.5);
 	return roundmass;
+}
+float UserAnalysisBase::getSusySystemPt(int pdgid1, int pdgid2){
+	int npart(0);
+	TLorentzVector tmp, final;
+	if (pdgid2 == -1) { // quick fix for ewino. if pdgid2 isn't set, just search for pair-produced particles with pdgid1 as before
+		for (int i = 0; i < fTR->nGenParticles; ++i){
+			if (fabs(fTR->genInfoId[i]) != pdgid1 || fTR->genInfoStatus[i] != 3) continue;
+			else {
+				npart++;
+				tmp.SetPtEtaPhiM(fTR->genInfoPt[i], fTR->genInfoEta[i], fTR->genInfoPhi[i], fTR->genInfoM[i]);
+				final += tmp;
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < fTR->nGenParticles; ++i){
+			if ((fabs(fTR->genInfoId[i]) == pdgid1 && fTR->genInfoStatus[i] == 3 ) ||
+				(fabs(fTR->genInfoId[i]) == pdgid2 && fTR->genInfoStatus[i] == 3 )  ) {
+				npart++;
+				tmp.SetPtEtaPhiM(fTR->genInfoPt[i], fTR->genInfoEta[i], fTR->genInfoPhi[i], fTR->genInfoM[i]);
+				final += tmp;
+			}
+		}
+	}
+
+	if (npart != 2) {
+		cout << " MORE OR LESS THAN TWO OF YOUR DESIRED SUSY INITIAL PARTICLES FOUND!! CHECK UP ON THAT!!" << endl;
+		exit(-10);
+	}
+	return final.Pt();
+}
+float UserAnalysisBase::getISRWeight(float susyPt, int flag){ // flag==0: central flag==1: up flag==2: down
+	if ( susyPt <= 120.){ 
+		return 1.0;
+	}
+	else if ( susyPt > 120. && susyPt <= 150.){ 
+		if (flag == 0) return 0.95;
+		if (flag == 1) return 1.00;
+		if (flag == 2) return 0.90;
+	}
+	else if ( susyPt > 150. && susyPt <= 250.){ 
+		if (flag == 0) return 0.90;
+		if (flag == 1) return 1.00;
+		if (flag == 2) return 0.80;
+	}
+	else if ( susyPt > 250.                  ){ 
+		if (flag == 0) return 0.80;
+		if (flag == 1) return 1.00;
+		if (flag == 2) return 0.60;
+	}
+	else {
+		cout << "SOMETHING WENT WRONG IN THE ISR SYSTEMATIC!! APPARENTLY YOU HAVE A NEGATIVE SUSY-PT VALUE..?" << endl;
+		exit(-1);
+	}
+	return -9999999.9;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -333,6 +398,7 @@ bool UserAnalysisBase::IsGoodBasicMu(int index){
     // if(fTR->MuNMuHits [index] < 2)   return false;
     // if(fTR->MuNGlHits [index] < 1)   return false; // muon.globalTrack()->hitPattern().numberOfValidHits()
 	if(fTR->MuNGlMuHits [index] < 1) return false;
+	// ONLY TEMPORARY   if(fTR->MuNMuHits [index] < 1) return false;
 	// if(fTR->MuNMatches[index] < 2)   return false; // muon.numberOfMatches()
 	if(fTR->MuNMatchedStations.size() > 0) { 	 
 		if(fTR->MuNMatchedStations[index] < 2)   return false; // muon.numberOfMatchedStations() 	 

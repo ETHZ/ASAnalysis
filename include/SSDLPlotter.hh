@@ -445,6 +445,7 @@ public:
 	vector<int> fMCBGEMEnr;    // SM background MC samples with Elec enriched QCD
 	vector<int> fMCBGMuEnrSig; // SM background + LM0 signal samples with Muon enriched QCD
 	vector<int> fMCRareSM; // Rare SM backgrounds
+	vector<int> fMCOnlyQCD; // Onlye QCD samples
 	vector<int> fMuData;  // Muon data samples
 	vector<int> fEGData;  // EG data samples
 	vector<int> fMuEGData;  // MuEG dataset

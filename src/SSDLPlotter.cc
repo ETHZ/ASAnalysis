@@ -229,6 +229,11 @@ void SSDLPlotter::init(TString filename){
 	fMCBGMuEnr.push_back(SingleTbar_s);
 	fMCBGMuEnr.push_back(WJets);
 	fMCBGMuEnr.push_back(DYJets);
+<<<<<<< SSDLPlotter.cc
+	// fMCBGMuEnr.push_back(GJets200);
+	// fMCBGMuEnr.push_back(GJets400);
+=======
+>>>>>>> 1.24.2.80.2.3
 	fMCBGMuEnr.push_back(WW);
 	fMCBGMuEnr.push_back(WZ);
 	fMCBGMuEnr.push_back(ZZ);
@@ -259,6 +264,16 @@ void SSDLPlotter::init(TString filename){
 	fMCBGMuEnr.push_back(QCD600);
 	fMCBGMuEnr.push_back(QCD800);
 	fMCBGMuEnr.push_back(QCDMuEnr15);
+
+	fMCOnlyQCD.push_back(QCD50);
+	fMCOnlyQCD.push_back(QCD80);
+	fMCOnlyQCD.push_back(QCD120);
+	fMCOnlyQCD.push_back(QCD170);
+	fMCOnlyQCD.push_back(QCD300);
+	fMCOnlyQCD.push_back(QCD470);
+	fMCOnlyQCD.push_back(QCD600);
+	fMCOnlyQCD.push_back(QCD800);
+	fMCOnlyQCD.push_back(QCDMuEnr15);
 	
 	// SAMPLES FOR QCD EM ENRICHED BKG:
 	fMCBGEMEnr.push_back(TTJets);
@@ -444,6 +459,24 @@ void SSDLPlotter::doAnalysis(){
 	//	makeMETvsHTPlot0HT();
 	// makeMETvsHTPlotTau();
 
+<<<<<<< SSDLPlotter.cc
+	// makeRatioPlots(Muon);
+	// makeRatioPlots(Elec);
+	// make2DRatioPlots(Muon);
+	// make2DRatioPlots(Elec);
+	// makeNTightLoosePlots(Muon);
+	// makeNTightLoosePlots(Elec);
+
+	// makeFRvsPtPlots(Muon, SigSup);
+	// makeFRvsPtPlots(Elec, SigSup);
+	// makeFRvsPtPlots(Muon, ZDecay);
+	// makeFRvsPtPlots(Elec, ZDecay);
+	// // makeFRvsNVPlots(Muon, ZDecay); 
+	// // makeFRvsNVPlots(Elec, ZDecay);
+	// makeFRvsEtaPlots(Muon);
+	// makeFRvsEtaPlots(Elec);
+	// // makeChMidvsPtPlots();
+=======
 	makeRatioPlots(Muon);
 	makeRatioPlots(Elec);
 	make2DRatioPlots(Muon);
@@ -460,6 +493,7 @@ void SSDLPlotter::doAnalysis(){
 	makeFRvsEtaPlots(Muon);
 	makeFRvsEtaPlots(Elec);
 	makeChMidvsPtPlots();
+>>>>>>> 1.24.2.80.2.3
 
 	// makeAllClosureTestsTTW();
 	makeAllIntPredictions();
@@ -15831,11 +15865,16 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	///////////////////////////////////////////////////////////////////////////////////
  	float mf(0.), mf_e(0.), mp(0.), mp_e(0.), ef(0.), ef_e(0.), ep(0.), ep_e(0.);
  
- 	calculateRatio(fMCBGMuEnr, Muon, SigSup, mf, mf_e);
- 	calculateRatio(fMCBGMuEnr, Muon, ZDecay, mp, mp_e);
- 	calculateRatio(fMCBGEMEnr, Elec, SigSup, ef, ef_e);
- 	calculateRatio(fMCBGEMEnr, Elec, ZDecay, ep, ep_e);
+ 	// calculateRatio(fMCBGMuEnr, Muon, SigSup, mf, mf_e);
+ 	// calculateRatio(fMCBGMuEnr, Muon, ZDecay, mp, mp_e);
+ 	// calculateRatio(fMCBGEMEnr, Elec, SigSup, ef, ef_e);
+ 	// calculateRatio(fMCBGEMEnr, Elec, ZDecay, ep, ep_e);
  
+ 	calculateRatio(fMCOnlyQCD, Muon, SigSup, mf, mf_e);
+ 	calculateRatio(fMCBGMuEnr, Muon, ZDecay, mp, mp_e);
+ 	calculateRatio(fMCOnlyQCD, Elec, SigSup, ef, ef_e);
+ 	calculateRatio(fMCBGEMEnr, Elec, ZDecay, ep, ep_e);
+
  	///////////////////////////////////////////////////////////////////////////////////
  	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
  	///////////////////////////////////////////////////////////////////////////////////
@@ -15867,6 +15906,7 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	vector<TString> names;
  	for(size_t i = 0; i < samples.size(); ++i){
  		Sample *S = fSamples[samples[i]];
+		// if (S->sname == "WJets") continue;
  		float scale = fLumiNorm / S->getLumi();
  		names.push_back(S->sname);
 		//		if (samples.size() == 1) scale = 1.;
@@ -20335,7 +20375,7 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	systs[7] = "METdown";
 	
 	int nbins, min, max;
-	// other scans:
+	// all scans:
 	nbins =  300;
 	min   =    0;
 	max   = 1500;
@@ -20344,6 +20384,11 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	TH2D  * Model_nPass_        [nSyst];
 	TH2D  * Model_eff_          [nSyst];
 	TH2D  * Model_lepSyst_      [nSyst];
+	TH2D  * Model_puUp_         [nSyst];
+	TH2D  * Model_puDn_         [nSyst];
+	TH2D  * Model_isrUp_        [nSyst];
+	TH2D  * Model_isrDn_        [nSyst];
+	TH2D  * Model_puNo_         [nSyst];
 	for (int j = 0; j<nSyst; j++) {
 		Model_nPass_         [j] = new TH2D(model+"_nPass_"+systs[j]         , model+"_nPass_"+systs[j]         , nbins, min, max, nbins, min, max);
 		Model_nPass_         [j]->Sumw2();
@@ -20353,20 +20398,75 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 		Model_eff_           [j]->Sumw2();
 		Model_lepSyst_       [j] = new TH2D(model+"_lepSyst_"+systs[j]       , model+"_lepSyst_"+systs[j]       , nbins, min, max, nbins, min, max);
 		Model_lepSyst_       [j]->Sumw2();
+		Model_puUp_          [j] = new TH2D(model+"_puUp_"+systs[j]          , model+"_puUp_"+systs[j]          , nbins, min, max, nbins, min, max);
+		Model_puUp_          [j]->Sumw2();
+		Model_puDn_          [j] = new TH2D(model+"_puDn_"+systs[j]          , model+"_puDn_"+systs[j]          , nbins, min, max, nbins, min, max);
+		Model_puDn_          [j]->Sumw2();
+		Model_isrUp_         [j] = new TH2D(model+"_isrUp_"+systs[j]         , model+"_isrUp_"+systs[j]         , nbins, min, max, nbins, min, max);
+		Model_isrUp_         [j]->Sumw2();
+		Model_isrDn_         [j] = new TH2D(model+"_isrDn_"+systs[j]         , model+"_isrDn_"+systs[j]         , nbins, min, max, nbins, min, max);
+		Model_isrDn_         [j]->Sumw2();
+		Model_puNo_         [j] = new TH2D(model+"_puNo_"+systs[j]           , model+"_puNo_"+systs[j]          , nbins, min, max, nbins, min, max);
+		Model_puNo_         [j]->Sumw2();
 	}
 	TH2D * Model_yield_ ;
 	Model_yield_  = new TH2D(model+"_yield"      , model+"_yield"  , nbins, min, max, nbins, min, max);
 	Model_yield_ ->Sumw2();
 
-	TFile * xsecFile_ = new TFile("/shome/mdunser/xsecfiles/"+model+"_xsecs.root", "READ", "xsecFile_");
-	TH1D  * xsecs     = (TH1D *) xsecFile_->Get("xsecs");
-	TF1   * xsecfit =  xsecs->GetFunction("xsec_fit1");
+	// TFile * xsecFile_ = new TFile("/shome/mdunser/xsecfiles/"+model+"_xsecs.root", "READ", "xsecFile_");
+	// TH1D  * xsecs     = (TH1D *) xsecFile_->Get("xsecs");
+	// TF1   * xsecfit =  xsecs->GetFunction("xsec_fit1");
 
+	TFile * file_ = TFile::Open(filestring);
 	// get the histo with the count for each point
-	TFile * file_ = TFile::Open(filestring); //, "READ", "file_");
 	TH2D  * Model_nTot_ ;
 	Model_nTot_ = (TH2D  *) file_->Get("ModelCountAll");
 	Model_nTot_ ->Sumw2();
+
+	TH2D  * Model_nTot_ISRweight_ ;
+	Model_nTot_ISRweight_ = (TH2D  *) file_->Get("ModelCountAll_ISRweight");
+	Model_nTot_ISRweight_ ->Sumw2();
+
+	TH2D  * Model_nTot_ISRweightDn_ ;
+	Model_nTot_ISRweightDn_ = (TH2D  *) file_->Get("ModelCountAll_ISRweightDn");
+	Model_nTot_ISRweightDn_ ->Sumw2();
+
+	TH2D  * Model_nTot_nChi2_ ;
+	Model_nTot_nChi2_ = (TH2D  *) file_->Get("ModelCountAll_nChi2");
+	if (Model_nTot_nChi2_ != NULL) Model_nTot_nChi2_ ->Sumw2();
+
+	TH2D  * Model_nTot_nChi2_ISRweight_ ;
+	Model_nTot_nChi2_ISRweight_ = (TH2D  *) file_->Get("ModelCountAll_nChi2_ISRweight");
+	if (Model_nTot_nChi2_ISRweight_ != NULL) Model_nTot_nChi2_ISRweight_ ->Sumw2();
+
+	TH2D  * Model_nTot_nChi2_ISRweightDn_ ;
+	Model_nTot_nChi2_ISRweightDn_ = (TH2D  *) file_->Get("ModelCountAll_nChi2_ISRweightDn");
+	if (Model_nTot_nChi2_ISRweightDn_ != NULL) Model_nTot_nChi2_ISRweightDn_ ->Sumw2();
+
+	// ===============================================================
+	// ======== one dimensional distributions ========================
+	// ===============================================================
+	int xVal = 400;
+	int yVal = 100;
+	
+	TH1F  * Model_HT_xVal_yVal_    ;
+	TH1F  * Model_MET_xVal_yVal_   ;
+	TH1F  * Model_NJETS_xVal_yVal_ ;
+	TH1F  * Model_JETPT_xVal_yVal_ ;
+	TH1F  * Model_PT_xVal_yVal_    ;
+	Model_HT_xVal_yVal_     = new TH1F(model+"_HT_xVal_yVal_"         , model+"_HT_xVal_yVal_"         , 100, 200., 700.);
+	Model_MET_xVal_yVal_    = new TH1F(model+"_MET_xVal_yVal_"        , model+"_MET_xVal_yVal_"        , 100,  50., 400.);
+	Model_NJETS_xVal_yVal_  = new TH1F(model+"_NJETS_xVal_yVal_"      , model+"_NJETS_xVal_yVal_"      ,  10,   2 ,  12 );
+	Model_JETPT_xVal_yVal_  = new TH1F(model+"_JETPT_xVal_yVal_"      , model+"_JETPT_xVal_yVal_"      , 100,  40., 300.);
+	Model_PT_xVal_yVal_     = new TH1F(model+"_PT_xVal_yVal_"         , model+"_PT_xVal_yVal_"         , 100,  10., 200.);
+	Model_HT_xVal_yVal_     -> Sumw2();
+	Model_MET_xVal_yVal_    -> Sumw2();
+	Model_NJETS_xVal_yVal_  -> Sumw2();
+	Model_JETPT_xVal_yVal_  -> Sumw2();
+	Model_PT_xVal_yVal_     -> Sumw2();
+	// ===============================================================
+	// ===============================================================
+
 	// get the Analysis tree from the file, initialize it
 	TTree * tree_ = (TTree *) file_->Get("Analysis");
 	tree_->ResetBranchAddresses();
@@ -20386,7 +20486,14 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	// need to initialize the TRandom object for the systematic studies
 	SSDLDumper::fRand3       = new TRandom3(10);
 	SSDLDumper::fRand3Normal = new TRandom3(10);
-	TString btagCorrection = "T1";
+
+
+	// BTAG CORRECTION FACTOR FOR FASTSIM!!!!!
+	// =========================================================
+	// T7btw, T1tttt, T5tttt: "T1tttt"
+	// T6ttWW, T6ttWWx05, T6ttWWx08: "T2tt"
+	// T5lnu, T5VV: "T1"
+	TString btagCorrection = "T2tt";
 
 	float xvar(-1);
 	float yvar(-1);
@@ -20401,11 +20508,6 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 			saveBTags();      // save the values of the new btag
 			scaleBTags(S, 0, btagCorrection); // this applies the bTagSF
 			 
-			// if ( (i == 0 || i == 4 || i == 5 ) && Event==45001){
-			// 	for (int ij = 0; ij<NJets; ++ij){
-			// 		cout << Form("index: %d btag after scaling: %.2f", ij, JetCSVBTag[ij]) << endl;
-			// 	}
-			// }
 			if (!doSystematic && i!=0) continue;
 			if (i == 1) smearJetPts(S, 1);
 			if (i == 2) smearJetPts(S, 2);
@@ -20421,41 +20523,46 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 			// T5tttt     scan: xvar = mGlu and yvar = mChi
 			// T7btw      scan: xvar = mGlu and yvar = mChi
 			// T1tttt     scan: xvar = mGlu and yvar = mLSP
+			// T5VV       scan: xvar = mGlu and yvar = mChi
 			xvar = mGlu;
-			yvar = mChi;
+			yvar = 50;//mLSP;
 
-			// int m1(-1),m2(-1),m3(-1),e3(-1),e1(-1),e2(-1);
-			// cleanedJetIndices(15.);
-			// if (i == 3 || i == 0){
-			// 	if ( Event == 45978937) { // && (isSSLLMuEvent(m1, m2) || isSSLLElMuEvent(m3, e3) || isSSLLElEvent(e1, e2)) )
-			// 		fOUTSTREAM << "----------------------------" << endl;
-			// 		fOUTSTREAM << filestring << endl;
-			// 		for (int ij = 0; ij<=fC_cleanJetIndices.size(); ++ij){
-			// 			// if (!isGoodJet(ij, 15.)) continue;
-			// 			cout << Form("systematic: %d jetpt: %.3f jeteta: %.3f", i, JetPt[ij], JetEta[ij]) << endl;
-			// 		}
-			// 		cout << Form("%d systematic: %d njets: %d nbjets: %d met: %.3f ht: %.3f jetpt[0]: %.3f jetpt[1]: %.3f", Event, i, getNJets(), getNBTagsMed(), getMET(), getHT(), JetPt[0], JetPt[1]) << endl;
-			// 	}	
-			// }
+			if (xvar == xVal && yvar == yVal) {
+				Model_HT_xVal_yVal_     -> Fill(getHT()   );
+				Model_MET_xVal_yVal_    -> Fill(getMET()  );
+				Model_NJETS_xVal_yVal_  -> Fill(getNJets());
+				for (int i = 0; i <NJets; ++i) if(isGoodJet(i)) Model_JETPT_xVal_yVal_  -> Fill(JetPt[i]);
+				for (int i = 0; i < NMus; ++i) Model_PT_xVal_yVal_    -> Fill(MuPt[i]);
+				for (int i = 0; i < NEls; ++i) Model_PT_xVal_yVal_    -> Fill(ElPt[i]);
+			}
 
-			float nloXsec      = xsecfit->Eval(xvar);
+			// float nloXsec      = xsecfit->Eval(xvar);
 			int   nGenBin      = Model_nTot_->FindBin(xvar, yvar);
 			float nGen         = Model_nTot_->GetBinContent(nGenBin);
-			float weight       = fLumiNorm * nloXsec / nGen;
+			float weight       = fLumiNorm / nGen;
 			float idsf(-999.), trigsf(-999.);
 			float lepsyst(0.);
+			float isrweight(-999.), isrweightdn(-999.);
 
 			int mu1(-1), mu2(-1);
 			if( isSSLLMuEvent(mu1, mu2) ){ // Same-sign loose-loose di muon event
 				if(isTightMuon(mu1) &&  isTightMuon(mu2) ){ // Tight-tight
 					n_tot++;
 					if ( IsSignalMuon[mu1] != 1 || IsSignalMuon[mu2] != 1 ) continue;
+					if ( (model == "T5VV" || model == "T5VVlowpt") && nChi != 2) continue;
 					signalTot++;
 					idsf   = getLeptonSFMu(MuPt[mu1], MuEta[mu1])*getLeptonSFMu(MuPt[mu2], MuEta[mu2]);
 					trigsf = getTriggerSFMuMu(MuEta[mu2]);
 					if (lowpt) trigsf =  getTriggerSFMuMuLowpt(MuEta[mu2]);
 					lepsyst = getLeptonSystematic(MuPt[mu1], MuPt[mu2], Muon);
-					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf); // fill weighted by SFs
+					isrweight   = getISRSystematic(susyPt, 0);
+					isrweightdn = getISRSystematic(susyPt, 2);
+					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweight); // fill weighted by SFs
+					Model_isrUp_         [i]-> Fill(xvar, yvar, idsf*trigsf); // isr weight = 1
+					Model_isrDn_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweightdn);
+					Model_puNo_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeight  *isrweight);
+					Model_puUp_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightUp*isrweight);
+					Model_puDn_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightDn*isrweight);
 					Model_nPass_noScale_ [i]-> Fill(xvar, yvar);
 					Model_lepSyst_       [i]-> Fill(xvar, yvar, lepsyst);
 					if (i==0) {
@@ -20474,12 +20581,20 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 				if(  isTightElectron(el) &&  isTightMuon(mu) ){ // Tight-tight
 					n_tot++;
 					if ( IsSignalMuon[mu] != 1 || IsSignalElectron[el] != 1 ) continue;
+					if ( (model == "T5VV" || model == "T5VVlowpt") && nChi != 2) continue;
 					signalTot++;
 					idsf   = getLeptonSFMu(MuPt[mu], MuEta[mu])*getLeptonSFEl(ElPt[el], ElEta[el]);
 					trigsf = getTriggerSFMuEl();
 					if (lowpt) trigsf =  getTriggerSFMuElLowpt();
 					lepsyst = getLeptonSystematic(MuPt[mu], ElPt[el], ElMu);
-					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf); // fill weighted by SFs
+					isrweight   = getISRSystematic(susyPt, 0);
+					isrweightdn = getISRSystematic(susyPt, 2);
+					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweight); // fill weighted by SFs
+					Model_isrUp_         [i]-> Fill(xvar, yvar, idsf*trigsf); // isr weight = 1
+					Model_isrDn_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweightdn);
+					Model_puNo_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeight  *isrweight);
+					Model_puUp_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightUp*isrweight);
+					Model_puDn_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightDn*isrweight);
 					Model_nPass_noScale_ [i]-> Fill(xvar, yvar);
 					Model_lepSyst_       [i]-> Fill(xvar, yvar, lepsyst);
 					if (i==0) {
@@ -20498,12 +20613,20 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 				if(  isTightElectron(el1) &&  isTightElectron(el2) ){ // Tight-tight
 					n_tot++;
 					if ( IsSignalElectron[el1] != 1 || IsSignalElectron[el2] != 1 ) continue;
+					if ( (model == "T5VV" || model == "T5VVlowpt") && nChi != 2) continue;
 					signalTot++;
 					idsf   = getLeptonSFEl(ElPt[el1], ElEta[el1])*getLeptonSFEl(ElPt[el2], ElEta[el2]);
 					trigsf = getTriggerSFElEl(ElPt[el2]);
 					if (lowpt) trigsf =  getTriggerSFElElLowpt();
 					lepsyst = getLeptonSystematic(ElPt[el1], ElPt[el2], Elec);
-					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf); // fill weighted by SFs
+					isrweight   = getISRSystematic(susyPt, 0);
+					isrweightdn = getISRSystematic(susyPt, 2);
+					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweight); // fill weighted by SFs
+					Model_isrUp_         [i]-> Fill(xvar, yvar, idsf*trigsf); // isr weight = 1
+					Model_isrDn_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweightdn);
+					Model_puNo_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeight  *isrweight);
+					Model_puUp_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightUp*isrweight);
+					Model_puDn_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightDn*isrweight);
 					Model_nPass_noScale_ [i]-> Fill(xvar, yvar);
 					Model_lepSyst_       [i]-> Fill(xvar, yvar, lepsyst);
 					if (i==0) {
@@ -20534,15 +20657,32 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 
 	Model_yield_ ->Write();
 	Model_nTot_  ->Write();
+	Model_nTot_ISRweight_   ->Write();
+	Model_nTot_ISRweightDn_ ->Write();
+	if (Model_nTot_nChi2_ != NULL) {
+		Model_nTot_nChi2_  ->Write();
+		Model_nTot_nChi2_ISRweight_   ->Write();
+		Model_nTot_nChi2_ISRweightDn_ ->Write();
+	}
+	Model_HT_xVal_yVal_    ->Write();
+	Model_MET_xVal_yVal_   ->Write();
+	Model_NJETS_xVal_yVal_ ->Write();
+	Model_JETPT_xVal_yVal_ ->Write();
+	Model_PT_xVal_yVal_   ->Write();
 
 	for (int i=0; i<nSyst; i++) {
-		Model_eff_           [i]->Write();
-		Model_nPass_         [i]->Write();
-		Model_nPass_noScale_ [i]->Write();
-		Model_lepSyst_ [i]->Write();
+		Model_eff_             [i]->Write();
+		Model_nPass_           [i]->Write();
+		Model_nPass_noScale_   [i]->Write();
+		Model_lepSyst_         [i]->Write();
+		Model_puNo_            [i]->Write();
+		Model_puUp_            [i]->Write();
+		Model_puDn_            [i]->Write();
+		Model_isrUp_           [i]->Write();
+		Model_isrDn_           [i]->Write();
 	}
 	file_->Close();
 	res_->Close();
 
-	delete res_, Model_nTot_;
+	delete res_, Model_nTot_, Model_nTot_ISRweight_, Model_nTot_ISRweightDn_;
 }
