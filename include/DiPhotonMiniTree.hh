@@ -89,7 +89,7 @@ private:
   bool SinglePhotonEventSelection(TreeReader *fTR, std::vector<int> &passing);
   bool StandardEventSelection(TreeReader *fTR, std::vector<int> &passing);
   bool TriggerSelection();
-  int Count_part_isrfsr_gamma(TreeReader *fTR, vector<int> passing);
+  int Count_part_isrfsr_gamma(TreeReader *fTR);
   void ResetVars();
   void Fillhist_PFPhotonDepositAroundImpingingTrack(int phoqi, int trkindex);  
   std::vector<int> GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component);

@@ -425,20 +425,9 @@ void DiPhotonMiniTree::Analyze(){
 
   //  cout << "B" << endl;
 
-  int nmatched_part_isrfsr_gamma=0;
   if (!isdata) {
-    std::vector<int> temp;
-    for (int i=0; i<fTR->NPhotons; i++){
-      temp.push_back(i);
-    }
-    //    cout << "B1" << endl;
-    temp = PhotonPreSelection(fTR,temp);
-    //    cout << "B2" << endl;
-    temp = ApplyPixelVeto(fTR,temp,0);
-    //    cout << "B3" << endl;
-    nmatched_part_isrfsr_gamma = Count_part_isrfsr_gamma(fTR,temp);
-    //    cout << "B4" << endl;
-    event_Kfactor = kfactors[2-nmatched_part_isrfsr_gamma];
+    int npart_isrfsr_gamma=Count_part_isrfsr_gamma(fTR);
+    event_Kfactor = kfactors[2-npart_isrfsr_gamma];
   }
   else event_Kfactor=1;
   
@@ -1163,7 +1152,7 @@ bool DiPhotonMiniTree::TriggerSelection(){
 #include "DiPhotonTriggerSelection.cc"
 };
 
-int DiPhotonMiniTree::Count_part_isrfsr_gamma(TreeReader *fTR, std::vector<int> passing){
+int DiPhotonMiniTree::Count_part_isrfsr_gamma(TreeReader *fTR){
 
   if (isdata){
     std::cout << "calling count of gammas for k-factor on data!!!" << std::endl;
@@ -1171,10 +1160,17 @@ int DiPhotonMiniTree::Count_part_isrfsr_gamma(TreeReader *fTR, std::vector<int> 
   }
 
   int res=0;
-  for (int i=0; i<2 && i<passing.size(); i++){
-    int code = fTR->PhoMCmatchexitcode[passing.at(i)];
-    if (code==1 || code==2) res++;
+
+  for (int i=0; i<fTR->NGenPhotons; i++){
+    bool pass=0;
+    int mother = fTR->GenPhotonMotherID[i];
+    if (mother>=-6 && mother<=6) pass=1;
+    if (mother==21) pass=1;
+    if (mother==22 && fTR->GenPhotonMotherStatus[i]==3) pass=1;
+    if (pass) res++;
   }
+
+  if (res>2) res=2;
   return res;
 
 };
