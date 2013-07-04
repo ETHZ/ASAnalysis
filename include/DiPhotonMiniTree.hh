@@ -29,6 +29,8 @@
 
 const int global_size_pfcandarrays = 30;
 
+const float global_dR_cut_acceptance = 0.45;
+
 typedef struct {
   float photon;
   float charged;

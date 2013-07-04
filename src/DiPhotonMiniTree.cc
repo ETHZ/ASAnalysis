@@ -785,7 +785,7 @@ void DiPhotonMiniTree::Analyze(){
     }
 
     if (passing_gen.size()>=2 && fTR->GenPhotonPt[passing_gen.at(0)]>40 && \
-	Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>0.45) found_gen=true;
+	Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>global_dR_cut_acceptance) found_gen=true;
 
     if (found_reco) {
       FillLead(passing.at(0));
@@ -1126,7 +1126,7 @@ bool DiPhotonMiniTree::StandardEventSelection(TreeReader *fTR, std::vector<int> 
   if (fTR->PhoPt[passing.at(0)]<40) return false;
   if (fTR->PhoPt[passing.at(1)]<25) return false;
   //  if (invmass0<80) return false;
-  if (dR<0.45) return false;
+  if (dR<global_dR_cut_acceptance) return false;
 
   return true;
 };
