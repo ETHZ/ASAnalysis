@@ -328,6 +328,9 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("photrail_chargedpfcanddphis",&photrail_chargedpfcanddphis,"photrail_chargedpfcanddphis[photrail_Npfcandchargedincone]/F");
   OutputTree[i]->Branch("photrail_neutralpfcanddphis",&photrail_neutralpfcanddphis,"photrail_neutralpfcanddphis[photrail_Npfcandneutralincone]/F");
 
+  OutputTree[i]->Branch("pholead_test_rotatedphotoniso",&pholead_test_rotatedphotoniso,"pholead_test_rotatedphotoniso[50]/F");
+  OutputTree[i]->Branch("photrail_test_rotatedphotoniso",&photrail_test_rotatedphotoniso,"photrail_test_rotatedphotoniso[50]/F");
+
   }
 
 
@@ -1440,7 +1443,7 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
   if (component=="photon"){
     std::vector<int> footprint = GetPFCandInsideFootprint(fTR,phoqi,rotation_phi,"photon");
     for (int i=0; i<footprint.size(); i++) removals.push_back(footprint.at(i));
-    scaleresult = scareaSF[fTR->PhotSCindex[phoqi]];
+    //    scaleresult = scareaSF[fTR->PhotSCindex[phoqi]];
   }
 
   for (int i=0; i<fTR->NPfCand; i++){
@@ -1528,7 +1531,7 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
 	if (dz>0.2) continue;
 	if (dxy>0.1) continue;
 	if (dR<0.02) continue;
-	scaleresult = 1+2.5e-3;
+	//	scaleresult = 1+2.5e-3;
       }
 
     }
@@ -1608,8 +1611,8 @@ float DiPhotonMiniTree::PFPhotonIsolationAroundMuon(int muqi, int *counter, std:
     
   } // end pf cand loop
 
-  const float scaleresult = 1.066;      
-  return result*scaleresult;
+  //  const float scaleresult = 1.066;      
+  return result; //*scaleresult;
   
 };
 
@@ -1764,6 +1767,9 @@ void DiPhotonMiniTree::FillLead(int index){
   //  pholead_Nchargedhadronsincone = CountChargedHadronsInCone(fTR,index,remove,global_dofootprintremoval);
   pholead_scarea = scarea[fTR->PhotSCindex[index]];
   pholead_scareaSF = scareaSF[fTR->PhotSCindex[index]];
+
+  for (int i=0; i<50; i++) pholead_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
+
 };
 
 float DiPhotonMiniTree::SieieRescale(float sieie, bool isbarrel){
@@ -1867,6 +1873,8 @@ void DiPhotonMiniTree::FillTrail(int index){
   //  photrail_Nchargedhadronsincone = CountChargedHadronsInCone(fTR,index,remove,global_dofootprintremoval);
   photrail_scarea = scarea[fTR->PhotSCindex[index]];
   photrail_scareaSF = scareaSF[fTR->PhotSCindex[index]];
+
+  for (int i=0; i<50; i++) photrail_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
 
 };
 
@@ -2071,6 +2079,8 @@ void DiPhotonMiniTree::ResetVars(){
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_photonpfcanddphis[i]=-999;
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_chargedpfcanddphis[i]=-999;
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_neutralpfcanddphis[i]=-999;
+
+  for (int i=0; i<50; i++) {pholead_test_rotatedphotoniso[i]=-999; photrail_test_rotatedphotoniso[i]=-999;}
 
   pholead_GEN_eta = -999;
   photrail_GEN_eta = -999;

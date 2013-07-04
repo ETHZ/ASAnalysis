@@ -356,5 +356,8 @@ private:
   Bool_t tree_found_gen;
   Bool_t tree_found_match;
 
+  Float_t pholead_test_rotatedphotoniso[50];
+  Float_t photrail_test_rotatedphotoniso[50];
+
 };
 #endif
