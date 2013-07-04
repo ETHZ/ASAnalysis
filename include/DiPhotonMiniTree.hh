@@ -130,6 +130,14 @@ private:
 
   float DeltaPhiSigned(float phi1, float phi2);
 
+  typedef std::pair<int,float> OrderPair;
+  struct IndexByPt {
+    const bool operator()(const OrderPair& j1, const OrderPair& j2 ) const {
+      return j1.second > j2.second;
+    }
+  };
+  IndexByPt indexComparator;
+
   TRandom3 *randomgen;
 
   static const int n_templates_EB=7;
@@ -166,6 +174,7 @@ private:
   TString treename[18];
   bool is2d[18];
   TTree* OutputTree[18];
+  TTree* LightTreeGenReco;
 
   Float_t event_luminormfactor;
   Float_t event_Kfactor;
@@ -332,6 +341,18 @@ private:
   TH1F *fHNumPUTrue;
   TH1F *fHNumPUTrue_noweight;
   TH1F *fHNumVtx;
+
+  Float_t pholead_GEN_eta, photrail_GEN_eta;
+  Float_t pholead_GEN_phi, photrail_GEN_phi;
+  Float_t pholead_GEN_px, photrail_GEN_px;
+  Float_t pholead_GEN_py, photrail_GEN_py;
+  Float_t pholead_GEN_pz, photrail_GEN_pz;
+  Float_t pholead_GEN_pt, photrail_GEN_pt;
+  Float_t pholead_GEN_energy, photrail_GEN_energy;
+
+  Bool_t tree_found_reco;
+  Bool_t tree_found_gen;
+  Bool_t tree_found_match;
 
 };
 #endif
