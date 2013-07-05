@@ -883,6 +883,11 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
     if ((fabs(eta)>1.4442 && fabs(eta)<1.56) || (fabs(eta)>2.5)) it=passing.erase(it); else it++;
   }
 
+  for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
+    float eta=fTR->PhoEta[fTR->PhotSCindex[*it]];
+    if (fabs(eta)>2.5) it=passing.erase(it); else it++;
+  }
+
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // Pt cut on RawEnCetaCorr
     float energy=fTR->SCRaw[fTR->PhotSCindex[*it]];
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
