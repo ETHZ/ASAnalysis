@@ -358,7 +358,9 @@ void DiPhotonMiniTree::Begin(){
 
   LightTreeGenReco->Branch("tree_found_reco",&tree_found_reco,"tree_found_reco/O");
   LightTreeGenReco->Branch("tree_found_gen",&tree_found_gen,"tree_found_gen/O");
+  LightTreeGenReco->Branch("tree_found_preselection",&tree_found_preselection,"tree_found_preselection/O");
   LightTreeGenReco->Branch("tree_found_match",&tree_found_match,"tree_found_match/O");
+  LightTreeGenReco->Branch("tree_found_match_preselection",&tree_found_match_preselection,"tree_found_match_preselection/O");
 
 
   fHNumPU = new TH1F("NumPU_rew","NumPU_rew",50,0,50);
@@ -763,10 +765,14 @@ void DiPhotonMiniTree::Analyze(){
 
     bool found_reco = false;
     bool found_gen = false;
+    bool found_preselection = false;
 
     passing = PhotonPreSelection(fTR,passing);
+    std::vector<int> passing_preselection = passing;
     passing = PhotonSelection(fTR,passing);
     found_reco = passtrigger && StandardEventSelection(fTR,passing);
+    found_preselection = passtrigger && StandardEventSelection(fTR,passing_preselection);
+
 
     for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
       bool pass=0;
@@ -819,6 +825,7 @@ void DiPhotonMiniTree::Analyze(){
     }
 
     bool found_match = false;
+    bool found_match_preselection = false;
 
     if (found_reco && found_gen) {
       int found = 0;
@@ -828,12 +835,22 @@ void DiPhotonMiniTree::Analyze(){
       }
       if (found==2 && (fTR->PhoMCmatchindex[passing.at(0)] != fTR->PhoMCmatchindex[passing.at(1)])) found_match=true;
     }
+    if (found_preselection && found_gen) {
+      int found = 0;
+      for (std::vector<int>::iterator it = passing_preselection.begin(); it != passing_preselection.end(); it++){
+	if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2)
+	  if (fTR->PhoMCmatchindex[*it]==passing_gen.at(0) || fTR->PhoMCmatchindex[*it]==passing_gen.at(1)) found++;
+      }
+      if (found==2 && (fTR->PhoMCmatchindex[passing_preselection.at(0)] != fTR->PhoMCmatchindex[passing_preselection.at(1)])) found_match_preselection=true;
+    }
 
     tree_found_reco = found_reco;
     tree_found_gen = found_gen;
+    tree_found_preselection = found_preselection;
     tree_found_match = found_match;
+    tree_found_match_preselection = found_match_preselection;
 
-    if (found_reco || found_gen) LightTreeGenReco->Fill();
+    if (found_reco || found_gen || found_preselection) LightTreeGenReco->Fill();
 
   }
 
@@ -1784,7 +1801,7 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_scarea = scarea[fTR->PhotSCindex[index]];
   pholead_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
-  for (int i=0; i<50; i++) pholead_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
+  //  for (int i=0; i<50; i++) pholead_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
 
 };
 
@@ -1896,7 +1913,7 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_scarea = scarea[fTR->PhotSCindex[index]];
   photrail_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
-  for (int i=0; i<50; i++) photrail_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
+  //  for (int i=0; i<50; i++) photrail_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
 
 };
 
@@ -2105,7 +2122,7 @@ void DiPhotonMiniTree::ResetVars(){
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_chargedpfcanddphis[i]=-999;
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_neutralpfcanddphis[i]=-999;
 
-  for (int i=0; i<50; i++) {pholead_test_rotatedphotoniso[i]=-999; photrail_test_rotatedphotoniso[i]=-999;}
+  //  for (int i=0; i<50; i++) {pholead_test_rotatedphotoniso[i]=-999; photrail_test_rotatedphotoniso[i]=-999;}
 
   pholead_GEN_eta = -999;
   photrail_GEN_eta = -999;
@@ -2115,7 +2132,9 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_GEN_pt = -999;
   tree_found_reco = false;
   tree_found_gen = false;
+  tree_found_preselection = false;
   tree_found_match = false;
+  tree_found_match_preselection = false;
 
 };
 

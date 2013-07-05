@@ -357,7 +357,9 @@ private:
 
   Bool_t tree_found_reco;
   Bool_t tree_found_gen;
+  Bool_t tree_found_preselection;
   Bool_t tree_found_match;
+  Bool_t tree_found_match_preselection;
 
   Float_t pholead_test_rotatedphotoniso[50];
   Float_t photrail_test_rotatedphotoniso[50];
