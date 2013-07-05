@@ -108,6 +108,7 @@ private:
   Int_t Choose_bin_eta(float eta, int region);
 
   float SieieRescale(float sieie, bool isbarrel);
+  float R9Rescale(float r9);
   float CalculateSCArea(TreeReader *fTR, int scindex);
   float GetPUEnergy(TreeReader *fTR, TString mode, float eta);
 

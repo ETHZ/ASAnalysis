@@ -900,7 +900,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   // MVA presel from Hgg
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // HoverE cut
-    float r9=fTR->SCR9[fTR->PhotSCindex[*it]];
+    float r9=R9Rescale(fTR->SCR9[fTR->PhotSCindex[*it]]);
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
     float hoe=fTR->PhoHoverE[*it];
     bool pass=0;
@@ -921,7 +921,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   }
 	
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // isolation cuts (trigger)
-    float r9=fTR->SCR9[fTR->PhotSCindex[*it]];
+    float r9=R9Rescale(fTR->SCR9[fTR->PhotSCindex[*it]]);
     bool pass=0;
     float etcorrecaliso=fTR->PhoIso03Ecal[*it]-0.012*fTR->PhoPt[*it];
     float etcorrhcaliso=fTR->PhoIso03Hcal[*it]-0.005*fTR->PhoPt[*it];
@@ -933,7 +933,6 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
 
 //  XXX EM ENRICHMENT PRESELECTION NOT APPLIED
 //  for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // isolation cuts (filter)
-//    float r9=fTR->SCR9[fTR->PhotSCindex[*it]];
 //    bool pass=0;
 //    if(fTR->pho_Cone02ChargedHadronIso_dR02_dz02_dxy01[*it]<4) pass=1;
 //    if (!pass) it=passing.erase(it); else it++;
@@ -1685,7 +1684,7 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_energySCdefault = CorrPhoton(fTR,index,0).E();
   pholead_energyNewCorr = CorrPhoton(fTR,index,5).E();
   pholead_energyNewCorrLocal = CorrPhoton(fTR,index,6).E();
-  pholead_r9 = fTR->SCR9[fTR->PhotSCindex[index]];
+  pholead_r9 = R9Rescale(fTR->SCR9[fTR->PhotSCindex[index]]);
   pholead_sieie = SieieRescale(fTR->PhoSigmaIetaIeta[index],(bool)(fabs(fTR->SCEta[fTR->PhotSCindex[index]])<1.4442));
   pholead_hoe = fTR->PhoHoverE[index];
   pholead_brem = fTR->SCBrem[fTR->PhotSCindex[index]];
@@ -1777,6 +1776,11 @@ float DiPhotonMiniTree::SieieRescale(float sieie, bool isbarrel){
   return isbarrel ? 0.87*sieie+0.0011 : 0.99*sieie;
 };
 
+float DiPhotonMiniTree::R9Rescale(float r9){
+  if (isdata) return r9; // rescale r9 only in MC
+  return 1.005*r9;
+};
+
 void DiPhotonMiniTree::FillTrail(int index){
 
   photrail_eta = fTR->PhoEta[index];
@@ -1793,7 +1797,7 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_energySCdefault = CorrPhoton(fTR,index,0).E();
   photrail_energyNewCorr = CorrPhoton(fTR,index,5).E();
   photrail_energyNewCorrLocal = CorrPhoton(fTR,index,6).E();
-  photrail_r9 = fTR->SCR9[fTR->PhotSCindex[index]];
+  photrail_r9 = R9Rescale(fTR->SCR9[fTR->PhotSCindex[index]]);
   photrail_sieie = SieieRescale(fTR->PhoSigmaIetaIeta[index],(bool)(fabs(fTR->SCEta[fTR->PhotSCindex[index]])<1.4442));
   photrail_hoe = fTR->PhoHoverE[index];
   photrail_brem = fTR->SCBrem[fTR->PhotSCindex[index]];
