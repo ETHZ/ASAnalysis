@@ -50,6 +50,7 @@ typedef struct {
   std::vector<float> photoncanddphis;
   std::vector<float> chargedcanddphis;
   std::vector<float> neutralcanddphis;
+  float newphi;
 } isolations_struct;
 
 typedef struct {
@@ -98,7 +99,7 @@ private:
   std::vector<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component);
   TVector3 PropagatePFCandToEcal(int pfcandindex, float position, bool isbarrel);
   bool FindImpingingTrack(TreeReader *fTR, int phoqi, int &reference_index_found, bool dofootprintremoval = false, std::vector<int> removals = std::vector<int>());
-  float PFIsolation(int phoqi, float rotation_phi, TString component, int *counter = NULL, std::vector<float> *energies = NULL, std::vector<float> *ets = NULL,  std::vector<float> *detas = NULL, std::vector<float> *dphis = NULL, std::vector<int> removals = std::vector<int>());
+  float PFIsolation(int phoqi, float rotation_phi, TString component, int *counter = NULL, std::vector<float> *energies = NULL, std::vector<float> *ets = NULL,  std::vector<float> *detas = NULL, std::vector<float> *dphis = NULL, float *newphi = NULL, std::vector<int> removals = std::vector<int>());
   angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, int phoqi, int pfindex, float rotation_phi = 0);
   bool FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_phi, int phoqi, TString mod="");
   std::vector<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
@@ -202,6 +203,7 @@ private:
   Float_t dipho_mgg_newCorrLocal;
   
   Float_t pholead_eta, photrail_eta;
+  Float_t pholead_phi, photrail_phi;
   Float_t pholead_px, photrail_px;
   Float_t pholead_py, photrail_py;
   Float_t pholead_pt, photrail_pt;
