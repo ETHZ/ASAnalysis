@@ -344,31 +344,31 @@ void SSDLDumper::init(){
 
 	// FOR THE BDT. LET'S SEE HOW THAT WORKS
 	// --------------------------------------------
-	fReader = new TMVA::Reader( "!Color:!Silent" );
-	fReader->AddVariable("HT"     , &fHT_bdt      );
-	fReader->AddVariable("pT1"    , &fpT1_bdt     );
-	fReader->AddVariable("pT2"    , &fpT2_bdt     ); 
-	fReader->AddVariable("NJ"     , &fNJ_bdt      ); 
-	fReader->AddVariable("Mll"    , &fMll_bdt     ); 
-	fReader->AddVariable("MT1"    , &fMT1_bdt     );
-	fReader->AddVariable("MET"    , &fMET_bdt     );
-	fReader->AddVariable("Jet0Pt" , &fJet0Pt_bdt  );
-	fReader->AddVariable("eta1"   , &feta1_bdt    );
-	fReader->AddVariable("NbJ"    , &fNbJ_bdt     );
-	fReader->AddVariable("NbJmed" , &fNbJmed_bdt  );
-	fReader->AddVariable("MT2"    , &fMT2_bdt     );
-	fReader->AddVariable("dPhiMLs", &fdPhiMLs_bdt );
-	fReader->AddVariable("NMus"   , &fNMus_bdt    );
-	fReader->AddVariable("PFIso1" , &fPFIso1_bdt  );
-	fReader->AddVariable("PFIso2" , &fPFIso2_bdt  );
-	fReader->AddVariable("Charge" , &fCharge_bdt  );
-
-	TString methodName = "BDTG method";
-	TString weightfile = "/shome/mdunser/finalRA5/CMSSW_5_3_7_patch5/src/DiLeptonAnalysis/NTupleProducer/macros/dps/tmvaStuff/training/weights/provaNEW_BDTG.weights.xml";
-
-	std::cout << "-> Booking BDT" << std::endl; 
-	fReader->BookMVA( methodName, weightfile );  
-
+//BDT. 	fReader = new TMVA::Reader( "!Color:!Silent" );
+//BDT. 	fReader->AddVariable("HT"     , &fHT_bdt      );
+//BDT. 	fReader->AddVariable("pT1"    , &fpT1_bdt     );
+//BDT. 	fReader->AddVariable("pT2"    , &fpT2_bdt     ); 
+//BDT. 	fReader->AddVariable("NJ"     , &fNJ_bdt      ); 
+//BDT. 	fReader->AddVariable("Mll"    , &fMll_bdt     ); 
+//BDT. 	fReader->AddVariable("MT1"    , &fMT1_bdt     );
+//BDT. 	fReader->AddVariable("MET"    , &fMET_bdt     );
+//BDT. 	fReader->AddVariable("Jet0Pt" , &fJet0Pt_bdt  );
+//BDT. 	fReader->AddVariable("eta1"   , &feta1_bdt    );
+//BDT. 	fReader->AddVariable("NbJ"    , &fNbJ_bdt     );
+//BDT. 	fReader->AddVariable("NbJmed" , &fNbJmed_bdt  );
+//BDT. 	fReader->AddVariable("MT2"    , &fMT2_bdt     );
+//BDT. 	fReader->AddVariable("dPhiMLs", &fdPhiMLs_bdt );
+//BDT. 	fReader->AddVariable("NMus"   , &fNMus_bdt    );
+//BDT. 	fReader->AddVariable("PFIso1" , &fPFIso1_bdt  );
+//BDT. 	fReader->AddVariable("PFIso2" , &fPFIso2_bdt  );
+//BDT. 	fReader->AddVariable("Charge" , &fCharge_bdt  );
+//BDT. 
+//BDT. 	TString methodName = "BDTG method";
+//BDT. 	TString weightfile = "/shome/mdunser/finalRA5/CMSSW_5_3_7_patch5/src/DiLeptonAnalysis/NTupleProducer/macros/dps/tmvaStuff/training/weights/provaNEW_BDTG.weights.xml";
+//BDT. 
+//BDT. 	std::cout << "-> Booking BDT" << std::endl; 
+//BDT. 	fReader->BookMVA( methodName, weightfile );  
+//BDT. 
 	// --------------------------------------------
 
 }
@@ -1778,7 +1778,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			fPFIso2_bdt  = fSETree_PFIso2;
 			fCharge_bdt  = fSETree_Charge;
 			// store the discriminator value:
-			fSETree_BDTVal = fReader->EvaluateMVA( "BDTG method" );
+//BDT.			fSETree_BDTVal = fReader->EvaluateMVA( "BDTG method" );
 			// -----------------------------------
 
 
@@ -1862,7 +1862,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			fPFIso2_bdt  = fSETree_PFIso2;
 			fCharge_bdt  = fSETree_Charge;
 			// store the discriminator value:
-			fSETree_BDTVal = fReader->EvaluateMVA( "BDTG method" );
+//BDT.			fSETree_BDTVal = fReader->EvaluateMVA( "BDTG method" );
 			// -----------------------------------
 
 
@@ -1947,7 +1947,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			fPFIso2_bdt  = fSETree_PFIso2;
 			fCharge_bdt  = fSETree_Charge;
 			// store the discriminator value:
-			fSETree_BDTVal = fReader->EvaluateMVA( "BDTG method" );
+//BDT.			fSETree_BDTVal = fReader->EvaluateMVA( "BDTG method" );
 			// -----------------------------------
 
 

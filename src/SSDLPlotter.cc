@@ -229,11 +229,6 @@ void SSDLPlotter::init(TString filename){
 	fMCBGMuEnr.push_back(SingleTbar_s);
 	fMCBGMuEnr.push_back(WJets);
 	fMCBGMuEnr.push_back(DYJets);
-<<<<<<< SSDLPlotter.cc
-	// fMCBGMuEnr.push_back(GJets200);
-	// fMCBGMuEnr.push_back(GJets400);
-=======
->>>>>>> 1.24.2.80.2.3
 	fMCBGMuEnr.push_back(WW);
 	fMCBGMuEnr.push_back(WZ);
 	fMCBGMuEnr.push_back(ZZ);
@@ -459,24 +454,6 @@ void SSDLPlotter::doAnalysis(){
 	//	makeMETvsHTPlot0HT();
 	// makeMETvsHTPlotTau();
 
-<<<<<<< SSDLPlotter.cc
-	// makeRatioPlots(Muon);
-	// makeRatioPlots(Elec);
-	// make2DRatioPlots(Muon);
-	// make2DRatioPlots(Elec);
-	// makeNTightLoosePlots(Muon);
-	// makeNTightLoosePlots(Elec);
-
-	// makeFRvsPtPlots(Muon, SigSup);
-	// makeFRvsPtPlots(Elec, SigSup);
-	// makeFRvsPtPlots(Muon, ZDecay);
-	// makeFRvsPtPlots(Elec, ZDecay);
-	// // makeFRvsNVPlots(Muon, ZDecay); 
-	// // makeFRvsNVPlots(Elec, ZDecay);
-	// makeFRvsEtaPlots(Muon);
-	// makeFRvsEtaPlots(Elec);
-	// // makeChMidvsPtPlots();
-=======
 	makeRatioPlots(Muon);
 	makeRatioPlots(Elec);
 	make2DRatioPlots(Muon);
@@ -493,7 +470,6 @@ void SSDLPlotter::doAnalysis(){
 	makeFRvsEtaPlots(Muon);
 	makeFRvsEtaPlots(Elec);
 	makeChMidvsPtPlots();
->>>>>>> 1.24.2.80.2.3
 
 	// makeAllClosureTestsTTW();
 	makeAllIntPredictions();
@@ -7462,9 +7438,10 @@ void SSDLPlotter::makeAllIntPredictions(){
 			 if (gRegions[reg]->app3rdVet !=0) reg_lV.push_back("$3^{rd}$ lepton veto "); 
 			 else                              reg_lV.push_back(" "); 
 
-			 if (gRegions[reg]->maxNjets == 0)       reg_jet.push_back("$N_{jets} = 0$");
-			 else if (gRegions[reg]->maxNbjets == 0) reg_jet.push_back("$N_{jets} \\leq 2$, $N_{bjets} = 0$");
-			 else                                    reg_jet.push_back(" ");
+			 if (gRegions[reg]->maxNjets == 0)         reg_jet.push_back("$N_{jets} = 0$");
+			 else if (gRegions[reg]->maxNbjets == 0 ||
+				  gRegions[reg]->maxNbjmed == 0)   reg_jet.push_back("$N_{jets} \\leq 2$, $N_{bjets} = 0$");
+			 else                                      reg_jet.push_back(" ");
 		}
 
 		// cuts
@@ -7513,7 +7490,7 @@ void SSDLPlotter::makeAllIntPredictions(){
 		fOUTSTREAM << "   \\label{tab:SSYields}" << endl;
 		fOUTSTREAM << "   \\small "            << endl;
 		fOUTSTREAM << "   \\resizebox{\\textwidth}{!}{\\begin{tabular}{c|c|c|c|c|c|c}" << endl;
-		fOUTSTREAM << "    \\hline" << endl;
+		fOUTSTREAM << "    \\hline\\hline" << endl;
 		fOUTSTREAM << MetLine  << endl;
 		fOUTSTREAM << JetLine  << endl;
 		fOUTSTREAM << lVLine   << endl;
@@ -7528,7 +7505,7 @@ void SSDLPlotter::makeAllIntPredictions(){
 		fOUTSTREAM << DataLine << endl;
 		fOUTSTREAM << "    \\hline" << endl;
 		fOUTSTREAM << "    \\hline" << endl; 
-		fOUTSTREAM << "    \\end{tabular}" << endl;
+		fOUTSTREAM << "    \\end{tabular}}" << endl;
 		fOUTSTREAM << " \\end{center}" << endl;
 		fOUTSTREAM << "\\end{table}" << endl;
 		fOUTSTREAM << endl;
@@ -7647,20 +7624,20 @@ void SSDLPlotter::makeAllIntPredictions(){
 	  hadString += "}{#splitline{";
 	  
 	  // second line
-	  if (gRegions[reg]->maxNbjets > 90 && gRegions[reg]->maxNjets <= 0 && gRegions[reg]->app3rdVet !=0) {
+	  if (gRegions[reg]->maxNbjmed > 90 && gRegions[reg]->maxNjets <= 0 && gRegions[reg]->app3rdVet !=0) {
 	    hadString += Form("N_{jets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets);
 	    hadString += Form("}{3^{rd} lepton Veto}}");
 	  }
 	  else if (gRegions[reg]->maxNjets <= 2 && gRegions[reg]->app3rdVet !=0) {
-	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjets);
+	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjmed);
 	    hadString += Form("}{3^{rd} lepton Veto}}");
 	  }
-	  else if (gRegions[reg]->maxNbjets > 90 && gRegions[reg]->maxNjets <= 0 && gRegions[reg]->app3rdVet == 0) {
+	  else if (gRegions[reg]->maxNbjmed > 90 && gRegions[reg]->maxNjets <= 0 && gRegions[reg]->app3rdVet == 0) {
 	    hadString += Form("N_{jets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets);
 	    hadString += Form("}{#color[0]{3^{rd} lepton Veto N_{j}}}}");
 	  }
 	  else if (gRegions[reg]->maxNjets <= 2 && gRegions[reg]->app3rdVet == 0) {
-	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjets);
+	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjmed);
 	    hadString += Form("}{#color[0]{3^{rd} lepton Veto N_{j}}}}");
 	  }
 	  else if (gRegions[reg]->maxNjets > 90 && gRegions[reg]->app3rdVet !=0){
