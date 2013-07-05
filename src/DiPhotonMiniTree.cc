@@ -344,6 +344,10 @@ void DiPhotonMiniTree::Begin(){
 
   LightTreeGenReco->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
   LightTreeGenReco->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
+  LightTreeGenReco->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
+  LightTreeGenReco->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
+  LightTreeGenReco->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
+  LightTreeGenReco->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
   LightTreeGenReco->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
   LightTreeGenReco->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
   LightTreeGenReco->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
