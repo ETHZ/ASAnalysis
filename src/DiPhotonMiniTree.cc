@@ -331,7 +331,6 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("photrail_neutralpfcanddphis",&photrail_neutralpfcanddphis,"photrail_neutralpfcanddphis[photrail_Npfcandneutralincone]/F");
 
   OutputTree[i]->Branch("pholead_test_rotatedphotoniso",&pholead_test_rotatedphotoniso,"pholead_test_rotatedphotoniso[50]/F");
-  OutputTree[i]->Branch("photrail_test_rotatedphotoniso",&photrail_test_rotatedphotoniso,"photrail_test_rotatedphotoniso[50]/F");
 
   }
 
@@ -746,6 +745,8 @@ void DiPhotonMiniTree::Analyze(){
 	for (int i=0; i<pholead_Npfcandneutralincone && i<global_size_pfcandarrays; i++) pholead_neutralpfcanddphis[i] = rcone_isos.neutralcanddphis.at(i);
 	if (rcone_isos.photon==-999 || rcone_isos.neutral==-999 || rcone_isos.charged==-999) dofill=false;
       }
+
+      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; k++) pholead_test_rotatedphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
 
       if (dofill) OutputTree[sel_cat]->Fill();
       }
@@ -1833,8 +1834,6 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_scarea = scarea[fTR->PhotSCindex[index]];
   pholead_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
-  //  for (int i=0; i<50; i++) pholead_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
-
 };
 
 float DiPhotonMiniTree::SieieRescale(float sieie, bool isbarrel){
@@ -1944,8 +1943,6 @@ void DiPhotonMiniTree::FillTrail(int index){
   //  photrail_Nchargedhadronsincone = CountChargedHadronsInCone(fTR,index,remove,global_dofootprintremoval);
   photrail_scarea = scarea[fTR->PhotSCindex[index]];
   photrail_scareaSF = scareaSF[fTR->PhotSCindex[index]];
-
-  //  for (int i=0; i<50; i++) photrail_test_rotatedphotoniso[i]=PFIsolation(index,0.025*i,"photon",NULL,NULL,NULL,NULL,NULL);
 
 };
 
@@ -2154,7 +2151,7 @@ void DiPhotonMiniTree::ResetVars(){
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_chargedpfcanddphis[i]=-999;
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_neutralpfcanddphis[i]=-999;
 
-  //  for (int i=0; i<50; i++) {pholead_test_rotatedphotoniso[i]=-999; photrail_test_rotatedphotoniso[i]=-999;}
+  for (int i=0; i<50; i++) pholead_test_rotatedphotoniso[i]=-999;
 
   pholead_GEN_eta = -999;
   photrail_GEN_eta = -999;

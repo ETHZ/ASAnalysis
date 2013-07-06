@@ -363,7 +363,6 @@ private:
   Bool_t tree_gen_in_acc_has_no_matched_reco;
 
   Float_t pholead_test_rotatedphotoniso[50];
-  Float_t photrail_test_rotatedphotoniso[50];
 
 };
 #endif
