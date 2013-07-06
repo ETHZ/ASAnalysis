@@ -746,7 +746,7 @@ void DiPhotonMiniTree::Analyze(){
 	if (rcone_isos.photon==-999 || rcone_isos.neutral==-999 || rcone_isos.charged==-999) dofill=false;
       }
 
-      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; i++) pholead_test_rotatedphotoniso[i]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
+      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; k++) pholead_test_rotatedphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
 
       if (dofill) OutputTree[sel_cat]->Fill();
       }
