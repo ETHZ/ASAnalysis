@@ -352,6 +352,8 @@ void DiPhotonMiniTree::Begin(){
   LightTreeGenReco->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
   LightTreeGenReco->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
   LightTreeGenReco->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
+  LightTreeGenReco->Branch("pholead_r9",&pholead_r9,"pholead_r9/F");
+  LightTreeGenReco->Branch("photrail_r9",&photrail_r9,"photrail_r9/F");
 
   LightTreeGenReco->Branch("pholead_GEN_pt",&pholead_GEN_pt,"pholead_GEN_pt/F");
   LightTreeGenReco->Branch("photrail_GEN_pt",&photrail_GEN_pt,"photrail_GEN_pt/F");
@@ -360,12 +362,12 @@ void DiPhotonMiniTree::Begin(){
   LightTreeGenReco->Branch("pholead_GEN_phi",&pholead_GEN_phi,"pholead_GEN_phi/F");
   LightTreeGenReco->Branch("photrail_GEN_phi",&photrail_GEN_phi,"photrail_GEN_phi/F");
 
-  LightTreeGenReco->Branch("tree_found_reco",&tree_found_reco,"tree_found_reco/O");
-  LightTreeGenReco->Branch("tree_found_gen",&tree_found_gen,"tree_found_gen/O");
-  LightTreeGenReco->Branch("tree_found_preselection",&tree_found_preselection,"tree_found_preselection/O");
-  LightTreeGenReco->Branch("tree_found_match",&tree_found_match,"tree_found_match/O");
-  LightTreeGenReco->Branch("tree_found_match_preselection",&tree_found_match_preselection,"tree_found_match_preselection/O");
-
+  LightTreeGenReco->Branch("reco_has_matched_gen_no_acceptance",&tree_reco_has_matched_gen_no_acceptance,"reco_has_matched_gen_no_acceptance/O");
+  LightTreeGenReco->Branch("reco_has_matched_gen_within_acceptance",&tree_reco_has_matched_gen_within_acceptance,"reco_has_matched_gen_within_acceptance/O");
+  LightTreeGenReco->Branch("reco_has_matched_gen_outside_acceptance",&tree_reco_has_matched_gen_outside_acceptance,"reco_has_matched_gen_outside_acceptance/O");
+  LightTreeGenReco->Branch("gen_in_acc",&tree_gen_in_acc,"gen_in_acc/O");
+  LightTreeGenReco->Branch("gen_in_acc_has_matched_reco",&tree_gen_in_acc_has_matched_reco,"gen_in_acc_has_matched_reco/O");
+  LightTreeGenReco->Branch("gen_in_acc_has_no_matched_reco",&tree_gen_in_acc_has_no_matched_reco,"gen_in_acc_has_no_matched_reco/O");
 
   fHNumPU = new TH1F("NumPU_rew","NumPU_rew",50,0,50);
   fHNumPU_noweight = new TH1F("NumPU_noweight","NumPU_noweight",50,0,50);
@@ -768,15 +770,32 @@ void DiPhotonMiniTree::Analyze(){
     }
 
     bool found_reco = false;
-    bool found_gen = false;
-    bool found_preselection = false;
+    bool gen_in_acc = false;
 
     passing = PhotonPreSelection(fTR,passing);
-    std::vector<int> passing_preselection = passing;
     passing = PhotonSelection(fTR,passing);
     found_reco = passtrigger && StandardEventSelection(fTR,passing);
-    found_preselection = passtrigger && StandardEventSelection(fTR,passing_preselection);
 
+    bool reco_has_matched_gen_no_acceptance = false;
+    bool reco_has_matched_gen_within_acceptance = false;
+    bool reco_has_matched_gen_outside_acceptance = false;
+
+    if (found_reco) {
+ 
+      bool match0 = ( (fTR->PhoMCmatchexitcode[passing.at(0)]==1 || fTR->PhoMCmatchexitcode[passing.at(0)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(0)]]<5 );
+      bool match1 = ( (fTR->PhoMCmatchexitcode[passing.at(1)]==1 || fTR->PhoMCmatchexitcode[passing.at(1)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(1)]]<5 ); 
+      reco_has_matched_gen_no_acceptance = match0 && match1;
+
+      if (reco_has_matched_gen_no_acceptance){
+	int m0 = fTR->PhoMCmatchindex[passing.at(0)];
+	int m1 = fTR->PhoMCmatchindex[passing.at(1)];
+	bool match0acc = ( (fabs(fTR->GenPhotonEta[m0])<1.4442) || (fabs(fTR->GenPhotonEta[m0])>1.566 && fabs(fTR->GenPhotonEta[m0])<2.5) ) && (fTR->GenPhotonPt[m0]>25);
+	bool match1acc = ( (fabs(fTR->GenPhotonEta[m1])<1.4442) || (fabs(fTR->GenPhotonEta[m1])>1.566 && fabs(fTR->GenPhotonEta[m1])<2.5) ) && (fTR->GenPhotonPt[m1]>25);
+	reco_has_matched_gen_within_acceptance = match0acc && match1acc && ((fTR->GenPhotonPt[m0]>40) || (fTR->GenPhotonPt[m1]>40)) && (Util::GetDeltaR(fTR->GenPhotonEta[m0],fTR->GenPhotonEta[m1],fTR->GenPhotonPhi[m0],fTR->GenPhotonPhi[m1])>global_dR_cut_acceptance);
+	reco_has_matched_gen_outside_acceptance = !reco_has_matched_gen_within_acceptance;
+      }
+
+    }
 
     for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
       bool pass=0;
@@ -806,55 +825,64 @@ void DiPhotonMiniTree::Analyze(){
     }
 
     if (passing_gen.size()>=2 && fTR->GenPhotonPt[passing_gen.at(0)]>40 && \
-	Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>global_dR_cut_acceptance) found_gen=true;
+	Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>global_dR_cut_acceptance) gen_in_acc=true;
 
-    if (found_reco) {
-      FillLead(passing.at(0));
-      FillTrail(passing.at(1));
-    }
+    bool gen_in_acc_has_matched_reco = false;
+    bool gen_in_acc_has_no_matched_reco = false;
 
-    if (found_gen) {
-
-      TLorentzVector genphotons[2];
-      genphotons[0].SetPtEtaPhiM(fTR->GenPhotonPt[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(0)],0);
-      genphotons[1].SetPtEtaPhiM(fTR->GenPhotonPt[passing_gen.at(1)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(1)],0);
-
-      pholead_GEN_eta =     fTR->GenPhotonEta[passing_gen.at(0)];
-      photrail_GEN_eta =    fTR->GenPhotonEta[passing_gen.at(1)];
-      pholead_GEN_phi =     fTR->GenPhotonPhi[passing_gen.at(0)];
-      photrail_GEN_phi =    fTR->GenPhotonPhi[passing_gen.at(1)];
-      pholead_GEN_pt =      fTR->GenPhotonPt[passing_gen.at(0)];
-      photrail_GEN_pt =     fTR->GenPhotonPt[passing_gen.at(1)];
-
-    }
-
-    bool found_match = false;
-    bool found_match_preselection = false;
-
-    if (found_reco && found_gen) {
+    if (found_reco && gen_in_acc) {
       int found = 0;
       for (std::vector<int>::iterator it = passing.begin(); it != passing.end(); it++){
 	if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2)
 	  if (fTR->PhoMCmatchindex[*it]==passing_gen.at(0) || fTR->PhoMCmatchindex[*it]==passing_gen.at(1)) found++;
       }
-      if (found==2 && (fTR->PhoMCmatchindex[passing.at(0)] != fTR->PhoMCmatchindex[passing.at(1)])) found_match=true;
+      if (found==2 && (fTR->PhoMCmatchindex[passing.at(0)] != fTR->PhoMCmatchindex[passing.at(1)])) gen_in_acc_has_matched_reco=true;
+      gen_in_acc_has_no_matched_reco = !gen_in_acc_has_matched_reco;
     }
-    if (found_preselection && found_gen) {
-      int found = 0;
-      for (std::vector<int>::iterator it = passing_preselection.begin(); it != passing_preselection.end(); it++){
-	if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2)
-	  if (fTR->PhoMCmatchindex[*it]==passing_gen.at(0) || fTR->PhoMCmatchindex[*it]==passing_gen.at(1)) found++;
+
+    //CHECK
+    if (gen_in_acc && reco_has_matched_gen_no_acceptance){
+      bool ok = false;
+      if (passing_gen.at(0)==fTR->PhoMCmatchindex[passing.at(0)] && passing_gen.at(1)==fTR->PhoMCmatchindex[passing.at(1)]) ok = true;
+      if (passing_gen.at(0)==fTR->PhoMCmatchindex[passing.at(1)] && passing_gen.at(1)==fTR->PhoMCmatchindex[passing.at(0)]) ok = true;
+      if (!ok) {std::cout << "PROBLEM! MISMATCH IN GEN OBJECTS! Throwing away the event." << std::endl; reco_has_matched_gen_no_acceptance=false; gen_in_acc=false;}
+    }
+
+    if (reco_has_matched_gen_no_acceptance) {
+      FillLead(passing.at(0));
+      FillTrail(passing.at(1));
+    }
+
+    {
+      int m0=-1; int m1=-1;
+      if (gen_in_acc) {m0 = passing_gen.at(0); m1=passing_gen.at(1);}
+      else if (reco_has_matched_gen_no_acceptance){
+	m0 = fTR->PhoMCmatchindex[passing.at(0)];
+	m1 = fTR->PhoMCmatchindex[passing.at(1)];
+	if (fTR->GenPhotonPt[m0]<fTR->GenPhotonPt[m1]) {int temp=m1; m1=m0; m0=temp;}
       }
-      if (found==2 && (fTR->PhoMCmatchindex[passing_preselection.at(0)] != fTR->PhoMCmatchindex[passing_preselection.at(1)])) found_match_preselection=true;
+      if (gen_in_acc || reco_has_matched_gen_no_acceptance) {
+	TLorentzVector genphotons[2];
+	genphotons[0].SetPtEtaPhiM(fTR->GenPhotonPt[m0],fTR->GenPhotonEta[m0],fTR->GenPhotonPhi[m0],0);
+	genphotons[1].SetPtEtaPhiM(fTR->GenPhotonPt[m1],fTR->GenPhotonEta[m1],fTR->GenPhotonPhi[m1],0);
+	pholead_GEN_eta =     genphotons[0].Eta();
+	photrail_GEN_eta =    genphotons[1].Eta();
+	pholead_GEN_phi =     genphotons[0].Phi();
+	photrail_GEN_phi =    genphotons[1].Phi();
+	pholead_GEN_pt =      genphotons[0].Pt();
+	photrail_GEN_pt =     genphotons[1].Pt();
+      }
     }
 
-    tree_found_reco = found_reco;
-    tree_found_gen = found_gen;
-    tree_found_preselection = found_preselection;
-    tree_found_match = found_match;
-    tree_found_match_preselection = found_match_preselection;
+    tree_reco_has_matched_gen_no_acceptance = reco_has_matched_gen_no_acceptance;
+    tree_reco_has_matched_gen_within_acceptance = reco_has_matched_gen_within_acceptance;
+    tree_reco_has_matched_gen_outside_acceptance = reco_has_matched_gen_outside_acceptance;
+    tree_gen_in_acc = gen_in_acc;
+    tree_gen_in_acc_has_matched_reco = gen_in_acc_has_matched_reco;
+    tree_gen_in_acc_has_no_matched_reco = gen_in_acc_has_no_matched_reco;
 
-    if (found_reco || found_gen || found_preselection) LightTreeGenReco->Fill();
+
+    if (reco_has_matched_gen_no_acceptance || gen_in_acc) LightTreeGenReco->Fill();
 
   }
 
@@ -2134,11 +2162,13 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_GEN_phi = -999;
   pholead_GEN_pt = -999;
   photrail_GEN_pt = -999;
-  tree_found_reco = false;
-  tree_found_gen = false;
-  tree_found_preselection = false;
-  tree_found_match = false;
-  tree_found_match_preselection = false;
+  tree_reco_has_matched_gen_no_acceptance = false;
+  tree_reco_has_matched_gen_within_acceptance = false;
+  tree_reco_has_matched_gen_outside_acceptance = false;
+  tree_gen_in_acc = false;
+  tree_gen_in_acc_has_matched_reco = false;
+  tree_gen_in_acc_has_no_matched_reco = false;
+
 
 };
 

@@ -355,11 +355,12 @@ private:
   Float_t pholead_GEN_pt, photrail_GEN_pt;
   Float_t pholead_GEN_energy, photrail_GEN_energy;
 
-  Bool_t tree_found_reco;
-  Bool_t tree_found_gen;
-  Bool_t tree_found_preselection;
-  Bool_t tree_found_match;
-  Bool_t tree_found_match_preselection;
+  Bool_t tree_reco_has_matched_gen_no_acceptance;
+  Bool_t tree_reco_has_matched_gen_within_acceptance;
+  Bool_t tree_reco_has_matched_gen_outside_acceptance;
+  Bool_t tree_gen_in_acc;
+  Bool_t tree_gen_in_acc_has_matched_reco;
+  Bool_t tree_gen_in_acc_has_no_matched_reco;
 
   Float_t pholead_test_rotatedphotoniso[50];
   Float_t photrail_test_rotatedphotoniso[50];
