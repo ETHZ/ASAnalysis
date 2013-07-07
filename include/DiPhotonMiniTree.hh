@@ -130,6 +130,8 @@ private:
   float PFPhotonIsolationAroundMuon(int muqi, int *counter, std::vector<float> *energies = NULL, std::vector<float> *ets = NULL,  std::vector<float> *detas = NULL, std::vector<float> *dphis = NULL);
   void FillMuonInfo(int index);
 
+  void BugfixWrongGenPhotonsMatching(TreeReader *fTR);
+
   bool PassPrimaryVertexFilter();
 
   float DeltaPhiSigned(float phi1, float phi2);

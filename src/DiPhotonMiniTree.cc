@@ -384,6 +384,9 @@ void DiPhotonMiniTree::Begin(){
 
 void DiPhotonMiniTree::Analyze(){
 
+  // FIX FOR WRONG MATCHING!!!
+  BugfixWrongGenPhotonsMatching(fTR);
+
   //  cout << "Analyze this event" << endl;
 
   if (fTR->NSuperClusters==101) return;
@@ -746,7 +749,7 @@ void DiPhotonMiniTree::Analyze(){
 	if (rcone_isos.photon==-999 || rcone_isos.neutral==-999 || rcone_isos.charged==-999) dofill=false;
       }
 
-      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; k++) pholead_test_rotatedphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
+      //      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; k++) pholead_test_rotatedphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
 
       if (dofill) OutputTree[sel_cat]->Fill();
       }
@@ -1118,6 +1121,10 @@ std::vector<int> DiPhotonMiniTree::SignalSelection(TreeReader *fTR, std::vector<
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
     bool pass=0;
     if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2) pass=1;
+    if (pass) {
+      float dR = Util::GetDeltaR(fTR->GenPhotonEta[fTR->PhoMCmatchindex[*it]],fTR->PhoEta[*it],fTR->GenPhotonPhi[fTR->PhoMCmatchindex[*it]],fTR->PhoPhi[*it]);
+      if (dR>0.1) cout << "PATHOLOGICAL MATCHING DR " << dR << endl;
+    }
     if (!pass) it=passing.erase(it); else it++;
   }
 
@@ -2508,4 +2515,33 @@ bool DiPhotonMiniTree::PassPrimaryVertexFilter(){
     if (fTR->VrtxNdof[i]>4 && fabs(fTR->VrtxZ[i])<=24 && TVector3(fTR->VrtxX[i],fTR->VrtxY[i],fTR->VrtxZ[i]).Perp()<=2) return true;
   }
   return false;
+};
+
+void DiPhotonMiniTree::BugfixWrongGenPhotonsMatching(TreeReader *fTR){   // redo the matching to fix bug dphi (no fabs in matching)
+
+  for (int i=0; i<fTR->NPhotons; i++){
+
+    if (fTR->PhoMCmatchexitcode[i]==-1 || fTR->PhoMCmatchexitcode[i]==0) continue;
+
+    int matched=-1;
+    for (int k=0; k<fTR->NGenPhotons; k++){
+      if (fabs(fTR->GenPhotonPt[k]-fTR->PhoPt[i])/fTR->GenPhotonPt[k]>2) continue;
+      if (Util::GetDeltaR(fTR->GenPhotonEta[k],fTR->PhoEta[i],fTR->GenPhotonPhi[k],fTR->PhoPhi[i])>0.1) continue;
+      matched=k; break;
+    }
+
+    if (matched==-1) {fTR->PhoMCmatchexitcode[i]=-2; fTR->PhoMCmatchindex[i]=-999;}
+    else {
+
+      fTR->PhoMCmatchindex[i]=matched;
+
+      int mother = fTR->GenPhotonMotherID[matched];      
+      if ((mother>=-6 && mother<=6) || (mother==21)) fTR->PhoMCmatchexitcode[i]=1;
+      else if (mother==22 && fTR->GenPhotonMotherStatus[matched]==3) fTR->PhoMCmatchexitcode[i]=2;
+      else fTR->PhoMCmatchexitcode[i]=3;
+
+
+    }
+  }
+
 };
