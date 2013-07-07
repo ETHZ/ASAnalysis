@@ -832,7 +832,6 @@ void DiPhotonMiniTree::Analyze(){
 	Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>global_dR_cut_acceptance) gen_in_acc=true;
 
     bool gen_in_acc_has_matched_reco = false;
-    bool gen_in_acc_has_no_matched_reco = false;
 
     if (found_reco && gen_in_acc) {
       int found = 0;
@@ -841,8 +840,9 @@ void DiPhotonMiniTree::Analyze(){
 	  if (fTR->PhoMCmatchindex[*it]==passing_gen.at(0) || fTR->PhoMCmatchindex[*it]==passing_gen.at(1)) found++;
       }
       if (found==2 && (fTR->PhoMCmatchindex[passing.at(0)] != fTR->PhoMCmatchindex[passing.at(1)])) gen_in_acc_has_matched_reco=true;
-      gen_in_acc_has_no_matched_reco = !gen_in_acc_has_matched_reco;
     }
+
+    bool gen_in_acc_has_no_matched_reco = gen_in_acc && !gen_in_acc_has_matched_reco;
 
     //CHECK
     if (gen_in_acc && reco_has_matched_gen_no_acceptance){
