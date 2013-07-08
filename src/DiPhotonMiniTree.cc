@@ -331,6 +331,7 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("photrail_neutralpfcanddphis",&photrail_neutralpfcanddphis,"photrail_neutralpfcanddphis[photrail_Npfcandneutralincone]/F");
 
   OutputTree[i]->Branch("pholead_test_rotatedphotoniso",&pholead_test_rotatedphotoniso,"pholead_test_rotatedphotoniso[50]/F");
+  OutputTree[i]->Branch("pholead_test_rotatedwithcheckphotoniso",&pholead_test_rotatedwithcheckphotoniso,"pholead_test_rotatedwithcheckphotoniso[50]/F");
 
   }
 
@@ -752,7 +753,10 @@ void DiPhotonMiniTree::Analyze(){
 	if (rcone_isos.photon==-999 || rcone_isos.neutral==-999 || rcone_isos.charged==-999) dofill=false;
       }
 
-      //      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; k++) pholead_test_rotatedphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
+//      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; k++) {
+//	pholead_test_rotatedphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
+//	if (!FindCloseJetsAndPhotons(fTR,0.025*k,passing.at(i),"")) pholead_test_rotatedwithcheckphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
+//      }
 
       if (dofill) OutputTree[sel_cat]->Fill();
       }
@@ -2170,6 +2174,7 @@ void DiPhotonMiniTree::ResetVars(){
   for (int i=0; i<global_size_pfcandarrays; i++) photrail_neutralpfcanddphis[i]=-999;
 
   for (int i=0; i<50; i++) pholead_test_rotatedphotoniso[i]=-999;
+  for (int i=0; i<50; i++) pholead_test_rotatedwithcheckphotoniso[i]=-999;
 
   pholead_GEN_eta = -999;
   photrail_GEN_eta = -999;
