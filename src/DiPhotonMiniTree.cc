@@ -338,6 +338,10 @@ void DiPhotonMiniTree::Begin(){
 
   LightTreeGenReco = new TTree("LightTreeGenReco","LightTreeGenReco");
 
+  LightTreeGenReco->Branch("event_run",&event_run,"event_run/I");
+  LightTreeGenReco->Branch("event_lumi",&event_lumi,"event_lumi/I");
+  LightTreeGenReco->Branch("event_number",&event_number,"event_number/I");
+
   LightTreeGenReco->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
   LightTreeGenReco->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
   LightTreeGenReco->Branch("event_weight",&event_weight,"event_weight/F");
@@ -402,6 +406,10 @@ void DiPhotonMiniTree::Analyze(){
   else weight3D=1;
   
   event_luminormfactor=AddWeight;
+
+  event_run = fTR->Run;
+  event_lumi = fTR->LumiSection;
+  event_number = fTR->Event;
 
   if (!isdata) {
     fHNumPU->Fill(fTR->PUnumInteractions,weight);
@@ -1699,7 +1707,7 @@ float DiPhotonMiniTree::PFPhotonIsolationAroundMuon(int muqi, int *counter, std:
   } // end pf cand loop
 
   //  const float scaleresult = 1.066;      
-  return result; //*scaleresult;
+  return result; 
   
 };
 

@@ -349,6 +349,10 @@ private:
   TH1F *fHNumPUTrue_noweight;
   TH1F *fHNumVtx;
 
+  Int_t event_run;
+  Int_t event_lumi;
+  Int_t event_number;
+
   Float_t pholead_GEN_eta, photrail_GEN_eta;
   Float_t pholead_GEN_phi, photrail_GEN_phi;
   Float_t pholead_GEN_px, photrail_GEN_px;
