@@ -496,6 +496,9 @@ void DiPhotonMiniTree::Analyze(){
       for (int i=0; i<fTR->NPhotons; i++){
 	passing.push_back(i);
       }
+      for (int i=0; i<(int)(passing.size())-1; i++){
+	assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
+      }
       passing = PhotonPreSelection(fTR,passing);
     }
 
@@ -767,6 +770,9 @@ void DiPhotonMiniTree::Analyze(){
     for (int i=0; i<fTR->NPhotons; i++){
       passing.push_back(i);
     }
+    for (int i=0; i<(int)(passing.size())-1; i++){
+      assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
+    }
 
     std::vector<int> passing_gen;
     for (int i=0; i<fTR->NGenPhotons; i++){
@@ -819,6 +825,7 @@ void DiPhotonMiniTree::Analyze(){
     }
 
     {
+      int sizegenphotonsbefore = passing_gen.size();
       std::vector<OrderPair> passing_gen_ordered;
       for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); it++){
 	passing_gen_ordered.push_back(make_pair<int,float>(*it,fTR->GenPhotonPt[*it]));
@@ -826,6 +833,10 @@ void DiPhotonMiniTree::Analyze(){
       std::sort(passing_gen_ordered.begin(),passing_gen_ordered.end(),indexComparator);
       passing_gen.clear();
       for (vector<OrderPair>::iterator it = passing_gen_ordered.begin(); it != passing_gen_ordered.end(); it++) passing_gen.push_back(it->first);
+      assert(sizegenphotonsbefore==passing_gen.size());
+    }
+    for (int i=0; i<(int)(passing_gen.size())-1; i++){
+      assert(fTR->GenPhotonPt[passing_gen.at(i)]>=fTR->GenPhotonPt[passing_gen.at(i+1)]);
     }
 
     if (passing_gen.size()>=2 && fTR->GenPhotonPt[passing_gen.at(0)]>40 && \
