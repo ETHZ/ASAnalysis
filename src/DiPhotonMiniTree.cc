@@ -968,7 +968,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   }
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
-    float eta=fTR->PhoEta[fTR->PhotSCindex[*it]];
+    float eta=fTR->PhoEta[*it];
     if (fabs(eta)>2.5) it=passing.erase(it); else it++;
   }
 
