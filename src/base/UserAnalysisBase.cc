@@ -19,23 +19,20 @@
 using namespace std;
 
 UserAnalysisBase::UserAnalysisBase(TreeReader *tr, bool isData, string globaltag){
-    fTR = tr;
-    fTlat = new TLatex();
-    fVerbose = 0;
-    fDoPileUpReweight = false;
+  fTR = tr;
+  fTlat = new TLatex();
+  fVerbose = 0;
+  fDoPileUpReweight = false;
 
 
-    string JESPathPrefix="/shome/mdunser/jetfiles/";
-
-    if(!isData) JESPathPrefix="/shome/mdunser/jetfiles/";
-	if(globaltag == "") globaltag = "START53_V7A"; // need a default GT, otherwise the next line crashes
-	fMetCorrector = new OnTheFlyCorrections(globaltag, isData);
+  if(globaltag == "") globaltag = "START53_V7A"; // need a default GT, otherwise the next line crashes
+  fMetCorrector = new OnTheFlyCorrections(globaltag, isData);
 }
 
 UserAnalysisBase::~UserAnalysisBase(){
-    if(fDoPileUpReweight) delete fPUWeight;
-	delete fMetCorrector;
-//     if(fDoPileUpReweight3D) delete fPUWeight3D;
+  if(fDoPileUpReweight) delete fPUWeight;
+  delete fMetCorrector;
+  //     if(fDoPileUpReweight3D) delete fPUWeight3D;
 
 }
 std::pair<float ,float> UserAnalysisBase::GetOnTheFlyCorrections(){
@@ -55,223 +52,223 @@ std::pair<float ,float> UserAnalysisBase::GetOnTheFlyCorrections(){
 }
 
 void UserAnalysisBase::BeginRun(Int_t& run) {
-    // Called when run changes
-    // Need to re-create HLT map in case it changed
+  // Called when run changes
+  // Need to re-create HLT map in case it changed
     
-    GetHLTNames();
+  GetHLTNames();
 }
 
 void UserAnalysisBase::ReadPDGTable(const char* filename){
-// Fills the fPDGMap map from a textfile to associate pdgids with names
-    int pdgid(0), type(0);
-    string Name, Texname, Typename;
-    ifstream IN(filename);
-    char buff1[200], buff2[200], buff3[200];
-    char readbuff[200];
-    // Loop over lines of datafile
-    while( IN.getline(readbuff, 200, '\n') ){
-        if (readbuff[0] == '#') {continue;} // Skip lines commented with '#'
-        sscanf(readbuff, "%d %s %d %s %s", &type, buff1, &pdgid, buff2, buff3);
-        // Convert chararrays to strings
-        Typename = string(buff1); Name = string(buff2); Texname = string(buff3);
-        pdgparticle *p = new pdgparticle(pdgid, Name, Texname, type, Typename);
-        // Fill map
-        fPDGMap[pdgid] = *p;
-    }
+  // Fills the fPDGMap map from a textfile to associate pdgids with names
+  int pdgid(0), type(0);
+  string Name, Texname, Typename;
+  ifstream IN(filename);
+  char buff1[200], buff2[200], buff3[200];
+  char readbuff[200];
+  // Loop over lines of datafile
+  while( IN.getline(readbuff, 200, '\n') ){
+    if (readbuff[0] == '#') {continue;} // Skip lines commented with '#'
+    sscanf(readbuff, "%d %s %d %s %s", &type, buff1, &pdgid, buff2, buff3);
+    // Convert chararrays to strings
+    Typename = string(buff1); Name = string(buff2); Texname = string(buff3);
+    pdgparticle *p = new pdgparticle(pdgid, Name, Texname, type, Typename);
+    // Fill map
+    fPDGMap[pdgid] = *p;
+  }
 }
 
 int UserAnalysisBase::GetPDGParticle(pdgparticle &part, int id){
-    if( fPDGMap.empty() ){
-        if(fVerbose > 0) cout << "UserAnalysisBase::GetPDGParticle ==> PDGMap not filled!" << endl;
-        return -1;
+  if( fPDGMap.empty() ){
+    if(fVerbose > 0) cout << "UserAnalysisBase::GetPDGParticle ==> PDGMap not filled!" << endl;
+    return -1;
+  }
+  else{
+    map<int, pdgparticle>::iterator it = fPDGMap.find(id);
+    if(it == fPDGMap.end()){
+      if(fVerbose > 1) cout << "UserAnalysisBase::GetPDGParticle ==> PDGParticle with ID " << id << " not found!" << endl;
+      return -1;
     }
     else{
-        map<int, pdgparticle>::iterator it = fPDGMap.find(id);
-        if(it == fPDGMap.end()){
-            if(fVerbose > 1) cout << "UserAnalysisBase::GetPDGParticle ==> PDGParticle with ID " << id << " not found!" << endl;
-            return -1;
-        }
-        else{
-            part = it->second;
-            return 1;
-        }
+      part = it->second;
+      return 1;
     }
-    return 0;
+  }
+  return 0;
 }
 
 void UserAnalysisBase::GetHLTNames(){
 	
-    fHLTLabelMap.clear();
-    fHLTLabels.clear();
-    fHLTLabels.reserve(fTR->HLTNames.size());
-    for( size_t i=0; i < fTR->HLTNames.size(); i++ ){
-        fHLTLabelMap[fTR->HLTNames[i]] = i; 
-        fHLTLabels.push_back(fTR->HLTNames[i]);
-        if (fVerbose>3) cout << " " << i << " " << fTR->HLTNames[i] << endl;
-    }
+  fHLTLabelMap.clear();
+  fHLTLabels.clear();
+  fHLTLabels.reserve(fTR->HLTNames.size());
+  for( size_t i=0; i < fTR->HLTNames.size(); i++ ){
+    fHLTLabelMap[fTR->HLTNames[i]] = i; 
+    fHLTLabels.push_back(fTR->HLTNames[i]);
+    if (fVerbose>3) cout << " " << i << " " << fTR->HLTNames[i] << endl;
+  }
 }
 
 int UserAnalysisBase::GetHLTBit(string theHltName){
-    if( fHLTLabelMap.empty() ) return -1;
-    else{
-        map<string,int>::iterator it = fHLTLabelMap.find(theHltName);
-        if(it == fHLTLabelMap.end()){
-            if(fVerbose > 1) cout << "UserAnalysisBase::GetHLTBit ==> Bit with name " << theHltName << " not found!" << endl;
-            return -1;
-        }
-        else{
-            return it->second;
-        }
+  if( fHLTLabelMap.empty() ) return -1;
+  else{
+    map<string,int>::iterator it = fHLTLabelMap.find(theHltName);
+    if(it == fHLTLabelMap.end()){
+      if(fVerbose > 1) cout << "UserAnalysisBase::GetHLTBit ==> Bit with name " << theHltName << " not found!" << endl;
+      return -1;
     }
+    else{
+      return it->second;
+    }
+  }
 }
 
 bool UserAnalysisBase::GetHLTResult(string theHltName){
-    if( fHLTLabelMap.empty() ) return false;
-    else{
-        int bit = GetHLTBit(theHltName);
-        if (bit < 0 ) {
-            if(fVerbose > 1) cout << "UserAnalysisBase::GetHLTResult ==> Bit with name " << theHltName << " not found!" << endl;
-            return false;
-        }
-        else return (bool)fTR->HLTResults[bit];
+  if( fHLTLabelMap.empty() ) return false;
+  else{
+    int bit = GetHLTBit(theHltName);
+    if (bit < 0 ) {
+      if(fVerbose > 1) cout << "UserAnalysisBase::GetHLTResult ==> Bit with name " << theHltName << " not found!" << endl;
+      return false;
     }
+    else return (bool)fTR->HLTResults[bit];
+  }
 }
 
 int UserAnalysisBase::GetHLTPrescale(string theHltName) {
-    if( fHLTLabelMap.empty() ) return 0;
-    else{
-        int bit = GetHLTBit(theHltName);
-        if (bit < 0 ) {
-            if(fVerbose > 1) cout << "UserAnalysisBase::GetHLTPrescale ==> Bit with name " << theHltName << " not found!" << endl;
-            return 0;
-        }
-        else return fTR->HLTPrescale[bit];
+  if( fHLTLabelMap.empty() ) return 0;
+  else{
+    int bit = GetHLTBit(theHltName);
+    if (bit < 0 ) {
+      if(fVerbose > 1) cout << "UserAnalysisBase::GetHLTPrescale ==> Bit with name " << theHltName << " not found!" << endl;
+      return 0;
     }
+    else return fTR->HLTPrescale[bit];
+  }
 }
 
 void UserAnalysisBase::GetEvtEmChFrac(double & fracEm, double & fracCh){
-// Computes the event EM and Charged fractions
-    std::cerr << "NEED TO REVISE" << std::endl;
-    exit(-1);
+  // Computes the event EM and Charged fractions
+  std::cerr << "NEED TO REVISE" << std::endl;
+  exit(-1);
 
-    int nMuGood = 0;
-    double pt_mu = 0.;
-    double pt_track = 0.;
-    double et_em = 0.;
-    double et_had = 0.;
-    for( int i = 0; i < fTR->NMus; ++i ){
-        if(fTR->MuGood[i] != 0) continue;
-        pt_mu += fTR->MuPt[i];
-        pt_track += fTR->MuPt[i];
-        nMuGood++;
-    }
-    for( int i = 0; i < fTR->NEles; ++i ){
-        if(fTR->ElGood[i] != 0) continue;
-        pt_track += fTR->ElPt[i];
-        double em = fTR->ElEt[i];
-        if (em < 0.) em = 0.;
-        et_em += em;
-    }
-    for( int i = 0; i < fTR->NPhotons; ++i ){
-        if(fTR->PhoGood[i] != 0) continue;
-        double em = fTR->PhoPt[i];
-        if (em < 0.) em = 0.;
-        et_em += em;
-    }
-    for( int i = 0; i < fTR->NJets; ++i ){
-        if(fTR->JGood[i] != 0) continue;
-        double pt = ( fTR->JChargedHadFrac[i] + fTR->JChargedEmFrac[i] ) * fTR->JPt[i];
-        if (pt < 0.) pt = 0.;
-        double em = ( fTR->JNeutralEmFrac[i] + fTR->JNeutralEmFrac[i] ) * fTR->JEt[i];
-        if (em < 0.) em = 0.;
-        double had = ( fTR->JChargedHadFrac[i] + fTR->JNeutralHadFrac[i] ) * fTR->JEt[i];
-        if (had < 0.) had = 0.;
-        pt_track += pt;
-        et_em    += em;
-        et_had   += had;
-    }
+  int nMuGood = 0;
+  double pt_mu = 0.;
+  double pt_track = 0.;
+  double et_em = 0.;
+  double et_had = 0.;
+  for( int i = 0; i < fTR->NMus; ++i ){
+    if(fTR->MuGood[i] != 0) continue;
+    pt_mu += fTR->MuPt[i];
+    pt_track += fTR->MuPt[i];
+    nMuGood++;
+  }
+  for( int i = 0; i < fTR->NEles; ++i ){
+    if(fTR->ElGood[i] != 0) continue;
+    pt_track += fTR->ElPt[i];
+    double em = fTR->ElEt[i];
+    if (em < 0.) em = 0.;
+    et_em += em;
+  }
+  for( int i = 0; i < fTR->NPhotons; ++i ){
+    if(fTR->PhoGood[i] != 0) continue;
+    double em = fTR->PhoPt[i];
+    if (em < 0.) em = 0.;
+    et_em += em;
+  }
+  for( int i = 0; i < fTR->NJets; ++i ){
+    if(fTR->JGood[i] != 0) continue;
+    double pt = ( fTR->JChargedHadFrac[i] + fTR->JChargedEmFrac[i] ) * fTR->JPt[i];
+    if (pt < 0.) pt = 0.;
+    double em = ( fTR->JNeutralEmFrac[i] + fTR->JNeutralEmFrac[i] ) * fTR->JEt[i];
+    if (em < 0.) em = 0.;
+    double had = ( fTR->JChargedHadFrac[i] + fTR->JNeutralHadFrac[i] ) * fTR->JEt[i];
+    if (had < 0.) had = 0.;
+    pt_track += pt;
+    et_em    += em;
+    et_had   += had;
+  }
 
-    fracCh = 0.;
-    fracEm = 0.;
-    if( et_em + et_had <= 0. ){
-        if( nMuGood < 1 ) return;
-        fracCh = 1.;
-        fracEm = 1.;
-    } else {
-        fracCh = pt_track / (et_em + et_had + pt_mu);
-        fracEm = et_em / (et_em + et_had + pt_mu);
-    }
-    return;
+  fracCh = 0.;
+  fracEm = 0.;
+  if( et_em + et_had <= 0. ){
+    if( nMuGood < 1 ) return;
+    fracCh = 1.;
+    fracEm = 1.;
+  } else {
+    fracCh = pt_track / (et_em + et_had + pt_mu);
+    fracEm = et_em / (et_em + et_had + pt_mu);
+  }
+  return;
 
 }
 int UserAnalysisBase::getSusyMass(int pdgid, int round){
-	float mpart(0.);
-	int npart(0);
-	for (int i = 0; i < fTR->nGenParticles; ++i){
-		if (fabs(fTR->genInfoId[i]) != pdgid || fTR->genInfoStatus[i] != 3) continue;
-		else {
-			mpart += fTR->genInfoM[i];
-			npart++;
-		}
-	}
-	mpart = mpart/npart; // averaging over both particles in the event
-	int roundmass = round * (int) (mpart/round + 0.5);
-	return roundmass;
+  float mpart(0.);
+  int npart(0);
+  for (int i = 0; i < fTR->nGenParticles; ++i){
+    if (fabs(fTR->genInfoId[i]) != pdgid || fTR->genInfoStatus[i] != 3) continue;
+    else {
+      mpart += fTR->genInfoM[i];
+      npart++;
+    }
+  }
+  mpart = mpart/npart; // averaging over both particles in the event
+  int roundmass = round * (int) (mpart/round + 0.5);
+  return roundmass;
 }
 float UserAnalysisBase::getSusySystemPt(int pdgid1, int pdgid2){
-	int npart(0);
-	TLorentzVector tmp, final;
-	if (pdgid2 == -1) { // quick fix for ewino. if pdgid2 isn't set, just search for pair-produced particles with pdgid1 as before
-		for (int i = 0; i < fTR->nGenParticles; ++i){
-			if (fabs(fTR->genInfoId[i]) != pdgid1 || fTR->genInfoStatus[i] != 3) continue;
-			else {
-				npart++;
-				tmp.SetPtEtaPhiM(fTR->genInfoPt[i], fTR->genInfoEta[i], fTR->genInfoPhi[i], fTR->genInfoM[i]);
-				final += tmp;
-			}
-		}
-	}
-	else {
-		for (int i = 0; i < fTR->nGenParticles; ++i){
-			if ((fabs(fTR->genInfoId[i]) == pdgid1 && fTR->genInfoStatus[i] == 3 ) ||
-				(fabs(fTR->genInfoId[i]) == pdgid2 && fTR->genInfoStatus[i] == 3 )  ) {
-				npart++;
-				tmp.SetPtEtaPhiM(fTR->genInfoPt[i], fTR->genInfoEta[i], fTR->genInfoPhi[i], fTR->genInfoM[i]);
-				final += tmp;
-			}
-		}
-	}
+  int npart(0);
+  TLorentzVector tmp, final;
+  if (pdgid2 == -1) { // quick fix for ewino. if pdgid2 isn't set, just search for pair-produced particles with pdgid1 as before
+    for (int i = 0; i < fTR->nGenParticles; ++i){
+      if (fabs(fTR->genInfoId[i]) != pdgid1 || fTR->genInfoStatus[i] != 3) continue;
+      else {
+        npart++;
+        tmp.SetPtEtaPhiM(fTR->genInfoPt[i], fTR->genInfoEta[i], fTR->genInfoPhi[i], fTR->genInfoM[i]);
+        final += tmp;
+      }
+    }
+  }
+  else {
+    for (int i = 0; i < fTR->nGenParticles; ++i){
+      if ((fabs(fTR->genInfoId[i]) == pdgid1 && fTR->genInfoStatus[i] == 3 ) ||
+          (fabs(fTR->genInfoId[i]) == pdgid2 && fTR->genInfoStatus[i] == 3 )  ) {
+        npart++;
+        tmp.SetPtEtaPhiM(fTR->genInfoPt[i], fTR->genInfoEta[i], fTR->genInfoPhi[i], fTR->genInfoM[i]);
+        final += tmp;
+      }
+    }
+  }
 
-	if (npart != 2) {
-		cout << " MORE OR LESS THAN TWO OF YOUR DESIRED SUSY INITIAL PARTICLES FOUND!! CHECK UP ON THAT!!" << endl;
-		exit(-10);
-	}
-	return final.Pt();
+  if (npart != 2) {
+    cout << " MORE OR LESS THAN TWO OF YOUR DESIRED SUSY INITIAL PARTICLES FOUND!! CHECK UP ON THAT!!" << endl;
+    exit(-10);
+  }
+  return final.Pt();
 }
 float UserAnalysisBase::getISRWeight(float susyPt, int flag){ // flag==0: central flag==1: up flag==2: down
-	if ( susyPt <= 120.){ 
-		return 1.0;
-	}
-	else if ( susyPt > 120. && susyPt <= 150.){ 
-		if (flag == 0) return 0.95;
-		if (flag == 1) return 1.00;
-		if (flag == 2) return 0.90;
-	}
-	else if ( susyPt > 150. && susyPt <= 250.){ 
-		if (flag == 0) return 0.90;
-		if (flag == 1) return 1.00;
-		if (flag == 2) return 0.80;
-	}
-	else if ( susyPt > 250.                  ){ 
-		if (flag == 0) return 0.80;
-		if (flag == 1) return 1.00;
-		if (flag == 2) return 0.60;
-	}
-	else {
-		cout << "SOMETHING WENT WRONG IN THE ISR SYSTEMATIC!! APPARENTLY YOU HAVE A NEGATIVE SUSY-PT VALUE..?" << endl;
-		exit(-1);
-	}
-	return -9999999.9;
+  if ( susyPt <= 120.){ 
+    return 1.0;
+  }
+  else if ( susyPt > 120. && susyPt <= 150.){ 
+    if (flag == 0) return 0.95;
+    if (flag == 1) return 1.00;
+    if (flag == 2) return 0.90;
+  }
+  else if ( susyPt > 150. && susyPt <= 250.){ 
+    if (flag == 0) return 0.90;
+    if (flag == 1) return 1.00;
+    if (flag == 2) return 0.80;
+  }
+  else if ( susyPt > 250.                  ){ 
+    if (flag == 0) return 0.80;
+    if (flag == 1) return 1.00;
+    if (flag == 2) return 0.60;
+  }
+  else {
+    cout << "SOMETHING WENT WRONG IN THE ISR SYSTEMATIC!! APPARENTLY YOU HAVE A NEGATIVE SUSY-PT VALUE..?" << endl;
+    exit(-1);
+  }
+  return -9999999.9;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -279,22 +276,22 @@ float UserAnalysisBase::getISRWeight(float susyPt, int flag){ // flag==0: centra
 // JETS
 
 bool UserAnalysisBase::IsGoodBasicPFJet(int index, double ptcut, double absetacut){
-    // Basic PF jet cleaning and ID cuts
-    // cut at pt of ptcut (default = 30 GeV)
-    // cut at abs(eta) of absetacut (default = 2.5)
-    if(fTR->JPt[index] < ptcut           ) return false;
-    if(fabs(fTR->JEta[index]) > absetacut) return false;
-    // Loose PF jet ID (WARNING: HF not included in our ntuple)
-    // See PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h
-    if ( !(fTR->JNConstituents[index] > 1) )    return false;
-    if ( !(fTR->JNeutralEmFrac[index]     < 0.99) ) return false;
-    if ( !(fTR->JNeutralHadFrac[index]    < 0.99) ) return false;
-    if (fabs(fTR->JEta[index]) < 2.4 ) { // Cuts for |eta|<2.4
-        if ( !(fTR->JChargedEmFrac[index]  < 0.99) )  return false;
-        if ( !(fTR->JChargedHadFrac[index] > 0.00) )  return false;
-        if ( !(fTR->JNAssoTracks[index]    > 0   ) )  return false;
-    }
-    return true;
+  // Basic PF jet cleaning and ID cuts
+  // cut at pt of ptcut (default = 30 GeV)
+  // cut at abs(eta) of absetacut (default = 2.5)
+  if(fTR->JPt[index] < ptcut           ) return false;
+  if(fabs(fTR->JEta[index]) > absetacut) return false;
+  // Loose PF jet ID (WARNING: HF not included in our ntuple)
+  // See PhysicsTools/SelectorUtils/interface/PFJetIDSelectionFunctor.h
+  if ( !(fTR->JNConstituents[index] > 1) )    return false;
+  if ( !(fTR->JNeutralEmFrac[index]     < 0.99) ) return false;
+  if ( !(fTR->JNeutralHadFrac[index]    < 0.99) ) return false;
+  if (fabs(fTR->JEta[index]) < 2.4 ) { // Cuts for |eta|<2.4
+    if ( !(fTR->JChargedEmFrac[index]  < 0.99) )  return false;
+    if ( !(fTR->JChargedHadFrac[index] > 0.00) )  return false;
+    if ( !(fTR->JNAssoTracks[index]    > 0   ) )  return false;
+  }
+  return true;
 }
 
 
@@ -310,11 +307,11 @@ bool UserAnalysisBase::IsGoodBasicPFJet(int index, double ptcut, double absetacu
 // }
 
 bool UserAnalysisBase::IsGoodPFJetMedium(int index, double ptcut, double absetacut) {
-    // Medium PF JID
-    if ( ! IsGoodBasicPFJet(index, ptcut, absetacut) ) return false;
-    if ( !(fTR->JNeutralHadFrac[index] < 0.95)         ) return false;
-    if ( !(fTR->JNeutralEmFrac[index]  < 0.95)         ) return false;
-    return true;
+  // Medium PF JID
+  if ( ! IsGoodBasicPFJet(index, ptcut, absetacut) ) return false;
+  if ( !(fTR->JNeutralHadFrac[index] < 0.95)         ) return false;
+  if ( !(fTR->JNeutralEmFrac[index]  < 0.95)         ) return false;
+  return true;
 }
 
 // bool UserAnalysisBase::IsGoodPFJetMediumPAT(int index, double ptcut, double absetacut) {
@@ -326,11 +323,11 @@ bool UserAnalysisBase::IsGoodPFJetMedium(int index, double ptcut, double absetac
 // }
 
 bool UserAnalysisBase::IsGoodPFJetTight(int index, double ptcut, double absetacut) {
-    // Tight PF JID
-    if ( ! IsGoodBasicPFJet(index, ptcut, absetacut) ) return false;
-    if ( !(fTR->JNeutralHadFrac[index] < 0.90)         ) return false;
-    if ( !(fTR->JNeutralEmFrac[index]  < 0.90)         ) return false;
-    return true;
+  // Tight PF JID
+  if ( ! IsGoodBasicPFJet(index, ptcut, absetacut) ) return false;
+  if ( !(fTR->JNeutralHadFrac[index] < 0.90)         ) return false;
+  if ( !(fTR->JNeutralEmFrac[index]  < 0.90)         ) return false;
+  return true;
 }
 
 // bool UserAnalysisBase::IsGoodPFJetTightPAT(int index, double ptcut, double absetacut) {
@@ -365,44 +362,44 @@ bool UserAnalysisBase::IsGoodPFJetTight(int index, double ptcut, double absetacu
 
 // MUONS
 bool UserAnalysisBase::IsMostBasicMu(int index){
-    // Most basic muons for Z-veto in 2012
-    if(MuPFIso(index) > 1.0) return false;
-    if((fTR->MuIsGlobalMuon[index] == 0 && fTR->MuIsTrackerMuon[index] == 0 ))  return false;
-    if(fTR->MuIsPFMuon[index] == 0) return false;
-	if(fTR->MuPt[index] < 5.) return false;
-	if(fabs(fTR->MuEta[index]) > 2.4) return false;
-    return true;
+  // Most basic muons for Z-veto in 2012
+  if(MuPFIso(index) > 1.0) return false;
+  if((fTR->MuIsGlobalMuon[index] == 0 && fTR->MuIsTrackerMuon[index] == 0 ))  return false;
+  if(fTR->MuIsPFMuon[index] == 0) return false;
+  if(fTR->MuPt[index] < 5.) return false;
+  if(fabs(fTR->MuEta[index]) > 2.4) return false;
+  return true;
 }
 
 bool UserAnalysisBase::IsGoodBasicMu(int index){
-    // Basic muon cleaning and ID
-    if(fTR->MuIsGlobalMuon[index] == 0)  return false;
-    if(fTR->MuIsPFMuon[index] == 0) return false;
+  // Basic muon cleaning and ID
+  if(fTR->MuIsGlobalMuon[index] == 0)  return false;
+  if(fTR->MuIsPFMuon[index] == 0) return false;
 
-    if(fTR->MuPt[index] < 5)          return false;
-    if(fabs(fTR->MuEta[index]) > 2.4) return false;
+  if(fTR->MuPt[index] < 5)          return false;
+  if(fabs(fTR->MuEta[index]) > 2.4) return false;
 
-    if(fTR->MuNChi2[index] > 10)    return false;
-    if(fTR->MuNSiLayers[index] < 6) return false;
-    if(fTR->MuNPxHits[index] < 1)   return false;
-    // if(fTR->MuNMuHits [index] < 2)   return false;
-    // if(fTR->MuNGlHits [index] < 1)   return false; // muon.globalTrack()->hitPattern().numberOfValidHits() 
-	if(fTR->MuNGlMuHits [index] < 1) return false;
-	// if(fTR->MuNMatches[index] < 2)   return false; // muon.numberOfMatches()
-	if(fTR->MuNMatchedStations.size() > 0) { 	 
-		if(fTR->MuNMatchedStations[index] < 2)   return false; // muon.numberOfMatchedStations() 	 
-	}
+  if(fTR->MuNChi2[index] > 10)    return false;
+  if(fTR->MuNSiLayers[index] < 6) return false;
+  if(fTR->MuNPxHits[index] < 1)   return false;
+  // if(fTR->MuNMuHits [index] < 2)   return false;
+  // if(fTR->MuNGlHits [index] < 1)   return false; // muon.globalTrack()->hitPattern().numberOfValidHits() 
+  if(fTR->MuNGlMuHits [index] < 1) return false;
+  // if(fTR->MuNMatches[index] < 2)   return false; // muon.numberOfMatches()
+  if(fTR->MuNMatchedStations.size() > 0) { 	 
+    if(fTR->MuNMatchedStations[index] < 2)   return false; // muon.numberOfMatchedStations() 	 
+  }
 
-    if(fabs(fTR->MuD0PV[index]) > 0.02)    return false;
-    if(fabs(fTR->MuDzPV[index]) > 0.10)    return false;
+  if(fabs(fTR->MuD0PV[index]) > 0.02)    return false;
+  if(fabs(fTR->MuDzPV[index]) > 0.10)    return false;
 
-    // in the dumper now if(fTR->MuIso03EMVetoEt[index] > 4.0)  return false;
-    // in the dumper now if(fTR->MuIso03HadVetoEt[index] > 6.0) return false;
+  // in the dumper now if(fTR->MuIso03EMVetoEt[index] > 4.0)  return false;
+  // in the dumper now if(fTR->MuIso03HadVetoEt[index] > 6.0) return false;
 
-    // if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
+  // if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
 
-    if(MuPFIso(index) > 1.0) return false;
-    return true;
+  if(MuPFIso(index) > 1.0) return false;
+  return true;
 }
 
 float UserAnalysisBase::MuPFIso(int index){
@@ -418,658 +415,658 @@ float UserAnalysisBase::MuPFIso04(int index){
 }
 
 float UserAnalysisBase::MuRadIso(int index){
-	return (fTR->MumuonRadPFIsoChHad03[index] + fTR->MumuonRadPFIsoNHad03[index] + fTR->MumuonRadPFIsoPhoton03[index]) / fTR->MuPt[index] ;
+  return (fTR->MumuonRadPFIsoChHad03[index] + fTR->MumuonRadPFIsoNHad03[index] + fTR->MumuonRadPFIsoPhoton03[index]) / fTR->MuPt[index] ;
 }
 
 bool UserAnalysisBase::IsTightMu(int index){
-    if(!IsGoodBasicMu(index)) return false;
-    if(MuPFIso(index) > 0.15) return false;
-    return true;
+  if(!IsGoodBasicMu(index)) return false;
+  if(MuPFIso(index) > 0.15) return false;
+  return true;
 }
 
 bool UserAnalysisBase::IsLooseMu(int index){
-    if(!IsGoodBasicMu(index)) return false;
-    if(MuPFIso(index) > 1.0) return false;
-    return true;
+  if(!IsGoodBasicMu(index)) return false;
+  if(MuPFIso(index) > 1.0) return false;
+  return true;
 }
 
 bool UserAnalysisBase::IsLooseNoTightMu(int index){
-    if(IsLooseMu(index) && !IsTightMu(index)) return true;
-    else return false;
+  if(IsLooseMu(index) && !IsTightMu(index)) return true;
+  else return false;
 }
 
 // ELECTRONS
 bool UserAnalysisBase::IsGoodBasicEl(int index){
-    // Electrons with Veto WP (corresponds to WP 95 from 2011)
-    // if(fTR->ElIDsimpleWP95relIso[index] != 5 && fTR->ElIDsimpleWP95relIso[index] != 7) return false;		
-    if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
-        if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.80 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
-        if(fTR->ElHcalOverEcal             [index] > 0.15 ) return false;	
-    }
-    if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
-        if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.70 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01) return false;
-        // if(fTR->ElHcalOverEcal             [index] > 0.07 ) return false;	
-    }
+  // Electrons with Veto WP (corresponds to WP 95 from 2011)
+  // if(fTR->ElIDsimpleWP95relIso[index] != 5 && fTR->ElIDsimpleWP95relIso[index] != 7) return false;		
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.80 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.15 ) return false;	
+  }
+  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+    if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.70 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01) return false;
+    // if(fTR->ElHcalOverEcal             [index] > 0.07 ) return false;	
+  }
 	
-    // ECAL gap veto
-    // do in dumper if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;
+  // ECAL gap veto
+  // do in dumper if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;
 
-    if(fabs(fTR->ElD0PV[index]) > 0.04) return false;
-    if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
+  if(fabs(fTR->ElD0PV[index]) > 0.04) return false;
+  if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
 
-    return true;
+  return true;
 }
 
 bool UserAnalysisBase::IsGoodTriggerEl(int index){
-    if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
-        if(fTR->ElSigmaIetaIeta            [index] > 0.011 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.15 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01) return false;
-        if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;	
-    }
-    if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
-        if(fTR->ElSigmaIetaIeta            [index] > 0.031 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.10 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01 ) return false;
-        if(fTR->ElHcalOverEcal             [index] > 0.075 ) return false;	
-    }
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    if(fTR->ElSigmaIetaIeta            [index] > 0.011 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.15 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;	
+  }
+  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+    if(fTR->ElSigmaIetaIeta            [index] > 0.031 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.10 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01 ) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.075 ) return false;	
+  }
 	
-    // ECAL gap veto
-    // do in dumper if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;
+  // ECAL gap veto
+  // do in dumper if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;
 
-	// the following two cuts are applied in the basicEle function
-    // if(fabs(fTR->ElD0PV[index]) > 0.04) return false;
-    // if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
+  // the following two cuts are applied in the basicEle function
+  // if(fabs(fTR->ElD0PV[index]) > 0.04) return false;
+  // if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
 
-    return true;
+  return true;
 }
 
 bool UserAnalysisBase::ElPassesConvRej(int index){
-    // if(fTR->ElNumberOfMissingInnerHits[index] > 0   ) return false;
-    // if(fabs(fTR->ElConvPartnerTrkDist[index]) < 0.02 && fabs(fTR->ElConvPartnerTrkDCot[index]) < 0.02) return false;
-    // if(fTR->ElIDsimpleWP80relIso[index] < 4) return false;
-    // return true;
-	if (fTR->ElNumberOfMissingInnerHits[index] > 0 ) return false;
-	if (!fTR->ElPassConversionVeto[index] ) return false;
-	return true;
+  // if(fTR->ElNumberOfMissingInnerHits[index] > 0   ) return false;
+  // if(fabs(fTR->ElConvPartnerTrkDist[index]) < 0.02 && fabs(fTR->ElConvPartnerTrkDCot[index]) < 0.02) return false;
+  // if(fTR->ElIDsimpleWP80relIso[index] < 4) return false;
+  // return true;
+  if (fTR->ElNumberOfMissingInnerHits[index] > 0 ) return false;
+  if (!fTR->ElPassConversionVeto[index] ) return false;
+  return true;
 }
 
 bool UserAnalysisBase::IsGoodElId_LooseWP(int index){
-    // Electrons with WP90 ID and WP80 conv. rej.
-    if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
-        if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.15 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
-        if(fTR->ElHcalOverEcal             [index] > 0.12 ) return false;	
-    }
-    if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
-        if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.10 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.009) return false;
-        if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;	
-    }
+  // Electrons with WP90 ID and WP80 conv. rej.
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.15 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.12 ) return false;	
+  }
+  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+    if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.10 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.009) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;	
+  }
 
-    if(fabs(1/fTR->ElCaloEnergy[index] - fTR->ElESuperClusterOverP[index]/fTR->ElCaloEnergy[index]) > 0.05 ) return false;
+  if(fabs(1/fTR->ElCaloEnergy[index] - fTR->ElESuperClusterOverP[index]/fTR->ElCaloEnergy[index]) > 0.05 ) return false;
     
-    if(fabs(fTR->ElD0PV[index]) > 0.02) return false;
-    if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
+  if(fabs(fTR->ElD0PV[index]) > 0.02) return false;
+  if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
 
-    // WP80 conv. rejection
-    if (fTR->ElNumberOfMissingInnerHits[index] > 1 ) return false;
-    if (!fTR->ElPassConversionVeto[index] )          return false;
-    return true;
+  // WP80 conv. rejection
+  if (fTR->ElNumberOfMissingInnerHits[index] > 1 ) return false;
+  if (!fTR->ElPassConversionVeto[index] )          return false;
+  return true;
 }
 
 bool UserAnalysisBase::IsGoodElId_MediumWP(int index){
-    // Electrons with WP80 ID and conv. rej. cuts
-    if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
-        if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.06 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.004) return false;
-        if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;
-    }
-    if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
-        if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
-        if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.03 ) return false;
-        if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
-        if(fTR->ElHcalOverEcal             [index] > 0.075 ) return false;	
-    }
-    // not applied if(fTR->ElPt[index] < 20.){
-    // not applied     if(fTR->Elfbrem[index] > 0.15) return true;
-    // not applied     if(fabs(fTR->ElSCEta[index]) < 1.0 && fTR->ElESuperClusterOverP[index] > 0.95 ) return true;
-    // not applied     return false;
-    // not applied }
-    if(fabs(1/fTR->ElCaloEnergy[index] - fTR->ElESuperClusterOverP[index]/fTR->ElCaloEnergy[index]) > 0.05 ) return false;
+  // Electrons with WP80 ID and conv. rej. cuts
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.06 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.004) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;
+  }
+  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+    if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
+    if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.03 ) return false;
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.075 ) return false;	
+  }
+  // not applied if(fTR->ElPt[index] < 20.){
+  // not applied     if(fTR->Elfbrem[index] > 0.15) return true;
+  // not applied     if(fabs(fTR->ElSCEta[index]) < 1.0 && fTR->ElESuperClusterOverP[index] > 0.95 ) return true;
+  // not applied     return false;
+  // not applied }
+  if(fabs(1/fTR->ElCaloEnergy[index] - fTR->ElESuperClusterOverP[index]/fTR->ElCaloEnergy[index]) > 0.05 ) return false;
 
-    if(fabs(fTR->ElD0PV[index]) > 0.02) return false;
-    if(fabs(fTR->ElDzPV[index]) > 0.10) return false;
+  if(fabs(fTR->ElD0PV[index]) > 0.02) return false;
+  if(fabs(fTR->ElDzPV[index]) > 0.10) return false;
 
-    // WP80 conv. rejection
-    if(ElPassesConvRej(index) == false) return false;
-    return true;
+  // WP80 conv. rejection
+  if(ElPassesConvRej(index) == false) return false;
+  return true;
 }
 
 float UserAnalysisBase::Aeff(float eta) {
-	float abseta = fabs(eta); // making sure we're looking at |eta|
-	// now for HCP dataset for cone of dR < 0.3
-	if(abseta < 1.0)   return 0.13;
-	if(abseta < 1.479) return 0.14;
-	if(abseta < 2.0)   return 0.07;
-	if(abseta < 2.2)   return 0.09;
-	if(abseta < 2.3)   return 0.11;
-	if(abseta < 2.4)   return 0.11;
-	return 0.14;
+  float abseta = fabs(eta); // making sure we're looking at |eta|
+  // now for HCP dataset for cone of dR < 0.3
+  if(abseta < 1.0)   return 0.13;
+  if(abseta < 1.479) return 0.14;
+  if(abseta < 2.0)   return 0.07;
+  if(abseta < 2.2)   return 0.09;
+  if(abseta < 2.3)   return 0.11;
+  if(abseta < 2.4)   return 0.11;
+  return 0.14;
 }
 
 float UserAnalysisBase::ElPFIso(int index){
-	double neutral = fTR->ElEventelPFIsoValueNeutral03PFIdStandard[index] + fTR->ElEventelPFIsoValueGamma03PFIdStandard[index];
-	double rhocorr = fTR->RhoForIso * Aeff(fTR->ElSCEta[index]);
-	double iso = ( fTR->ElEventelPFIsoValueCharged03PFIdStandard[index] + TMath::Max(0., neutral - rhocorr) )/ fTR->ElPt[index];
-	return iso;
+  double neutral = fTR->ElEventelPFIsoValueNeutral03PFIdStandard[index] + fTR->ElEventelPFIsoValueGamma03PFIdStandard[index];
+  double rhocorr = fTR->RhoForIso * Aeff(fTR->ElSCEta[index]);
+  double iso = ( fTR->ElEventelPFIsoValueCharged03PFIdStandard[index] + TMath::Max(0., neutral - rhocorr) )/ fTR->ElPt[index];
+  return iso;
 }
 
 float UserAnalysisBase::ElRadIso(int index){
-    double iso = ( fTR->ElelectronRadPFIsoChHad03[index] + fTR->ElelectronRadPFIsoNHad03[index] + fTR->ElelectronRadPFIsoPhoton03[index] ) / fTR->ElPt[index];
-    return iso;
+  double iso = ( fTR->ElelectronRadPFIsoChHad03[index] + fTR->ElelectronRadPFIsoNHad03[index] + fTR->ElelectronRadPFIsoPhoton03[index] ) / fTR->ElPt[index];
+  return iso;
 }
 
 float UserAnalysisBase::relElIso(int index){
-    // Apply 1 GeV subtraction in ECAL Barrel isolation
-    if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
-        double iso = ( fTR->ElDR03TkSumPt[index] + TMath::Max(0., fTR->ElDR03EcalRecHitSumEt[index] - 1.) + fTR->ElDR03HcalTowerSumEt[index] ) / fTR->ElPt[index];
-        return iso;
-    }
-    return fTR->ElRelIso03[index]; // EndCap
+  // Apply 1 GeV subtraction in ECAL Barrel isolation
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    double iso = ( fTR->ElDR03TkSumPt[index] + TMath::Max(0., fTR->ElDR03EcalRecHitSumEt[index] - 1.) + fTR->ElDR03HcalTowerSumEt[index] ) / fTR->ElPt[index];
+    return iso;
+  }
+  return fTR->ElRelIso03[index]; // EndCap
 }
 
 bool UserAnalysisBase::IsLooseTau(int index){
-    if(fTR->TauPt[index] < 10.)        return false;
-    if(fabs(fTR->TauEta[index]) > 2.5) return false;
+  if(fTR->TauPt[index] < 10.)        return false;
+  if(fabs(fTR->TauEta[index]) > 2.5) return false;
 
-    // some tau ID variables
-    if( fTR->TauDecayModeFinding[index]     < 0.5 ) return false;
-    // applied in dumper if( fTR->TauElectronMVARejection[index] < 0.5 ) return false;
-    // applied in dumper if( fTR->TauTightMuonRejection[index]   < 0.5 ) return false;
-    // applied in dumper if( fTR->TauLooseCombinedIsoDBSumPtCorr[index] < 0.5 ) return false;
-    return true;
+  // some tau ID variables
+  if( fTR->TauDecayModeFinding[index]     < 0.5 ) return false;
+  // applied in dumper if( fTR->TauElectronMVARejection[index] < 0.5 ) return false;
+  // applied in dumper if( fTR->TauTightMuonRejection[index]   < 0.5 ) return false;
+  // applied in dumper if( fTR->TauLooseCombinedIsoDBSumPtCorr[index] < 0.5 ) return false;
+  return true;
 }
 
 bool UserAnalysisBase::IsLooseEl(int index){
-    if(!IsGoodBasicEl(index))         return false;
-    if(fTR->ElPt[index] < 5.)        return false;
-    if(fabs(fTR->ElEta[index]) > 2.4) return false;
+  if(!IsGoodBasicEl(index))         return false;
+  if(fTR->ElPt[index] < 5.)        return false;
+  if(fabs(fTR->ElEta[index]) > 2.4) return false;
 
-    // MARC: what is this? if(!fTR->ElEcalDriven[index]) return false;
+  // MARC: what is this? if(!fTR->ElEcalDriven[index]) return false;
 	
-    // Loose identification criteria: WP90
-    // if(!IsGoodElId_LooseWP(index)) return false;
+  // Loose identification criteria: WP90
+  // if(!IsGoodElId_LooseWP(index)) return false;
 
-    // Requiring VETO WP: no further requirements need to be applied.
+  // Requiring VETO WP: no further requirements need to be applied.
 
-    // Loose isolation criteria
-	if(ElPFIso(index) > 1.0) return false;
-    // if( fabs(fTR->ElEta[index]) <= 1.479 && relElIso(index) > 1.0 ) return false;
-    // if( fabs(fTR->ElEta[index]) >  1.479 && relElIso(index) > 0.6 ) return false;
+  // Loose isolation criteria
+  if(ElPFIso(index) > 1.0) return false;
+  // if( fabs(fTR->ElEta[index]) <= 1.479 && relElIso(index) > 1.0 ) return false;
+  // if( fabs(fTR->ElEta[index]) >  1.479 && relElIso(index) > 0.6 ) return false;
 
-    return true;
+  return true;
 }
 
 // PHOTONS
 bool UserAnalysisBase::IsGoodBasicPho(int index){
-    // Basic photon cleaning / ID cuts (to be completed)
+  // Basic photon cleaning / ID cuts (to be completed)
 
-    double pt	= fTR->PhoPt[index];
-    double eta	= fTR->PhoEta[index];
+  double pt	= fTR->PhoPt[index];
+  double eta	= fTR->PhoEta[index];
 
-    // barrel cut values
-    double PhoHoverEBarmax		= 0.04;
-    double PhoSigmaEtaEtaBarmin	= 0.002;
-    double PhoSigmaEtaEtaBarmax	= 0.01;
-    // endcaps cut values
-    double PhoHoverEEndmax		= 0.025;
-    double PhoSigmaEtaEtaEndmax	= 0.03;
-    // kinematics + ECAL gap cut values
-    double etamax				= 3.0;
-    double etaEgapUpperEdge		= 1.560;
-    double etaEgapLowerEdge		= 1.442;
-    double pTmin				= 10.;
+  // barrel cut values
+  double PhoHoverEBarmax		= 0.04;
+  double PhoSigmaEtaEtaBarmin	= 0.002;
+  double PhoSigmaEtaEtaBarmax	= 0.01;
+  // endcaps cut values
+  double PhoHoverEEndmax		= 0.025;
+  double PhoSigmaEtaEtaEndmax	= 0.03;
+  // kinematics + ECAL gap cut values
+  double etamax				= 3.0;
+  double etaEgapUpperEdge		= 1.560;
+  double etaEgapLowerEdge		= 1.442;
+  double pTmin				= 10.;
 
-    // photon ID
-    if( fabs(eta) < 1.479 ){ // Barrel
-        if(	fTR->ElHcalOverEcal [index]	> PhoHoverEBarmax      ) return false;
-        if(	fTR->ElSigmaIetaIeta[index]	> PhoSigmaEtaEtaBarmax ) return false;
-        if(	fTR->ElSigmaIetaIeta[index]	< PhoSigmaEtaEtaBarmin ) return false;
-    }
-    else{ // EndCap
-        if(	fTR->ElHcalOverEcal [index]	> PhoHoverEEndmax      ) return false;
-        if(	fTR->ElSigmaIetaIeta[index]	> PhoSigmaEtaEtaEndmax ) return false;
-    }
+  // photon ID
+  if( fabs(eta) < 1.479 ){ // Barrel
+    if(	fTR->ElHcalOverEcal [index]	> PhoHoverEBarmax      ) return false;
+    if(	fTR->ElSigmaIetaIeta[index]	> PhoSigmaEtaEtaBarmax ) return false;
+    if(	fTR->ElSigmaIetaIeta[index]	< PhoSigmaEtaEtaBarmin ) return false;
+  }
+  else{ // EndCap
+    if(	fTR->ElHcalOverEcal [index]	> PhoHoverEEndmax      ) return false;
+    if(	fTR->ElSigmaIetaIeta[index]	> PhoSigmaEtaEtaEndmax ) return false;
+  }
 
-    // photon kinematic cuts + the ECAL gap veto
-    if ( (fabs(eta) > etamax) ||
-         ( (fabs(eta) > etaEgapLowerEdge) && (fabs(eta) < etaEgapUpperEdge) ) )	return false;	
-    if( pt < pTmin) return false;
+  // photon kinematic cuts + the ECAL gap veto
+  if ( (fabs(eta) > etamax) ||
+       ( (fabs(eta) > etaEgapLowerEdge) && (fabs(eta) < etaEgapUpperEdge) ) )	return false;	
+  if( pt < pTmin) return false;
 
-    return true;
+  return true;
 }
 
 ///////////////////////////////////////////////////////////////
 // Event selections:
 bool UserAnalysisBase::IsGoodEvent(){
-    // Some cuts on the primary vertex
-    double pvx = fTR->PrimVtxx;
-    double pvy = fTR->PrimVtxy;
-    double pvz = fTR->PrimVtxz;
-    if (fTR->PrimVtxIsFake) return false;
-    if (fabs(pvz) > 24.) return false;
-    if (sqrt(pvx*pvx + pvy*pvy) > 2.0) return false; // Wrt 0,0
-    if (fTR->PrimVtxNdof < 4.0) return false; // this is a float, cut value at 4.0
-    return true;
+  // Some cuts on the primary vertex
+  double pvx = fTR->PrimVtxx;
+  double pvy = fTR->PrimVtxy;
+  double pvz = fTR->PrimVtxz;
+  if (fTR->PrimVtxIsFake) return false;
+  if (fabs(pvz) > 24.) return false;
+  if (sqrt(pvx*pvx + pvy*pvy) > 2.0) return false; // Wrt 0,0
+  if (fTR->PrimVtxNdof < 4.0) return false; // this is a float, cut value at 4.0
+  return true;
 }
 
 bool UserAnalysisBase::IsGoodMuEvent(){
-    if(!IsGoodEvent()) return false;
-    bool HLT_Mu9       = GetHLTResult("HLT_Mu9");
-    bool HLT_Mu11      = GetHLTResult("HLT_Mu11");
-    bool HLT_Mu13_v1   = GetHLTResult("HLT_Mu13_v1");
-    bool HLT_Mu15      = GetHLTResult("HLT_Mu15");
-    bool HLT_Mu15_v1   = GetHLTResult("HLT_Mu15_v1");
-    bool HLT_DoubleMu0 = GetHLTResult("HLT_DoubleMu0");
-    bool HLT_DoubleMu3 = GetHLTResult("HLT_DoubleMu3");
-    bool HLT_DoubleMu3_v2 = GetHLTResult("HLT_DoubleMu3_v2");
-    bool HLT_DoubleMu5_v2 = GetHLTResult("HLT_DoubleMu5_v2");
+  if(!IsGoodEvent()) return false;
+  bool HLT_Mu9       = GetHLTResult("HLT_Mu9");
+  bool HLT_Mu11      = GetHLTResult("HLT_Mu11");
+  bool HLT_Mu13_v1   = GetHLTResult("HLT_Mu13_v1");
+  bool HLT_Mu15      = GetHLTResult("HLT_Mu15");
+  bool HLT_Mu15_v1   = GetHLTResult("HLT_Mu15_v1");
+  bool HLT_DoubleMu0 = GetHLTResult("HLT_DoubleMu0");
+  bool HLT_DoubleMu3 = GetHLTResult("HLT_DoubleMu3");
+  bool HLT_DoubleMu3_v2 = GetHLTResult("HLT_DoubleMu3_v2");
+  bool HLT_DoubleMu5_v2 = GetHLTResult("HLT_DoubleMu5_v2");
 	
-    return (HLT_Mu9     ||
-            HLT_Mu11    ||
-            HLT_Mu13_v1 ||
-            HLT_Mu15    ||
-            HLT_Mu15_v1 ||
-            HLT_DoubleMu0    ||
-            HLT_DoubleMu3    ||
-            HLT_DoubleMu3_v2 ||
-            HLT_DoubleMu5_v2);
+  return (HLT_Mu9     ||
+          HLT_Mu11    ||
+          HLT_Mu13_v1 ||
+          HLT_Mu15    ||
+          HLT_Mu15_v1 ||
+          HLT_DoubleMu0    ||
+          HLT_DoubleMu3    ||
+          HLT_DoubleMu3_v2 ||
+          HLT_DoubleMu5_v2);
 }
 
 bool UserAnalysisBase::IsGoodElEvent(){
-    // signle-e triggers without ElID or Iso cuts
-    bool HLT_Ele10_LW_L1R =				GetHLTResult("HLT_Ele10_LW_L1R");
-    bool HLT_Ele10_SW_L1R =				GetHLTResult("HLT_Ele10_SW_L1R");
-    bool HLT_Ele15_LW_L1R =				GetHLTResult("HLT_Ele15_LW_L1R");
-    bool HLT_Ele15_SW_L1R =				GetHLTResult("HLT_Ele15_SW_L1R");
-    bool HLT_Ele20_SW_L1R =				GetHLTResult("HLT_Ele20_SW_L1R");
-    // double-e triggers without ElID or Iso cuts
-    bool HLT_DoubleEle5_SW_L1R =		GetHLTResult("HLT_DoubleEle5_SW_L1R");
-    bool HLT_DoubleEle10_SW_L1R =		GetHLTResult("HLT_DoubleEle10_SW_L1R");
-    bool HLT_DoubleEle15_SW_L1R_v1 =	GetHLTResult("HLT_DoubleEle15_SW_L1R_v1");
-    bool HLT_DoubleEle17_SW_L1R_v1 =    GetHLTResult("HLT_DoubleEle17_SW_L1R_v1");
-    // e triggers with ElID or Iso cuts
-    bool HLT_Ele10_LW_EleId_L1R =		GetHLTResult("HLT_Ele10_LW_EleId_L1R");
-    bool HLT_Ele10_SW_EleId_L1R =		GetHLTResult("HLT_Ele10_SW_EleId_L1R");
-    bool HLT_Ele15_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele15_SW_CaloEleId_L1R");
-    bool HLT_Ele15_SW_EleId_L1R =		GetHLTResult("HLT_Ele15_SW_EleId_L1R");
-    bool HLT_Ele17_SW_LooseEleId_L1R =	GetHLTResult("HLT_Ele17_SW_LooseEleId_L1R");
-    bool HLT_Ele17_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele17_SW_CaloEleId_L1R");
-    bool HLT_Ele17_SW_EleId_L1R =		GetHLTResult("HLT_Ele17_SW_EleId_L1R");
-    bool HLT_Ele17_SW_TightEleId_L1R =	GetHLTResult("HLT_Ele17_SW_TightEleId_L1R");
-    bool HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1 = GetHLTResult("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1");
-    bool HLT_Ele17_SW_TightEleIdIsol_L1R_v1 =       GetHLTResult("HLT_Ele17_SW_TightEleIdIsol_L1R_v1");
-    bool HLT_Ele17_SW_TighterEleId_L1R_v1 =         GetHLTResult("HLT_Ele17_SW_TighterEleId_L1R_v1");
-    bool HLT_Ele22_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v2");
-    bool HLT_Ele22_SW_TighterEleId_L1R_v3 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v3");
-    bool HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1");
-    bool HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1");
-    bool HLT_Ele32_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele32_SW_TighterEleId_L1R_v2");
+  // signle-e triggers without ElID or Iso cuts
+  bool HLT_Ele10_LW_L1R =				GetHLTResult("HLT_Ele10_LW_L1R");
+  bool HLT_Ele10_SW_L1R =				GetHLTResult("HLT_Ele10_SW_L1R");
+  bool HLT_Ele15_LW_L1R =				GetHLTResult("HLT_Ele15_LW_L1R");
+  bool HLT_Ele15_SW_L1R =				GetHLTResult("HLT_Ele15_SW_L1R");
+  bool HLT_Ele20_SW_L1R =				GetHLTResult("HLT_Ele20_SW_L1R");
+  // double-e triggers without ElID or Iso cuts
+  bool HLT_DoubleEle5_SW_L1R =		GetHLTResult("HLT_DoubleEle5_SW_L1R");
+  bool HLT_DoubleEle10_SW_L1R =		GetHLTResult("HLT_DoubleEle10_SW_L1R");
+  bool HLT_DoubleEle15_SW_L1R_v1 =	GetHLTResult("HLT_DoubleEle15_SW_L1R_v1");
+  bool HLT_DoubleEle17_SW_L1R_v1 =    GetHLTResult("HLT_DoubleEle17_SW_L1R_v1");
+  // e triggers with ElID or Iso cuts
+  bool HLT_Ele10_LW_EleId_L1R =		GetHLTResult("HLT_Ele10_LW_EleId_L1R");
+  bool HLT_Ele10_SW_EleId_L1R =		GetHLTResult("HLT_Ele10_SW_EleId_L1R");
+  bool HLT_Ele15_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele15_SW_CaloEleId_L1R");
+  bool HLT_Ele15_SW_EleId_L1R =		GetHLTResult("HLT_Ele15_SW_EleId_L1R");
+  bool HLT_Ele17_SW_LooseEleId_L1R =	GetHLTResult("HLT_Ele17_SW_LooseEleId_L1R");
+  bool HLT_Ele17_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele17_SW_CaloEleId_L1R");
+  bool HLT_Ele17_SW_EleId_L1R =		GetHLTResult("HLT_Ele17_SW_EleId_L1R");
+  bool HLT_Ele17_SW_TightEleId_L1R =	GetHLTResult("HLT_Ele17_SW_TightEleId_L1R");
+  bool HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1 = GetHLTResult("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1");
+  bool HLT_Ele17_SW_TightEleIdIsol_L1R_v1 =       GetHLTResult("HLT_Ele17_SW_TightEleIdIsol_L1R_v1");
+  bool HLT_Ele17_SW_TighterEleId_L1R_v1 =         GetHLTResult("HLT_Ele17_SW_TighterEleId_L1R_v1");
+  bool HLT_Ele22_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v2");
+  bool HLT_Ele22_SW_TighterEleId_L1R_v3 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v3");
+  bool HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1");
+  bool HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1");
+  bool HLT_Ele32_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele32_SW_TighterEleId_L1R_v2");
 
-    return (HLT_Ele10_LW_L1R				|| HLT_Ele15_LW_L1R            || HLT_DoubleEle5_SW_L1R				    ||
-            HLT_Ele10_SW_L1R				|| HLT_Ele15_SW_L1R            || HLT_Ele20_SW_L1R                      ||
-            HLT_Ele10_LW_EleId_L1R			|| HLT_Ele10_SW_EleId_L1R      || HLT_Ele15_SW_CaloEleId_L1R			|| HLT_Ele15_SW_EleId_L1R ||
-            HLT_Ele17_SW_LooseEleId_L1R     || HLT_Ele17_SW_CaloEleId_L1R  || HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1 ||
-            HLT_Ele17_SW_EleId_L1R          || HLT_Ele17_SW_TightEleId_L1R || HLT_Ele17_SW_TightEleIdIsol_L1R_v1    || HLT_Ele17_SW_TighterEleId_L1R_v1     || 
-            HLT_Ele20_SW_L1R                ||
-            HLT_Ele22_SW_TighterEleId_L1R_v2        || HLT_Ele22_SW_TighterEleId_L1R_v3 || HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 ||
-            HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 || HLT_Ele32_SW_TighterEleId_L1R_v2 ||
-            HLT_DoubleEle10_SW_L1R                  || HLT_DoubleEle15_SW_L1R_v1        || HLT_DoubleEle17_SW_L1R_v1);
+  return (HLT_Ele10_LW_L1R				|| HLT_Ele15_LW_L1R            || HLT_DoubleEle5_SW_L1R				    ||
+          HLT_Ele10_SW_L1R				|| HLT_Ele15_SW_L1R            || HLT_Ele20_SW_L1R                      ||
+          HLT_Ele10_LW_EleId_L1R			|| HLT_Ele10_SW_EleId_L1R      || HLT_Ele15_SW_CaloEleId_L1R			|| HLT_Ele15_SW_EleId_L1R ||
+          HLT_Ele17_SW_LooseEleId_L1R     || HLT_Ele17_SW_CaloEleId_L1R  || HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1 ||
+          HLT_Ele17_SW_EleId_L1R          || HLT_Ele17_SW_TightEleId_L1R || HLT_Ele17_SW_TightEleIdIsol_L1R_v1    || HLT_Ele17_SW_TighterEleId_L1R_v1     || 
+          HLT_Ele20_SW_L1R                ||
+          HLT_Ele22_SW_TighterEleId_L1R_v2        || HLT_Ele22_SW_TighterEleId_L1R_v3 || HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 ||
+          HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 || HLT_Ele32_SW_TighterEleId_L1R_v2 ||
+          HLT_DoubleEle10_SW_L1R                  || HLT_DoubleEle15_SW_L1R_v1        || HLT_DoubleEle17_SW_L1R_v1);
 }
 
 bool UserAnalysisBase::IsGoodElEvent_RA5(){
-    int run = fTR->Run;
-    // signle-e triggers without ElID or Iso cuts
-    bool HLT_Ele10_LW_L1R =          GetHLTResult("HLT_Ele10_LW_L1R");
-    bool HLT_Ele10_SW_L1R =          GetHLTResult("HLT_Ele10_SW_L1R");
-    bool HLT_Ele15_LW_L1R =          GetHLTResult("HLT_Ele15_LW_L1R");
-    bool HLT_Ele15_SW_L1R =          GetHLTResult("HLT_Ele15_SW_L1R");
-    bool HLT_Ele20_SW_L1R =          GetHLTResult("HLT_Ele20_SW_L1R");
-    // double-e triggers without ElID or Iso cuts
-    bool HLT_DoubleEle5_SW_L1R =     GetHLTResult("HLT_DoubleEle5_SW_L1R");
-    bool HLT_DoubleEle10_SW_L1R =    GetHLTResult("HLT_DoubleEle10_SW_L1R");
-    bool HLT_DoubleEle15_SW_L1R_v1 = GetHLTResult("HLT_DoubleEle15_SW_L1R_v1");
-    bool HLT_DoubleEle17_SW_L1R_v1 = GetHLTResult("HLT_DoubleEle17_SW_L1R_v1");
-    // e triggers with ElID or Iso cuts
-    bool HLT_Ele10_LW_EleId_L1R =		GetHLTResult("HLT_Ele10_LW_EleId_L1R");
-    bool HLT_Ele10_SW_EleId_L1R =		GetHLTResult("HLT_Ele10_SW_EleId_L1R");
-    bool HLT_Ele15_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele15_SW_CaloEleId_L1R");
-    bool HLT_Ele15_SW_EleId_L1R =		GetHLTResult("HLT_Ele15_SW_EleId_L1R");
-    bool HLT_Ele17_SW_LooseEleId_L1R =	GetHLTResult("HLT_Ele17_SW_LooseEleId_L1R");
-    bool HLT_Ele17_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele17_SW_CaloEleId_L1R");
-    bool HLT_Ele17_SW_EleId_L1R =		GetHLTResult("HLT_Ele17_SW_EleId_L1R");
-    bool HLT_Ele17_SW_TightEleId_L1R =  GetHLTResult("HLT_Ele17_SW_TightEleId_L1R");
-    bool HLT_Ele17_SW_TighterEleId_L1R_v1 =         GetHLTResult("HLT_Ele17_SW_TighterEleId_L1R_v1");
-    bool HLT_Ele22_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v2");
-    bool HLT_Ele22_SW_TighterEleId_L1R_v3 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v3");
-    bool HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1");
-    bool HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1");
-    bool HLT_Ele32_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele32_SW_TighterEleId_L1R_v2");
+  int run = fTR->Run;
+  // signle-e triggers without ElID or Iso cuts
+  bool HLT_Ele10_LW_L1R =          GetHLTResult("HLT_Ele10_LW_L1R");
+  bool HLT_Ele10_SW_L1R =          GetHLTResult("HLT_Ele10_SW_L1R");
+  bool HLT_Ele15_LW_L1R =          GetHLTResult("HLT_Ele15_LW_L1R");
+  bool HLT_Ele15_SW_L1R =          GetHLTResult("HLT_Ele15_SW_L1R");
+  bool HLT_Ele20_SW_L1R =          GetHLTResult("HLT_Ele20_SW_L1R");
+  // double-e triggers without ElID or Iso cuts
+  bool HLT_DoubleEle5_SW_L1R =     GetHLTResult("HLT_DoubleEle5_SW_L1R");
+  bool HLT_DoubleEle10_SW_L1R =    GetHLTResult("HLT_DoubleEle10_SW_L1R");
+  bool HLT_DoubleEle15_SW_L1R_v1 = GetHLTResult("HLT_DoubleEle15_SW_L1R_v1");
+  bool HLT_DoubleEle17_SW_L1R_v1 = GetHLTResult("HLT_DoubleEle17_SW_L1R_v1");
+  // e triggers with ElID or Iso cuts
+  bool HLT_Ele10_LW_EleId_L1R =		GetHLTResult("HLT_Ele10_LW_EleId_L1R");
+  bool HLT_Ele10_SW_EleId_L1R =		GetHLTResult("HLT_Ele10_SW_EleId_L1R");
+  bool HLT_Ele15_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele15_SW_CaloEleId_L1R");
+  bool HLT_Ele15_SW_EleId_L1R =		GetHLTResult("HLT_Ele15_SW_EleId_L1R");
+  bool HLT_Ele17_SW_LooseEleId_L1R =	GetHLTResult("HLT_Ele17_SW_LooseEleId_L1R");
+  bool HLT_Ele17_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele17_SW_CaloEleId_L1R");
+  bool HLT_Ele17_SW_EleId_L1R =		GetHLTResult("HLT_Ele17_SW_EleId_L1R");
+  bool HLT_Ele17_SW_TightEleId_L1R =  GetHLTResult("HLT_Ele17_SW_TightEleId_L1R");
+  bool HLT_Ele17_SW_TighterEleId_L1R_v1 =         GetHLTResult("HLT_Ele17_SW_TighterEleId_L1R_v1");
+  bool HLT_Ele22_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v2");
+  bool HLT_Ele22_SW_TighterEleId_L1R_v3 =         GetHLTResult("HLT_Ele22_SW_TighterEleId_L1R_v3");
+  bool HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1");
+  bool HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 =  GetHLTResult("HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1");
+  bool HLT_Ele32_SW_TighterEleId_L1R_v2 =         GetHLTResult("HLT_Ele32_SW_TighterEleId_L1R_v2");
 	
-    if (run==1)						return (HLT_Ele10_LW_L1R);
-    if (run>1		&& run<138000)	return (HLT_Ele10_LW_L1R            || HLT_Ele10_SW_L1R           || HLT_Ele15_LW_L1R           || HLT_DoubleEle5_SW_L1R);
-    if (run>=138000 && run<=141900)	return (HLT_Ele15_LW_L1R            || HLT_Ele15_SW_L1R           || HLT_Ele10_LW_EleId_L1R     || HLT_DoubleEle5_SW_L1R);
-    if (run>141900)					return (HLT_Ele10_SW_EleId_L1R      || HLT_Ele15_SW_CaloEleId_L1R || HLT_Ele15_SW_EleId_L1R ||
+  if (run==1)						return (HLT_Ele10_LW_L1R);
+  if (run>1		&& run<138000)	return (HLT_Ele10_LW_L1R            || HLT_Ele10_SW_L1R           || HLT_Ele15_LW_L1R           || HLT_DoubleEle5_SW_L1R);
+  if (run>=138000 && run<=141900)	return (HLT_Ele15_LW_L1R            || HLT_Ele15_SW_L1R           || HLT_Ele10_LW_EleId_L1R     || HLT_DoubleEle5_SW_L1R);
+  if (run>141900)					return (HLT_Ele10_SW_EleId_L1R      || HLT_Ele15_SW_CaloEleId_L1R || HLT_Ele15_SW_EleId_L1R ||
                                                                 HLT_Ele17_SW_LooseEleId_L1R || HLT_Ele17_SW_CaloEleId_L1R || HLT_Ele17_SW_EleId_L1R || 
                                                                 HLT_Ele17_SW_TightEleId_L1R || HLT_Ele17_SW_TighterEleId_L1R_v1 || HLT_Ele20_SW_L1R ||
                                                                 HLT_Ele22_SW_TighterEleId_L1R_v2        || HLT_Ele22_SW_TighterEleId_L1R_v3 || HLT_Ele27_SW_TightCaloEleIdTrack_L1R_v1 ||
                                                                 HLT_Ele32_SW_TightCaloEleIdTrack_L1R_v1 || HLT_Ele32_SW_TighterEleId_L1R_v2 ||
                                                                 HLT_DoubleEle10_SW_L1R      || HLT_DoubleEle15_SW_L1R_v1  || HLT_DoubleEle17_SW_L1R_v1);
-    return false;
+  return false;
 }
 
 bool UserAnalysisBase::IsGoodElEvent_TDL(){
-    int run = fTR->Run;
-    // signle-e triggers without ElID or Iso cuts
-    bool HLT_Ele10_LW_L1R =				GetHLTResult("HLT_Ele10_LW_L1R");
-    bool HLT_Ele15_LW_L1R =				GetHLTResult("HLT_Ele15_LW_L1R");
-    bool HLT_Ele15_SW_L1R =				GetHLTResult("HLT_Ele15_SW_L1R");
-    bool HLT_Ele20_SW_L1R =				GetHLTResult("HLT_Ele20_SW_L1R");
-    // double-e triggers without ElID or Iso cuts
-    bool HLT_DoubleEle10_SW_L1R =		GetHLTResult("HLT_DoubleEle10_SW_L1R");
-    bool HLT_DoubleEle15_SW_L1R_v1 =	GetHLTResult("HLT_DoubleEle15_SW_L1R_v1");
-    // e triggers with ElID or Iso cuts
-    bool HLT_Ele15_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele15_SW_CaloEleId_L1R");
-    bool HLT_Ele17_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele17_SW_CaloEleId_L1R");
-    bool HLT_Ele17_SW_TightEleId_L1R =	GetHLTResult("HLT_Ele17_SW_TightEleId_L1R");
-    bool HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1 = GetHLTResult("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1");
+  int run = fTR->Run;
+  // signle-e triggers without ElID or Iso cuts
+  bool HLT_Ele10_LW_L1R =				GetHLTResult("HLT_Ele10_LW_L1R");
+  bool HLT_Ele15_LW_L1R =				GetHLTResult("HLT_Ele15_LW_L1R");
+  bool HLT_Ele15_SW_L1R =				GetHLTResult("HLT_Ele15_SW_L1R");
+  bool HLT_Ele20_SW_L1R =				GetHLTResult("HLT_Ele20_SW_L1R");
+  // double-e triggers without ElID or Iso cuts
+  bool HLT_DoubleEle10_SW_L1R =		GetHLTResult("HLT_DoubleEle10_SW_L1R");
+  bool HLT_DoubleEle15_SW_L1R_v1 =	GetHLTResult("HLT_DoubleEle15_SW_L1R_v1");
+  // e triggers with ElID or Iso cuts
+  bool HLT_Ele15_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele15_SW_CaloEleId_L1R");
+  bool HLT_Ele17_SW_CaloEleId_L1R =	GetHLTResult("HLT_Ele17_SW_CaloEleId_L1R");
+  bool HLT_Ele17_SW_TightEleId_L1R =	GetHLTResult("HLT_Ele17_SW_TightEleId_L1R");
+  bool HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1 = GetHLTResult("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1");
 
-    if (run==1)						return (HLT_Ele10_LW_L1R);
-    if (run>1		&& run<138000)	return (HLT_Ele10_LW_L1R);
-    if (run>=138000 && run<141900)	return (HLT_Ele15_LW_L1R);
-    if (run>=141900 && run<144000)	return (HLT_Ele15_SW_L1R);
-    if (run>=144000 && run<144114)	return (HLT_Ele15_SW_CaloEleId_L1R	|| HLT_Ele20_SW_L1R							|| HLT_DoubleEle10_SW_L1R );
-    if (run>=146000 && run<147120)	return (HLT_DoubleEle10_SW_L1R		|| HLT_Ele17_SW_CaloEleId_L1R);
-    if (run>=147120)				return (HLT_DoubleEle15_SW_L1R_v1	|| HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1	|| HLT_Ele17_SW_TightEleId_L1R);
-    return false;
+  if (run==1)						return (HLT_Ele10_LW_L1R);
+  if (run>1		&& run<138000)	return (HLT_Ele10_LW_L1R);
+  if (run>=138000 && run<141900)	return (HLT_Ele15_LW_L1R);
+  if (run>=141900 && run<144000)	return (HLT_Ele15_SW_L1R);
+  if (run>=144000 && run<144114)	return (HLT_Ele15_SW_CaloEleId_L1R	|| HLT_Ele20_SW_L1R							|| HLT_DoubleEle10_SW_L1R );
+  if (run>=146000 && run<147120)	return (HLT_DoubleEle10_SW_L1R		|| HLT_Ele17_SW_CaloEleId_L1R);
+  if (run>=147120)				return (HLT_DoubleEle15_SW_L1R_v1	|| HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1	|| HLT_Ele17_SW_TightEleId_L1R);
+  return false;
 }
 
 bool UserAnalysisBase::IsGoodElFakesEvent(){
-    // signle-e triggers without ElID or Iso cuts to be used for FP ratio measurements
-    bool HLT_Ele10_LW_L1R =	GetHLTResult("HLT_Ele10_LW_L1R");
-    bool HLT_Ele10_SW_L1R =	GetHLTResult("HLT_Ele10_SW_L1R");
-    bool HLT_Ele15_LW_L1R =	GetHLTResult("HLT_Ele15_LW_L1R");
-    bool HLT_Ele15_SW_L1R =	GetHLTResult("HLT_Ele15_SW_L1R");
+  // signle-e triggers without ElID or Iso cuts to be used for FP ratio measurements
+  bool HLT_Ele10_LW_L1R =	GetHLTResult("HLT_Ele10_LW_L1R");
+  bool HLT_Ele10_SW_L1R =	GetHLTResult("HLT_Ele10_SW_L1R");
+  bool HLT_Ele15_LW_L1R =	GetHLTResult("HLT_Ele15_LW_L1R");
+  bool HLT_Ele15_SW_L1R =	GetHLTResult("HLT_Ele15_SW_L1R");
 	
-    return (HLT_Ele10_LW_L1R || HLT_Ele10_SW_L1R || HLT_Ele15_LW_L1R || HLT_Ele15_SW_L1R);
+  return (HLT_Ele10_LW_L1R || HLT_Ele10_SW_L1R || HLT_Ele15_LW_L1R || HLT_Ele15_SW_L1R);
 }
 
 bool UserAnalysisBase::IsGoodHadronicEvent(){
-    // HLT and Jet triggers without ElID or Iso cuts - (should be used for FP ratio measurements)
-    bool HLT_Jet30U	= GetHLTResult("HLT_Jet30U");
-    bool HLT_Jet50U	= GetHLTResult("HLT_Jet50U");
-    bool HLT_Jet70U	= GetHLTResult("HLT_Jet70U");
-    bool HLT_Jet100U= GetHLTResult("HLT_Jet100U");
-    bool HLT_Jet100U_v2= GetHLTResult("HLT_Jet100U_v2");
-    bool HLT_Jet100U_v3= GetHLTResult("HLT_Jet100U_v3");
-    bool HLT_HT100U	= GetHLTResult("HLT_HT100U");
-    bool HLT_HT120U	= GetHLTResult("HLT_HT120U");
-    bool HLT_HT130U	= GetHLTResult("HLT_HT130U");
-    bool HLT_HT140U	= GetHLTResult("HLT_HT140U");
-    bool HLT_HT150U	= GetHLTResult("HLT_HT150U");
-    bool HLT_HT150U_v3	        = GetHLTResult("HLT_HT150U_v3");
-    bool HLT_HT200U	            = GetHLTResult("HLT_HT200U");
-    // HLT cross-triggers
-    bool HLT_Mu5_HT70U_v1	    = GetHLTResult("HLT_Mu5_HT70U_v1");
-    bool HLT_Mu5_HT100U_v1	    = GetHLTResult("HLT_Mu5_HT100U_v1");
-    bool HLT_DoubleMu3_HT50U    = GetHLTResult("HLT_DoubleMu3_HT50U");
-    bool HLT_Ele10_HT70U	    = GetHLTResult("HLT_Ele10_HT70U");
-    bool HLT_Ele10_HT100U	    = GetHLTResult("HLT_Ele10_HT100U");
-    bool HLT_Ele10_EleId_HT70U	= GetHLTResult("HLT_Ele10_EleId_HT70U");
-    bool HLT_DoubleEle8_SW_HT70U_LR1_v1	= GetHLTResult("HLT_DoubleEle8_SW_HT70U_LR1_v1");
-    bool HLT_Mu5_Ele5	        = GetHLTResult("HLT_Mu5_Ele5");
-    bool HLT_Mu3_Ele8_HT70U_v1	= GetHLTResult("HLT_Mu3_Ele8_HT70U_v1");
+  // HLT and Jet triggers without ElID or Iso cuts - (should be used for FP ratio measurements)
+  bool HLT_Jet30U	= GetHLTResult("HLT_Jet30U");
+  bool HLT_Jet50U	= GetHLTResult("HLT_Jet50U");
+  bool HLT_Jet70U	= GetHLTResult("HLT_Jet70U");
+  bool HLT_Jet100U= GetHLTResult("HLT_Jet100U");
+  bool HLT_Jet100U_v2= GetHLTResult("HLT_Jet100U_v2");
+  bool HLT_Jet100U_v3= GetHLTResult("HLT_Jet100U_v3");
+  bool HLT_HT100U	= GetHLTResult("HLT_HT100U");
+  bool HLT_HT120U	= GetHLTResult("HLT_HT120U");
+  bool HLT_HT130U	= GetHLTResult("HLT_HT130U");
+  bool HLT_HT140U	= GetHLTResult("HLT_HT140U");
+  bool HLT_HT150U	= GetHLTResult("HLT_HT150U");
+  bool HLT_HT150U_v3	        = GetHLTResult("HLT_HT150U_v3");
+  bool HLT_HT200U	            = GetHLTResult("HLT_HT200U");
+  // HLT cross-triggers
+  bool HLT_Mu5_HT70U_v1	    = GetHLTResult("HLT_Mu5_HT70U_v1");
+  bool HLT_Mu5_HT100U_v1	    = GetHLTResult("HLT_Mu5_HT100U_v1");
+  bool HLT_DoubleMu3_HT50U    = GetHLTResult("HLT_DoubleMu3_HT50U");
+  bool HLT_Ele10_HT70U	    = GetHLTResult("HLT_Ele10_HT70U");
+  bool HLT_Ele10_HT100U	    = GetHLTResult("HLT_Ele10_HT100U");
+  bool HLT_Ele10_EleId_HT70U	= GetHLTResult("HLT_Ele10_EleId_HT70U");
+  bool HLT_DoubleEle8_SW_HT70U_LR1_v1	= GetHLTResult("HLT_DoubleEle8_SW_HT70U_LR1_v1");
+  bool HLT_Mu5_Ele5	        = GetHLTResult("HLT_Mu5_Ele5");
+  bool HLT_Mu3_Ele8_HT70U_v1	= GetHLTResult("HLT_Mu3_Ele8_HT70U_v1");
 
-    return (HLT_Jet30U       || HLT_Jet50U        || HLT_Jet70U            || HLT_Jet100U || HLT_Jet100U_v2 || HLT_Jet100U_v3 ||
-            HLT_HT100U       || HLT_HT120U        || HLT_HT130U            || HLT_HT140U  || HLT_HT150U || HLT_HT200U || HLT_HT150U_v3 ||
-            HLT_Mu5_HT70U_v1 || HLT_Mu5_HT100U_v1 || HLT_DoubleMu3_HT50U   ||
-            HLT_Ele10_HT70U  || HLT_Ele10_HT100U  || HLT_Ele10_EleId_HT70U || HLT_DoubleEle8_SW_HT70U_LR1_v1 ||
-            HLT_Mu5_Ele5     || HLT_Mu3_Ele8_HT70U_v1);
+  return (HLT_Jet30U       || HLT_Jet50U        || HLT_Jet70U            || HLT_Jet100U || HLT_Jet100U_v2 || HLT_Jet100U_v3 ||
+          HLT_HT100U       || HLT_HT120U        || HLT_HT130U            || HLT_HT140U  || HLT_HT150U || HLT_HT200U || HLT_HT150U_v3 ||
+          HLT_Mu5_HT70U_v1 || HLT_Mu5_HT100U_v1 || HLT_DoubleMu3_HT50U   ||
+          HLT_Ele10_HT70U  || HLT_Ele10_HT100U  || HLT_Ele10_EleId_HT70U || HLT_DoubleEle8_SW_HT70U_LR1_v1 ||
+          HLT_Mu5_Ele5     || HLT_Mu3_Ele8_HT70U_v1);
 }
 
 vector<int> UserAnalysisBase::ElectronSelection(bool(UserAnalysisBase::*eleSelector)(int)){
-    // Returns the vector of indices of
-    // good electrons sorted by Pt
-    if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
-    vector<int>    selectedObjInd;
-    vector<double> selectedObjPt;
-    // form the vector of indices
-    for(int ind = 0; ind < fTR->NEles; ++ind){
-        // selection
-        if((*this.*eleSelector)(ind) == false) continue;
+  // Returns the vector of indices of
+  // good electrons sorted by Pt
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
+  vector<int>    selectedObjInd;
+  vector<double> selectedObjPt;
+  // form the vector of indices
+  for(int ind = 0; ind < fTR->NEles; ++ind){
+    // selection
+    if((*this.*eleSelector)(ind) == false) continue;
 
-		if (fTR->ElPt[ind] != fTR->ElPt[ind]) { 
-			std::cout<<"ERROR!!!! this should never happen!!! there is an electron which's pT is NaN!!!!!"<<std::endl;
-			std::cout<<"ERROR!!!! I'll skip it now. But this is seriously not cool." <<std::endl;
-			std::cout<<"ERROR!!!! here's some more info:"<<std::endl;
-			std::cout<<"          run: "<<fTR->Run<<" ls: " << fTR->LumiSection<< " event: " << fTR->Event<<std::endl;
-			std::cout<<"          elpt: "<<fTR->ElPt[ind]<<" eleta: " << fTR->ElEta[ind]<< " elSCeta: " << fTR->ElSCEta[ind]<< " elphi: "<< fTR->ElPhi[ind]<<std::endl;
+    if (fTR->ElPt[ind] != fTR->ElPt[ind]) { 
+      std::cout<<"ERROR!!!! this should never happen!!! there is an electron which's pT is NaN!!!!!"<<std::endl;
+      std::cout<<"ERROR!!!! I'll skip it now. But this is seriously not cool." <<std::endl;
+      std::cout<<"ERROR!!!! here's some more info:"<<std::endl;
+      std::cout<<"          run: "<<fTR->Run<<" ls: " << fTR->LumiSection<< " event: " << fTR->Event<<std::endl;
+      std::cout<<"          elpt: "<<fTR->ElPt[ind]<<" eleta: " << fTR->ElEta[ind]<< " elSCeta: " << fTR->ElSCEta[ind]<< " elphi: "<< fTR->ElPhi[ind]<<std::endl;
 			
-			continue;
-		}
-        selectedObjInd.push_back(ind);
-        selectedObjPt.push_back(fTR->ElPt[ind]);
+      continue;
     }
-    return Util::VSort(selectedObjInd, selectedObjPt);
+    selectedObjInd.push_back(ind);
+    selectedObjPt.push_back(fTR->ElPt[ind]);
+  }
+  return Util::VSort(selectedObjInd, selectedObjPt);
 }
 
 vector<int> UserAnalysisBase::TauSelection(bool(UserAnalysisBase::*tauSelector)(int)){
-    // Returns the vector of indices of
-    // taus sorted by Pt
-    if(tauSelector == NULL) tauSelector = &UserAnalysisBase::IsLooseTau;
-    vector<int>    selectedObjInd;
-    vector<double> selectedObjPt;
-    // form the vector of indices
-    for(int ind = 0; ind < fTR->TauNObjs; ++ind){
-        // selection
-        if((*this.*tauSelector)(ind) == false) continue;
+  // Returns the vector of indices of
+  // taus sorted by Pt
+  if(tauSelector == NULL) tauSelector = &UserAnalysisBase::IsLooseTau;
+  vector<int>    selectedObjInd;
+  vector<double> selectedObjPt;
+  // form the vector of indices
+  for(int ind = 0; ind < fTR->TauNObjs; ++ind){
+    // selection
+    if((*this.*tauSelector)(ind) == false) continue;
 
-        selectedObjInd.push_back(ind);
-        selectedObjPt.push_back(fTR->TauPt[ind]);
-    }
-    return Util::VSort(selectedObjInd, selectedObjPt);
+    selectedObjInd.push_back(ind);
+    selectedObjPt.push_back(fTR->TauPt[ind]);
+  }
+  return Util::VSort(selectedObjInd, selectedObjPt);
 }
 
 vector<int> UserAnalysisBase::JetSelection(bool(UserAnalysisBase::*jetSelector)(int)){
-    // Returns the vector of indices of
-    // good jets sorted by Pt
-    vector<int>    selectedObjInd;
-    vector<double> selectedObjPt;
-//     if(jetSelector == NULL) jetSelector = &UserAnalysisBase::IsGoodBasicJet;
-    // form the vector of indices
-    for(int ind = 0; ind < fTR->NJets; ++ind){
-        // selection
-        if((*this.*jetSelector)(ind) == false) continue;
+  // Returns the vector of indices of
+  // good jets sorted by Pt
+  vector<int>    selectedObjInd;
+  vector<double> selectedObjPt;
+  //     if(jetSelector == NULL) jetSelector = &UserAnalysisBase::IsGoodBasicJet;
+  // form the vector of indices
+  for(int ind = 0; ind < fTR->NJets; ++ind){
+    // selection
+    if((*this.*jetSelector)(ind) == false) continue;
 
-        // additional kinematic cuts
-        if(fabs(fTR->JEta[ind]) > 2.5) continue;
+    // additional kinematic cuts
+    if(fabs(fTR->JEta[ind]) > 2.5) continue;
 		
-        selectedObjInd.push_back(ind);
-        selectedObjPt.push_back(fTR->JPt[ind]);
-    }
-    return Util::VSort(selectedObjInd, selectedObjPt);
+    selectedObjInd.push_back(ind);
+    selectedObjPt.push_back(fTR->JPt[ind]);
+  }
+  return Util::VSort(selectedObjInd, selectedObjPt);
 }
 
 vector<int> UserAnalysisBase::PFJetSelection(double ptcut, double absetacut, bool(UserAnalysisBase::*pfjetSelector)(int, double, double)){
-    // Returns the vector of indices of
-    // good jets sorted by Pt
-    // cut at pt of ptcut (default = 30.)
-    // cut at abs(eta) of absetacut (default = 2.5)
-    if(pfjetSelector == NULL) pfjetSelector = &UserAnalysisBase::IsGoodBasicPFJet;
-    vector<int>    selectedObjInd;
-    vector<double> selectedObjPt;
-    // form the vector of indices
-    for(int ind = 0; ind < fTR->NJets; ++ind){
-        // selection
-        if((*this.*pfjetSelector)(ind, ptcut, absetacut) == false) continue;
+  // Returns the vector of indices of
+  // good jets sorted by Pt
+  // cut at pt of ptcut (default = 30.)
+  // cut at abs(eta) of absetacut (default = 2.5)
+  if(pfjetSelector == NULL) pfjetSelector = &UserAnalysisBase::IsGoodBasicPFJet;
+  vector<int>    selectedObjInd;
+  vector<double> selectedObjPt;
+  // form the vector of indices
+  for(int ind = 0; ind < fTR->NJets; ++ind){
+    // selection
+    if((*this.*pfjetSelector)(ind, ptcut, absetacut) == false) continue;
 
-        selectedObjInd.push_back(ind);
-        selectedObjPt.push_back(fTR->JPt[ind]);
-    }
-    return Util::VSort(selectedObjInd, selectedObjPt);
+    selectedObjInd.push_back(ind);
+    selectedObjPt.push_back(fTR->JPt[ind]);
+  }
+  return Util::VSort(selectedObjInd, selectedObjPt);
 }
 
 vector<int> UserAnalysisBase::PhotonSelection(bool(UserAnalysisBase::*phoSelector)(int)){
-    std::cerr << "NEED TO REVISE" << std::endl;
-    exit(-1);
-    // Returns the vector of indices of
-    // good photons sorted by Pt
-    if(phoSelector == NULL) phoSelector = &UserAnalysisBase::IsGoodBasicPho;
-    vector<int>    selectedObjInd;
-    vector<double> selectedObjPt;
-    // form the vector of indices
-    for(int ind = 0; ind < fTR->NPhotons; ++ind){
-        // selection
-        if((*this.*phoSelector)(ind) == false) continue;
-        //if(fTR->PhoIsElDupl[ind] >= 0) continue;
-        selectedObjInd.push_back(ind);
-        selectedObjPt.push_back(fTR->PhoPt[ind]);
-    }
-    return Util::VSort(selectedObjInd, selectedObjPt);
+  std::cerr << "NEED TO REVISE" << std::endl;
+  exit(-1);
+  // Returns the vector of indices of
+  // good photons sorted by Pt
+  if(phoSelector == NULL) phoSelector = &UserAnalysisBase::IsGoodBasicPho;
+  vector<int>    selectedObjInd;
+  vector<double> selectedObjPt;
+  // form the vector of indices
+  for(int ind = 0; ind < fTR->NPhotons; ++ind){
+    // selection
+    if((*this.*phoSelector)(ind) == false) continue;
+    //if(fTR->PhoIsElDupl[ind] >= 0) continue;
+    selectedObjInd.push_back(ind);
+    selectedObjPt.push_back(fTR->PhoPt[ind]);
+  }
+  return Util::VSort(selectedObjInd, selectedObjPt);
 }
 
 vector<int> UserAnalysisBase::MuonSelection(bool(UserAnalysisBase::*muonSelector)(int)){
-    // Returns the vector of indices of
-    // good muons sorted by Pt
-    if(muonSelector == NULL) muonSelector = &UserAnalysisBase::IsGoodBasicMu;
-    vector<int>	selectedObjInd;
-    vector<double>	selectedObjPt;
-    // form the vector of indices
-    for(int ind = 0; ind < fTR->NMus; ++ind){
-        // selection
-        if((*this.*muonSelector)(ind) == false) continue;
-        selectedObjInd.push_back(ind);
-        selectedObjPt.push_back(fTR->MuPt[ind]);
-    }	
-    return Util::VSort(selectedObjInd, selectedObjPt);
+  // Returns the vector of indices of
+  // good muons sorted by Pt
+  if(muonSelector == NULL) muonSelector = &UserAnalysisBase::IsGoodBasicMu;
+  vector<int>	selectedObjInd;
+  vector<double>	selectedObjPt;
+  // form the vector of indices
+  for(int ind = 0; ind < fTR->NMus; ++ind){
+    // selection
+    if((*this.*muonSelector)(ind) == false) continue;
+    selectedObjInd.push_back(ind);
+    selectedObjPt.push_back(fTR->MuPt[ind]);
+  }	
+  return Util::VSort(selectedObjInd, selectedObjPt);
 }
 
 bool UserAnalysisBase::SingleElectronSelection(int &index, bool(UserAnalysisBase::*eleSelector)(int)){
-    // Selects events with (at least) one good electron and gives the index
-    // of the hardest one in the argument
-    if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
-    if( fTR->NEles < 1 ) return false;
-    vector<int> ElInd = ElectronSelection(eleSelector);
-    if(ElInd.size() < 1) return false;
-    index = ElInd[0];
-    return true;
+  // Selects events with (at least) one good electron and gives the index
+  // of the hardest one in the argument
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
+  if( fTR->NEles < 1 ) return false;
+  vector<int> ElInd = ElectronSelection(eleSelector);
+  if(ElInd.size() < 1) return false;
+  index = ElInd[0];
+  return true;
 }
 
 bool UserAnalysisBase::DiElectronSelection(int &ind1, int &ind2, int charge, bool(UserAnalysisBase::*eleSelector)(int)){
-    // Selects events with (at least) two good electrons and gives the indices
-    // of the hardest two in the argument (if selected)
-    // charge is the relative charge, 0 = no cut on charge (default), 1 = SS, -1 = OS
-    if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
-    if( fTR->NEles < 2 ) return false;
-    vector<int> ElInd = ElectronSelection(eleSelector);
-    if(ElInd.size() < 2) return false;
-    // Charge selection
-    if(charge != 0) if(fTR->ElCharge[ElInd[0]] * fTR->ElCharge[ElInd[1]] != charge) return false;
-    ind1 = ElInd[0];
-    ind2 = ElInd[1];
-    return true;
+  // Selects events with (at least) two good electrons and gives the indices
+  // of the hardest two in the argument (if selected)
+  // charge is the relative charge, 0 = no cut on charge (default), 1 = SS, -1 = OS
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
+  if( fTR->NEles < 2 ) return false;
+  vector<int> ElInd = ElectronSelection(eleSelector);
+  if(ElInd.size() < 2) return false;
+  // Charge selection
+  if(charge != 0) if(fTR->ElCharge[ElInd[0]] * fTR->ElCharge[ElInd[1]] != charge) return false;
+  ind1 = ElInd[0];
+  ind2 = ElInd[1];
+  return true;
 }
 
 bool UserAnalysisBase::SSDiElectronSelection(int &prim, int &sec, bool(UserAnalysisBase::*eleSelector)(int)){
-    if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
-    return DiElectronSelection(prim, sec, 1, eleSelector);
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
+  return DiElectronSelection(prim, sec, 1, eleSelector);
 }
 
 bool UserAnalysisBase::OSDiElectronSelection(int &prim, int &sec, bool(UserAnalysisBase::*eleSelector)(int)){
-    if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
-    return DiElectronSelection(prim, sec, -1, eleSelector);
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
+  return DiElectronSelection(prim, sec, -1, eleSelector);
 }
 
 bool UserAnalysisBase::SingleMuonSelection(int &index){
-    // Selects events with (at least) one good muon and gives the index
-    // of the hardest one in the argument
-    // Assumes the muons are sorted by pt in the ntuple
-    if( fTR->NMus < 1 ) return false;
-    vector<int> MuInd;
-    for(int imu = 0; imu < fTR->NMus; ++imu){
-        if(!IsGoodBasicMu(imu)) continue;
-        MuInd.push_back(imu);
-    }
-    if(MuInd.size() < 1) return false;
+  // Selects events with (at least) one good muon and gives the index
+  // of the hardest one in the argument
+  // Assumes the muons are sorted by pt in the ntuple
+  if( fTR->NMus < 1 ) return false;
+  vector<int> MuInd;
+  for(int imu = 0; imu < fTR->NMus; ++imu){
+    if(!IsGoodBasicMu(imu)) continue;
+    MuInd.push_back(imu);
+  }
+  if(MuInd.size() < 1) return false;
 	
-    int maxind = MuInd[0];
-    for(size_t i = 0; i < MuInd.size(); ++i){
-        int ind = MuInd[i];
-        if(fTR->MuPt[ind] > fTR->MuPt[maxind]) maxind = ind;
-    }
-    index = maxind;
-    return true;
+  int maxind = MuInd[0];
+  for(size_t i = 0; i < MuInd.size(); ++i){
+    int ind = MuInd[i];
+    if(fTR->MuPt[ind] > fTR->MuPt[maxind]) maxind = ind;
+  }
+  index = maxind;
+  return true;
 }
 
 bool UserAnalysisBase::DiMuonSelection(int &ind1, int &ind2, int charge){
-    // Selects events with (at least) two good muons and gives the indices
-    // of the hardest two in the argument
-    // charge is the relative charge, 0 = no cut on charge, 1 = SS, -1 = OS
-    if( fTR->NMus < 2 ) return false;
-    vector<int> MuInd;
-    for(int imu = 0; imu < fTR->NMus; ++imu){
-        if(fTR->MuPt[imu] < 10.) continue;
-        if(!IsGoodBasicMu(imu)) continue;
-        MuInd.push_back(imu);
-    }
-    if(MuInd.size() < 2) return false;
+  // Selects events with (at least) two good muons and gives the indices
+  // of the hardest two in the argument
+  // charge is the relative charge, 0 = no cut on charge, 1 = SS, -1 = OS
+  if( fTR->NMus < 2 ) return false;
+  vector<int> MuInd;
+  for(int imu = 0; imu < fTR->NMus; ++imu){
+    if(fTR->MuPt[imu] < 10.) continue;
+    if(!IsGoodBasicMu(imu)) continue;
+    MuInd.push_back(imu);
+  }
+  if(MuInd.size() < 2) return false;
 
-    // Sort by pt
-    int maxind(MuInd[0]), maxind2(MuInd[1]);
-    for(size_t i = 1; i < MuInd.size(); ++i){
-        int index = MuInd[i];
-        if(fTR->MuPt[index] > fTR->MuPt[maxind]){ maxind2 = maxind; maxind = index; }
-        else if(fTR->MuPt[index] > fTR->MuPt[maxind2]) maxind2 = index;
-    }
+  // Sort by pt
+  int maxind(MuInd[0]), maxind2(MuInd[1]);
+  for(size_t i = 1; i < MuInd.size(); ++i){
+    int index = MuInd[i];
+    if(fTR->MuPt[index] > fTR->MuPt[maxind]){ maxind2 = maxind; maxind = index; }
+    else if(fTR->MuPt[index] > fTR->MuPt[maxind2]) maxind2 = index;
+  }
 	
-    ind1 = maxind;
-    ind2 = maxind2;
-    // Charge selection
-    if(charge != 0) if(fTR->MuCharge[ind1] * fTR->MuCharge[ind2] != charge) return false;
-    return true;
+  ind1 = maxind;
+  ind2 = maxind2;
+  // Charge selection
+  if(charge != 0) if(fTR->MuCharge[ind1] * fTR->MuCharge[ind2] != charge) return false;
+  return true;
 }
 
 bool UserAnalysisBase::SSDiMuonSelection(int &prim, int &sec){
-    // Selects events with (at least) two good muons and gives the indices
-    // of the hardest two in the argument
-    // charge is the relative charge, 0 = no cut on charge, 1 = SS, -1 = OS
-    return DiMuonSelection(prim, sec, 1);
+  // Selects events with (at least) two good muons and gives the indices
+  // of the hardest two in the argument
+  // charge is the relative charge, 0 = no cut on charge, 1 = SS, -1 = OS
+  return DiMuonSelection(prim, sec, 1);
 }
 
 ///////////////////////////////////////////////////////////////
 // JEC
 float UserAnalysisBase::getNewJetInfo(int ind, string which){
-	std::vector<float> newjet = fMetCorrector->getCorrPtECorr(fTR->JPt[ind]   , fTR->JEta[ind]  , fTR->JE[ind], 
-	                                          fTR->JEcorr[ind], fTR->JArea[ind] , fTR->Rho);
-	if (which == "pt"  ) return newjet[0]; // new jet pt
-	if (which == "e"   ) return newjet[1]; // new jet energy
-	if (which == "corr") return newjet[2]; // new jet correction
+  std::vector<float> newjet = fMetCorrector->getCorrPtECorr(fTR->JPt[ind]   , fTR->JEta[ind]  , fTR->JE[ind], 
+                                                            fTR->JEcorr[ind], fTR->JArea[ind] , fTR->Rho);
+  if (which == "pt"  ) return newjet[0]; // new jet pt
+  if (which == "e"   ) return newjet[1]; // new jet energy
+  if (which == "corr") return newjet[2]; // new jet correction
 }
 float UserAnalysisBase::GetJetPtNoResidual(int ind){
-	float pt = fMetCorrector->getJetPtNoResidual(fTR->JPt[ind], fTR->JEta[ind], fTR->JEcorr[ind], 
-	                                  fTR->JArea[ind], fTR->Rho);
-	return pt;
+  float pt = fMetCorrector->getJetPtNoResidual(fTR->JPt[ind], fTR->JEta[ind], fTR->JEcorr[ind], 
+                                               fTR->JArea[ind], fTR->Rho);
+  return pt;
 }
 float UserAnalysisBase::GetJECUncert(float pt, float eta){
-	return fMetCorrector->getJECUncertainty(pt, eta);
+  return fMetCorrector->getJECUncertainty(pt, eta);
 }
 
 // ///////////////////////////////////////////////////////////////
@@ -1394,40 +1391,40 @@ float UserAnalysisBase::GetJECUncert(float pt, float eta){
 // ---------------------------------------------
 // Pile Up Reweighting
 void UserAnalysisBase::SetPileUpSrc(string data_PileUp, string mc_PileUp){
-    if(data_PileUp.size() == 0 || mc_PileUp.size() == 0 ) return;
-    if(fDoPileUpReweight  == 1 ) {cout << "ERROR in SetPileUpSrc: fPUWeight already initialized" << endl; return; }
+  if(data_PileUp.size() == 0 || mc_PileUp.size() == 0 ) return;
+  if(fDoPileUpReweight  == 1 ) {cout << "ERROR in SetPileUpSrc: fPUWeight already initialized" << endl; return; }
     
-    TFile *fpu = new TFile(data_PileUp.c_str());
-    string pileupUp="pileupUp";
-    string pileupDown="pileupDown";
-    if(!((TH1D*)fpu->Get("pileupUp"))||!((TH1D*)fpu->Get("pileupDown"))) {
-      //the user supplied a file with only the standard histogram, which does not contain the up and down shapes
-      cout << "Did not find up and down shapes in provided file " << endl;
-      pileupUp="pileup";
-      pileupDown="pileup";
-    }
-    fpu->Close();
+  TFile *fpu = new TFile(data_PileUp.c_str());
+  string pileupUp="pileupUp";
+  string pileupDown="pileupDown";
+  if(!((TH1D*)fpu->Get("pileupUp"))||!((TH1D*)fpu->Get("pileupDown"))) {
+    //the user supplied a file with only the standard histogram, which does not contain the up and down shapes
+    cout << "Did not find up and down shapes in provided file " << endl;
+    pileupUp="pileup";
+    pileupDown="pileup";
+  }
+  fpu->Close();
     
-    fPUWeight     = new reweight::LumiReWeighting( mc_PileUp, data_PileUp,"pileup","pileup");
-    fPUWeightUp   = new reweight::LumiReWeighting( mc_PileUp, data_PileUp,"pileup",pileupUp);
-    fPUWeightDown = new reweight::LumiReWeighting( mc_PileUp, data_PileUp,"pileup",pileupDown);
-    fDoPileUpReweight = true;
+  fPUWeight     = new reweight::LumiReWeighting( mc_PileUp, data_PileUp,"pileup","pileup");
+  fPUWeightUp   = new reweight::LumiReWeighting( mc_PileUp, data_PileUp,"pileup",pileupUp);
+  fPUWeightDown = new reweight::LumiReWeighting( mc_PileUp, data_PileUp,"pileup",pileupDown);
+  fDoPileUpReweight = true;
 }
 
 
 //2012 PU reweighting: USE NUMBER OF TRUE INTERACTIONS!
 float UserAnalysisBase::GetPUWeight(float nPUTrueinteractions){
-    if(! fDoPileUpReweight) return -999.99;
-    else return fPUWeight->weight( nPUTrueinteractions); 
+  if(! fDoPileUpReweight) return -999.99;
+  else return fPUWeight->weight( nPUTrueinteractions); 
 }
 
 float UserAnalysisBase::GetPUWeightUp(float nPUTrueinteractions){
-    if(! fDoPileUpReweight) return -999.99;
-    else return fPUWeightUp->weight( nPUTrueinteractions); 
+  if(! fDoPileUpReweight) return -999.99;
+  else return fPUWeightUp->weight( nPUTrueinteractions); 
 }
 
 float UserAnalysisBase::GetPUWeightDown(float nPUTrueinteractions){
-    if(! fDoPileUpReweight) return -999.99;
-    else return fPUWeightDown->weight( nPUTrueinteractions); 
+  if(! fDoPileUpReweight) return -999.99;
+  else return fPUWeightDown->weight( nPUTrueinteractions); 
 }
 
