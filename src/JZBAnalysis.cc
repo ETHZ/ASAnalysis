@@ -166,7 +166,6 @@ public:
   float pfJetDphiMet[jMax];
   float pfJetDphiZ[jMax];
   float pfBJetDphiZ[jMax];
-  float CorrectionRatio[jMax];
   float pfHT;
   float pfGoodHT;
   float pfTightHT;
@@ -652,7 +651,6 @@ void nanoEvent::reset()
     pfJetDphiMet[jCounter]=0;
     pfJetDphiZ[jCounter]=0;
     pfBJetDphiZ[jCounter]=0;
-    CorrectionRatio[jMax]=0;
   }
   pfJetNum=0;
   pfHT=0;
@@ -1237,8 +1235,13 @@ bool JZBAnalysis::IsThisTTbar(vector<string> fileList) {
     if(isTTbar) return true;
     else return false;
 }
-JZBAnalysis::JZBAnalysis(TreeReader *tr, std::string dataType, bool fullCleaning, bool isModelScan, bool makeSmall, bool doGenInfo, vector<string> fileList) :
-  UserAnalysisBase(tr,dataType!="mc"), fDataType_(dataType), fFullCleaning_(fullCleaning) , fisModelScan(isModelScan) , fmakeSmall(makeSmall), fdoGenInfo(doGenInfo) {
+
+//________________________________________________________________________________________
+JZBAnalysis::JZBAnalysis(TreeReader *tr, std::string dataType, std::string globalTag, bool fullCleaning,
+                         bool isModelScan, bool makeSmall, bool doGenInfo, vector<string> fileList) :
+  UserAnalysisBase(tr,dataType!="mc",globalTag), fDataType_(dataType), fGlobalTag_(globalTag), 
+  fFullCleaning_(fullCleaning) , fisModelScan(isModelScan) , fmakeSmall(makeSmall), fdoGenInfo(doGenInfo)
+{
     
   if(fileList.size()==1) fFile=ExtractFileNumber(fileList[0]);
   else fFile=-1;
@@ -1487,7 +1490,6 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("pfHT",&nEvent.pfHT,"pfHT/F");
   myTree->Branch("pfGoodHT",&nEvent.pfGoodHT,"pfGoodHT/F");
   myTree->Branch("pfTightHT",&nEvent.pfTightHT,"pfTightHT/F");
-  myTree->Branch("CorrectionRatio", nEvent.CorrectionRatio,"CorrectionRatio[pfJetNum]/F");
 
   myTree->Branch("metUncertainty",&nEvent.metUncertainty,"metUncertainty/F");
   myTree->Branch("type1metUncertainty",&nEvent.type1metUncertainty,"type1metUncertainty/F");
@@ -2075,7 +2077,7 @@ void JZBAnalysis::Analyze() {
         nEvent.xbarSMS=fTR->xbarSMS;
         nEvent.NPdfs=fTR->NPdfs;
         for(int i=0;i<fTR->NPdfs;i++) nEvent.pdfW[i]=fTR->pdfW[i];
-	    nEvent.pdfWsum=fTR->pdfWsum;
+        nEvent.pdfWsum=fTR->pdfWsum;
      } else {
 	    //don't attempt to do PURW for model scans
 	    nEvent.PUweight     = GetPUWeight(fTR->PUnumTrueInteractions);
@@ -2751,42 +2753,28 @@ void JZBAnalysis::Analyze() {
   vector<lepton> pfGoodJets;
   unsigned int mjlcounter=0;
   
+  bool isSetGT = (fGlobalTag_ != "");
   for(int i =0 ; i<fTR->NJets;i++) // PF jet loop
     {
       counters[PJ].fill("All PF jets");
       if(i==jMax){cout<<"max Num was reached"<<endl; break;}
 	
       float jpt = fTR->JPt[i];
-      float jeta = fTR->JEta[i];
-      float jphi = fTR->JPhi[i];
-      float jpx = fTR->JPx[i];
-      float jpy = fTR->JPy[i];
-      float jpz = fTR->JPz[i];
       float jenergy = fTR->JE[i];
       float jesC = fTR->JEcorr[i];
+      if ( isSetGT ) {
+        jpt     = getNewJetInfo(i, "pt");
+        jenergy = getNewJetInfo(i, "e");
+        jesC    = getNewJetInfo(i, "corr");
+      }
+      float jeta = fTR->JEta[i];
+      float jphi = fTR->JPhi[i];
       bool  isJetID = IsGoodBasicPFJet(i,0.0,5.0);
       int   ntracksch = fTR->JNAssoTracks[i];  
       int   ntracksne = fTR->JNConstituents[i];
 
-//      jpt=jpt/jesC;
-//      jenergy=jenergy/jesC;
-//      jpx/=jesC;
-//      jpy/=jesC;
-//      jpz/=jesC;
-//      fJetCorrector->setJetEta(jeta);
-//      fJetCorrector->setJetPt(jpt);
-//      fJetCorrector->setJetA(fTR->JArea[i]);
-//      fJetCorrector->setRho(fTR->Rho);
-//      double correction = fJetCorrector->getCorrection();
-//      jpt*=correction;
-//      jenergy*=correction;
-//      jpx*=correction;
-//      jpy*=correction;
-//      jpz*=correction;
-//      nEvent.CorrectionRatio[nEvent.pfJetNum]=correction/jesC;
-//      jesC=correction;
-
-      TLorentzVector aJet(jpx,jpy,jpz,jenergy);
+      TLorentzVector aJet;
+      aJet.SetPtEtaPhiE(jpt,jeta,jphi,jenergy);
       
       // lepton-jet cleaning
       if ( fFullCleaning_ ) { 
@@ -2805,7 +2793,7 @@ void JZBAnalysis::Analyze() {
       }
       
       //Get Uncertainty
-      float unc = fMetCorrector->getJECUncertainty(jpt,jeta); //fJECUnc->getUncertainty(true);
+      float unc = fMetCorrector->getJECUncertainty(jpt,jeta);
       //removing jet from residual met
       ResidualMet=ResidualMet+aJet;
       Type1ResidualMet=Type1ResidualMet+aJet;
@@ -2831,10 +2819,10 @@ void JZBAnalysis::Analyze() {
       counters[PJ].fill("... |eta|<3.0");
       
       
-      Mpx.push_back(jpx);
-      Mpy.push_back(jpy);
-      Mpz.push_back(jpz);
-      ME .push_back(jenergy);
+      Mpx.push_back(aJet.Px());
+      Mpy.push_back(aJet.Py());
+      Mpz.push_back(aJet.Pz());
+      ME .push_back(aJet.E());
       
       hemiobjs.index.push_back(i);
       hemiobjs.type.push_back("jet"),

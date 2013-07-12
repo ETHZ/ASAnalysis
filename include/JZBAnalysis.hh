@@ -41,7 +41,8 @@ struct HemiObj {
 
 class JZBAnalysis : public UserAnalysisBase{
 public:
-  JZBAnalysis(TreeReader *tr=NULL, std::string dataType="mc", bool fullCleaning=false, bool isModelScan=false, bool makeSmall=false, bool doGenInfo=false, vector<string> fileList=vector<string>());
+  JZBAnalysis(TreeReader *tr=NULL, std::string dataType="mc", std::string globalTag="", 
+              bool fullCleaning=false, bool isModelScan=false, bool makeSmall=false, bool doGenInfo=false, vector<string> fileList=vector<string>());
   virtual ~JZBAnalysis();
   const bool IsCustomMu2012(const int);
   const bool IsCustomEl2012(const int);
@@ -105,6 +106,7 @@ private:
   template<class T> std::string any2string(T i);
 
   std::string fDataType_;
+  std::string fGlobalTag_;
   bool fFullCleaning_;
   bool fisModelScan;
   bool fdoGenInfo;

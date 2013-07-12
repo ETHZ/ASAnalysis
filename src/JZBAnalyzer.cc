@@ -6,11 +6,12 @@
 
 using namespace std;
 
-JZBAnalyzer::JZBAnalyzer(std::vector<std::string>& fileList, std::string dataType, bool fullCleaning, bool isModelScan, bool makeSmall, bool doGenInfo)  
+JZBAnalyzer::JZBAnalyzer(std::vector<std::string>& fileList, std::string dataType, std::string globalTag,
+                         bool fullCleaning, bool isModelScan, bool makeSmall, bool doGenInfo)  
    : TreeAnalyzerBase(fileList) {
   f_isModelScan=isModelScan;
   f_doGenInfo=doGenInfo;
-  fJZBAnalysis = new JZBAnalysis(fTR,dataType,fullCleaning,isModelScan,makeSmall,doGenInfo,fileList);
+  fJZBAnalysis = new JZBAnalysis(fTR,dataType,globalTag,fullCleaning,isModelScan,makeSmall,doGenInfo,fileList);
 }
 
 JZBAnalyzer::~JZBAnalyzer() {

@@ -19,7 +19,7 @@ using namespace std;
 //________________________________________________________________________________________
 // Print out usage
 void usage( int status = 0 ) {
-  cout << "Usage: RunJZBAnalyzer [-o filename] [-v verbose] [-n maxEvents] [-j JSON] [-t type] [-c] [-l] [-s] [-M] [-g] [-p data_PileUp] [-P mc_PileUP] file1 [... filen]" << endl;
+  cout << "Usage: RunJZBAnalyzer [-o filename] [-v verbose] [-n maxEvents] [-j JSON] [-t type] [-c] [-l] [-s] [-M] [-g] [-G tag] [-p data_PileUp] [-P mc_PileUP] file1 [... filen]" << endl;
   cout << "  where:" << endl;
   cout << "     -c       runs full lepton cleaning                                       " << endl;
   cout << "     -M       is for Model scans (also loads masses)                          " << endl;
@@ -35,6 +35,7 @@ void usage( int status = 0 ) {
   cout << "                   interactions is read                                       " << endl;
   cout << "     mc_PileUP     root file from which the generated # pile up               " << endl;
   cout << "     type     is 'el', 'mu' or 'mc' (default)                                 " << endl;
+  cout << "     tag      is a global tag (default: no tag)                               " << endl;
   cout << "     filen    are the input files (by default: ROOT files)                    " << endl;
   cout << "              with option -l, these are read as text files                    " << endl;
   cout << "              with one ROOT file name per line                                " << endl;
@@ -55,6 +56,7 @@ int main(int argc, char* argv[]) {
   string jsonFileName = "";
   string  data_PileUp = "";
   string  mc_PileUp = "";
+  string  globalTag = "";
 
   int verbose = 0;
   int maxEvents=-1;
@@ -63,12 +65,13 @@ int main(int argc, char* argv[]) {
   bool doGenInfo=false;
   // Parse options
   char ch;
-  while ((ch = getopt(argc, argv, "o:v:n:j:t:lgMh?csp:P:")) != -1 ) {
+  while ((ch = getopt(argc, argv, "o:v:n:j:t:G:lgMh?csp:P:")) != -1 ) {
     switch (ch) {
     case 'o': outputFileName = string(optarg); break;
     case 'v': verbose = atoi(optarg); break;
     case 's': makeSmall = true; break;
     case 'g': doGenInfo = true; break;
+    case 'G': globalTag = string(optarg); break;
     case 'l': isList = true; break;
     case 'M': isModelScan = true; break;
     case '?':
@@ -121,6 +124,7 @@ int main(int argc, char* argv[]) {
   cout << "Full cleaning is " << (fullCleaning?"ON":"OFF") << endl;
   cout << "MC_PileUp file:                 " << (mc_PileUp.length()>0?mc_PileUp:"empty") << endl;
   cout << "Data_PileUp file:               " << (data_PileUp.length()>0?data_PileUp:"empty") << endl;
+  cout << "Global Tag is: " << (globalTag==""?"<not set>":globalTag) << endl;
   cout << "Model scan is " << (isModelScan?"activated":"deactivated") << endl;
   cout << (makeSmall?"Making a small version":"Not making small version") << endl;
   cout << (doGenInfo?"Including generator information":"Not including generator information") << endl;
@@ -128,7 +132,7 @@ int main(int argc, char* argv[]) {
   cout << "--------------" << endl;
   
   cout << "INPUT NAME (S) " << endl;
-  JZBAnalyzer *tA = new JZBAnalyzer(fileList,type,fullCleaning,isModelScan,makeSmall,doGenInfo);
+  JZBAnalyzer *tA = new JZBAnalyzer(fileList,type,globalTag,fullCleaning,isModelScan,makeSmall,doGenInfo);
   //	tA->SetOutputFile(outputfile);
   tA->SetOutputFileName(outputFileName);
   tA->SetVerbose(verbose);
