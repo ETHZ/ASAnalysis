@@ -27,6 +27,8 @@
 #include "TGeoPara.h"
 #include "TGeoTube.h"
 
+const int global_maxN_photonpfcandidates = 2000;
+
 const int global_size_pfcandarrays = 30;
 
 const float global_dR_cut_acceptance = 0.45;
@@ -370,6 +372,11 @@ private:
 
   Float_t pholead_test_rotatedphotoniso[50];
   Float_t pholead_test_rotatedwithcheckphotoniso[50];
+
+  Int_t allphotonpfcand_count;
+  Float_t allphotonpfcand_pt[global_maxN_photonpfcandidates];
+  Float_t allphotonpfcand_eta_propagated[global_maxN_photonpfcandidates];
+  Float_t allphotonpfcand_phi_propagated[global_maxN_photonpfcandidates];
 
 };
 #endif

@@ -333,6 +333,11 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("pholead_test_rotatedphotoniso",&pholead_test_rotatedphotoniso,"pholead_test_rotatedphotoniso[50]/F");
   OutputTree[i]->Branch("pholead_test_rotatedwithcheckphotoniso",&pholead_test_rotatedwithcheckphotoniso,"pholead_test_rotatedwithcheckphotoniso[50]/F");
 
+  OutputTree[i]->Branch("allphotonpfcand_count",&allphotonpfcand_count,"allphotonpfcand_count/I");
+  OutputTree[i]->Branch("allphotonpfcand_pt",&allphotonpfcand_pt,"allphotonpfcand_pt[allphotonpfcand_count]/F");
+  OutputTree[i]->Branch("allphotonpfcand_eta_propagated",&allphotonpfcand_eta_propagated,"allphotonpfcand_eta_propagated[allphotonpfcand_count]/F");
+  OutputTree[i]->Branch("allphotonpfcand_phi_propagated",&allphotonpfcand_phi_propagated,"allphotonpfcand_phi_propagated[allphotonpfcand_count]/F");
+
   }
 
 
@@ -766,10 +771,36 @@ void DiPhotonMiniTree::Analyze(){
 //	if (!FindCloseJetsAndPhotons(fTR,0.025*k,passing.at(i),"")) pholead_test_rotatedwithcheckphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
 //      }
 
+
+      if (sel_cat==1 || sel_cat==2) {
+	std::vector<int> removals;
+	std::vector<int> footprint = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
+	for (int l=0; l<footprint.size(); l++) removals.push_back(footprint.at(l));
+	bool isbarrel = fTR->PhoisEB[passing.at(i)];
+	int index=0;
+	for (int k=0; k<fTR->NPfCand; k++){
+	  if (fTR->PfCandPdgId[k]!=22) continue;
+	  float eta = fTR->PfCandEta[k];
+	  if (eta>1.4442 && eta<1.56) continue;
+	  if (eta>2.5) continue;
+	  if (isbarrel) {if (fabs(eta)>1.4442) continue;}
+	  else {if (fabs(eta)<1.56) continue;}
+	  if (fTR->Pho_isPFPhoton[passing.at(i)] && fTR->pho_matchedPFPhotonCand[passing.at(i)]==k) continue;	
+	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) continue;
+	  angular_distances_struct angles = GetPFCandDeltaRFromSC(fTR,passing.at(i),k,0);
+	  allphotonpfcand_pt[index] = fTR->PfCandPt[k];
+	  allphotonpfcand_eta_propagated[index] = fTR->SCEta[fTR->PhotSCindex[passing.at(i)]]+angles.dEta;
+	  allphotonpfcand_phi_propagated[index] = fTR->SCPhi[fTR->PhotSCindex[passing.at(i)]]+angles.dPhi;
+	  index++;
+	}
+	allphotonpfcand_count = index;
+      }
+
       if (dofill) OutputTree[sel_cat]->Fill();
       }
 
     }
+
 
   }
  
@@ -2197,6 +2228,12 @@ void DiPhotonMiniTree::ResetVars(){
   tree_gen_in_acc_has_matched_reco = false;
   tree_gen_in_acc_has_no_matched_reco = false;
 
+  allphotonpfcand_count = 0;
+  for (int i=0; i<global_maxN_photonpfcandidates; i++){
+    allphotonpfcand_pt[i]=-999;
+    allphotonpfcand_eta_propagated[i]=-999;
+    allphotonpfcand_phi_propagated[i]=-999;
+  }
 
 };
 
