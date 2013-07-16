@@ -335,9 +335,11 @@ void DiPhotonMiniTree::Begin(){
 
   OutputTree[i]->Branch("allphotonpfcand_count",&allphotonpfcand_count,"allphotonpfcand_count/I");
   OutputTree[i]->Branch("allphotonpfcand_pt",&allphotonpfcand_pt,"allphotonpfcand_pt[allphotonpfcand_count]/F");
-  OutputTree[i]->Branch("allphotonpfcand_eta_propagated",&allphotonpfcand_eta_propagated,"allphotonpfcand_eta_propagated[allphotonpfcand_count]/F");
-  OutputTree[i]->Branch("allphotonpfcand_phi_propagated",&allphotonpfcand_phi_propagated,"allphotonpfcand_phi_propagated[allphotonpfcand_count]/F");
-
+  OutputTree[i]->Branch("allphotonpfcand_eta",&allphotonpfcand_eta,"allphotonpfcand_eta[allphotonpfcand_count]/F");
+  OutputTree[i]->Branch("allphotonpfcand_phi",&allphotonpfcand_phi,"allphotonpfcand_phi[allphotonpfcand_count]/F");
+  OutputTree[i]->Branch("allphotonpfcand_vx",&allphotonpfcand_vx,"allphotonpfcand_vx[allphotonpfcand_count]/F");
+  OutputTree[i]->Branch("allphotonpfcand_vy",&allphotonpfcand_vy,"allphotonpfcand_vy[allphotonpfcand_count]/F");
+  OutputTree[i]->Branch("allphotonpfcand_vz",&allphotonpfcand_vz,"allphotonpfcand_vz[allphotonpfcand_count]/F");
   }
 
 
@@ -773,24 +775,21 @@ void DiPhotonMiniTree::Analyze(){
 
 
       if (sel_cat==1 || sel_cat==2) {
-	std::vector<int> removals;
-	std::vector<int> footprint = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
-	for (int l=0; l<footprint.size(); l++) removals.push_back(footprint.at(l));
-	bool isbarrel = fTR->PhoisEB[passing.at(i)];
+	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
 	  if (fTR->PfCandPdgId[k]!=22) continue;
-	  float eta = fTR->PfCandEta[k];
+	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.56) continue;
 	  if (eta>2.5) continue;
-	  if (isbarrel) {if (fabs(eta)>1.4442) continue;}
-	  else {if (fabs(eta)<1.56) continue;}
 	  if (fTR->Pho_isPFPhoton[passing.at(i)] && fTR->pho_matchedPFPhotonCand[passing.at(i)]==k) continue;	
 	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) continue;
-	  angular_distances_struct angles = GetPFCandDeltaRFromSC(fTR,passing.at(i),k,0);
 	  allphotonpfcand_pt[index] = fTR->PfCandPt[k];
-	  allphotonpfcand_eta_propagated[index] = fTR->SCEta[fTR->PhotSCindex[passing.at(i)]]+angles.dEta;
-	  allphotonpfcand_phi_propagated[index] = fTR->SCPhi[fTR->PhotSCindex[passing.at(i)]]+angles.dPhi;
+	  allphotonpfcand_eta[index] = fTR->PfCandEta[k];
+	  allphotonpfcand_phi[index] = fTR->PfCandPhi[k];
+	  allphotonpfcand_vx[index] = fTR->PfCandVx[k];
+	  allphotonpfcand_vy[index] = fTR->PfCandVy[k];
+	  allphotonpfcand_vz[index] = fTR->PfCandVz[k];
 	  index++;
 	}
 	allphotonpfcand_count = index;
@@ -2231,8 +2230,11 @@ void DiPhotonMiniTree::ResetVars(){
   allphotonpfcand_count = 0;
   for (int i=0; i<global_maxN_photonpfcandidates; i++){
     allphotonpfcand_pt[i]=-999;
-    allphotonpfcand_eta_propagated[i]=-999;
-    allphotonpfcand_phi_propagated[i]=-999;
+    allphotonpfcand_eta[i]=-999;
+    allphotonpfcand_phi[i]=-999;
+    allphotonpfcand_vx[i]=-999;
+    allphotonpfcand_vy[i]=-999;
+    allphotonpfcand_vz[i]=-999;
   }
 
 };

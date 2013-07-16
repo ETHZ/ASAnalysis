@@ -375,8 +375,11 @@ private:
 
   Int_t allphotonpfcand_count;
   Float_t allphotonpfcand_pt[global_maxN_photonpfcandidates];
-  Float_t allphotonpfcand_eta_propagated[global_maxN_photonpfcandidates];
-  Float_t allphotonpfcand_phi_propagated[global_maxN_photonpfcandidates];
+  Float_t allphotonpfcand_eta[global_maxN_photonpfcandidates];
+  Float_t allphotonpfcand_phi[global_maxN_photonpfcandidates];
+  Float_t allphotonpfcand_vx[global_maxN_photonpfcandidates];
+  Float_t allphotonpfcand_vy[global_maxN_photonpfcandidates];
+  Float_t allphotonpfcand_vz[global_maxN_photonpfcandidates];
 
 };
 #endif
