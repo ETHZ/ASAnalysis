@@ -61,6 +61,15 @@ typedef struct {
   float dPhi;
 } angular_distances_struct;
 
+typedef struct {
+  std::vector<float> PfCandPt;
+  std::vector<float> PfCandEta;
+  std::vector<float> PfCandPhi;
+  std::vector<float> PfCandVx;
+  std::vector<float> PfCandVy;
+  std::vector<float> PfCandVz;
+} pfcandidates_struct;
+
 class DiPhotonMiniTree : public UserAnalysisBase{
 public:
   DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0);
@@ -98,11 +107,16 @@ private:
   void ResetVars();
   void Fillhist_PFPhotonDepositAroundImpingingTrack(int phoqi, int trkindex);  
   std::vector<int> GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component);
+  std::vector<int> GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component);
   std::vector<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component);
-  TVector3 PropagatePFCandToEcal(int pfcandindex, float position, bool isbarrel);
+  std::vector<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, bool outoffootprint, TString component);
+  TVector3 PropagatePFCandToEcal(TreeReader *fTR, int pfcandindex, float position, bool isbarrel);
+  TVector3 PropagatePFCandToEcal(pfcandidates_struct *pfcands, int pfcandindex, float position, bool isbarrel);
   bool FindImpingingTrack(TreeReader *fTR, int phoqi, int &reference_index_found, bool dofootprintremoval = false, std::vector<int> removals = std::vector<int>());
   float PFIsolation(int phoqi, float rotation_phi, TString component, int *counter = NULL, std::vector<float> *energies = NULL, std::vector<float> *ets = NULL,  std::vector<float> *detas = NULL, std::vector<float> *dphis = NULL, float *newphi = NULL, std::vector<int> removals = std::vector<int>());
+  std::pair<float,float> PFPhotonIsolationFromMinitree(int phoqi1, int phoqi2, pfcandidates_struct *pfcands);
   angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, int phoqi, int pfindex, float rotation_phi = 0);
+  angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, int pfindex);
   bool FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_phi, int phoqi, TString mod="");
   std::vector<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
 

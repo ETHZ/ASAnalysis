@@ -783,7 +783,9 @@ void DiPhotonMiniTree::Analyze(){
 	  if (eta>1.4442 && eta<1.56) continue;
 	  if (eta>2.5) continue;
 	  if (fTR->Pho_isPFPhoton[passing.at(i)] && fTR->pho_matchedPFPhotonCand[passing.at(i)]==k) continue;	
-	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) continue;
+	  bool removed = false;
+	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
+	  if (removed) continue;
 	  allphotonpfcand_pt[index] = fTR->PfCandPt[k];
 	  allphotonpfcand_eta[index] = fTR->PfCandEta[k];
 	  allphotonpfcand_phi[index] = fTR->PfCandPhi[k];
@@ -1367,6 +1369,10 @@ std::vector<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, int
   return GetPFCandWithFootprintRemoval(fTR,phoqi,rotation_phi,false,component);
 };
 
+std::vector<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component){
+  return GetPFCandWithFootprintRemoval(fTR,pfcands,phoqi,rotation_phi,false,component);
+};
+
 std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component){
 
   if (component!="photon"){
@@ -1402,7 +1408,6 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
     if (component=="photon" && type!=2) continue;
 
     TVector3 sc_position = TVector3(fTR->SCx[scindex],fTR->SCy[scindex],fTR->SCz[scindex]);
-    //    TVector3 ecalpfhit = PropagatePFCandToEcal(i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel); // approximate, but much faster! Note that inputs are not changed by rotation
 
     bool inside=false;
 
@@ -1417,7 +1422,7 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 	xtal_position *= r;
       }
 
-      TVector3 ecalpfhit = PropagatePFCandToEcal(i,isbarrel ? xtal_position.Perp() : xtal_position.z(), isbarrel); // this would be the most correct
+      TVector3 ecalpfhit = PropagatePFCandToEcal(fTR,i,isbarrel ? xtal_position.Perp() : xtal_position.z(), isbarrel); // this would be the most correct
 
       if (isbarrel){
 	float xtalEtaWidth = fTR->SCxtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
@@ -1458,7 +1463,78 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 
 };
 
-TVector3 DiPhotonMiniTree::PropagatePFCandToEcal(int pfcandindex, float position, bool isbarrel){
+std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, bool outoffootprint, TString component){
+
+  assert(rotation_phi==0);
+
+  if (component!="photon"){
+    std::cout << "propagation not implemented for non photon objects!!!" << std::endl;
+    return std::vector<int>();
+  }
+
+  if (phoqi<0) return std::vector<int>();
+
+  int scindex = fTR->PhotSCindex[phoqi];
+  
+  if (scindex<0) {
+    std::cout << "Error in GetPFCandOverlappingSC" << std::endl;
+    std::cout << scindex << " " << phoqi << std::endl;
+    return std::vector<int>();
+  }
+
+  bool isbarrel = fTR->PhoisEB[phoqi];
+  int nxtals = fTR->SCNXtals[scindex];
+
+  std::vector<int> result;
+
+  for (int i=0; i<pfcands->PfCandPt.size(); i++){
+
+    TVector3 sc_position = TVector3(fTR->SCx[scindex],fTR->SCy[scindex],fTR->SCz[scindex]);
+
+    bool inside=false;
+
+    for (int j=0; j<nxtals; j++){
+      
+      TVector3 xtal_position = TVector3(fTR->SCxtalX[scindex][j],fTR->SCxtalY[scindex][j],fTR->SCxtalZ[scindex][j]);
+
+      TVector3 ecalpfhit = PropagatePFCandToEcal(pfcands,i,isbarrel ? xtal_position.Perp() : xtal_position.z(), isbarrel); // this would be the most correct
+
+      if (isbarrel){
+	float xtalEtaWidth = fTR->SCxtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	float xtalPhiWidth = fTR->SCxtalPhiWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	if (fabs(ecalpfhit.Eta()-xtal_position.Eta())<xtalEtaWidth/2 && Util::DeltaPhi(ecalpfhit.Phi(),xtal_position.Phi())<xtalPhiWidth/2) inside=true;
+      }
+      else { // EE
+	if (ecalpfhit.z()*xtal_position.z()>0){
+	  TVector3 xtal_corners[4];
+	  for (int k=0; k<4; k++) xtal_corners[k] = TVector3(fTR->SCxtalfrontX[scindex][j][k],fTR->SCxtalfrontY[scindex][j][k],fTR->SCxtalfrontZ[scindex][j][k]);
+	  float hitx = ecalpfhit.x();
+	  float hity = ecalpfhit.y();
+	  float polx[5];
+	  float poly[5];
+	  for (int k=0; k<4; k++) polx[k] = xtal_corners[k].x();
+	  for (int k=0; k<4; k++) poly[k] = xtal_corners[k].y();
+	  polx[4]=polx[0]; poly[4]=poly[0]; // closed polygon
+	  float centerx = (polx[0]+polx[1]+polx[2]+polx[3])/4;
+	  float centery = (poly[0]+poly[1]+poly[2]+poly[3])/4;
+	  hitx = centerx + (hitx-centerx)/(1.0+global_linkbyrechit_enlargement);
+	  hity = centery + (hity-centery)/(1.0+global_linkbyrechit_enlargement);
+	  if (TMath::IsInside(hitx,hity,5,polx,poly)) inside=true;
+	}
+      }
+
+    }
+
+    if (outoffootprint) inside=!inside;
+    if (inside) result.push_back(i);
+
+  }
+
+  return result;
+
+};
+
+TVector3 DiPhotonMiniTree::PropagatePFCandToEcal(TreeReader *fTR, int pfcandindex, float position, bool isbarrel){
   // WARNING: this propagates until EE+ or EE- at the given TMath::Abs(position.z()) for isbarrel=0, depending on where the candidate is pointing.
 
   int i = pfcandindex;
@@ -1470,6 +1546,34 @@ TVector3 DiPhotonMiniTree::PropagatePFCandToEcal(int pfcandindex, float position
 
   TVector3 pfvertex(fTR->PfCandVx[i],fTR->PfCandVy[i],fTR->PfCandVz[i]);
   TVector3 pfmomentum(fTR->PfCandPx[i],fTR->PfCandPy[i],fTR->PfCandPz[i]);
+  pfmomentum = pfmomentum.Unit();
+  TVector3 ecalpfhit(0,0,0);
+  if (isbarrel){
+    double p[3] = {pfvertex.x(),pfvertex.y(),pfvertex.z()};
+    double d[3] = {pfmomentum.x(),pfmomentum.y(),pfmomentum.z()};
+    double dist = TGeoTube::DistFromInsideS(p,d,0,position,1e+10);
+    ecalpfhit = pfvertex + dist*pfmomentum;
+  }
+  else { // EE
+    double dim[6]={1e+10,1e+10,fabs(position),0,0,0};
+    double p[3] = {pfvertex.x(),pfvertex.y(),pfvertex.z()};
+    double d[3] = {pfmomentum.x(),pfmomentum.y(),pfmomentum.z()};
+    eegeom.SetDimensions(dim);
+    double dist = eegeom.DistFromInside(p,d);
+    ecalpfhit = pfvertex + dist*pfmomentum;
+  }
+
+  return ecalpfhit;
+
+};
+
+TVector3 DiPhotonMiniTree::PropagatePFCandToEcal(pfcandidates_struct *pfcands, int pfcandindex, float position, bool isbarrel){
+  // WARNING: this propagates until EE+ or EE- at the given TMath::Abs(position.z()) for isbarrel=0, depending on where the candidate is pointing.
+
+  int i = pfcandindex;
+
+  TVector3 pfvertex(pfcands->PfCandVx[i],pfcands->PfCandVy[i],pfcands->PfCandVz[i]);
+  TVector3 pfmomentum; pfmomentum.SetPtEtaPhi(pfcands->PfCandPt[i],pfcands->PfCandEta[i],pfcands->PfCandPhi[i]);
   pfmomentum = pfmomentum.Unit();
   TVector3 ecalpfhit(0,0,0);
   if (isbarrel){
@@ -1538,6 +1642,34 @@ isolations_struct DiPhotonMiniTree::PFConeIsolation(TreeReader *fTR, int phoqi){
   out.charged = PFIsolation(phoqi,0,"charged",&(out.nchargedcand),&(out.chargedcandenergies),&(out.chargedcandets),&(out.chargedcanddetas),&(out.chargedcanddphis));
   out.neutral = PFIsolation(phoqi,0,"neutral",&(out.nneutralcand),&(out.neutralcandenergies),&(out.neutralcandets),&(out.neutralcanddetas),&(out.neutralcanddphis));
   return out;
+};
+
+std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi1, int phoqi2, pfcandidates_struct *pfcands){
+
+  float result1=0;
+  float result2=0;
+  
+  std::vector<int> footprint = GetPFCandInsideFootprint(fTR,pfcands,phoqi1,0,"photon");
+  std::vector<int> footprint2 = GetPFCandInsideFootprint(fTR,pfcands,phoqi2,0,"photon"); // add phoqi<0 ritorna vuoto
+  footprint.insert(footprint.end(),footprint2.begin(),footprint2.end());
+
+  for (int i=0; i<pfcands->PfCandPt.size(); i++){
+
+    bool removed=false;
+    for (int j=0; j<footprint.size(); j++) {
+      if (i==footprint.at(j)) removed=true;
+    }
+    if (removed) continue;
+
+    if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi1,i).dR<0.4) result1+=pfcands->PfCandPt[i];
+    if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi2,i).dR<0.4) result2+=pfcands->PfCandPt[i];
+    
+
+  } // end pf cand loop
+
+
+  return std::make_pair<float,float>(result1,result2);
+
 };
 
 float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString component, int *counter, std::vector<float> *energies, std::vector<float> *ets, std::vector<float> *detas, std::vector<float> *dphis, float* newphi, std::vector<int> removals){
@@ -1769,7 +1901,40 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
   TVector3 pfmomentum(fTR->PfCandPx[i],fTR->PfCandPy[i],fTR->PfCandPz[i]);
   pfmomentum = pfmomentum.Unit();
 
-  TVector3 ecalpfhit = PropagatePFCandToEcal(i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel);
+  TVector3 ecalpfhit = PropagatePFCandToEcal(fTR,i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel);
+
+  angular_distances_struct out;
+  out.dR = Util::GetDeltaR(sc_position.Eta(),ecalpfhit.Eta(),sc_position.Phi(),ecalpfhit.Phi());
+  out.dEta = ecalpfhit.Eta()-sc_position.Eta();
+  out.dPhi = DeltaPhiSigned(ecalpfhit.Phi(),sc_position.Phi());
+
+  return out;
+
+}
+
+angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, int pfindex){
+
+  int i = pfindex;
+  int scindex = fTR->PhotSCindex[phoqi];
+
+  if (scindex<0) {
+    std::cout << "Error in GetPFCandDeltaRFromSC" << std::endl;
+    angular_distances_struct out;
+    out.dR = 999;
+    out.dEta = 999;
+    out.dPhi = 999;
+    return out;
+  }
+
+  bool isbarrel = fTR->PhoisEB[phoqi];
+
+  TVector3 sc_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+
+  TVector3 pfvertex(pfcands->PfCandVx[i],pfcands->PfCandVy[i],pfcands->PfCandVz[i]);
+  TVector3 pfmomentum; pfmomentum.SetPtEtaPhi(pfcands->PfCandPt[i],pfcands->PfCandEta[i],pfcands->PfCandPhi[i]);
+  pfmomentum = pfmomentum.Unit();
+
+  TVector3 ecalpfhit = PropagatePFCandToEcal(pfcands,i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel);
 
   angular_distances_struct out;
   out.dR = Util::GetDeltaR(sc_position.Eta(),ecalpfhit.Eta(),sc_position.Phi(),ecalpfhit.Phi());
