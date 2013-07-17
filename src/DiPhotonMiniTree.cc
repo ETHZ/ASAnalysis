@@ -778,6 +778,7 @@ void DiPhotonMiniTree::Analyze(){
 	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
+	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
 	  if (fTR->PfCandPdgId[k]!=22) continue;
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.56) continue;
