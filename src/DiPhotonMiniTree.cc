@@ -112,6 +112,10 @@ void DiPhotonMiniTree::Begin(){
 
   for (int i=0; i<18; i++){
 
+  OutputTree[i]->Branch("event_run",&event_run,"event_run/I");
+  OutputTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
+  OutputTree[i]->Branch("event_number",&event_number,"event_number/I");
+
   OutputTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
   OutputTree[i]->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
 
