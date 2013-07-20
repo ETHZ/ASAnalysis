@@ -344,6 +344,17 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("allphotonpfcand_vx",&allphotonpfcand_vx,"allphotonpfcand_vx[allphotonpfcand_count]/F");
   OutputTree[i]->Branch("allphotonpfcand_vy",&allphotonpfcand_vy,"allphotonpfcand_vy[allphotonpfcand_count]/F");
   OutputTree[i]->Branch("allphotonpfcand_vz",&allphotonpfcand_vz,"allphotonpfcand_vz[allphotonpfcand_count]/F");
+
+  OutputTree[i]->Branch("phoiso_template_sigsig_1",&phoiso_template_sigsig_1,"phoiso_template_sigsig_1[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_sigsig_2",&phoiso_template_sigsig_2,"phoiso_template_sigsig_2[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_sigbkg_1",&phoiso_template_sigbkg_1,"phoiso_template_sigbkg_1[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_sigbkg_2",&phoiso_template_sigbkg_2,"phoiso_template_sigbkg_2[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_bkgsig_1",&phoiso_template_bkgsig_1,"phoiso_template_bkgsig_1[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_bkgsig_2",&phoiso_template_bkgsig_2,"phoiso_template_bkgsig_2[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_bkgbkg_1",&phoiso_template_bkgbkg_1,"phoiso_template_bkgbkg_1[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_bkgbkg_2",&phoiso_template_bkgbkg_2,"phoiso_template_bkgbkg_2[nclosest]/F");
+
+
   }
 
 
@@ -729,6 +740,23 @@ void DiPhotonMiniTree::Analyze(){
 	  if (rcone_isos.photon==-999 || rcone_isos.neutral==-999 || rcone_isos.charged==-999) dofill=false;
 	}
 
+
+      if (sel_cat==0 && isstep2){ // new templates from event mixing
+
+	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex();
+	if (index_matchingtree<0) {cout << "NO MATCHING FOUND!!!" << endl; dofill=false;}
+	matchingtree->GetEntry(index_matchingtree);
+	if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING" << endl; dofill=false;}
+	
+	FillPhoIso_NewTemplates(fTR,matchingtree_index_sigsig_1,matchingtree_index_sigsig_2,passing,kSigSig);
+	FillPhoIso_NewTemplates(fTR,matchingtree_index_sigbkg_1,matchingtree_index_sigbkg_2,passing,kSigBkg);
+	FillPhoIso_NewTemplates(fTR,matchingtree_index_bkgsig_1,matchingtree_index_bkgsig_2,passing,kBkgSig);
+	FillPhoIso_NewTemplates(fTR,matchingtree_index_bkgbkg_1,matchingtree_index_bkgbkg_2,passing,kBkgBkg);
+
+      }
+
+
+
       float invmass0 = (CorrPhoton(fTR,passing.at(0),0)+CorrPhoton(fTR,passing.at(1),0)).M();
       float invmass5 = (CorrPhoton(fTR,passing.at(0),5)+CorrPhoton(fTR,passing.at(1),5)).M();
       float invmass6 = (CorrPhoton(fTR,passing.at(0),6)+CorrPhoton(fTR,passing.at(1),6)).M();
@@ -970,6 +998,55 @@ void DiPhotonMiniTree::End(){
   fOutputFile->Close();
 
 }
+
+
+void FillPhoIso_NewTemplates(TreeReader *fTR, int n1, int n2, std::vector<int> passing, SigBkgMode mode){
+
+  int m1 = (mode==kSigSig || mode==kSigBkg) ? 0 : 1;
+  int m2 = (mode==kSigSig || mode==kBkgSig) ? 0 : 1;
+  
+	for (int l=0; l<nclosest; l++){
+	  if (m1==m2 && n1==n2) {cout << "Same event for axis 1 and 2, skipping" << endl; continue;}
+	  pfcandidates_struct pfcands;
+	  InputTree[m1]->GetEntry(n1);
+	  for (int k=0; k<input_allphotonpfcand_count; k++){
+	    pfcands.PfCandPt.push_back(input_allphotonpfcand_pt[k]);
+	    pfcands.PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]);
+	    pfcands.PfCandPhi.push_back(DeltaPhiSigned(input_allphotonpfcand_phi[k],input_pholead_SCphi)+fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]);
+	    pfcands.PfCandVx.push_back(input_allphotonpfcand_vx[k]);
+	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
+	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
+	  }
+	  InputTree[m2]->GetEntry(n2);
+	  for (int k=0; k<input_allphotonpfcand_count; k++){
+	    pfcands.PfCandPt.push_back(input_allphotonpfcand_pt[k]);
+	    pfcands.PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]);
+	    pfcands.PfCandPhi.push_back(DeltaPhiSigned(input_allphotonpfcand_phi[k],input_pholead_SCphi)+fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]);
+	    pfcands.PfCandVx.push_back(input_allphotonpfcand_vx[k]);
+	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
+	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
+	  }
+	  std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
+	  if (mode==kSigSig){
+	    phoiso_template_sigsig_1[l] = isos.first;
+	    phoiso_template_sigsig_2[l] = isos.second;
+	  }
+	  else if (mode==kSigBkg){
+	    phoiso_template_sigbkg_1[l] = isos.first;
+	    phoiso_template_sigbkg_2[l] = isos.second;
+	  }
+	  else if (mode==kBkgSig){
+	    phoiso_template_bkgsig_1[l] = isos.first;
+	    phoiso_template_bkgsig_2[l] = isos.second;
+	  }
+	  else if (mode==kBkgBkg){
+	    phoiso_template_bkgbkg_1[l] = isos.first;
+	    phoiso_template_bkgbkg_2[l] = isos.second;
+	  }
+	}
+
+};
+
 
 TLorentzVector DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i, int mode){
   TLorentzVector corr;
@@ -2406,6 +2483,18 @@ void DiPhotonMiniTree::ResetVars(){
     allphotonpfcand_vy[i]=-999;
     allphotonpfcand_vz[i]=-999;
   }
+
+  for (int i=0; i<nclosest; i++){
+    phoiso_template_sigsig_1[i]=-999;
+    phoiso_template_sigsig_2[i]=-999;
+    phoiso_template_sigbkg_1[i]=-999;
+    phoiso_template_sigbkg_2[i]=-999;
+    phoiso_template_bkgsig_1[i]=-999;
+    phoiso_template_bkgsig_2[i]=-999;
+    phoiso_template_bkgbkg_1[i]=-999;
+    phoiso_template_bkgbkg_2[i]=-999;
+  }
+
 
 };
 

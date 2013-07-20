@@ -27,11 +27,22 @@
 #include "TGeoPara.h"
 #include "TGeoTube.h"
 
+enum SigBkgMode {
+  kSigSig = 0,
+  kSigBkg = 1,
+  kBkgSig = 2,
+  kBkgBkg = 3,
+  kSig = 4,
+  kBkg = 5
+};
+
 const int global_maxN_photonpfcandidates = 2000;
 
 const int global_size_pfcandarrays = 30;
 
 const float global_dR_cut_acceptance = 0.45;
+
+const int nclosest = 10;
 
 typedef struct {
   float photon;
@@ -394,6 +405,15 @@ private:
   Float_t allphotonpfcand_vx[global_maxN_photonpfcandidates];
   Float_t allphotonpfcand_vy[global_maxN_photonpfcandidates];
   Float_t allphotonpfcand_vz[global_maxN_photonpfcandidates];
+
+Float_t phoiso_template_sigsig_1[nclosest];
+Float_t phoiso_template_sigsig_2[nclosest];
+Float_t phoiso_template_sigbkg_1[nclosest];
+Float_t phoiso_template_sigbkg_2[nclosest];
+Float_t phoiso_template_bkgsig_1[nclosest];
+Float_t phoiso_template_bkgsig_2[nclosest];
+Float_t phoiso_template_bkgbkg_1[nclosest];
+Float_t phoiso_template_bkgbkg_2[nclosest];
 
 };
 #endif
