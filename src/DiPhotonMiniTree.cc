@@ -546,6 +546,8 @@ void DiPhotonMiniTree::Analyze(){
 
     if (isdata){
       if (sel_cat>=11) continue;
+      if (sel_cat>=9) continue;
+      if (sel_cat==4 || sel_cat==5) continue;
     }
 
     pass[sel_cat]=false;
@@ -697,6 +699,8 @@ void DiPhotonMiniTree::Analyze(){
 
     if (isdata){
       if (sel_cat>=11) continue;
+      if (sel_cat>=9) continue;
+      if (sel_cat==4 || sel_cat==5) continue;
     }
 
     if (!pass[sel_cat]) continue;
@@ -1056,6 +1060,8 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
 	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	  }
+	  if (fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) {if (fabs(input_pholead_SCeta) > 1.4442) continue;}
+	  else {if (fabs(input_pholead_SCeta) < 1.4442) continue;}
 	  InputTree[m2]->GetEntry(n2);
 	  for (int k=0; k<input_allphotonpfcand_count; k++){
 	    pfcands.PfCandPt.push_back(input_allphotonpfcand_pt[k]);
@@ -1065,6 +1071,9 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
 	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	  }
+	  if (fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) {if (fabs(input_pholead_SCeta) > 1.4442) continue;}
+	  else {if (fabs(input_pholead_SCeta) < 1.4442) continue;}
+
 	  std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
 	  if (mode==kSigSig){
 	    phoiso_template_sigsig_1[l] = isos.first;
