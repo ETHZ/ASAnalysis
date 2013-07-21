@@ -16,7 +16,7 @@ using namespace std;
 //________________________________________________________________________________________
 // Print out usage
 void usage( int status = 0 ) {
-	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-Y minthrpfphotoncandEB] [-y minthrpfphotoncandEE] [-l] file1 [... filen]" << endl;
+	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-Y minthrpfphotoncandEB] [-y minthrpfphotoncandEE] [-s step] [-S input_filename_step2] [-l] file1 [... filen]" << endl;
 	cout << "  where:" << endl;
 	cout << "     dir      is the output directory               " << endl;
 	cout << "               default is current directory               " << endl;
@@ -47,12 +47,14 @@ int main(int argc, char* argv[]) {
 	Int_t nevtsindset=-1;
 	Float_t minthrpfphotoncandEB = 0;
 	Float_t minthrpfphotoncandEE = 0;
+	bool isstep2 = false;
+	TString input_filename = "";
 
 	Float_t kfactors[3]={1,1,1};
 
 	// Parse options
 	char ch;
-	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:Y:y:lh?")) != -1 ) {
+	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:Y:y:s:S:lh?")) != -1 ) {
 	  switch (ch) {
 	  case 'N': nevtsindset = atoi(optarg); break;
 	  case 'G': kfactors[0] = atof(optarg); break;
@@ -73,6 +75,8 @@ int main(int argc, char* argv[]) {
 	  case 'L': nlumi = atof(optarg); break;
 	  case 'Y': minthrpfphotoncandEB = atof(optarg); break;
 	  case 'y': minthrpfphotoncandEE = atof(optarg); break;
+	  case 's': atoi(optarg)==2 ? isstep2=true : isstep2=false; break;
+	  case 'S': input_filename=TString(optarg); break;
 	  default:
 	    cerr << "*** Error: unknown option " << optarg << std::endl;
 	    usage(-1);
@@ -119,6 +123,8 @@ int main(int argc, char* argv[]) {
 	cout << "gg,gj,jj k-factors:  " << kfactors[0] << " " << kfactors[1] << " " << kfactors[2] << endl;
 	cout << "minthrpfphotoncandEB = " << minthrpfphotoncandEB << endl;
 	cout << "minthrpfphotoncandEE = " << minthrpfphotoncandEE << endl;
+	cout << "step2 = " << isstep2 << endl;
+	cout << "input_filename = " << input_filename.Data() << endl;
 	cout << "--------------" << endl;
 
 	Float_t AddWeight;
@@ -128,7 +134,7 @@ int main(int argc, char* argv[]) {
 
 	if (verbose) cout << "Reweighting factor for luminosity rescaling: " << AddWeight << endl;
 
-	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(theChain,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE);
+	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(theChain,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename);
 	tA->SetOutputDir(outputdir);
 	tA->SetOutputFile(outputfile);
 	tA->SetVerbose(verbose);

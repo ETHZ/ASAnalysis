@@ -10,7 +10,7 @@
 
 using namespace std;
 
-DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE) : UserAnalysisBase(tr), fDataType_(dataType), AddWeight(aw), kfactors(_kfac), global_minthrpfphotoncandEB(_minthrpfphotoncandEB), global_minthrpfphotoncandEE(_minthrpfphotoncandEE){
+DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE, bool _isstep2, TString _input_filename) : UserAnalysisBase(tr), fDataType_(dataType), AddWeight(aw), kfactors(_kfac), global_minthrpfphotoncandEB(_minthrpfphotoncandEB), global_minthrpfphotoncandEE(_minthrpfphotoncandEE), isstep2(_isstep2), input_filename(_input_filename){
   Util::SetStyle();	
   if (fDataType_ == "mc") isdata=false;
   else if (fDataType_ == "data") isdata=true; 
@@ -354,6 +354,39 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("phoiso_template_bkgbkg_1",&phoiso_template_bkgbkg_1,"phoiso_template_bkgbkg_1[nclosest]/F");
   OutputTree[i]->Branch("phoiso_template_bkgbkg_2",&phoiso_template_bkgbkg_2,"phoiso_template_bkgbkg_2[nclosest]/F");
 
+
+  }
+
+  if (isstep2){
+    f_input = new TFile(input_filename.Data(),"read");
+    f_input->GetObject("Tree_1Drandomcone_template",InputTree[0]);
+    f_input->GetObject("Tree_1Dsideband_template",InputTree[1]);
+    for (int m=0; m<2; m++){
+      InputTree[m]->SetBranchAddress("allphotonpfcand_count", &input_allphotonpfcand_count, &b_input_allphotonpfcand_count);
+      InputTree[m]->SetBranchAddress("allphotonpfcand_pt", input_allphotonpfcand_pt   , &b_input_allphotonpfcand_pt   );
+      InputTree[m]->SetBranchAddress("allphotonpfcand_eta", input_allphotonpfcand_eta  , &b_input_allphotonpfcand_eta  );
+      InputTree[m]->SetBranchAddress("allphotonpfcand_phi", input_allphotonpfcand_phi  , &b_input_allphotonpfcand_phi  );
+      InputTree[m]->SetBranchAddress("allphotonpfcand_vx", input_allphotonpfcand_vx   , &b_input_allphotonpfcand_vx   );
+      InputTree[m]->SetBranchAddress("allphotonpfcand_vy", input_allphotonpfcand_vy   , &b_input_allphotonpfcand_vy   );
+      InputTree[m]->SetBranchAddress("allphotonpfcand_vz", input_allphotonpfcand_vz   , &b_input_allphotonpfcand_vz   );
+      InputTree[m]->SetBranchAddress("pholead_SCeta", &input_pholead_SCeta, &b_input_pholead_SCeta);
+      InputTree[m]->SetBranchAddress("pholead_SCphi", &input_pholead_SCphi, &b_input_pholead_SCphi);
+    }
+
+    f_input->GetObject("matchingtree",matchingtree);
+    matchingtree->SetBranchAddress("matchingtree_event_run",&matchingtree_event_run,&b_matchingtree_event_run);
+    matchingtree->SetBranchAddress("matchingtree_event_lumi",&matchingtree_event_lumi,&b_matchingtree_event_lumi);
+    matchingtree->SetBranchAddress("matchingtree_event_number",&matchingtree_event_number,&b_matchingtree_event_number);
+    matchingtree->SetBranchAddress("matchingtree_index_sigsig_1",matchingtree_index_sigsig_1,&b_matchingtree_index_sigsig_1);
+    matchingtree->SetBranchAddress("matchingtree_index_sigsig_2",matchingtree_index_sigsig_2,&b_matchingtree_index_sigsig_2);
+    matchingtree->SetBranchAddress("matchingtree_index_sigbkg_1",matchingtree_index_sigbkg_1,&b_matchingtree_index_sigbkg_1);
+    matchingtree->SetBranchAddress("matchingtree_index_sigbkg_2",matchingtree_index_sigbkg_2,&b_matchingtree_index_sigbkg_2);
+    matchingtree->SetBranchAddress("matchingtree_index_bkgsig_1",matchingtree_index_bkgsig_1,&b_matchingtree_index_bkgsig_1);
+    matchingtree->SetBranchAddress("matchingtree_index_bkgsig_2",matchingtree_index_bkgsig_2,&b_matchingtree_index_bkgsig_2);
+    matchingtree->SetBranchAddress("matchingtree_index_bkgbkg_1",matchingtree_index_bkgbkg_1,&b_matchingtree_index_bkgbkg_1);
+    matchingtree->SetBranchAddress("matchingtree_index_bkgbkg_2",matchingtree_index_bkgbkg_2,&b_matchingtree_index_bkgbkg_2);
+
+    matchingtree->BuildIndex("matchingtree_event_run*10000+matchingtree_event_lumi","matchingtree_event_number");
 
   }
 
@@ -743,7 +776,7 @@ void DiPhotonMiniTree::Analyze(){
 
       if (sel_cat==0 && isstep2){ // new templates from event mixing
 
-	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex();
+	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex(event_run*10000+event_lumi,event_number);
 	if (index_matchingtree<0) {cout << "NO MATCHING FOUND!!!" << endl; dofill=false;}
 	matchingtree->GetEntry(index_matchingtree);
 	if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING" << endl; dofill=false;}
@@ -1000,12 +1033,14 @@ void DiPhotonMiniTree::End(){
 }
 
 
-void FillPhoIso_NewTemplates(TreeReader *fTR, int n1, int n2, std::vector<int> passing, SigBkgMode mode){
+void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode){
 
   int m1 = (mode==kSigSig || mode==kSigBkg) ? 0 : 1;
   int m2 = (mode==kSigSig || mode==kBkgSig) ? 0 : 1;
   
 	for (int l=0; l<nclosest; l++){
+	  int n1 = n1_arr[l];
+	  int n2 = n2_arr[l];
 	  if (m1==m2 && n1==n2) {cout << "Same event for axis 1 and 2, skipping" << endl; continue;}
 	  pfcandidates_struct pfcands;
 	  InputTree[m1]->GetEntry(n1);

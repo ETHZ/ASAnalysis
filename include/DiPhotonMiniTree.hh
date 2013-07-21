@@ -83,7 +83,7 @@ typedef struct {
 
 class DiPhotonMiniTree : public UserAnalysisBase{
 public:
-  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0);
+  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "");
   virtual ~DiPhotonMiniTree();
 
   void Begin();
@@ -130,6 +130,8 @@ private:
   angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, int pfindex);
   bool FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_phi, int phoqi, TString mod="");
   std::vector<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
+
+  void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode);
 
   std::vector<int> DiPhotonInvariantMassCutSelection(TreeReader *fTR, std::vector<int> passing);
 
@@ -406,14 +408,66 @@ private:
   Float_t allphotonpfcand_vy[global_maxN_photonpfcandidates];
   Float_t allphotonpfcand_vz[global_maxN_photonpfcandidates];
 
-Float_t phoiso_template_sigsig_1[nclosest];
-Float_t phoiso_template_sigsig_2[nclosest];
-Float_t phoiso_template_sigbkg_1[nclosest];
-Float_t phoiso_template_sigbkg_2[nclosest];
-Float_t phoiso_template_bkgsig_1[nclosest];
-Float_t phoiso_template_bkgsig_2[nclosest];
-Float_t phoiso_template_bkgbkg_1[nclosest];
-Float_t phoiso_template_bkgbkg_2[nclosest];
+  Float_t phoiso_template_sigsig_1[nclosest];
+  Float_t phoiso_template_sigsig_2[nclosest];
+  Float_t phoiso_template_sigbkg_1[nclosest];
+  Float_t phoiso_template_sigbkg_2[nclosest];
+  Float_t phoiso_template_bkgsig_1[nclosest];
+  Float_t phoiso_template_bkgsig_2[nclosest];
+  Float_t phoiso_template_bkgbkg_1[nclosest];
+  Float_t phoiso_template_bkgbkg_2[nclosest];
+
+  Int_t   input_allphotonpfcand_count;
+  Float_t input_allphotonpfcand_pt[global_maxN_photonpfcandidates];
+  Float_t input_allphotonpfcand_eta[global_maxN_photonpfcandidates];
+  Float_t input_allphotonpfcand_phi[global_maxN_photonpfcandidates];
+  Float_t input_allphotonpfcand_vx[global_maxN_photonpfcandidates];
+  Float_t input_allphotonpfcand_vy[global_maxN_photonpfcandidates];
+  Float_t input_allphotonpfcand_vz[global_maxN_photonpfcandidates];
+  Float_t input_pholead_SCeta;
+  Float_t input_pholead_SCphi;
+
+  TBranch *b_input_allphotonpfcand_count;
+  TBranch *b_input_allphotonpfcand_pt   ;
+  TBranch *b_input_allphotonpfcand_eta  ;
+  TBranch *b_input_allphotonpfcand_phi  ;
+  TBranch *b_input_allphotonpfcand_vx   ;
+  TBranch *b_input_allphotonpfcand_vy   ;
+  TBranch *b_input_allphotonpfcand_vz   ;
+  TBranch *b_input_pholead_SCeta;
+  TBranch *b_input_pholead_SCphi;
+  
+  TBranch *b_matchingtree_event_run;
+  TBranch *b_matchingtree_event_lumi;
+  TBranch *b_matchingtree_event_number;
+  TBranch *b_matchingtree_index_sigsig_1;
+  TBranch *b_matchingtree_index_sigsig_2;
+  TBranch *b_matchingtree_index_sigbkg_1;
+  TBranch *b_matchingtree_index_sigbkg_2;
+  TBranch *b_matchingtree_index_bkgsig_1;
+  TBranch *b_matchingtree_index_bkgsig_2;
+  TBranch *b_matchingtree_index_bkgbkg_1;
+  TBranch *b_matchingtree_index_bkgbkg_2;
+
+
+  bool isstep2;
+  TFile *f_input;
+  TString input_filename;
+  TTree *InputTree[2];
+  TTree *matchingtree;
+  Int_t matchingtree_event_run;
+  Int_t matchingtree_event_lumi;
+  Int_t matchingtree_event_number;
+  Int_t matchingtree_index_sigsig_1[nclosest];
+  Int_t matchingtree_index_sigsig_2[nclosest];
+  Int_t matchingtree_index_sigbkg_1[nclosest];
+  Int_t matchingtree_index_sigbkg_2[nclosest];
+  Int_t matchingtree_index_bkgsig_1[nclosest];
+  Int_t matchingtree_index_bkgsig_2[nclosest];
+  Int_t matchingtree_index_bkgbkg_1[nclosest];
+  Int_t matchingtree_index_bkgbkg_2[nclosest];
+
+
 
 };
 #endif
