@@ -540,6 +540,8 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
+    if (isstep2 && sel_cat!=0) continue;
+
     if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
 
     if (isdata){
@@ -689,6 +691,8 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
+    if (isstep2 && sel_cat!=0) continue;
+
     if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
 
     if (isdata){
@@ -777,7 +781,7 @@ void DiPhotonMiniTree::Analyze(){
       if (sel_cat==0 && isstep2){ // new templates from event mixing
 
 	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex(event_run*10000+event_lumi,event_number);
-	if (index_matchingtree<0) {cout << "NO MATCHING FOUND!!!" << endl; dofill=false;}
+	if (index_matchingtree<0) {cout << "NO MATCHING FOUND!!!" << endl; cout << event_run << " " << event_lumi << " " << event_number << endl; dofill=false;}
 	matchingtree->GetEntry(index_matchingtree);
 	if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING" << endl; dofill=false;}
 	
