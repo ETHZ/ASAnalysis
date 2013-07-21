@@ -1272,16 +1272,25 @@ std::vector<int> DiPhotonMiniTree::PhotonSelection(TreeReader *fTR, std::vector<
 //    if (!pass) it=passing.erase(it); else it++;
 //  }
 
-  for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
-    bool pass=0;
-    float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
-    float combiso = PFIsolation(*it,0,"combined");
-    if (mode=="no_combiso_cut") pass=1; // pass in any case
-    else if (mode=="cut_combiso_sideband"){ // selection for sideband
-      //      if (combiso> && combiso<) pass=1;
+//  for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
+//    bool pass=0;
+//    float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
+//    float combiso = PFIsolation(*it,0,"combined");
+//    if (mode=="no_combiso_cut") pass=1; // pass in any case
+//    else if (mode=="cut_combiso_sideband"){ // selection for sideband
+//      //      if (combiso> && combiso<) pass=1;
+//    }
+//    else if (combiso<999) pass=1;
+//    if (!pass) it=passing.erase(it); else it++;
+//  }
+
+
+  if (mode=="invert_sieie_cut"){ // veto close objects
+    for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // HoverE cut
+      bool pass=1;
+      if (FindCloseJetsAndPhotons(fTR,0,*it,"exclude_object_itself")) pass=0;
+      if (!pass) it=passing.erase(it); else it++;
     }
-    else if (combiso<999) pass=1;
-    if (!pass) it=passing.erase(it); else it++;
   }
 
   return passing;
@@ -1433,7 +1442,7 @@ double DiPhotonMiniTree::phiNorm(float phi) {
 
 bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_phi, int phoqi, TString mod){
 
-  if (mod!="" && mod!="nocombisocut") {std::cout << "error" << std::endl; return true;}
+  if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl; return true;}
 
   TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
   if (rotation_phi!=0) {
@@ -1452,6 +1461,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
   for (int i=0; i<fTR->NJets; i++){
     if (fTR->JPt[i]<20) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
+    if (mod=="exclude_object_itself") if (dR<0.2) continue;
     if (dR<mindR) found=true;
     if (debug) if (dR<mindR) std::cout << "Found jet eta=" << fTR->JEta[i] << " phi=" << fTR->JPhi[i] << std::endl;
   }
@@ -1459,11 +1469,10 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
   for (int i=0; i<fTR->NPhotons; i++){
     if (fTR->PhoPt[i]<10) continue;
     float dR = Util::GetDeltaR(eta,fTR->PhoEta[i],phi,fTR->PhoPhi[i]);
+    if (mod=="exclude_object_itself") if (dR<0.2) continue;
     if (dR<mindR) found=true;
     if (debug) if (dR<mindR) std::cout << "Found phot eta=" << fTR->PhoEta[i] << " phi=" << fTR->PhoPhi[i] << std::endl;
   }
-
-  if (mod!="nocombisocut") { if (PFIsolation(phoqi,rotation_phi,"combined")>999) found=true; }
 
   for (int i=0; i<fTR->NMus; i++){
     float mueta = fTR->MuEta[i];
