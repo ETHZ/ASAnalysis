@@ -345,14 +345,14 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("allphotonpfcand_vy",&allphotonpfcand_vy,"allphotonpfcand_vy[allphotonpfcand_count]/F");
   OutputTree[i]->Branch("allphotonpfcand_vz",&allphotonpfcand_vz,"allphotonpfcand_vz[allphotonpfcand_count]/F");
 
-  OutputTree[i]->Branch("phoiso_template_sigsig_1",&phoiso_template_sigsig_1,"phoiso_template_sigsig_1[nclosest]/F");
-  OutputTree[i]->Branch("phoiso_template_sigsig_2",&phoiso_template_sigsig_2,"phoiso_template_sigsig_2[nclosest]/F");
-  OutputTree[i]->Branch("phoiso_template_sigbkg_1",&phoiso_template_sigbkg_1,"phoiso_template_sigbkg_1[nclosest]/F");
-  OutputTree[i]->Branch("phoiso_template_sigbkg_2",&phoiso_template_sigbkg_2,"phoiso_template_sigbkg_2[nclosest]/F");
-  OutputTree[i]->Branch("phoiso_template_bkgsig_1",&phoiso_template_bkgsig_1,"phoiso_template_bkgsig_1[nclosest]/F");
-  OutputTree[i]->Branch("phoiso_template_bkgsig_2",&phoiso_template_bkgsig_2,"phoiso_template_bkgsig_2[nclosest]/F");
-  OutputTree[i]->Branch("phoiso_template_bkgbkg_1",&phoiso_template_bkgbkg_1,"phoiso_template_bkgbkg_1[nclosest]/F");
-  OutputTree[i]->Branch("phoiso_template_bkgbkg_2",&phoiso_template_bkgbkg_2,"phoiso_template_bkgbkg_2[nclosest]/F");
+  OutputTree[i]->Branch("phoiso_template_sigsig_1",&phoiso_template_sigsig_1,Form("phoiso_template_sigsig_1[%d]/F",nclosest));
+  OutputTree[i]->Branch("phoiso_template_sigsig_2",&phoiso_template_sigsig_2,Form("phoiso_template_sigsig_2[%d]/F",nclosest));
+  OutputTree[i]->Branch("phoiso_template_sigbkg_1",&phoiso_template_sigbkg_1,Form("phoiso_template_sigbkg_1[%d]/F",nclosest));
+  OutputTree[i]->Branch("phoiso_template_sigbkg_2",&phoiso_template_sigbkg_2,Form("phoiso_template_sigbkg_2[%d]/F",nclosest));
+  OutputTree[i]->Branch("phoiso_template_bkgsig_1",&phoiso_template_bkgsig_1,Form("phoiso_template_bkgsig_1[%d]/F",nclosest));
+  OutputTree[i]->Branch("phoiso_template_bkgsig_2",&phoiso_template_bkgsig_2,Form("phoiso_template_bkgsig_2[%d]/F",nclosest));
+  OutputTree[i]->Branch("phoiso_template_bkgbkg_1",&phoiso_template_bkgbkg_1,Form("phoiso_template_bkgbkg_1[%d]/F",nclosest));
+  OutputTree[i]->Branch("phoiso_template_bkgbkg_2",&phoiso_template_bkgbkg_2,Form("phoiso_template_bkgbkg_2[%d]/F",nclosest));
 
 
   }
