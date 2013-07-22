@@ -112,6 +112,8 @@ void DiPhotonMiniTree::Begin(){
 
   for (int i=0; i<18; i++){
 
+  OutputTree[i]->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
+
   OutputTree[i]->Branch("event_run",&event_run,"event_run/I");
   OutputTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
   OutputTree[i]->Branch("event_number",&event_number,"event_number/I");
@@ -462,6 +464,8 @@ void DiPhotonMiniTree::Analyze(){
   
   event_luminormfactor=AddWeight;
 
+  event_fileuuid = uuid;
+
   event_run = fTR->Run;
   event_lumi = fTR->LumiSection;
   event_number = fTR->Event;
@@ -788,11 +792,16 @@ void DiPhotonMiniTree::Analyze(){
 	if (index_matchingtree<0) {cout << "NO MATCHING FOUND!!!" << endl; cout << event_run << " " << event_lumi << " " << event_number << endl; dofill=false;}
 	matchingtree->GetEntry(index_matchingtree);
 	if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING" << endl; dofill=false;}
-	
+
+
 	FillPhoIso_NewTemplates(fTR,matchingtree_index_sigsig_1,matchingtree_index_sigsig_2,passing,kSigSig);
 	FillPhoIso_NewTemplates(fTR,matchingtree_index_sigbkg_1,matchingtree_index_sigbkg_2,passing,kSigBkg);
 	FillPhoIso_NewTemplates(fTR,matchingtree_index_bkgsig_1,matchingtree_index_bkgsig_2,passing,kBkgSig);
 	FillPhoIso_NewTemplates(fTR,matchingtree_index_bkgbkg_1,matchingtree_index_bkgbkg_2,passing,kBkgBkg);
+
+//	for (int l=0; l<nclosest; l++) cout << matchingtree_index_sigsig_1[l] << endl;
+//	for (int l=0; l<nclosest; l++) cout << phoiso_template_sigsig_1[l] << endl;
+
 
       }
 
@@ -1043,6 +1052,8 @@ void DiPhotonMiniTree::End(){
 
 void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode){
 
+  //  cout << "EVENT " << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << endl;
+
   int m1 = (mode==kSigSig || mode==kSigBkg) ? 0 : 1;
   int m2 = (mode==kSigSig || mode==kBkgSig) ? 0 : 1;
   
@@ -1051,7 +1062,9 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	  int n2 = n2_arr[l];
 	  if (m1==m2 && n1==n2) {cout << "Same event for axis 1 and 2, skipping" << endl; continue;}
 	  pfcandidates_struct pfcands;
-	  InputTree[m1]->GetEntry(n1);
+	  bool skip_EBEE = false;
+
+	  if (InputTree[m1]->GetEntry(n1)<=0) continue;
 	  for (int k=0; k<input_allphotonpfcand_count; k++){
 	    pfcands.PfCandPt.push_back(input_allphotonpfcand_pt[k]);
 	    pfcands.PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]);
@@ -1060,9 +1073,14 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
 	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	  }
-	  if (fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) {if (fabs(input_pholead_SCeta) > 1.4442) continue;}
-	  else {if (fabs(input_pholead_SCeta) < 1.4442) continue;}
-	  InputTree[m2]->GetEntry(n2);
+	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
+	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
+
+	  if (skip_EBEE) {cout << "EB/EE migration, skipping" << endl; cout << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << input_pholead_SCeta << endl; continue;}
+
+	  skip_EBEE = false;
+
+	  if (InputTree[m2]->GetEntry(n2)<=0) continue;
 	  for (int k=0; k<input_allphotonpfcand_count; k++){
 	    pfcands.PfCandPt.push_back(input_allphotonpfcand_pt[k]);
 	    pfcands.PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]);
@@ -1071,10 +1089,14 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
 	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	  }
-	  if (fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) {if (fabs(input_pholead_SCeta) > 1.4442) continue;}
-	  else {if (fabs(input_pholead_SCeta) < 1.4442) continue;}
+	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
+	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
+
+	  if (skip_EBEE) {cout << "EB/EE migration, skipping" << endl; cout << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << input_pholead_SCeta << endl; continue;}
+
 
 	  std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
+	  //	  cout << isos.first << " " << isos.second << endl;
 	  if (mode==kSigSig){
 	    phoiso_template_sigsig_1[l] = isos.first;
 	    phoiso_template_sigsig_2[l] = isos.second;

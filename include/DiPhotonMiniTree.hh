@@ -378,6 +378,8 @@ private:
   TH1F *fHNumPUTrue_noweight;
   TH1F *fHNumVtx;
 
+  UInt_t event_fileuuid;
+
   Int_t event_run;
   Int_t event_lumi;
   Int_t event_number;
@@ -437,6 +439,8 @@ private:
   TBranch *b_input_pholead_SCeta;
   TBranch *b_input_pholead_SCphi;
   
+  TBranch *b_matchingtree_event_fileuuid;
+
   TBranch *b_matchingtree_event_run;
   TBranch *b_matchingtree_event_lumi;
   TBranch *b_matchingtree_event_number;
