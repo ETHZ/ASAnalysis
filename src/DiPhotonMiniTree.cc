@@ -582,6 +582,7 @@ void DiPhotonMiniTree::Analyze(){
       pass[sel_cat] = StandardEventSelection(fTR,passing);
     }
     else if (sel_cat==1){
+      passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
     else if (sel_cat==2){
