@@ -8,6 +8,8 @@
 #include <TROOT.h>
 #include <TTree.h>
 #include <TChain.h>
+#include "TUUID.h"
+#include "TChainElement.h"
 
 #include "DiPhotonJetsAnalyzer.hh"
 
@@ -91,6 +93,8 @@ int main(int argc, char* argv[]) {
 		usage(-1);
 	}
 
+	UInt_t uuid = 0;
+
 	TChain *theChain = new TChain("analyze/Analysis");
 	for(int i = 0; i < argc; i++){
 		if( !isList ){
@@ -105,6 +109,19 @@ int main(int argc, char* argv[]) {
 				printf(" Adding file: %s\n", rootFile.Data());
 			}
 		}
+	}
+
+	{
+	TObjArray *fileElements=theChain->GetListOfFiles();
+	TIter next(fileElements);
+	TChainElement *chEl=0;
+	while (( chEl=(TChainElement*)next() )) {
+	  cout << chEl->GetTitle() << endl;
+	  TFile *f = TFile::Open(chEl->GetTitle(),"read");
+	  cout << f->GetUUID().AsString() << " " << TString(f->GetUUID().AsString()).Hash() << endl;
+	  uuid+=TString(f->GetUUID().AsString()).Hash();
+	  f->Close();
+		  }
 	}
 
 	cout << "--------------" << endl;
@@ -125,6 +142,7 @@ int main(int argc, char* argv[]) {
 	cout << "minthrpfphotoncandEE = " << minthrpfphotoncandEE << endl;
 	cout << "step2 = " << isstep2 << endl;
 	cout << "input_filename = " << input_filename.Data() << endl;
+	cout << "UUID = " << uuid << endl;
 	cout << "--------------" << endl;
 
 	Float_t AddWeight;
@@ -134,7 +152,7 @@ int main(int argc, char* argv[]) {
 
 	if (verbose) cout << "Reweighting factor for luminosity rescaling: " << AddWeight << endl;
 
-	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(theChain,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename);
+	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(theChain,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename,uuid);
 	tA->SetOutputDir(outputdir);
 	tA->SetOutputFile(outputfile);
 	tA->SetVerbose(verbose);

@@ -83,7 +83,7 @@ typedef struct {
 
 class DiPhotonMiniTree : public UserAnalysisBase{
 public:
-  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "");
+  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid=0);
   virtual ~DiPhotonMiniTree();
 
   void Begin();
@@ -453,6 +453,7 @@ private:
   bool isstep2;
   TFile *f_input;
   TString input_filename;
+  UInt_t uuid;
   TTree *InputTree[2];
   TTree *matchingtree;
   Int_t matchingtree_event_run;

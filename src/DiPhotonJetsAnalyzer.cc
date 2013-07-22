@@ -8,9 +8,9 @@
 
 using namespace std;
 
-DiPhotonJetsAnalyzer::DiPhotonJetsAnalyzer(TTree *tree, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE, bool _isstep2, TString _input_filename) : TreeAnalyzerBase(tree), AddWeight(aw), kfactors(_kfac), minthrpfphotoncandEB(_minthrpfphotoncandEB), minthrpfphotoncandEE(_minthrpfphotoncandEE), isstep2(_isstep2), input_filename(_input_filename) {
+DiPhotonJetsAnalyzer::DiPhotonJetsAnalyzer(TTree *tree, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE, bool _isstep2, TString _input_filename, UInt_t _uuid) : TreeAnalyzerBase(tree), AddWeight(aw), kfactors(_kfac), minthrpfphotoncandEB(_minthrpfphotoncandEB), minthrpfphotoncandEE(_minthrpfphotoncandEE), isstep2(_isstep2), input_filename(_input_filename), uuid(_uuid) {
   //  fDiPhotonPurity = new DiPhotonPurity(fTR,dataType,AddWeight);
-  fDiPhotonMiniTree = new DiPhotonMiniTree(fTR,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename);
+  fDiPhotonMiniTree = new DiPhotonMiniTree(fTR,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename,uuid);
 }
 
 DiPhotonJetsAnalyzer::~DiPhotonJetsAnalyzer(){

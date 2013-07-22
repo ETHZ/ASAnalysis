@@ -12,7 +12,7 @@
 
 class DiPhotonJetsAnalyzer : public TreeAnalyzerBase {
 public:
-  DiPhotonJetsAnalyzer(TTree *tree = 0, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t minthrpfphotoncandEB=0, Float_t minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "");
+  DiPhotonJetsAnalyzer(TTree *tree = 0, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t minthrpfphotoncandEB=0, Float_t minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid = 0);
 	virtual ~DiPhotonJetsAnalyzer();
 	void BeginJob(string data_PileUp, string mc_PileUp);
 	void EndJob();
@@ -30,5 +30,6 @@ private:
   Float_t minthrpfphotoncandEE;
   bool isstep2;
   TString input_filename;
+  UInt_t uuid;
 };
 #endif
