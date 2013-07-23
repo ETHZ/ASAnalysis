@@ -133,6 +133,8 @@ private:
 
   void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode);
 
+  void InitInputTree();
+
   std::vector<int> DiPhotonInvariantMassCutSelection(TreeReader *fTR, std::vector<int> passing);
 
   Int_t Choose_bin_eta(float eta, int region);
@@ -193,6 +195,7 @@ private:
   std::vector<float> eff_areas_EB_neutral_MC;
   std::vector<float> eff_areas_EE_neutral_MC;
 
+  bool inputtree_isinitialized;
 
   float scarea[100];
   float scareaSF[100];
