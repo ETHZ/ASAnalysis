@@ -11,7 +11,6 @@
 #include "TUUID.h"
 #include "TChainElement.h"
 #include "TString.h"
-#include "TRandom3.h"
 
 #include "DiPhotonJetsAnalyzer.hh"
 
@@ -113,7 +112,6 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	TRandom3 *randgen = new TRandom3(0);
 
 	{
 	TObjArray *fileElements=theChain->GetListOfFiles();
@@ -124,7 +122,6 @@ int main(int argc, char* argv[]) {
 	  TFile *f = TFile::Open(chEl->GetTitle(),"read");
 	  TString uuidstring = f->GetUUID().AsString();
 	  uuidstring.Append(chEl->GetTitle());
-	  uuidstring.Append(Form("%ld",(Long64_t)(randgen->Uniform(0,123456789))));
 	  cout << "UUID_number " << uuidstring.Data() << " " << uuidstring.Hash() << endl;
 	  uuid+=uuidstring.Hash();
 	  f->Close();
