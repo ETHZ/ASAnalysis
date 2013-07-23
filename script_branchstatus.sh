@@ -1,0 +1,1 @@
+for i in `cat branchlist.txt`; do j=`grep $i src/DiPhoton*cc src/base/UserAnalysisBase.cc src/base/*cc | wc -l`; if [ "$j" != "0" ] ; then echo "fTR->fChain->SetBranchStatus(\"$i\",1)"; fi; done
