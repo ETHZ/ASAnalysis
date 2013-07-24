@@ -2920,7 +2920,7 @@ void DiPhotonMiniTree::BugfixWrongGenPhotonsMatching(TreeReader *fTR){   // redo
 
 void DiPhotonMiniTree::InitInputTree(){
   if (isstep2){
-    TString title = Form("%s/matchingtree_%d.root",input_filename.Data(),uuid);
+    TString title = Form("%s/matchingtree_%u.root",input_filename.Data(),uuid);
     cout << "opening " << title.Data() << endl;
     f_input = new TFile(title.Data(),"read");
     f_input->GetObject("Tree_1Drandomcone_template",InputTree[0]);
