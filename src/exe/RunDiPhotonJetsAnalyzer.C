@@ -3,6 +3,9 @@
 #include <fstream>
 #include <string>
 #include <stdio.h>
+#include <boost/functional/hash.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 // ROOT includes
 #include <TROOT.h>
@@ -120,10 +123,20 @@ int main(int argc, char* argv[]) {
 	while (( chEl=(TChainElement*)next() )) {
 	  cout << chEl->GetTitle() << endl;
 	  TFile *f = TFile::Open(chEl->GetTitle(),"read");
-	  TString uuidstring = f->GetUUID().AsString();
-	  uuidstring.Append(chEl->GetTitle());
-	  cout << "UUID_number " << uuidstring.Data() << " " << uuidstring.Hash() << endl;
-	  uuid+=uuidstring.Hash();
+	  TString uuidstring(chEl->GetTitle());
+	  string uuidstdstring(uuidstring.Data());
+	  boost::trim(uuidstdstring);
+	  boost::erase_all(uuidstdstring,".root");
+	  boost::replace_all(uuidstdstring,"//","/");
+	  std::vector<std::string> strs;
+	  boost::split(strs, uuidstdstring, boost::is_any_of("/."));
+	  uuidstring="";
+	  for (int k=strs.size()-4; k<strs.size() && k>=0; k++) uuidstring+=strs.at(k);
+	  cout << uuidstring << endl;
+	  boost::hash<std::string> string_hash;
+	  UInt_t hashed = string_hash(string(uuidstring.Data()));
+	  uuid=hashed;
+	  cout << "UUID_number " << uuidstring.Data() << " " << string_hash(string(uuidstring.Data())) << " " << uuid << endl;
 	  f->Close();
 		  }
 	}
