@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 ### WATCH OUT: NEEDS TO BE LAUNCHED AS python runManager.py configuration.cfg and NOT ./runManager configuration.cfg
 
@@ -51,6 +50,8 @@ parser.add_option("-v","--verbose",dest="verbose",action="store_true",default=Fa
                   help="Turn verbosity on")
 parser.add_option("-r","--renew",dest="renew",action="store_true",default=False,
                   help="Renew cached files")
+parser.add_option("-m","--merge-only",dest="mergeonly",action="store_true",default=False,
+                  help="Run the merging only")
 (options, args) = parser.parse_args(args=None, values=None)
 #---------------------------------------------------------
 
@@ -178,7 +179,7 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
   thisjobnumber=0
 
   cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-#  print cmd
+  if options.verbose: print cmd
   if options.dryrun: return thisjobnumber
 
   pipe=popen(cmd)#"qsub -e /tmp/ -o /tmp/ -N " + "RMJ"+str(step)+taskName + " " + nameOfDirectory + taskName + "/" + nameOfConf2 + " " + str(step))
@@ -450,47 +451,54 @@ if __name__ == '__main__' :
 	  print "You should be ok, your proxy is still valid for a long time."
 	else:
 	  print "You need to refresh your proxy! (will run voms-proxy-init -voms cms for you)"
-	  os.system("voms-proxy-init -voms cms");
+	  os.system("voms-proxy-init -voms cms -hours 120");
 	  
-	  
-	
-	
         result = parseInputFile(args[0])
         if(result == "Error"):
-                showMessage("Error parsing input file")
-                sys.exit(-1)
+           showMessage("Error parsing input file")
+           sys.exit(-1)
 
         listOfTasks = getListOfTasks(result[0])
         fusepath=result[4]
         uname=result[6]
-        for l in listOfTasks:
-                if(l[0].find("/data/")>-1) :
-                        isdata=1
-                showMessage("Processing " + l[0])
-                if domultiprocessing==True:
-                        po.apply_async(process,(l, result),callback=cb)
-                else :
-                        print "At this point you could be saving a lot of time with multiprocessing ... "
-                        jobnumber = process(l, result)
-                        jobnumbers.extend(jobnumber)
-      		
-        if domultiprocessing==True :
-                po.close()
-                po.join()
+
+ 
+        # Get list of files and create scripts to run
+        if options.mergeonly:
+           print 'Skipping writing of the scripts'
+        else :
+           for l in listOfTasks:
+              if(l[0].find("/data/")>-1): isdata=1 #FIXME: This won't work anymore
+              showMessage("Processing " + l[0])
+              if domultiprocessing==True:
+                 po.apply_async(process,(l, result),callback=cb)
+              else :
+                 print "At this point you could be saving a lot of time with multiprocessing ... "
+                 jobnumber = process(l, result)
+                 jobnumbers.extend(jobnumber)
+           if domultiprocessing==True :
+              po.close()
+              po.join()
 
         if options.dryrun: sys.exit(0) # We're done for the dry run
 
-        totaljobnumber=len(jobnumbers)
-        counter=0
-        print 'Total number of jobs:',totaljobnumber
-        while(len(jobnumbers)>0 and counter<300) :
-                time.sleep(60)
-                counter+=1
-                currlist=[]
-                pipe=popen("qstat | grep `whoami` | awk '{print $1}'")
-                for line in pipe.readlines():
-                        currlist.append(int(line))
-                checklist(jobnumbers,currlist)
+        # Run the jobs
+        if options.mergeonly:
+           print 'Skipping running step'
+        else:
+           totaljobnumber=len(jobnumbers)
+           counter=0
+           print 'Total number of jobs:',totaljobnumber
+           while(len(jobnumbers)>0 and counter<300) :
+              time.sleep(60)
+              counter+=1
+              currlist=[]
+              pipe=popen("qstat | grep `whoami` | awk '{print $1}'")
+              for line in pipe.readlines():
+                 currlist.append(int(line))
+              checklist(jobnumbers,currlist)
+
+        # Merge the files
         print "All jobs have finished - need to merge everything and place it in your scratch directory!"
         check_directory(fusepath,uname)
         if isdata==1 and result[2].find("RunJZBAnalyzer")>-1:
