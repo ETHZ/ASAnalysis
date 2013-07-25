@@ -521,6 +521,10 @@ void DiPhotonMiniTree::Analyze(){
       if (sel_cat>=9) continue;
       if (sel_cat==4 || sel_cat==5) continue;
     }
+    else {
+      if (sel_cat==9 || sel_cat==10) continue;
+      if (sel_cat==4 || sel_cat==5) continue;
+    }
 
     pass[sel_cat]=false;
 
@@ -673,6 +677,10 @@ void DiPhotonMiniTree::Analyze(){
     if (isdata){
       if (sel_cat>=11) continue;
       if (sel_cat>=9) continue;
+      if (sel_cat==4 || sel_cat==5) continue;
+    }
+    else {
+      if (sel_cat==9 || sel_cat==10) continue;
       if (sel_cat==4 || sel_cat==5) continue;
     }
 
