@@ -31,7 +31,7 @@ def getSeDir(dir,opt):
          if m: hnname = m.group(1)
          if sehome!='' and sesubdir != '' and hnname != '': break
    finally: f.close()
-   sepath = path.join(sehome,hnname,sesubdir)
+   sepath = path.join(sehome,hnname,'ProcessedTrees/',sesubdir)
    if opt.verb>2: 
       print '  Found remote home',sehome,', HN name',hnname,'and subdir',sesubdir
       print '  Returning',sepath
@@ -65,7 +65,7 @@ def process(dir,opt):
    # 1. Remove remote files
    answ = 'y'
    if len(list)>0:
-      cmd = ['lcg-del -b -D srmv2 -l ']+list
+      cmd = ['lcg-del','-b','-D','srmv2','-l']+list
       if opt.verb>1: print "CMD =",' '.join(cmd)
       if not opt.force: 
          answ = raw_input('Remove files? [y/n] ')
@@ -81,7 +81,7 @@ def process(dir,opt):
    # 2. Remove remote directory
    if len(list)>0:
       answ = 'y'
-      cmd = ['lcg-del -b -D srmv2 -l -d ',sedir]
+      cmd = ['lcg-del','-b','-D','srmv2','-l','-d',sedir]
       if opt.verb>1: print "CMD =",' '.join(cmd)
       if not opt.force: 
          answ = raw_input('Remove remote directory? [y/n] ')
