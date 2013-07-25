@@ -169,7 +169,8 @@ public:
   float pfHT;
   float pfGoodHT;
   float pfTightHT;
-  
+  float rho;
+ 
   float metUncertainty;
   float type1metUncertainty;
   
@@ -195,12 +196,20 @@ public:
   int   pfJetGoodTracksN[jMax];
   float bTagProbCSVBP[jMax];
   float bTagProbCSVMVA[jMax];
-  
+  float bTagProbJP[jMax];
+  float bTagProbTCHP[jMax];
+ 
   int MC_pfJetGoodNumBTag40;
   int MC_pfJetGoodNumBTag40dn;
   int MC_pfJetGoodNumBTag40up;
   int pfJetGoodNumBtag30;
   int pfJetGoodNumBtag40;
+  int pfJetGoodNumBtag40CSVBPLoose;
+  int pfJetGoodNumBtag40CSVBPTight;
+  int pfJetGoodNumBtag40CSVMVA;
+  int pfJetGoodNumBtag40JP;
+  int pfJetGoodNumBtag40TCHP;
+  
   int pfJetGoodNumBtag40up;
   int pfJetGoodNumBtag40dn;
   int pfJetGoodNumBtag30_Tight;
@@ -612,6 +621,8 @@ void nanoEvent::reset()
   chid1=0;
   chid2=0;
 
+  rho=0;
+
   for(int i=0;i<100;i++) pdfW[i]=1.0;
 
   for(int jCounter=0;jCounter<lMax;jCounter++){
@@ -679,6 +690,10 @@ void nanoEvent::reset()
     pfJetGoodIDBtag[jCounter]=0;
     bTagProbCSVBP[jCounter] = 0;
     bTagProbCSVMVA[jCounter] = 0;
+    bTagProbJP[jCounter] = 0;
+    bTagProbTCHP[jCounter] = 0;
+
+
     mjl[jCounter]=0;
     mjll[jCounter]=0;
   }
@@ -694,6 +709,12 @@ void nanoEvent::reset()
   pfJetGoodNumID=0;
   pfJetGoodNumBtag30=0;
   pfJetGoodNumBtag40=0;
+  pfJetGoodNumBtag40CSVBPLoose=0;
+  pfJetGoodNumBtag40CSVBPTight=0;
+  pfJetGoodNumBtag40CSVMVA=0;
+  pfJetGoodNumBtag40JP=0;
+  pfJetGoodNumBtag40TCHP=0;
+  
   MC_pfJetGoodNumBTag40=0;
   MC_pfJetGoodNumBTag40up=0;
   MC_pfJetGoodNumBTag40dn=0;
@@ -1250,7 +1271,7 @@ JZBAnalysis::JZBAnalysis(TreeReader *tr, std::string dataType, std::string globa
   // Define trigger paths to check
   addPath(elTriggerPaths,"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL",10,30);
 
-  addPath(muTriggerPaths,"HLT_Mu13_Mu8",10,30);
+  //addPath(muTriggerPaths,"HLT_Mu13_Mu8",10,30);
   addPath(muTriggerPaths,"HLT_Mu17_Mu8",10,30);
   addPath(muTriggerPaths,"HLT_Mu17_TkMu8",9,20);
   
@@ -1458,6 +1479,7 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("leptonPairDphi",nEvent.leptonPairDphi,"leptonPairDphi[leptonPairNum]/F");
   myTree->Branch("leptonPairId",nEvent.leptonPairId,"leptonPairId[leptonPairNum]/I");
 
+  myTree->Branch("rho",&nEvent.rho,"rho/F");
   myTree->Branch("met",nEvent.met,Form("met[%d]/F",int(mettype_max)));
   myTree->Branch("pfMET",&nEvent.pfMET,"pfMET/F");
   myTree->Branch("t1pfMET",&nEvent.t1pfMET,"t1pfMET/F");
@@ -1505,6 +1527,12 @@ void JZBAnalysis::Begin(TFile *f){
 //  myTree->Branch("pfJetGoodNum60",&nEvent.pfJetGoodNum60,"pfJetGoodNum60/I");
   myTree->Branch("pfJetGoodNumBtag30",&nEvent.pfJetGoodNumBtag30,"pfJetGoodNumBtag30/I");
   myTree->Branch("pfJetGoodNumBtag40",&nEvent.pfJetGoodNumBtag40,"pfJetGoodNumBtag40/I");
+  myTree->Branch("pfJetGoodNumBtag40CSVBPLoose",&nEvent.pfJetGoodNumBtag40CSVBPLoose,"pfJetGoodNumBtag40CSVBPLoose/I");
+  myTree->Branch("pfJetGoodNumBtag40CSVBPTight",&nEvent.pfJetGoodNumBtag40CSVBPTight,"pfJetGoodNumBtag40CSVBPTight/I");
+  myTree->Branch("pfJetGoodNumBtag40CSVMVA",&nEvent.pfJetGoodNumBtag40CSVMVA,"pfJetGoodNumBtag40CSVMVA/I");
+  myTree->Branch("pfJetGoodNumBtag40JP",&nEvent.pfJetGoodNumBtag40JP,"pfJetGoodNumBtag40JP/I");
+  myTree->Branch("pfJetGoodNumBtag40TCHP",&nEvent.pfJetGoodNumBtag40TCHP,"pfJetGoodNumBtag40TCHP/I");
+  
   myTree->Branch("pfJetGoodNumBtag40up",&nEvent.pfJetGoodNumBtag40up,"pfJetGoodNumBtag40up/I");
   myTree->Branch("pfJetGoodNumBtag40dn",&nEvent.pfJetGoodNumBtag40dn,"pfJetGoodNumBtag40dn/I");
   myTree->Branch("pfJetGoodNumBtag30_Tight",&nEvent.pfJetGoodNumBtag30_Tight,"pfJetGoodNumBtag30_Tight/I");
@@ -1543,7 +1571,8 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("pfJetGoodPtlBtag", nEvent.pfJetGoodPtlBtag,"pfJetGoodPtlBtag[pfJetGoodNumBtag40]/F");
   myTree->Branch("bTagProbCSVBP", nEvent.bTagProbCSVBP,"bTagProbCSVBP[pfJetGoodNum40]/F");
   myTree->Branch("bTagProbCSVMVA", nEvent.bTagProbCSVMVA,"bTagProbCSVMVA[pfJetGoodNum40]/F");
-
+  myTree->Branch("bTagProbJP", nEvent.bTagProbJP,"bTagProbJP[pfJetGoodNum40]/F");
+  myTree->Branch("bTagProbTCHP", nEvent.bTagProbTCHP,"bTagProbTCHP[pfJetGoodNum40]/F");
 
   myTree->Branch("chs_jzb",&nEvent.chs_jzb,"chs_jzb/F");
   myTree->Branch("jzb",nEvent.jzb,Form("jzb[%d]/F",int(jzbtype_max)));
@@ -2062,7 +2091,10 @@ void JZBAnalysis::Analyze() {
   nEvent.eventNum  = fTR->Event;
   nEvent.runNum    = fTR->Run;
   nEvent.lumi      = fTR->LumiSection;
-  
+ 
+
+
+ 
   if(fDataType_ == "mc") // only do this for MC; for data nEvent.reset() has already set both weights to 1
     {
      if(fisModelScan) {
@@ -2438,7 +2470,9 @@ void JZBAnalysis::Analyze() {
   
   // Check for OS combination
   for(; PosLepton2 < sortedGoodLeptons.size(); PosLepton2++) {
-    if(sortedGoodLeptons[0].charge*sortedGoodLeptons[PosLepton2].charge<0) break;
+    if(sortedGoodLeptons[0].charge*sortedGoodLeptons[PosLepton2].charge<0) {
+      break;
+    }
   }
   if(PosLepton2 == sortedGoodLeptons.size()) {
     if (isMC&&!fmakeSmall) myTree->Fill();
@@ -2519,6 +2553,7 @@ void JZBAnalysis::Analyze() {
     nEvent.ch1 = sortedGoodLeptons[PosLepton1].charge;
     nEvent.id1 = sortedGoodLeptons[PosLepton1].type; //??????
     nEvent.chid1 = (sortedGoodLeptons[PosLepton1].type+1)*sortedGoodLeptons[PosLepton1].charge;
+    nEvent.rho = fTR->RhoForIso; 
 //    nEvent.isConv1 = IsConvertedPhoton(sortedGoodLeptons[PosLepton1].index);
       
     nEvent.eta2 = sortedGoodLeptons[PosLepton2].p.Eta();
@@ -2733,6 +2768,12 @@ void JZBAnalysis::Analyze() {
   nEvent.pfJetGoodNum30=0;
   nEvent.pfJetGoodNumBtag30=0;
   nEvent.pfJetGoodNumBtag40=0;
+  nEvent.pfJetGoodNumBtag40CSVBPLoose=0;
+  nEvent.pfJetGoodNumBtag40CSVBPTight=0;
+  nEvent.pfJetGoodNumBtag40CSVMVA=0;
+  nEvent.pfJetGoodNumBtag40JP=0;
+  nEvent.pfJetGoodNumBtag40TCHP=0;
+  
   nEvent.pfJetGoodNumBtag30_Tight=0;
   nEvent.pfJetGoodNumBtag40_Tight=0;
   nEvent.pfJetGoodNumBtag30_Loose=0;
@@ -2868,6 +2909,8 @@ void JZBAnalysis::Analyze() {
         nEvent.pfJetGoodID[nEvent.pfJetGoodNum40]  = isJetID;
         nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] = fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i];
         nEvent.bTagProbCSVMVA[nEvent.pfJetGoodNum40] = fTR->JnewPFCombinedSecondaryVertexMVABPFJetTags[i];
+        nEvent.bTagProbJP[nEvent.pfJetGoodNum40] = fTR->JnewPFJetProbabilityBPFJetTags[i];
+        nEvent.bTagProbTCHP[nEvent.pfJetGoodNum40] = fTR->JnewPFTrackCountingHighPurBJetTags[i];
         nEvent.pfJetGoodTracks[nEvent.pfJetGoodNum40] = ntracksch;
         nEvent.pfJetGoodTracksN[nEvent.pfJetGoodNum40] = ntracksne;
         nEvent.minc+=jpt;
@@ -2896,6 +2939,12 @@ void JZBAnalysis::Analyze() {
 	   if(nEvent.ml2b<0) nEvent.ml2b=ml2b_cand;
 	   else if(ml2b_cand<nEvent.ml2b) nEvent.ml2b=ml2b_cand;
         }
+
+	if(nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] > 0.244) nEvent.pfJetGoodNumBtag40CSVBPLoose++; 
+	if(nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] > 0.898) nEvent.pfJetGoodNumBtag40CSVBPTight++; 
+ 	if(nEvent.bTagProbCSVMVA[nEvent.pfJetGoodNum40] > 0.679) nEvent.pfJetGoodNumBtag40CSVMVA++;
+	if(nEvent.bTagProbJP[nEvent.pfJetGoodNum40] > 0.545) nEvent.pfJetGoodNumBtag40JP++;
+	if(nEvent.bTagProbTCHP[nEvent.pfJetGoodNum40] > 3.41) nEvent.pfJetGoodNumBtag40TCHP++;
         
         if(nEvent.pfJetGoodNum40*2<jMax) {
 	  nEvent.mjl[mjlcounter]=(sortedGoodLeptons[PosLepton1].p+aJet).M();
@@ -2935,7 +2984,10 @@ void JZBAnalysis::Analyze() {
       if ( jpt>40. && fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i] > 0.898 && isJetID && abs(jeta)<2.4)  nEvent.pfJetGoodNumBtag40_Tight++;
       if ( jpt>30. && fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i] > 0.244 && isJetID && abs(jeta)<2.4)  nEvent.pfJetGoodNumBtag30_Loose++;
       if ( jpt>40. && fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i] > 0.244 && isJetID && abs(jeta)<2.4)  nEvent.pfJetGoodNumBtag40_Loose++;
-      
+     
+
+
+ 
       if ( jpt>30. )  nEvent.pfJetGoodNum30++;
       if ( jpt>50. )  nEvent.pfJetGoodNum50++;
       if ( jpt>60. )  nEvent.pfJetGoodNum60++;
@@ -3421,8 +3473,8 @@ const bool JZBAnalysis::IsCustomMu2012(const int index){
   counters[MU].fill(" ... nValidHits > 0");
   if ( !(fTR->MuNPxHits[index] > 0) )       return false;
   counters[MU].fill(" ... nPxHits > 0");
-  //FR if ( !(fTR->MuNMatchedStations[index] > 1) )      return false;
-  if ( !(fTR->MuNMatches[index] > 1) )      return false;
+  if ( !(fTR->MuNMatchedStations[index] > 1) )      return false;
+  //if ( !(fTR->MuNMatches[index] > 1) )      return false;
   counters[MU].fill(" ... nMatches > 1");
   if ( !(fTR->MuNSiLayers[index] > 5) )      return false;
   counters[MU].fill(" ... nLayers > 5");
@@ -3432,10 +3484,10 @@ const bool JZBAnalysis::IsCustomMu2012(const int index){
   if ( !(fabs(fTR->MuD0PV[index]) < 0.02) ) return false; //still open
   counters[MU].fill(" ... D0(pv) < 0.02");
   //HPA recommendation not POG
-  //FR if ( !(fabs(fTR->MuDzPV[index]) < 0.1 ) ) return false; //still open
-  //FR counters[MU].fill(" ... DZ(pv) < 0.1");
-  if ( !(fabs(fTR->MuDzPV[index]) < 0.2 ) ) return false; //still open
-  counters[MU].fill(" ... DZ(pv) < 0.2");
+  if ( !(fabs(fTR->MuDzPV[index]) < 0.1 ) ) return false; //still open
+  counters[MU].fill(" ... DZ(pv) < 0.1");
+  //if ( !(fabs(fTR->MuDzPV[index]) < 0.2 ) ) return false; //still open
+  //counters[MU].fill(" ... DZ(pv) < 0.2");
 
 
   // Flat isolation below 20 GeV (only for synch.: we cut at 20...)
@@ -3778,10 +3830,10 @@ const bool JZBAnalysis::IsCustomEl2012(const int index) {
 
   if(!(abs(fTR->ElD0PV[index])<0.02)) return false;
   counters[EL].fill(" ... D0(PV)<0.02");
-  //FR if(!(abs(fTR->ElDzPV[index])<0.1)) return false;
-  //FR counters[EL].fill(" ... DZ(PV)<0.1");
-  if(!(abs(fTR->ElDzPV[index])<0.2)) return false;
-  counters[EL].fill(" ... DZ(PV)<0.2");
+  if(!(abs(fTR->ElDzPV[index])<0.1)) return false;
+  counters[EL].fill(" ... DZ(PV)<0.1");
+  //if(!(abs(fTR->ElDzPV[index])<0.2)) return false;
+  //counters[EL].fill(" ... DZ(PV)<0.2");
 
 //  if(!(fTR->ElPassConversionVeto[index])) return false;
   if(!(fTR->ElNumberOfMissingInnerHits[index]<=1)) return false;
@@ -3789,7 +3841,6 @@ const bool JZBAnalysis::IsCustomEl2012(const int index) {
   if(!fTR->ElPassConversionVeto[index]) return false;
   counters[EL].fill(" ... passed conversion rejection");
   
-
   float e=fTR->ElCaloEnergy[index];
   float p=fTR->ElCaloEnergy[index]/fTR->ElESuperClusterOverP[index];
   if(!(fabs(1/e-1/p)<0.05)) return false;
