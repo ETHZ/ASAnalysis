@@ -37,6 +37,7 @@ enum SigBkgMode {
 };
 
 const int global_maxN_photonpfcandidates = 2000;
+const int global_maxN_vetoobjects = 200;
 
 const int global_size_pfcandarrays = 30;
 
@@ -129,10 +130,11 @@ private:
   angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, int phoqi, int pfindex, float rotation_phi = 0);
   angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, int pfindex);
   bool FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_phi, int phoqi, TString mod="");
+  bool FindCloseJetsAndPhotons(std::vector<std::pair<float,float> > obj, float eta, float phi);
   std::vector<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
 
   void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode);
-
+  void FillVetoObjects(TreeReader *fTR, int phoqi, TString mod);
   void InitInputTree();
 
   std::vector<int> DiPhotonInvariantMassCutSelection(TreeReader *fTR, std::vector<int> passing);
@@ -422,6 +424,10 @@ private:
   Float_t phoiso_template_bkgbkg_1[nclosest];
   Float_t phoiso_template_bkgbkg_2[nclosest];
 
+  Int_t   vetoobjects_count;
+  Float_t vetoobjects_eta[global_maxN_vetoobjects];
+  Float_t vetoobjects_phi[global_maxN_vetoobjects];
+
   Int_t   input_allphotonpfcand_count;
   Float_t input_allphotonpfcand_pt[global_maxN_photonpfcandidates];
   Float_t input_allphotonpfcand_eta[global_maxN_photonpfcandidates];
@@ -431,6 +437,9 @@ private:
   Float_t input_allphotonpfcand_vz[global_maxN_photonpfcandidates];
   Float_t input_pholead_SCeta;
   Float_t input_pholead_SCphi;
+  Int_t   input_vetoobjects_count;
+  Float_t input_vetoobjects_eta[global_maxN_vetoobjects];
+  Float_t input_vetoobjects_phi[global_maxN_vetoobjects];
 
   TBranch *b_input_allphotonpfcand_count;
   TBranch *b_input_allphotonpfcand_pt   ;
@@ -441,7 +450,10 @@ private:
   TBranch *b_input_allphotonpfcand_vz   ;
   TBranch *b_input_pholead_SCeta;
   TBranch *b_input_pholead_SCphi;
-  
+  TBranch *b_input_vetoobjects_count;
+  TBranch *b_input_vetoobjects_eta;
+  TBranch *b_input_vetoobjects_phi;
+
   TBranch *b_matchingtree_event_fileuuid;
 
   TBranch *b_matchingtree_event_run;

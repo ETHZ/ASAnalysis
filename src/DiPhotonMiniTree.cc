@@ -356,6 +356,9 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("phoiso_template_bkgbkg_1",&phoiso_template_bkgbkg_1,Form("phoiso_template_bkgbkg_1[%d]/F",nclosest));
   OutputTree[i]->Branch("phoiso_template_bkgbkg_2",&phoiso_template_bkgbkg_2,Form("phoiso_template_bkgbkg_2[%d]/F",nclosest));
 
+  OutputTree[i]->Branch("vetoobjects_count",&vetoobjects_count,"vetoobjects_count/I");
+  OutputTree[i]->Branch("vetoobjects_eta",&vetoobjects_eta,"vetoobjects_eta[vetoobjects_count]/F");
+  OutputTree[i]->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
 
   }
 
@@ -857,6 +860,9 @@ void DiPhotonMiniTree::Analyze(){
 	  index++;
 	}
 	allphotonpfcand_count = index;
+
+	FillVetoObjects(fTR,passing.at(i),(sel_cat==1) ? TString("") : TString("exclude_object_itself"));
+
       }
 
       if (dofill) OutputTree[sel_cat]->Fill();
@@ -1052,6 +1058,9 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
 	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	  }
+	  std::vector<std::pair<float,float> > obj0;
+	  for (int k=0; k<input_vetoobjects_count; k++) obj0.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
+	  if (FindCloseJetsAndPhotons(obj0,fTR->SCEta[fTR->PhotSCindex[passing.at(1)]],fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]])) continue; // veto around the OTHER photon
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 
@@ -1073,6 +1082,9 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
 	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	  }
+	  std::vector<std::pair<float,float> > obj1;
+	  for (int k=0; k<input_vetoobjects_count; k++) obj1.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
+	  if (FindCloseJetsAndPhotons(obj1,fTR->SCEta[fTR->PhotSCindex[passing.at(0)]],fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]])) continue; // veto around the OTHER photon
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 
@@ -1505,6 +1517,58 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   if (debug) std::cout << "returning " << found << std::endl;
   return found;
+
+};
+
+bool DiPhotonMiniTree::FindCloseJetsAndPhotons(std::vector<std::pair<float,float> > obj, float eta, float phi){
+
+  const float mindR = 0.8;
+  bool found=false;
+
+  for (int i=0; i<obj.size(); i++){
+    float dR = Util::GetDeltaR(eta,obj.at(i).first,phi,obj.at(i).second);
+    if (dR<mindR) found=true;
+  }
+
+  return found;
+
+};
+
+void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
+
+  std::vector<std::pair<float,float> > obj;
+
+  if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl;}
+
+  TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+
+  double eta = photon_position.Eta();
+  double phi = photon_position.Phi();
+  
+  for (int i=0; i<fTR->NJets; i++){
+    if (fTR->JPt[i]<20) continue;
+    float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
+    if (mod=="exclude_object_itself") if (dR<0.2) continue;
+    obj.push_back(std::pair<float,float>(fTR->JEta[i],fTR->JPhi[i]));
+  }
+
+  for (int i=0; i<fTR->NPhotons; i++){
+    if (fTR->PhoPt[i]<10) continue;
+    float dR = Util::GetDeltaR(eta,fTR->PhoEta[i],phi,fTR->PhoPhi[i]);
+    if (mod=="exclude_object_itself") if (dR<0.2) continue;
+    obj.push_back(std::pair<float,float>(fTR->PhoEta[i],fTR->PhoPhi[i]));
+  }
+
+  for (int i=0; i<fTR->NMus; i++){
+    obj.push_back(std::pair<float,float>(fTR->MuEta[i],fTR->MuPhi[i]));
+  }
+
+  if (obj.size()>global_maxN_vetoobjects) {std::cout << "MaxN vetoobjects reached" << std::endl; obj.resize(global_maxN_vetoobjects);}
+  for (int i=0; i<obj.size(); i++){
+    vetoobjects_eta[i]=obj.at(i).first;
+    vetoobjects_phi[i]=obj.at(i).second;
+  }
+  vetoobjects_count = obj.size();
 
 };
 
@@ -2562,6 +2626,11 @@ void DiPhotonMiniTree::ResetVars(){
     phoiso_template_bkgbkg_2[i]=-999;
   }
 
+  vetoobjects_count=0;
+  for (int i=0; i<global_maxN_vetoobjects; i++){
+    vetoobjects_eta[i]=-999;
+    vetoobjects_phi[i]=-999;
+  }
 
 };
 
@@ -2952,6 +3021,9 @@ void DiPhotonMiniTree::InitInputTree(){
       InputTree[m]->SetBranchAddress("allphotonpfcand_vz", input_allphotonpfcand_vz   , &b_input_allphotonpfcand_vz   );
       InputTree[m]->SetBranchAddress("pholead_SCeta", &input_pholead_SCeta, &b_input_pholead_SCeta);
       InputTree[m]->SetBranchAddress("pholead_SCphi", &input_pholead_SCphi, &b_input_pholead_SCphi);
+      InputTree[m]->SetBranchAddress("vetoobjects_count",&input_vetoobjects_count,&b_input_vetoobjects_count);
+      InputTree[m]->SetBranchAddress("vetoobjects_eta", input_vetoobjects_eta, &b_input_vetoobjects_eta);
+      InputTree[m]->SetBranchAddress("vetoobjects_phi", input_vetoobjects_phi, &b_input_vetoobjects_phi);
     }
 
     f_input->GetObject("matchingtree",matchingtree);
