@@ -1060,7 +1060,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	  }
 	  std::vector<std::pair<float,float> > obj0;
 	  for (int k=0; k<input_vetoobjects_count; k++) obj0.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
-	  if (FindCloseJetsAndPhotons(obj0,fTR->SCEta[fTR->PhotSCindex[passing.at(1)]],fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]])) continue; // veto around the OTHER photon
+	  if (FindCloseJetsAndPhotons(obj0,fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 
@@ -1084,7 +1084,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	  }
 	  std::vector<std::pair<float,float> > obj1;
 	  for (int k=0; k<input_vetoobjects_count; k++) obj1.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
-	  if (FindCloseJetsAndPhotons(obj1,fTR->SCEta[fTR->PhotSCindex[passing.at(0)]],fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]])) continue; // veto around the OTHER photon
+	  if (FindCloseJetsAndPhotons(obj1,fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 
