@@ -98,6 +98,13 @@ private:
 	TH2D* fTChiSlepSlepCountAll;
 	TH2D* fTChiSlepSnuCountAll;
 	TH2D* fModelCountAll;
+	TH2D* fModelCountAll_ISRweight;
+	TH2D* fModelCountAll_ISRweightUp;
+	TH2D* fModelCountAll_ISRweightDn;
+	TH2D* fModelCountAll_nChi2;
+	TH2D* fModelCountAll_nChi2_ISRweight;
+	TH2D* fModelCountAll_nChi2_ISRweightUp;
+	TH2D* fModelCountAll_nChi2_ISRweightDn;
 	TH2D* fRightHandedSlepCount[nx];
 	TH2D* fRightHandedCount[nx];
 	TH2D* fTChiSlepSlepCount[nx];
@@ -117,6 +124,8 @@ private:
 	float  fTmGlu;
 	float  fTmChi;
 	float  fTmLSP;
+	float  fTsusyPt;
+	int    fTnChi;
 	int    fTisTChiSlepSnu;
 	int    fTisRightHanded;
 
@@ -124,6 +133,8 @@ private:
 	float fTrho;
 	int   fTnvrtx;
 	float fTpuweight;
+	float fTpuweightUp;
+	float fTpuweightDn;
 	
 	// Triggers
 	vector<HLTPathSet> fHLTPathSets;

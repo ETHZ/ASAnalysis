@@ -4,6 +4,8 @@
 
 #include "JetCorrectionUncertainty.h"
 
+#include "LHAPDF/LHAPDF.h"
+
 
 using namespace std;
 
@@ -57,6 +59,13 @@ void SSDLAnalysis::Begin(const char* filename){
 		fTChiSlepSlepCountAll       = new TH2D("TChiSlepSlepCountAll"    , "TChiSlepSlepCountAll"    , 300 , 0 , 1500 , 300 , 0 , 1500);
 		fTChiSlepSnuCountAll        = new TH2D("TChiSlepSnuCountAll"     , "TChiSlepSnuCountAll"     , 300 , 0 , 1500 , 300 , 0 , 1500);
 		fModelCountAll              = new TH2D("ModelCountAll"           , "ModelCountAll"           , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_ISRweight    = new TH2D("ModelCountAll_ISRweight" , "ModelCountAll_ISRweight" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_ISRweightUp    = new TH2D("ModelCountAll_ISRweightUp" , "ModelCountAll_ISRweightUp" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_ISRweightDn    = new TH2D("ModelCountAll_ISRweightDn" , "ModelCountAll_ISRweightDn" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2                = new TH2D("ModelCountAll_nChi2"             , "ModelCountAll_nChi2"             , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2_ISRweight      = new TH2D("ModelCountAll_nChi2_ISRweight"   , "ModelCountAll_nChi2_ISRweight"   , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2_ISRweightUp    = new TH2D("ModelCountAll_nChi2_ISRweightUp" , "ModelCountAll_nChi2_ISRweightUp" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2_ISRweightDn    = new TH2D("ModelCountAll_nChi2_ISRweightDn" , "ModelCountAll_nChi2_ISRweightDn" , 300 , 0 , 1500 , 300 , 0 , 1500);
 		for (int i = 0; i < nx; ++i) {
 			fRightHandedSlepCount[i] = new TH2D(Form("RightHandedSlepCount%.0f" , 100*x_values[i]) , Form("RightHandedSlepCount%.0f" , 100*x_values[i]) , 300 , 0 , 1500 , 300 , 0 , 1500);
 			fRightHandedCount[i]     = new TH2D(Form("RightHandedCount%.0f"     , 100*x_values[i]) , Form("RightHandedCount%.0f"     , 100*x_values[i]) , 300 , 0 , 1500 , 300 , 0 , 1500);
@@ -82,6 +91,13 @@ void SSDLAnalysis::End(){
 		fTChiSlepSlepCountAll    -> Write();
 		fTChiSlepSnuCountAll     -> Write();
 		fModelCountAll           -> Write();
+		fModelCountAll_ISRweight -> Write();
+		fModelCountAll_ISRweightUp -> Write();
+		fModelCountAll_ISRweightDn -> Write();
+		fModelCountAll_nChi2           -> Write();
+		fModelCountAll_nChi2_ISRweight -> Write();
+		fModelCountAll_nChi2_ISRweightUp -> Write();
+		fModelCountAll_nChi2_ISRweightDn -> Write();
 		for (int i = 0; i < nx; ++i) {
 			fRightHandedSlepCount [i] -> Write();
 			fRightHandedCount     [i] -> Write();
@@ -206,6 +222,8 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("mGlu",          &fTmGlu,       "mGlu/F");
 	fAnalysisTree->Branch("mChi",          &fTmChi,       "mChi/F");
 	fAnalysisTree->Branch("mLSP",          &fTmLSP,       "mLSP/F");
+	fAnalysisTree->Branch("susyPt",        &fTsusyPt,     "susyPt/F");
+	fAnalysisTree->Branch("nChi",          &fTnChi,       "nChi/I");
 	fAnalysisTree->Branch("isTChiSlepSnu", &fTisTChiSlepSnu,       "isTChiSlepSnu/I");
 	fAnalysisTree->Branch("isRightHanded", &fTisRightHanded,       "isRightHanded/I");
 
@@ -216,6 +234,8 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("Rho",           &fTrho,       "Rho/F");
 	fAnalysisTree->Branch("NVrtx",         &fTnvrtx,     "NVrtx/I");
 	fAnalysisTree->Branch("PUWeight",      &fTpuweight,  "PUWeight/F");
+	fAnalysisTree->Branch("PUWeightUp",      &fTpuweightUp,  "PUWeightUp/F");
+	fAnalysisTree->Branch("PUWeightDn",      &fTpuweightDn,  "PUWeightDn/F");
 
 	// single-muon properties
 	fAnalysisTree->Branch("NMus"          ,&fTnqmus,          "NMus/I");
@@ -314,6 +334,14 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("JetGenPt",      &fTJetGenpt ,     "JetGenPt[NJets]/F");
 	fAnalysisTree->Branch("JetGenEta",     &fTJetGeneta,     "JetGenEta[NJets]/F");
 	fAnalysisTree->Branch("JetGenPhi",     &fTJetGenphi,     "JetGenPhi[NJets]/F");
+
+	fAnalysisTree->Branch("NPdfCTEQ", &fTNPdfCTEQ , "NPdfCTEQ/I");
+	fAnalysisTree->Branch("WPdfCTEQ", &fTWPdfCTEQ , "WPdfCTEQ[NPdfCTEQ]/F");
+	fAnalysisTree->Branch("NPdfCT10", &fTNPdfCT10 , "NPdfCT10/I");
+	fAnalysisTree->Branch("WPdfCT10", &fTWPdfCT10 , "WPdfCT10[NPdfCT10]/F");
+	fAnalysisTree->Branch("NPdfMRST", &fTNPdfMRST , "NPdfMRST/I");
+	fAnalysisTree->Branch("WPdfMRST", &fTWPdfMRST , "WPdfMRST[NPdfMRST]/F");
+
 }
 
 void SSDLAnalysis::BookEffTree(){
@@ -371,9 +399,21 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 		// now finally filling the histograms
 		// sbottom = 1000005 , stop = 1000006, neutralino = 1000022, chi1 = 1000024, gluino = 1000021
-		int var1 = fTR->MassGlu; //getSusyMass(1000005, 25);
-		int var2 = fTR->MassChi; //getSusyMass(1000022, 25);
-		                                   fModelCountAll           -> Fill(var1, var2);
+		int var1 = fTR->MassGlu; // getSusyMass(1000021, 25);
+		int var2 = fTR->MassChi; // getSusyMass(1000021, 25);
+		float isrpt = getSusySystemPt(1000021);
+		float isrweight   = getISRWeight(isrpt, 0);
+		float isrweightup = getISRWeight(isrpt, 1);
+		float isrweightdn = getISRWeight(isrpt, 2);
+		int nchi = getNParticle(1000024);
+		                                   fModelCountAll             -> Fill(var1, var2);
+		                                   fModelCountAll_ISRweight   -> Fill(var1, var2, isrweight);
+		                                   fModelCountAll_ISRweightUp -> Fill(var1, var2, isrweightup);
+		                                   fModelCountAll_ISRweightDn -> Fill(var1, var2, isrweightdn);
+		if (nchi ==2)                      fModelCountAll_nChi2             -> Fill(var1, var2);
+		if (nchi ==2)                      fModelCountAll_nChi2_ISRweight   -> Fill(var1, var2, isrweight);
+		if (nchi ==2)                      fModelCountAll_nChi2_ISRweightUp -> Fill(var1, var2, isrweightup);
+		if (nchi ==2)                      fModelCountAll_nChi2_ISRweightDn -> Fill(var1, var2, isrweightdn);
 		if (!TChiSlepSnu && isRightHanded) fRightHandedSlepCountAll -> Fill(var1, var2);
 		if (isRightHanded)                 fRightHandedCountAll     -> Fill(var1, var2);
 		TChiSlepSnu ?                      fTChiSlepSnuCountAll     -> Fill(var1, var2) : fTChiSlepSlepCountAll->Fill(var1, var2);
@@ -385,6 +425,15 @@ void SSDLAnalysis::FillAnalysisTree(){
 			if (!TChiSlepSnu  &&                  x == x_values[i]) fTChiSlepSlepCount[i]    -> Fill( var1, var2);
 			if (                                  x == x_values[i]) fModelCount[i]           -> Fill( var1, var2);
 		}
+
+		// // ======================================== VERIFICATION FOR EWINO
+		// if (isRightHanded && !TChiSlepSnu){
+		// 	cout << " =====================================" << endl;
+		// 	cout << "this event is righthanded and tchislepsnu!" << endl;
+		// 	for (int i = 0; i < fTR->NGenLeptons; i++) {
+		// 		cout << Form("I have an ID: %d here. \n \t\t the mother: %d", abs(fTR->GenLeptonID[i]), abs(fTR->GenLeptonMID[i])) << endl;
+		// 	}
+		// }
 
 	}
 	// initial event selection: good event trigger, good primary vertex...
@@ -411,7 +460,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	// Require at least one loose lepton
 	// if( (fTnqmus + fTnqels) < 1 ) return;
-	// ONLY FOR THE SUSY WORKSHOP!!!!! if( (nLooseMus + fTnqels) < 1 ) return;
+	if( (nLooseMus + fTnqels) < 1 ) return;
 	fCounter.fill(fCutnames[3]);
 
 	// Event and run info
@@ -424,12 +473,127 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTm12  = fTR->M12;
 		fTprocess = fTR->process;
 		// sbottom = 1000005 , stop = 1000006, neutralino = 1000022, chi1 = 1000024, gluino = 1000021
-		fTmGlu = fTR->MassGlu; //getSusyMass(1000005, 25);
-		fTmChi = fTR->MassChi; //getSusyMass(1000024, 25);
-		fTmLSP = fTR->MassLSP; //getSusyMass(1000022, 25);
+		fTmGlu = fTR->MassGlu; //getSusyMass(1000021, 25);
+		fTmChi = 0.2*fTR->MassGlu + 0.8*fTR->MassLSP; // getSusyMass(1000022, 25);
+		fTmLSP = fTR->MassChi; // getSusyMass(1000022, 25);
+		fTsusyPt = getSusySystemPt(1000021); // gives the pt of the system of the two particles with given id
+		fTnChi = getNParticle(1000024);
 		TChiSlepSnu   ? fTisTChiSlepSnu = 1 : fTisTChiSlepSnu = 0;
 		isRightHanded ? fTisRightHanded = 1 : fTisRightHanded = 0;
-	}
+
+	// ===========================================================================
+	
+		// pdfstuff /swshare/cms/slc5_amd64_gcc462/external/lhapdf/5.8.5-cms2/share/lhapdf/PDFsets/
+		// "MRST2006nnlo.LHgrid"
+		// "NNPDF10_100.LHgrid"
+		// "cteq66.LHgrid"
+		float x1 = fTR->PDFx1;
+		float x2 = fTR->PDFx2;
+		float Q  = fTR->PDFScalePDF;
+		int id1  = fTR->PDFID1;
+		int id2  = fTR->PDFID2;
+		double pdf_xpdf1, pdf_xpdf2;
+		double newxfx1, newxfx2;
+
+		// SAVE WEIGHTS FOR CTEQ
+		// ==========================
+		// std::cout << LHAPDF::numberPDF() << std::endl;
+		//LHAPDF::initPDFSet(1,"CT10.LHgrid");
+		LHAPDF::initPDFSet(1,"cteq61.LHgrid");
+		
+		LHAPDF::initPDF(1,0);
+		LHAPDF::usePDFMember(1,0);
+		fTNPdfCTEQ = (int)LHAPDF::numberPDF(1);
+		pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
+		pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
+			
+		// std::vector<float> pdfweight;
+		// float pdfWsum=0;
+		for(int pdf=0; pdf < fTNPdfCTEQ; pdf++){
+			// LHAPDF::initPDF(pdf);
+			LHAPDF::usePDFMember(1, pdf);
+			newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
+			newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
+			fTWPdfCTEQ[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+			// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+			// pdfWsum += pdfweight.back();
+		}
+
+		
+		//LHAPDF::initPDFSet(2,"cteq61.LHgrid");
+		LHAPDF::initPDFSet(2, "CT10.LHgrid");
+		LHAPDF::initPDF(2, 0);
+		LHAPDF::usePDFMember(2, 0);
+		fTNPdfCT10 = (int)LHAPDF::numberPDF(2);
+		pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
+		pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
+			
+		// std::vector<float> pdfweight;
+		// float pdfWsum=0;
+		for(int pdf=0; pdf < fTNPdfCT10; pdf++){
+			// LHAPDF::initPDF(pdf);
+			LHAPDF::usePDFMember(2, pdf);
+			newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
+			newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
+			fTWPdfCT10[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+			// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+			// pdfWsum += pdfweight.back();
+		}
+
+
+		
+		//LHAPDF::initPDFSet(3, "MRST2006nnlo.LHgrid");
+		LHAPDF::initPDFSet(3, "MSTW2008nnlo90cl.LHgrid");
+		LHAPDF::initPDF(3, 0);
+		LHAPDF::usePDFMember(3, 0);
+		fTNPdfMRST = (int)LHAPDF::numberPDF(3);
+		pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
+		pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
+			
+		// std::vector<float> pdfweight;
+		// float pdfWsum=0;
+		for(int pdf=0; pdf < fTNPdfMRST; pdf++){
+			// LHAPDF::initPDF(pdf);
+			LHAPDF::usePDFMember(3, pdf);
+			newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
+			newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
+			fTWPdfMRST[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+			// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+			// pdfWsum += pdfweight.back();
+		}
+
+		// for (int i=0; i<pdfweight.size(); ++i){
+		// 	cout << i << ": " << pdfweight[i] << " ";
+		// }
+
+		// // SAVE WEIGHTS FOR MRST
+		// // ==========================
+		// // std::cout << LHAPDF::numberPDF() << std::endl;
+		// LHAPDF::initPDFSet("MRST2006nnlo.LHgrid",1);
+		// fTNPdfMRST = (int)LHAPDF::numberPDF();
+		// 
+		// //LHAPDF::initPDF(0);
+		// newpdf1_0 = LHAPDF::xfx(x1, Q, id1)/x1;
+		// newpdf2_0 = LHAPDF::xfx(x2, Q, id2)/x2;
+		// 	
+		// // std::vector<float> pdfweight;
+		// // float pdfWsum=0;
+		// for(int pdf=1; pdf <= fTNPdfMRST; pdf++){
+		// 	LHAPDF::initPDF(pdf);
+		// 	newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
+		// 	newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
+		// 	fTWPdfMRST[pdf-1] = newpdf1/newpdf1_0*newpdf2/newpdf2_0;
+		// 	// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+		// 	// pdfWsum += pdfweight.back();
+		// }
+		// for (int i=0; i<pdfweight.size(); ++i){
+		// 	cout << i << ": " << pdfweight[i] << " ";
+		// }
+
+	// ===========================================================================
+
+	}// end if fIsData
+
 	else {
 		fTm0      = -1;
 		fTm12     = -1;
@@ -437,6 +601,8 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTmGlu    = -1;
 		fTmChi    = -1;
 		fTmLSP    = -1;
+		fTsusyPt  = -1;
+		fTnChi    = -1;
 		fTisTChiSlepSnu  = -1;
 		fTisRightHanded  = -1;
 	}
@@ -487,8 +653,27 @@ void SSDLAnalysis::FillAnalysisTree(){
 	// PU correction
 	fTrho   = fTR->Rho;
 	fTnvrtx = fTR->NVrtx;
-	if(!fIsData) fTpuweight = GetPUWeight(fTR->PUnumInteractions);
-	else fTpuweight = 1.;
+	if(!fIsData) {
+		// this is the nominal!! fTpuweight   = GetPUWeight  (fTR->PUnumInteractions);
+		// fTpuweight   = GetPUWeight    (fTR->NVrtx * 1.38); // the factor of 1.38 is derived from 20000 ttW events
+		// fTpuweightUp = GetPUWeightUp  (fTR->NVrtx * 1.38);
+		// fTpuweightDn = GetPUWeightDown(fTR->NVrtx * 1.38);
+		// =============================================================
+		fTpuweight   = GetPUWeight    (fTR->PUnumInteractions); // the factor of 1.38 is derived from 20000 ttW events
+		fTpuweightUp = GetPUWeightUp  (fTR->PUnumInteractions);
+		fTpuweightDn = GetPUWeightDown(fTR->PUnumInteractions);
+	}
+	else {
+		fTpuweight   = 1.;
+		fTpuweightUp = 1.;
+		fTpuweightDn = 1.;
+	}
+
+	// cout << "---------------------------------------------------------------------------" << endl;
+	// cout << Form("Event: %12d    puweight  : %.3f", fTEventNumber, fTpuweight  ) << endl;
+	// cout << Form("               puweightUP: %.3f",                fTpuweightUp) << endl;
+	// cout << Form("               puweightDN: %.3f",                fTpuweightDn) << endl;
+	// cout << Form("            SUSY-PT      : %.3f",                fTsusyPt    ) << endl;
 
 	// Dump muon properties
 	for(int i = 0; i < fTnqmus; ++i){
@@ -683,8 +868,23 @@ void SSDLAnalysis::ResetTree(){
 	fTmGlu    = -999.99;
 	fTmChi    = -999.99;
 	fTmLSP    = -999.99;
+	fTsusyPt  = -999.99;
+	fTnChi    = -999;
 	fTisTChiSlepSnu   = -999.99;
 	fTisRightHanded   = -999.99;
+
+	fTNPdfCTEQ = 0;
+	for( int i=0; i<fNCTEQ; ++i){
+		fTWPdfCTEQ[i] = -1.;
+	}
+	fTNPdfCT10 = 0;
+	for( int i=0; i<fNCT10; ++i){
+		fTWPdfCT10[i] = -1.;
+	}
+	fTNPdfMRST = 0;
+	for( int i=0; i<fNMRST; ++i){
+		fTWPdfMRST[i] = -1.;
+	}
 
 	for(size_t i = 0; i < fHLTPathSets.size(); ++i){
 		fHLTResults[i]   -2;
@@ -694,6 +894,8 @@ void SSDLAnalysis::ResetTree(){
 	fTrho      = -999.99;
 	fTnvrtx    = -999;
 	fTpuweight = -999.99;
+	fTpuweightUp = -999.99;
+	fTpuweightDn = -999.99;
 	
 	// muon properties
 	fTnqmus = 0;

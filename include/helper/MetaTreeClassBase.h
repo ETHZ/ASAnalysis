@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Mon Feb 25 10:02:59 2013 by ROOT version 5.32/00
+// Wed May 22 12:43:41 2013 by ROOT version 5.32/00
 // from TTree Analysis/AnalysisTree
-// found on file: dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/Feb19_T4tW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_47.root
+// found on file: dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/May21_T6ttWW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_9.root
 //////////////////////////////////////////////////////////
 
 #ifndef MetaTreeClassBase_h
@@ -31,6 +31,8 @@ public :
    Float_t         mGlu;
    Float_t         mChi;
    Float_t         mLSP;
+   Float_t         susyPt;
+   Int_t           nChi;
    Int_t           isTChiSlepSnu;
    Int_t           isRightHanded;
    Int_t           HLT_MU8;
@@ -58,6 +60,8 @@ public :
    Float_t         Rho;
    Int_t           NVrtx;
    Float_t         PUWeight;
+   Float_t         PUWeightUp;
+   Float_t         PUWeightDn;
    Int_t           NMus;
    Int_t           IsSignalMuon[5];   //[NMus]
    Float_t         MuPt[5];   //[NMus]
@@ -134,20 +138,20 @@ public :
    Float_t         pfMETType1;
    Float_t         pfMETType1Phi;
    Int_t           NJets;
-   Float_t         JetPt[20];   //[NJets]
-   Float_t         JetEta[20];   //[NJets]
-   Float_t         JetPhi[20];   //[NJets]
-   Float_t         JetEnergy[20];   //[NJets]
-   Float_t         JetCSVBTag[20];   //[NJets]
-   Float_t         JetProbBTag[20];   //[NJets]
-   Float_t         JetArea[20];   //[NJets]
-   Float_t         JetCorr[20];   //[NJets]
-   Float_t         JetCorrUnc[20];   //[NJets]
-   Int_t           JetPartonID[20];   //[NJets]
-   Int_t           JetPartonFlav[20];   //[NJets]
-   Float_t         JetGenPt[20];   //[NJets]
-   Float_t         JetGenEta[20];   //[NJets]
-   Float_t         JetGenPhi[20];   //[NJets]
+   Float_t         JetPt[30];   //[NJets]
+   Float_t         JetEta[30];   //[NJets]
+   Float_t         JetPhi[30];   //[NJets]
+   Float_t         JetEnergy[30];   //[NJets]
+   Float_t         JetCSVBTag[30];   //[NJets]
+   Float_t         JetProbBTag[30];   //[NJets]
+   Float_t         JetArea[30];   //[NJets]
+   Float_t         JetCorr[30];   //[NJets]
+   Float_t         JetCorrUnc[30];   //[NJets]
+   Int_t           JetPartonID[30];   //[NJets]
+   Int_t           JetPartonFlav[30];   //[NJets]
+   Float_t         JetGenPt[30];   //[NJets]
+   Float_t         JetGenEta[30];   //[NJets]
+   Float_t         JetGenPhi[30];   //[NJets]
 
    // List of branches
    TBranch        *b_Run;   //!
@@ -159,6 +163,8 @@ public :
    TBranch        *b_mGlu;   //!
    TBranch        *b_mChi;   //!
    TBranch        *b_mLSP;   //!
+   TBranch        *b_susyPt;   //!
+   TBranch        *b_nChi;   //!
    TBranch        *b_isTChiSlepSnu;   //!
    TBranch        *b_isRightHanded;   //!
    TBranch        *b_HLT_MU8;   //!
@@ -186,6 +192,8 @@ public :
    TBranch        *b_Rho;   //!
    TBranch        *b_NVrtx;   //!
    TBranch        *b_PUWeight;   //!
+   TBranch        *b_PUWeightUp;   //!
+   TBranch        *b_PUWeightDn;   //!
    TBranch        *b_NMus;   //!
    TBranch        *b_IsSignalMuon;   //!
    TBranch        *b_MuPt;   //!
@@ -296,9 +304,9 @@ MetaTreeClassBase::MetaTreeClassBase(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/Feb19_T4tW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_47.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/May21_T6ttWW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_9.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/Feb19_T4tW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_47.root");
+         f = new TFile("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/May21_T6ttWW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_9.root");
       }
       f->GetObject("Analysis",tree);
 
@@ -356,6 +364,8 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("mGlu", &mGlu, &b_mGlu);
    fChain->SetBranchAddress("mChi", &mChi, &b_mChi);
    fChain->SetBranchAddress("mLSP", &mLSP, &b_mLSP);
+   fChain->SetBranchAddress("susyPt", &susyPt, &b_susyPt);
+   fChain->SetBranchAddress("nChi", &nChi, &b_nChi);
    fChain->SetBranchAddress("isTChiSlepSnu", &isTChiSlepSnu, &b_isTChiSlepSnu);
    fChain->SetBranchAddress("isRightHanded", &isRightHanded, &b_isRightHanded);
    fChain->SetBranchAddress("HLT_MU8", &HLT_MU8, &b_HLT_MU8);
@@ -383,6 +393,8 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("Rho", &Rho, &b_Rho);
    fChain->SetBranchAddress("NVrtx", &NVrtx, &b_NVrtx);
    fChain->SetBranchAddress("PUWeight", &PUWeight, &b_PUWeight);
+   fChain->SetBranchAddress("PUWeightUp", &PUWeightUp, &b_PUWeightUp);
+   fChain->SetBranchAddress("PUWeightDn", &PUWeightDn, &b_PUWeightDn);
    fChain->SetBranchAddress("NMus", &NMus, &b_NMus);
    fChain->SetBranchAddress("IsSignalMuon", IsSignalMuon, &b_IsSignalMuon);
    fChain->SetBranchAddress("MuPt", MuPt, &b_MuPt);

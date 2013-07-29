@@ -326,6 +326,7 @@ public:
 	void makeTTWIntPredictions();
 	TTWZPrediction makeIntPredictionTTW(TString, int);
 	// old TTWZPrediction makeIntPredictionTTW(TString, gRegion);
+	void makeKinematicPlotsPaper();
 	void makeSystPlot(TString outputname, TString label, TH1D *nom, TH1D *plus, TH1D *minus=NULL);
 
 	void makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw    =false, int flag=0);
@@ -447,6 +448,7 @@ public:
 	vector<int> fMCBGEMEnr;    // SM background MC samples with Elec enriched QCD
 	vector<int> fMCBGMuEnrSig; // SM background + LM0 signal samples with Muon enriched QCD
 	vector<int> fMCRareSM; // Rare SM backgrounds
+	vector<int> fMCOnlyQCD; // Onlye QCD samples
 	vector<int> fMuData;  // Muon data samples
 	vector<int> fEGData;  // EG data samples
 	vector<int> fMuEGData;  // MuEG dataset

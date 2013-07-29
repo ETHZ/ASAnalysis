@@ -1271,7 +1271,6 @@ JZBAnalysis::JZBAnalysis(TreeReader *tr, std::string dataType, std::string globa
   // Define trigger paths to check
   addPath(elTriggerPaths,"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL",10,30);
 
-  //addPath(muTriggerPaths,"HLT_Mu13_Mu8",10,30);
   addPath(muTriggerPaths,"HLT_Mu17_Mu8",10,30);
   addPath(muTriggerPaths,"HLT_Mu17_TkMu8",9,20);
   
@@ -3475,7 +3474,7 @@ const bool JZBAnalysis::IsCustomMu2012(const int index){
   counters[MU].fill(" ... nPxHits > 0");
   if ( !(fTR->MuNMatchedStations[index] > 1) )      return false;
   //if ( !(fTR->MuNMatches[index] > 1) )      return false;
-  counters[MU].fill(" ... nMatches > 1");
+  counters[MU].fill(" ... nMatchedStations > 1");
   if ( !(fTR->MuNSiLayers[index] > 5) )      return false;
   counters[MU].fill(" ... nLayers > 5");
 
@@ -3828,23 +3827,32 @@ const bool JZBAnalysis::IsCustomEl2012(const int index) {
   
   counters[EL].fill(" ... pass additional electron ID cuts");
 
-  if(!(abs(fTR->ElD0PV[index])<0.02)) return false;
-  counters[EL].fill(" ... D0(PV)<0.02");
-  if(!(abs(fTR->ElDzPV[index])<0.1)) return false;
-  counters[EL].fill(" ... DZ(PV)<0.1");
-  //if(!(abs(fTR->ElDzPV[index])<0.2)) return false;
-  //counters[EL].fill(" ... DZ(PV)<0.2");
-
-//  if(!(fTR->ElPassConversionVeto[index])) return false;
   if(!(fTR->ElNumberOfMissingInnerHits[index]<=1)) return false;
   counters[EL].fill(" ... N(missing inner hits) <= 1");
-  if(!fTR->ElPassConversionVeto[index]) return false;
-  counters[EL].fill(" ... passed conversion rejection");
-  
+
   float e=fTR->ElCaloEnergy[index];
   float p=fTR->ElCaloEnergy[index]/fTR->ElESuperClusterOverP[index];
   if(!(fabs(1/e-1/p)<0.05)) return false;
   counters[EL].fill(" ... |1/e-1/p|<0.05");
+
+  // Remove if close to muon
+  for(int i=0;i<fTR->NMus;++i)
+    {
+      if ( !(fTR->MuPt[i]>10) ) continue;
+      if ( fTR->MuIsGlobalMuon[i] || fTR->MuIsTrackerMuon[i] ) {
+        TLorentzVector muP(fTR->MuPx[i],fTR->MuPy[i],fTR->MuPz[i],fTR->MuE[i]);
+        TLorentzVector elP(fTR->ElPx[index],fTR->ElPy[index],fTR->ElPz[index],fTR->ElE[index]);
+        if ( elP.DeltaR(muP) < 0.1 ) return false;
+      }
+    }
+  counters[EL].fill(" ... DR(e,mu)>0.1");
+
+  if(!(abs(fTR->ElD0PV[index])<0.02)) return false;
+  counters[EL].fill(" ... D0(PV)<0.02");
+  if(!(abs(fTR->ElDzPV[index])<0.1)) return false;
+  counters[EL].fill(" ... DZ(PV)<0.1");
+  if(!fTR->ElPassConversionVeto[index]) return false;
+  counters[EL].fill(" ... passed conversion rejection");
   
   // ECAL gap veto
   if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;  

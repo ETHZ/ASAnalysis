@@ -34,7 +34,6 @@
 using namespace std;
 //////////////////////////////////////////////////////////////////////////////////
 // Global parameters:
-static const bool gEWKino = false;
 static const bool gRunSMSscan = false;
 static const bool gRatiosFromTTbar = false;
 static const bool gFullDataBlind = false;
@@ -134,18 +133,13 @@ void SSDLPlotter::init(TString filename){
 	fMCBG.push_back(SingleTbar_s);
 	fMCBG.push_back(WJets);
 	fMCBG.push_back(DYJets);
-	// MARC fMCBG.push_back(GJets40);
-	// fMCBG.push_back(GJets200);
-	// fMCBG.push_back(GJets400);
 	fMCBG.push_back(WW);
 	fMCBG.push_back(WZ);
 	fMCBG.push_back(ZZ);
-	//	fMCBG.push_back(GVJets);
 	fMCBG.push_back(WGstarMu);
 	fMCBG.push_back(WGstarTau);
-
+	// RARES:
 	fMCBG.push_back(DPSWW);
-	// fMCBG.push_back(TTbarH);
 	fMCBG.push_back(HWW);
 	fMCBG.push_back(HZZ);
 	fMCBG.push_back(HTauTau);
@@ -160,13 +154,13 @@ void SSDLPlotter::init(TString filename){
 	fMCBG.push_back(WWG);
 	fMCBG.push_back(WWW);
 	fMCBG.push_back(ZZZ);
+	fMCBG.push_back(TTbarWW);
 	// QCD:
 	fMCBG.push_back(QCDMuEnr15);
-	// fMCBG.push_back(QCDEM20);
 	fMCBG.push_back(QCDEM30);
 	fMCBG.push_back(QCDEM80);
-	//	fMCBG.push_back(QCDEM170);
 	fMCBG.push_back(QCDEM250);
+	fMCBG.push_back(QCDEM350);
 	fMCBG.push_back(QCD50);
 	fMCBG.push_back(QCD80);
 	fMCBG.push_back(QCD120);
@@ -175,7 +169,8 @@ void SSDLPlotter::init(TString filename){
 	fMCBG.push_back(QCD470);
 	fMCBG.push_back(QCD600);
 	fMCBG.push_back(QCD800);
-
+	
+	///// SAMPLES WITHOUT GJETS:
 	fMCBGNoQCDNoGJets.push_back(TTJets);
 	fMCBGNoQCDNoGJets.push_back(SingleT_t);
 	fMCBGNoQCDNoGJets.push_back(SingleTbar_t);
@@ -183,13 +178,12 @@ void SSDLPlotter::init(TString filename){
 	fMCBGNoQCDNoGJets.push_back(SingleTbar_tW);
 	fMCBGNoQCDNoGJets.push_back(SingleT_s);
 	fMCBGNoQCDNoGJets.push_back(SingleTbar_s);
-	fMCBGNoQCDNoGJets.push_back(WJets);
+	//	fMCBGNoQCDNoGJets.push_back(WJets);
 	fMCBGNoQCDNoGJets.push_back(DYJets);
 	fMCBGNoQCDNoGJets.push_back(WW);
 	fMCBGNoQCDNoGJets.push_back(WZ);
 	fMCBGNoQCDNoGJets.push_back(ZZ);
 	fMCBGNoQCDNoGJets.push_back(DPSWW);
-	// fMCBGNoQCDNoGJets.push_back(TTbarH);
 	fMCBGNoQCDNoGJets.push_back(HWW);
 	fMCBGNoQCDNoGJets.push_back(HZZ);
 	fMCBGNoQCDNoGJets.push_back(HTauTau);
@@ -204,8 +198,9 @@ void SSDLPlotter::init(TString filename){
 	fMCBGNoQCDNoGJets.push_back(WWG);
 	fMCBGNoQCDNoGJets.push_back(WWW);
 	fMCBGNoQCDNoGJets.push_back(ZZZ);
+	fMCBGNoQCDNoGJets.push_back(TTbarWW);
 
-	// input samples for closure tests
+	// INPUT SAMPLES FOR CLOSURE TESTS
 	fClosureSamples.push_back(TTJets);
 	fClosureSamples.push_back(SingleT_t);
 	fClosureSamples.push_back(SingleTbar_t);
@@ -215,14 +210,16 @@ void SSDLPlotter::init(TString filename){
 	fClosureSamples.push_back(SingleTbar_s);
 	fClosureSamples.push_back(DYJets);
 	fClosureSamples.push_back(WW);
-	fClosureSamples.push_back(WJets);
+	//SANTI	fClosureSamples.push_back(WJets);
+	fClosureSamples.push_back(WGstarMu);
+	fClosureSamples.push_back(WGstarTau);	
 	
+	// OTHERS SAMPLES
 	fTTJets.push_back(TTJets);
-	
 	fWJets.push_back(WJets);
-	
 	fDYJets.push_back(DYJets);
 	
+	// SAMPLES FOR QCD MU ENRICHED BKG:
 	fMCBGMuEnr.push_back(TTJets);
 	fMCBGMuEnr.push_back(SingleT_t);
 	fMCBGMuEnr.push_back(SingleTbar_t);
@@ -232,19 +229,12 @@ void SSDLPlotter::init(TString filename){
 	fMCBGMuEnr.push_back(SingleTbar_s);
 	fMCBGMuEnr.push_back(WJets);
 	fMCBGMuEnr.push_back(DYJets);
-	// MARC fMCBGMuEnr.push_back(GJets40);
-	// MARC fMCBGMuEnr.push_back(GJets100);
-	// fMCBGMuEnr.push_back(GJets200);
-	// fMCBGMuEnr.push_back(GJets400);
 	fMCBGMuEnr.push_back(WW);
 	fMCBGMuEnr.push_back(WZ);
 	fMCBGMuEnr.push_back(ZZ);
-	//	fMCBGMuEnr.push_back(GVJets);
 	fMCBGMuEnr.push_back(WGstarMu);
 	fMCBGMuEnr.push_back(WGstarTau);
-
 	fMCBGMuEnr.push_back(DPSWW);
-	// fMCBGMuEnr.push_back(TTbarH);
 	fMCBGMuEnr.push_back(HWW);
 	fMCBGMuEnr.push_back(HZZ);
 	fMCBGMuEnr.push_back(HTauTau);
@@ -259,6 +249,7 @@ void SSDLPlotter::init(TString filename){
 	fMCBGMuEnr.push_back(WWG);
 	fMCBGMuEnr.push_back(WWW);
 	fMCBGMuEnr.push_back(ZZZ);
+	fMCBGMuEnr.push_back(TTbarWW);
 	fMCBGMuEnr.push_back(QCD50);
 	fMCBGMuEnr.push_back(QCD80);
 	fMCBGMuEnr.push_back(QCD120);
@@ -268,7 +259,18 @@ void SSDLPlotter::init(TString filename){
 	fMCBGMuEnr.push_back(QCD600);
 	fMCBGMuEnr.push_back(QCD800);
 	fMCBGMuEnr.push_back(QCDMuEnr15);
+
+	fMCOnlyQCD.push_back(QCD50);
+	fMCOnlyQCD.push_back(QCD80);
+	fMCOnlyQCD.push_back(QCD120);
+	fMCOnlyQCD.push_back(QCD170);
+	fMCOnlyQCD.push_back(QCD300);
+	fMCOnlyQCD.push_back(QCD470);
+	fMCOnlyQCD.push_back(QCD600);
+	fMCOnlyQCD.push_back(QCD800);
+	fMCOnlyQCD.push_back(QCDMuEnr15);
 	
+	// SAMPLES FOR QCD EM ENRICHED BKG:
 	fMCBGEMEnr.push_back(TTJets);
 	fMCBGEMEnr.push_back(SingleT_t);
 	fMCBGEMEnr.push_back(SingleTbar_t);
@@ -278,18 +280,12 @@ void SSDLPlotter::init(TString filename){
 	fMCBGEMEnr.push_back(SingleTbar_s);
 	fMCBGEMEnr.push_back(WJets);
 	fMCBGEMEnr.push_back(DYJets);
-	// MARC fMCBGEMEnr.push_back(GJets40);
-	// MARC fMCBGEMEnr.push_back(GJets100);
-	// fMCBGEMEnr.push_back(GJets200);
-	// fMCBGEMEnr.push_back(GJets400);
 	fMCBGEMEnr.push_back(WW);
 	fMCBGEMEnr.push_back(WZ);
 	fMCBGEMEnr.push_back(ZZ);
 	fMCBGEMEnr.push_back(WGstarMu);
 	fMCBGEMEnr.push_back(WGstarTau);
-
 	fMCBGEMEnr.push_back(DPSWW);
-	// fMCBGEMEnr.push_back(TTbarH);
 	fMCBGEMEnr.push_back(HWW);
 	fMCBGEMEnr.push_back(HZZ);
 	fMCBGEMEnr.push_back(HTauTau);
@@ -304,11 +300,9 @@ void SSDLPlotter::init(TString filename){
 	fMCBGEMEnr.push_back(WWG);
 	fMCBGEMEnr.push_back(WWW);
 	fMCBGEMEnr.push_back(ZZZ);
-
-	// fMCBGEMEnr.push_back(QCDEM20);
+	fMCBGEMEnr.push_back(TTbarWW);
 	fMCBGEMEnr.push_back(QCDEM30);
 	fMCBGEMEnr.push_back(QCDEM80);
-	//	fMCBGEMEnr.push_back(QCDEM170);
 	fMCBGEMEnr.push_back(QCDEM250);
 	fMCBGEMEnr.push_back(QCD50);
 	fMCBGEMEnr.push_back(QCD80);
@@ -319,26 +313,25 @@ void SSDLPlotter::init(TString filename){
 	fMCBGEMEnr.push_back(QCD600);
 	fMCBGEMEnr.push_back(QCD800);
 	
+	/// QCD ONLY SAMPLES: 
 	fMuEnr.push_back(QCDMuEnr15);
-	
-	// fEMEnr.push_back(QCDEM20);
+
 	fEMEnr.push_back(QCDEM30);
 	fEMEnr.push_back(QCDEM80);
-	//	fEMEnr.push_back(QCDEM170);
 	fEMEnr.push_back(QCDEM250);
-
+	
 	fMCBGMuEnrSig = fMCBGMuEnr;
-
-
+	
+	/// RARE SM BKGs ONLY: 
 	fMCRareSM.push_back(ZZ);
-	//V2	fMCRareSM.push_back(GVJets);
 	fMCRareSM.push_back(WGstarMu);
 	fMCRareSM.push_back(WGstarTau);
 	fMCRareSM.push_back(DPSWW);
-	// if(gEWKino || gTTHBG)  fMCRareSM.push_back(TTbarH);
-	if(gEWKino || gTTHBG)  { fMCRareSM.push_back(HWW); fMCRareSM.push_back(HZZ); fMCRareSM.push_back(HTauTau); }
-	if(gEWKino)  fMCRareSM.push_back(TTbarW);
-	if(gEWKino)  fMCRareSM.push_back(TTbarZ);
+	fMCRareSM.push_back(HWW);
+	fMCRareSM.push_back(HZZ);
+	fMCRareSM.push_back(HTauTau);
+	fMCRareSM.push_back(TTbarW);
+	fMCRareSM.push_back(TTbarZ);
 	fMCRareSM.push_back(TTbarG);
 	fMCRareSM.push_back(TbZ);
 	fMCRareSM.push_back(WpWp);
@@ -348,63 +341,52 @@ void SSDLPlotter::init(TString filename){
 	fMCRareSM.push_back(WWG);
 	fMCRareSM.push_back(WWW);
 	fMCRareSM.push_back(ZZZ);
+	fMCRareSM.push_back(TTbarWW);
+	
 
+	/// DATA SAMPLES:
 	fMuData    .push_back(DoubleMu1);
 	fMuData    .push_back(DoubleMu1a);
 	fMuData    .push_back(DoubleMu2);
 	fMuData    .push_back(DoubleMu3);
 	fMuData    .push_back(DoubleMu4);
 	fMuData    .push_back(DoubleMu5);
-	// fMuData    .push_back(DoubleMu5a);
-	// fMuHadData .push_back(MuHad1);
-	// fMuHadData .push_back(MuHad2);
+
 	fEGData    .push_back(DoubleEle1);
 	fEGData    .push_back(DoubleEle1a);
 	fEGData    .push_back(DoubleEle2);
 	fEGData    .push_back(DoubleEle3);
 	fEGData    .push_back(DoubleEle4);
 	fEGData    .push_back(DoubleEle5);
-	// fEGData    .push_back(DoubleEle5a);
-	// fEleHadData.push_back(EleHad1);
-	// fEleHadData.push_back(EleHad2);
+
 	fMuEGData  .push_back(MuEG1);
 	fMuEGData  .push_back(MuEG1a);
 	fMuEGData  .push_back(MuEG2);
 	fMuEGData  .push_back(MuEG3);
 	fMuEGData  .push_back(MuEG4);
 	fMuEGData  .push_back(MuEG5);
-	// fMuEGData  .push_back(MuEG5a);
 
-	fHighPtData.push_back(DoubleMu1);
+	// OTHER SAMPLES:
+       	fHighPtData.push_back(DoubleMu1);
 	fHighPtData.push_back(DoubleMu1a);
 	fHighPtData.push_back(DoubleMu2);
 	fHighPtData.push_back(DoubleMu3);
 	fHighPtData.push_back(DoubleMu4);
 	fHighPtData.push_back(DoubleMu5);
-	// fHighPtData.push_back(DoubleMu5a);
+
 	fHighPtData.push_back(DoubleEle1);
 	fHighPtData.push_back(DoubleEle1a);
 	fHighPtData.push_back(DoubleEle2);
 	fHighPtData.push_back(DoubleEle3);
 	fHighPtData.push_back(DoubleEle4);
 	fHighPtData.push_back(DoubleEle5);
-	// fHighPtData.push_back(DoubleEle5a);
+
 	fHighPtData.push_back(MuEG1);
 	fHighPtData.push_back(MuEG1a);
 	fHighPtData.push_back(MuEG2);
 	fHighPtData.push_back(MuEG3);
 	fHighPtData.push_back(MuEG4);
 	fHighPtData.push_back(MuEG5);
-	// fHighPtData.push_back(MuEG5a);
-
-	// fLowPtData.push_back(MuHad1);
-	// fLowPtData.push_back(MuHad2);
-	// fLowPtData.push_back(EleHad1);
-	// fLowPtData.push_back(EleHad2);
-	// fLowPtData.push_back(MuEG1);
-	// fLowPtData.push_back(MuEG2);
-	// fLowPtData.push_back(MuEG3);
-	// fLowPtData.push_back(MuEG4);
 }
 void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
         // This macro runs over the the SMS scans 
@@ -413,7 +395,7 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 	// TString filename   = "/shome//mdunser/xsecfiles/output_38.root";  
 
 	// bool for the low-pt analysis...
-	bool lowpt = true;
+	bool lowpt = false;
 	
 	cout << "Running Over region: " << region << endl;
 	cout << "On file: " << file << endl;
@@ -421,8 +403,7 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 	scanModelGeneric(file , gRegion[region], model, lowpt);
 }
 void SSDLPlotter::doAnalysis(){
-	// sandBox();
-
+	// sandBox();  
   //    SUSYWorkshopPlots("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/SUSYWorkshop/SMS-MadGraph-Pythia6Zstar-8TeV-T1tttt-2J-mGo-800to1400-mLSP-1-50GeVX50GeV-Binning-Summer12-START52-V9-FSIM-v2.root", 1100, 5);
   //	SUSYWorkshopPlots("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/SUSYWorkshop/SMS-MadGraph-Pythia6Zstar-8TeV-T1tttt-2J-mGo-775to1075-mLSP-25to500-50GeVX50GeV-Binning.root", 1075, 25);
   //	SUSYWorkshopPlots("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/SUSYWorkshop/SMS-MadGraph-Pythia6Zstar-8TeV-T1tttt-2J-mGo-775to1075-mLSP-25to500-50GeVX50GeV-Binning.root", 1075, 225);
@@ -434,28 +415,21 @@ void SSDLPlotter::doAnalysis(){
        
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
         if(readHistos(fOutputFileName) != 0) return;
-	fillRatios(fMuData, fEGData, 0);
+	fillRatios(fMuData,    fEGData,    0);
 	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
+	
+	// fill fake ratios to run closure tests
+	//	fillRatios(fMuData, fEGData, 0);
+	//	fillRatios(fMuEnr, fEMEnr, fDYJets, fDYJets, 1);
+	//	fillRatios(fMuData, fEGData, 0);
+	//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 0);
+	//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 1);
+	//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 0);
+	//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
+	//	storeWeightedPred(gRegion[gBaseRegion]);
+	
 	storeWeightedPred(gRegion[gBaseRegion]);
 	ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
-	
-	
-//SANTI	makeOSSFEfficiency();
-//SANTI	// ------------------- the following is for testing and closure things
-	// fill fake ratios to run closure tests
-//	fillRatios(fMuData, fEGData, 0);
-//	fillRatios(fMuEnr, fEMEnr, fDYJets, fDYJets, 1);
-//	fillRatios(fMuData, fEGData, 0);
-//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 0);
-//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 1);
-//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 0);
-//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
-//	fillRatios(fMuData, fEGData, 0);
-//	fillRatios(fMuData, fEGData, 1);
-//	fillRatios(fTTJets, fTTJets, 0);
-//	fillRatios(fTTJets, fTTJets, 1);
-//	storeWeightedPred(gRegion[gBaseRegion]);
-	
 
 	// makeROCCurve(); return;
 	// makePileUpPlots(); // loops on all data!
@@ -480,81 +454,34 @@ void SSDLPlotter::doAnalysis(){
 	//	makeMETvsHTPlot0HT();
 	// makeMETvsHTPlotTau();
 
-//	makeRatioPlots(Muon);
-//	makeRatioPlots(Elec);
-//	make2DRatioPlots(Muon);
-//	make2DRatioPlots(Elec);
-//	// // makeNTightLoosePlots(Muon);
-//	// // makeNTightLoosePlots(Elec);
-//	// 
-//	makeFRvsPtPlots(Muon, SigSup);
-//	makeFRvsPtPlots(Elec, SigSup);
-//	makeFRvsPtPlots(Muon, ZDecay);
-//	makeFRvsPtPlots(Elec, ZDecay);
-//	makeFRvsNVPlots(Muon, ZDecay);
-//	makeFRvsNVPlots(Elec, ZDecay);
-//	makeFRvsEtaPlots(Muon);
-//	makeFRvsEtaPlots(Elec);
-//	makeChMidvsPtPlots();
-//
-//	makeAllClosureTestsTTW();
-//	makeAllIntPredictions();
-//	makeAllClosureTests();
-//
-	// makeDiffPrediction();
-//	makeTTWDiffPredictions();
-//	makeTTWIntPredictions();
-	// printAllYieldTables();
+	makeRatioPlots(Muon);
+	makeRatioPlots(Elec);
+	make2DRatioPlots(Muon);
+	make2DRatioPlots(Elec);
+	makeNTightLoosePlots(Muon);
+	makeNTightLoosePlots(Elec);
+
+	makeFRvsPtPlots(Muon, SigSup);
+	makeFRvsPtPlots(Elec, SigSup);
+	makeFRvsPtPlots(Muon, ZDecay);
+	makeFRvsPtPlots(Elec, ZDecay);
+	// makeFRvsNVPlots(Muon, ZDecay); 
+	// makeFRvsNVPlots(Elec, ZDecay);
+	makeFRvsEtaPlots(Muon);
+	makeFRvsEtaPlots(Elec);
+	makeChMidvsPtPlots();
+
+	// makeAllClosureTestsTTW();
+	makeAllIntPredictions();
+	makeAllClosureTests();
+
+	// makeKinematicPlotsPaper();
+	makeDiffPrediction();
+	// makeTTWDiffPredictions();
+	// makeTTWIntPredictions();
+	printAllYieldTables();
 	
-	
-	makeTTWDiffPredictionsSigEvent();
-	
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
-	
-	// presel
-//	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20., 0, true);
-//	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20.,-1, true);
-//	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20.,+1, true);
-	
-	// optimized selection
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
-// 	makeTTWIntPredictionsSigEvent(260., 8000., 0., 8000., 3, 1, 1, 31., 31.,-1, true);
-// 	makeTTWIntPredictionsSigEvent(175, 8000., 0., 8000., 3, 1, 1, 33., 33.,+1, true);
-	
-	// optimized selection March 20
-// 	makeTTWIntPredictionsSigEvent(260., 8000., 0., 8000., 3, 1, 1, 33., 33.,-1, true);
-// 	makeTTWIntPredictionsSigEvent(175., 8000., 0., 8000., 3, 1, 1, 33., 33.,+1, true);
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
-	
-	//makeTTWNLOPlots(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag)
-//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            0,              0,              0,           0.,           0.,          0,     true,            0);
-//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            0,              0,              0,           0.,           0.,          1,     true,            0);
-//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            0,              0,              0,           0.,           0.,         -1,     true,            0);
-//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
-//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          1,     true,            0);
-//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,         -1,     true,            0);
-//	makeTTWNLOPlots(         175.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
-//	makeTTWNLOPlots(         260.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
-//	makeTTWNLOPlots(         175.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          1,     true,            0);
-//	makeTTWNLOPlots(         260.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,         -1,     true,            0);
-//	makeTTWNLOPlots(           0.,        300.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
-//	makeTTWNLOPlots(           0.,        300.,           0.,        8000.,            0,              0,              0,           0.,           0.,          0,     true,            0);
-	
-	
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,-1, true);
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,+1, true);
-	
-	
-// 	makeTTWIntPredictionsSigEvent(268.235, 8000., 0., 8000., 3, 1, 1, 35.5956, 35.5956, 0, true);
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,-1, true);
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,+1, true);
-//	makePredictionSignalEvents(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,-1, true);
-//	makePredictionSignalEvents(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,+1, true);
-//	makePredictionSignalEvents(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
-//	makePredictionSignalEvents(100., 8000., 0., 8000., 3, 1, 1, 55., 35., 0, true);
-//	makePredictionSignalEvents(175., 8000., 0., 7000., 3, 1, 1, 35., 35., 0, true);
-	//makePredictionSignalEvents(280., 8000., 0., 7000., 3, 1, 1, 40., 40., 0, true);
-	// makeRelIsoTTSigPlots();
+
 	
 //	makeFakeGenIDTables();
 //	makeMIDIsolationPlots(Muon, SigSup);
@@ -4671,7 +4598,6 @@ void SSDLPlotter::makeMETvsHTPlot0HT(){
 	regleg2->SetTextSize(0.03);
 	regleg2->SetBorderSize(0);
 	
-
 	// HT vs. MET plot first
 	TCanvas *c_temp = new TCanvas("C_HTvsMET", "HT vs MET in Data vs MC", 0, 0, 600, 600);
 	c_temp->cd();
@@ -5435,18 +5361,18 @@ void SSDLPlotter::makeFRvsPtPlots(gChannel chan, gFPSwitch fp){
 	if(fp == SigSup){
 		h_ptratio_data = new TH1D("Ratio_data", "Tight/Loose Ratio in data", getNFPtBins(chan), getFPtBins(chan));
 		h_ptratio_mc   = new TH1D("Ratio_mc",   "Tight/Loose Ratio in MC",   getNFPtBins(chan), getFPtBins(chan));
-		h_ptratio_qcd  = new TH1D("Ratio_qcd",  "Tight/Loose Ratio in QCD",  getNFPtBins(chan), getFPtBins(chan));
-		h_ptratio_wjets= new TH1D("Ratio_wjets","Tight/Loose Ratio in WJets",getNFPtBins(chan), getFPtBins(chan));
-		h_ptratio_ttbar= new TH1D("Ratio_ttbar","Tight/Loose Ratio in ttbar",getNFPtBins(chan), getFPtBins(chan));
+		//h_ptratio_qcd  = new TH1D("Ratio_qcd",  "Tight/Loose Ratio in QCD",  getNFPtBins(chan), getFPtBins(chan));
+		//h_ptratio_wjets= new TH1D("Ratio_wjets","Tight/Loose Ratio in WJets",getNFPtBins(chan), getFPtBins(chan));
+		//h_ptratio_ttbar= new TH1D("Ratio_ttbar","Tight/Loose Ratio in ttbar",getNFPtBins(chan), getFPtBins(chan));
 		h_dummy1       = new TH1D("dummy1", "dummy1", getNEtaBins(chan), getEtaBins(chan));
 		h_dummy2       = new TH2D("dummy2", "dummy2", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan), getEtaBins(chan));
 	}
 	if(fp == ZDecay){
 		h_ptratio_data = new TH1D("Ratio_data", "Tight/Loose Ratio in data", getNPPtBins(chan), getPPtBins(chan));
 		h_ptratio_mc   = new TH1D("Ratio_mc",   "Tight/Loose Ratio in MC",   getNPPtBins(chan), getPPtBins(chan));
-		h_ptratio_qcd  = new TH1D("Ratio_qcd",  "Tight/Loose Ratio in QCD",  getNPPtBins(chan), getPPtBins(chan));
-		h_ptratio_wjets= new TH1D("Ratio_wjets","Tight/Loose Ratio in WJets",getNPPtBins(chan), getPPtBins(chan));
-		h_ptratio_ttbar= new TH1D("Ratio_ttbar","Tight/Loose Ratio in ttbar",getNPPtBins(chan), getPPtBins(chan));
+		//h_ptratio_qcd  = new TH1D("Ratio_qcd",  "Tight/Loose Ratio in QCD",  getNPPtBins(chan), getPPtBins(chan));
+		//h_ptratio_wjets= new TH1D("Ratio_wjets","Tight/Loose Ratio in WJets",getNPPtBins(chan), getPPtBins(chan));
+		//h_ptratio_ttbar= new TH1D("Ratio_ttbar","Tight/Loose Ratio in ttbar",getNPPtBins(chan), getPPtBins(chan));
 		h_dummy1       = new TH1D("dummy1", "dummy1", getNEtaBins(chan), getEtaBins(chan));
 		h_dummy2       = new TH2D("dummy2", "dummy2", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan), getEtaBins(chan));
 	}
@@ -5478,9 +5404,9 @@ void SSDLPlotter::makeFRvsPtPlots(gChannel chan, gFPSwitch fp){
 
 	calculateRatio(datasamples, chan, fp, h_dummy2, h_ptratio_data, h_dummy1);
 	calculateRatio(mcsamples,   chan, fp, h_dummy2, h_ptratio_mc,   h_dummy1);
-	calculateRatio(qcdsamples,  chan, fp, h_dummy2, h_ptratio_qcd,   h_dummy1);
-	calculateRatio(wjetssamples,  chan, fp, h_dummy2, h_ptratio_wjets,   h_dummy1);
-	calculateRatio(ttbarsamples,  chan, fp, h_dummy2, h_ptratio_ttbar,   h_dummy1, false, true);
+	//calculateRatio(qcdsamples,  chan, fp, h_dummy2, h_ptratio_qcd,   h_dummy1);
+	//calculateRatio(wjetssamples,  chan, fp, h_dummy2, h_ptratio_wjets,   h_dummy1);
+	//calculateRatio(ttbarsamples,  chan, fp, h_dummy2, h_ptratio_ttbar,   h_dummy1, false, true);
 
 	//////////////
 	float linewidth = 1.;
@@ -5503,16 +5429,16 @@ void SSDLPlotter::makeFRvsPtPlots(gChannel chan, gFPSwitch fp){
 
 	float maximum = 0.2; //0.4;
 	if(fp == ZDecay) maximum = 1.1;
-	h_ptratio_data->SetMaximum(maximum);
-	h_ptratio_mc  ->SetMaximum(maximum);
-	h_ptratio_qcd  ->SetMaximum(maximum);
-	h_ptratio_wjets  ->SetMaximum(maximum);
-	h_ptratio_ttbar  ->SetMaximum(maximum);
-	h_ptratio_data->SetMinimum(0.0);
-	h_ptratio_mc  ->SetMinimum(0.0);
-	h_ptratio_qcd ->SetMinimum(0.0);
-	h_ptratio_wjets ->SetMinimum(0.0);
-	h_ptratio_ttbar ->SetMinimum(0.0);
+	h_ptratio_data  -> SetMaximum(maximum);
+	h_ptratio_mc    -> SetMaximum(maximum);
+	//h_ptratio_qcd   -> SetMaximum(maximum);
+	//h_ptratio_wjets -> SetMaximum(maximum);
+	//h_ptratio_ttbar -> SetMaximum(maximum);
+	h_ptratio_data  -> SetMinimum(0.0);
+	h_ptratio_mc    -> SetMinimum(0.0);
+	//h_ptratio_qcd   -> SetMinimum(0.0);
+	//h_ptratio_wjets -> SetMinimum(0.0);
+	//h_ptratio_ttbar -> SetMinimum(0.0);
 
 	if(chan == Muon) h_ptratio_mc->SetXTitle(convertVarName("MuPt[0]"));
 	if(chan == Elec) h_ptratio_mc->SetXTitle(convertVarName("ElPt[0]"));
@@ -5534,29 +5460,29 @@ void SSDLPlotter::makeFRvsPtPlots(gChannel chan, gFPSwitch fp){
 	h_ptratio_mc  ->SetFillColor(kRed);
 	h_ptratio_mc  ->GetXaxis()->SetRangeUser(0.,50.);
 	
-	h_ptratio_qcd  ->SetMarkerColor(kGreen);
-	h_ptratio_qcd  ->SetMarkerStyle(23);
-	h_ptratio_qcd  ->SetMarkerSize(1.5);
-	h_ptratio_qcd  ->SetLineWidth(linewidth);
-	h_ptratio_qcd  ->SetLineColor(kGreen);
-	h_ptratio_qcd  ->SetFillColor(kGreen);
-	h_ptratio_qcd  ->GetXaxis()->SetRangeUser(0.,50.);
+	// h_ptratio_qcd  ->SetMarkerColor(kGreen);
+	// h_ptratio_qcd  ->SetMarkerStyle(23);
+	// h_ptratio_qcd  ->SetMarkerSize(1.5);
+	// h_ptratio_qcd  ->SetLineWidth(linewidth);
+	// h_ptratio_qcd  ->SetLineColor(kGreen);
+	// h_ptratio_qcd  ->SetFillColor(kGreen);
+	// h_ptratio_qcd  ->GetXaxis()->SetRangeUser(0.,50.);
 	
-	h_ptratio_wjets  ->SetMarkerColor(kOrange);
-	h_ptratio_wjets  ->SetMarkerStyle(23);
-	h_ptratio_wjets  ->SetMarkerSize(1.5);
-	h_ptratio_wjets  ->SetLineWidth(2);
-	h_ptratio_wjets  ->SetLineColor(kOrange);
-	h_ptratio_wjets  ->SetFillColor(kOrange);
-	h_ptratio_wjets  ->GetXaxis()->SetRangeUser(0.,50.);
+	// h_ptratio_wjets  ->SetMarkerColor(kOrange);
+	// h_ptratio_wjets  ->SetMarkerStyle(23);
+	// h_ptratio_wjets  ->SetMarkerSize(1.5);
+	// h_ptratio_wjets  ->SetLineWidth(2);
+	// h_ptratio_wjets  ->SetLineColor(kOrange);
+	// h_ptratio_wjets  ->SetFillColor(kOrange);
+	// h_ptratio_wjets  ->GetXaxis()->SetRangeUser(0.,50.);
 	
-	h_ptratio_ttbar  ->SetMarkerColor(kBlue);
-	h_ptratio_ttbar  ->SetMarkerStyle(23);
-	h_ptratio_ttbar  ->SetMarkerSize(1.5);
-	h_ptratio_ttbar  ->SetLineWidth(2);
-	h_ptratio_ttbar  ->SetLineColor(kBlue);
-	h_ptratio_ttbar  ->SetFillColor(kBlue);
-	h_ptratio_ttbar  ->GetXaxis()->SetRangeUser(0.,50.);
+	// h_ptratio_ttbar  ->SetMarkerColor(kBlue);
+	// h_ptratio_ttbar  ->SetMarkerStyle(23);
+	// h_ptratio_ttbar  ->SetMarkerSize(1.5);
+	// h_ptratio_ttbar  ->SetLineWidth(2);
+	// h_ptratio_ttbar  ->SetLineColor(kBlue);
+	// h_ptratio_ttbar  ->SetFillColor(kBlue);
+	// h_ptratio_ttbar  ->GetXaxis()->SetRangeUser(0.,50.);
 
 	TLatex *lat = new TLatex();
 	lat->SetNDC(kTRUE);
@@ -5568,9 +5494,9 @@ void SSDLPlotter::makeFRvsPtPlots(gChannel chan, gFPSwitch fp){
 	if(fp == ZDecay) leg = new TLegend(0.15,0.15,0.35,0.37);
 	leg->AddEntry(h_ptratio_data, "Data",            "p");
 	leg->AddEntry(h_ptratio_mc,   "Simulation",      "p");
-	leg->AddEntry(h_ptratio_qcd,  "QCD",             "p");
-	leg->AddEntry(h_ptratio_wjets,"WJets",           "p");
-	leg->AddEntry(h_ptratio_ttbar,"ttbar (matched)", "p");
+	//leg->AddEntry(h_ptratio_qcd,  "QCD",             "p");
+	//leg->AddEntry(h_ptratio_wjets,"WJets",           "p");
+	//leg->AddEntry(h_ptratio_ttbar,"ttbar (matched)", "p");
 	leg->SetTextSize(0.04);
 	leg->SetFillStyle(0);
 	leg->SetTextFont(42);
@@ -5580,8 +5506,8 @@ void SSDLPlotter::makeFRvsPtPlots(gChannel chan, gFPSwitch fp){
 	c_temp->cd();
 	// MARC h_ptratio_mc->DrawCopy("axis");
 	h_ptratio_mc->DrawCopy("PE 0");
-	h_ptratio_qcd->Draw("PE 0 same");
-	h_ptratio_ttbar->Draw("PE 0 same");
+	// h_ptratio_qcd->Draw("PE 0 same");
+	// h_ptratio_ttbar->Draw("PE 0 same");
 	// MARC eff_mc->Draw("P same");
 	// MARC h_ptratio_data->Draw("PE X0 same");
 	eff_data->Draw("PZ 0 same");
@@ -5602,7 +5528,8 @@ void SSDLPlotter::makeFRvsPtPlots(gChannel chan, gFPSwitch fp){
 	
 	// Util::PrintNoEPS( c_temp, fpname + "Ratio_" + name + "_Pt", fOutputDir + fOutputSubDir, NULL);
 	Util::PrintPDF(c_temp, fpname + "Ratio_" + name + "_Pt", fOutputDir + fOutputSubDir);
-	delete h_ptratio_mc, h_ptratio_data, h_ptratio_qcd, h_ptratio_wjets, h_ptratio_ttbar;
+	delete h_ptratio_mc, h_ptratio_data;
+	//delete h_ptratio_mc, h_ptratio_data, h_ptratio_qcd, h_ptratio_wjets, h_ptratio_ttbar;
 	delete c_temp, lat, leg;
 	fOutputSubDir = "";
 }
@@ -5816,8 +5743,8 @@ void SSDLPlotter::makeFRvsEtaPlots(gChannel chan){
 
 	TH1D *h_etaratio_data = new TH1D("Ratio_data", "Tight/Loose Ratio in data", getNEtaBins(chan), getEtaBins(chan));
 	TH1D *h_etaratio_mc   = new TH1D("Ratio_mc",   "Tight/Loose Ratio in MC",   getNEtaBins(chan), getEtaBins(chan));
-	TH1D *h_etaratio_qcd  = new TH1D("Ratio_qcd",  "Tight/Loose Ratio in QCD",  getNEtaBins(chan), getEtaBins(chan));
-	TH1D *h_etaratio_wjets= new TH1D("Ratio_wjets","Tight/Loose Ratio in WJets",getNEtaBins(chan), getEtaBins(chan));
+	//TH1D *h_etaratio_qcd  = new TH1D("Ratio_qcd",  "Tight/Loose Ratio in QCD",  getNEtaBins(chan), getEtaBins(chan));
+	//TH1D *h_etaratio_wjets= new TH1D("Ratio_wjets","Tight/Loose Ratio in WJets",getNEtaBins(chan), getEtaBins(chan));
 
 	vector<int> datasamples;
 	vector<int> mcsamples;
@@ -5843,8 +5770,8 @@ void SSDLPlotter::makeFRvsEtaPlots(gChannel chan){
 
 	calculateRatio(datasamples, chan, SigSup, h_dummy2, h_dummy1, h_etaratio_data);
 	calculateRatio(mcsamples,   chan, SigSup, h_dummy2, h_dummy1, h_etaratio_mc);
-	calculateRatio(qcdsamples,  chan, SigSup, h_dummy2, h_dummy1, h_etaratio_qcd);
-	calculateRatio(wjetssamples,chan, SigSup, h_dummy2, h_dummy1, h_etaratio_wjets);
+	//calculateRatio(qcdsamples,  chan, SigSup, h_dummy2, h_dummy1, h_etaratio_qcd);
+	//calculateRatio(wjetssamples,chan, SigSup, h_dummy2, h_dummy1, h_etaratio_wjets);
 
 	//////////////
 	TEfficiency *eff_data = getMergedEfficiency(datasamples, chan, SigSup, 1);
@@ -5857,12 +5784,12 @@ void SSDLPlotter::makeFRvsEtaPlots(gChannel chan){
 	//	if(chan==Elec) max = 0.8;
 	h_etaratio_data->SetMaximum(max);
 	h_etaratio_mc  ->SetMaximum(max);
-	h_etaratio_qcd  ->SetMaximum(max);
-	h_etaratio_wjets  ->SetMaximum(max);
+	//h_etaratio_qcd  ->SetMaximum(max);
+	// h_etaratio_wjets  ->SetMaximum(max);
 	h_etaratio_data->SetMinimum(0.0);
 	h_etaratio_mc  ->SetMinimum(0.0);
-	h_etaratio_qcd  ->SetMinimum(0.0);
-	h_etaratio_wjets  ->SetMinimum(0.0);
+	//h_etaratio_qcd  ->SetMinimum(0.0);
+	// h_etaratio_wjets  ->SetMinimum(0.0);
 
 	if(chan == Muon) h_etaratio_mc->SetXTitle(convertVarName("MuEta[0]"));
 	if(chan == Elec) h_etaratio_mc->SetXTitle(convertVarName("ElEta[0]"));
@@ -5883,19 +5810,19 @@ void SSDLPlotter::makeFRvsEtaPlots(gChannel chan){
 	h_etaratio_mc  ->SetLineColor(kRed);
 	h_etaratio_mc  ->SetFillColor(kRed);
 	
-	h_etaratio_qcd  ->SetMarkerColor(kBlue);
-	h_etaratio_qcd  ->SetMarkerStyle(23);
-	h_etaratio_qcd  ->SetMarkerSize(1.5);
-	h_etaratio_qcd  ->SetLineWidth(2);
-	h_etaratio_qcd  ->SetLineColor(kBlue);
-	h_etaratio_qcd  ->SetFillColor(kBlue);
+	// h_etaratio_qcd  ->SetMarkerColor(kBlue);
+	// h_etaratio_qcd  ->SetMarkerStyle(23);
+	// h_etaratio_qcd  ->SetMarkerSize(1.5);
+	// h_etaratio_qcd  ->SetLineWidth(2);
+	// h_etaratio_qcd  ->SetLineColor(kBlue);
+	// h_etaratio_qcd  ->SetFillColor(kBlue);
 	
-	h_etaratio_wjets  ->SetMarkerColor(kYellow);
-	h_etaratio_wjets  ->SetMarkerStyle(23);
-	h_etaratio_wjets  ->SetMarkerSize(1.5);
-	h_etaratio_wjets  ->SetLineWidth(2);
-	h_etaratio_wjets  ->SetLineColor(kYellow);
-	h_etaratio_wjets  ->SetFillColor(kYellow);
+	// h_etaratio_wjets  ->SetMarkerColor(kYellow);
+	// h_etaratio_wjets  ->SetMarkerStyle(23);
+	// h_etaratio_wjets  ->SetMarkerSize(1.5);
+	// h_etaratio_wjets  ->SetLineWidth(2);
+	// h_etaratio_wjets  ->SetLineColor(kYellow);
+	// h_etaratio_wjets  ->SetFillColor(kYellow);
 
 	// // h_etaratio_data->GetXaxis()->SetTitle("p_{T} (GeV)");
 	// h_etaratio_data->GetXaxis()->SetTitle("#left|#eta#right|");
@@ -5914,8 +5841,8 @@ void SSDLPlotter::makeFRvsEtaPlots(gChannel chan){
 	TLegend *leg = new TLegend(0.15,0.75,0.35,0.88);
 	leg->AddEntry(h_etaratio_data, "Data",       "p");
 	leg->AddEntry(h_etaratio_mc,   "Simulation", "p");
-	leg->AddEntry(h_etaratio_qcd,   "QCD", "p");
-	leg->AddEntry(h_etaratio_wjets,   "WJets", "p");
+	// leg->AddEntry(h_etaratio_qcd,   "QCD", "p");
+	// leg->AddEntry(h_etaratio_wjets,   "WJets", "p");
 	leg->SetFillStyle(0);
 	leg->SetTextFont(42);
 	leg->SetTextSize(0.04);
@@ -5937,8 +5864,8 @@ void SSDLPlotter::makeFRvsEtaPlots(gChannel chan){
 	h_etaratio_mc->DrawCopy("PE 0");
 	// MARC h_etaratio_mc->DrawCopy("axis");
 	// MARC eff_data->Draw("P same");
-	h_etaratio_qcd->Draw("PE 0 same");
-	h_etaratio_wjets->Draw("PE 0 same");
+	// h_etaratio_qcd->Draw("PE 0 same");
+	// h_etaratio_wjets->Draw("PE 0 same");
 	eff_data->Draw("PZ 0 same");
 	leg->Draw();
 	drawTopLine();
@@ -5951,7 +5878,8 @@ void SSDLPlotter::makeFRvsEtaPlots(gChannel chan){
 	
 	// Util::PrintNoEPS( c_temp, "FRatio_" + name + "_Eta", fOutputDir + fOutputSubDir, NULL);
 	Util::PrintPDF(   c_temp, "FRatio_" + name + "_Eta", fOutputDir + fOutputSubDir);
-	delete h_etaratio_mc, h_etaratio_data, h_etaratio_qcd, h_etaratio_wjets;
+	delete h_etaratio_mc, h_etaratio_data;
+	// delete h_etaratio_mc, h_etaratio_data, h_etaratio_qcd, h_etaratio_wjets;
 	// delete c_temp;
 	delete c_temp, lat, leg;
 	fOutputSubDir = "";
@@ -6092,8 +6020,8 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan){
 
 	fOutputSubDir = "Ratios/" + name + "/NTightLoose/";
 	char cmd[100];
-    sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
-    system(cmd);
+	sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
+	system(cmd);
 
 	vector<int> datasamples;
 	vector<int> mcsamples;
@@ -6109,55 +6037,158 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan){
 
 	// Customization
 	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
-
+	
 	for(size_t i = 0; i < gNRatioVars; ++i){
-		THStack *hsntight = new THStack(Form("NTight_%s", FRatioPlots::var_name[i].Data()), "Stack of tight");
-		THStack *hsnloose = new THStack(Form("NLoose_%s", FRatioPlots::var_name[i].Data()), "Stack of loose");
-		const unsigned int nmcsamples = mcsamples.size();
+		TH1D *ntight_data = new TH1D("NT_Data_"   + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in Data", FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *ntight_qcd  = new TH1D("NT_QCD_"    + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *ntight_ttj  = new TH1D("NT_TTjets_" + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *ntight_ewk  = new TH1D("NT_EWK_"    + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *ntight_rare = new TH1D("NT_Rare_"   + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *ntight_db   = new TH1D("NT_DB_"     + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		//		TH1D *ntight_tot  = new TH1D("NT_Tot_"    + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		//		TH1D *ntight_rat  = new TH1D("NT_Ratio_"  + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " Data/MC", FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); // ratio
 
-		// TLegend *leg = new TLegend(0.13,0.60,0.38,0.88);
-		TLegend *leg = new TLegend(0.75,0.60,0.89,0.88);
-		for(size_t j = 0; j < mcsamples.size(); ++j){
+		TH1D *nloose_data = new TH1D("NL_Data_"   + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in Data", FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *nloose_qcd  = new TH1D("NL_QCD_"    + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *nloose_ttj  = new TH1D("NL_TTjets_" + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *nloose_ewk  = new TH1D("NL_EWK_"    + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *nloose_rare = new TH1D("NL_Rare_"   + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		TH1D *nloose_db   = new TH1D("NL_DB_"     + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		//		TH1D *nloose_tot  = new TH1D("NL_Tot_"    + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " in MC",   FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); 
+		//		TH1D *nloose_rat  = new TH1D("NL_Ratio_"  + FRatioPlots::var_name[i], FRatioPlots::var_name[i] + " Data/MC", FRatioPlots::nbins[i], FRatioPlots::xmin[i], FRatioPlots::xmax[i]); // ratio
+				
+		THStack *ntight   = new THStack(Form("NTight_%s", FRatioPlots::var_name[i].Data()), "Stack of tight");
+		THStack *nloose   = new THStack(Form("NLoose_%s", FRatioPlots::var_name[i].Data()), "Stack of loose");
+
+		const unsigned int nmcsamples = mcsamples.size();
+		
+		// Fill data histos
+		ntight_data->SetXTitle(axis_name[i]);      nloose_data->SetXTitle(axis_name[i]);   
+		ntight_data->SetLineWidth(3);	           nloose_data->SetLineWidth(3);         
+		ntight_data->SetLineColor(kBlack);	   nloose_data->SetLineColor(kBlack);    
+		ntight_data->SetMarkerStyle(8);	           nloose_data->SetMarkerStyle(8);       
+		ntight_data->SetMarkerColor(kBlack);	   nloose_data->SetMarkerColor(kBlack);  
+		ntight_data->SetMarkerSize(1.3);           nloose_data->SetMarkerSize(1.3);       
+		// Fill data histo
+		for (size_t j = 0; j < datasamples.size(); ++j){
+			Sample *S = fSamples[datasamples[j]];
+			FRatioPlots *rat;
+			if(chan == Muon) rat = &S->ratioplots[0];
+			if(chan == Elec) rat = &S->ratioplots[1];
+			ntight_data->Add(rat->ntight[i]);
+			nloose_data->Add(rat->nloose[i]);
+		}
+		float dataint_tight = ntight_data->Integral();
+		float dataint_loose = nloose_data->Integral();
+		
+		float mcint_tight(0.),mcint_loose(0.);
+		for (size_t j = 0; j < mcsamples.size(); ++j){
+		        Sample *S = fSamples[mcsamples[j]];
+			FRatioPlots *rat;
+			if(chan == Muon) rat = &S->ratioplots[0];
+			if(chan == Elec) rat = &S->ratioplots[1];
+			
+			float scale = fLumiNorm / S->getLumi();
+			rat->ntight[i]->Scale(scale);
+			rat->nloose[i]->Scale(scale);
+			mcint_tight += rat->ntight[i]->Integral();
+			mcint_loose += rat->nloose[i]->Integral();
+		}
+		
+		// Fill MC histos and stack
+		float intscale_T = dataint_tight / mcint_tight;
+		float intscale_L = dataint_loose / mcint_loose;
+		for (size_t j = 0; j < mcsamples.size(); ++j){
 			Sample *S = fSamples[mcsamples[j]];
 			FRatioPlots *rat;
 			if(chan == Muon) rat = &S->ratioplots[0];
 			if(chan == Elec) rat = &S->ratioplots[1];
-			rat->ntight[i]->SetFillColor(S->color);
-			rat->nloose[i]->SetFillColor(S->color);
+			
 			float scale = fLumiNorm / S->getLumi();
-			rat->ntight[i]->Scale(scale);
-			rat->nloose[i]->Scale(scale);
-			hsntight->Add(rat->ntight[i]);
-			hsnloose->Add(rat->nloose[i]);
+			rat->ntight[i]->Scale(intscale_T);
+			rat->nloose[i]->Scale(intscale_L);
+			
+			// sample type: QCD = 1 , Top = 2, EWK = 3 , Rare = 4 , DB = 5
+			if ( S->getType() == 1)                        ntight_qcd ->Add( rat->ntight[i] ); // ttZ
+			if ( S->getType() == 5 && S->getProc() == 7 )  ntight_db  ->Add( rat->ntight[i] ); // ttW
+			if ( S->getType() == 2)                        ntight_ttj ->Add( rat->ntight[i] ); // top + qcd
+			if ( S->getType() == 3 || 		       			    	    
+			     (S->getType() == 5 && S->getProc() != 7)) ntight_ewk ->Add( rat->ntight[i] ); // single boson
+			if ( S->getType() == 4)                        ntight_rare->Add( rat->ntight[i] ); // di boson
 
-			if(rat->nloose[i]->Integral() < 1 ) continue;
-			leg->AddEntry(rat->ntight[i], S->sname.Data(), "f");
+			if ( S->getType() == 1)                        nloose_qcd ->Add( rat->nloose[i] ); // ttZ
+			if ( S->getType() == 5 && S->getProc() == 7 )  nloose_db  ->Add( rat->nloose[i] ); // ttW
+			if ( S->getType() == 2)                        nloose_ttj ->Add( rat->nloose[i] ); // top + qcd
+			if ( S->getType() == 3 || 		       			    	    
+			     (S->getType() == 5 && S->getProc() != 7)) nloose_ewk ->Add( rat->nloose[i] ); // single boson
+			if ( S->getType() == 4)                        nloose_rare->Add( rat->nloose[i] ); // di boson
 		}
-		hsntight->Draw();
-		hsntight->GetXaxis()->SetTitle(axis_name[i]);
-		hsnloose->Draw();
-		hsnloose->GetXaxis()->SetTitle(axis_name[i]);
+		ntight_qcd ->SetFillColor(kYellow-4);        nloose_qcd ->SetFillColor(kYellow-4);
+		ntight_db  ->SetFillColor(kSpring-9);	     nloose_db  ->SetFillColor(kSpring-9);
+		ntight_ewk ->SetFillColor(kAzure+8);	     nloose_ewk ->SetFillColor(kAzure+8);
+		ntight_ttj ->SetFillColor(kAzure-5);	     nloose_ttj ->SetFillColor(kAzure-5);
+		ntight_rare->SetFillColor(kGreen+1);	     nloose_rare->SetFillColor(kGreen+1);
+		
+		ntight->Add(ntight_qcd );        nloose->Add(nloose_qcd );
+		ntight->Add(ntight_db  );        nloose->Add(nloose_db  );
+		ntight->Add(ntight_ewk );        nloose->Add(nloose_ewk );
+		ntight->Add(ntight_ttj );        nloose->Add(nloose_ttj );
+		ntight->Add(ntight_rare);        nloose->Add(nloose_rare);
+		
+		ntight->Draw("goff"); 	 	 
+		ntight->GetXaxis()->SetTitle(axis_name[i]);
+		nloose->Draw("goff");
+		nloose->GetXaxis()->SetTitle(axis_name[i]);
+		
+		FakeRatios *FR = new FakeRatios();
+		TGraphAsymmErrors* nt_obs = FR->getGraphPoissonErrors(ntight_data);
+		nt_obs->SetMarkerColor(kBlack);
+		nt_obs->SetMarkerStyle(8);
+		nt_obs->SetMarkerSize(1.2);
+		nt_obs->SetLineWidth(2);
+		nt_obs->SetLineColor(kBlack);
+		nt_obs->SetFillColor(kBlack);
+		
+		TGraphAsymmErrors* nl_obs = FR->getGraphPoissonErrors(nloose_data);
+		nl_obs->SetMarkerColor(kBlack);
+		nl_obs->SetMarkerStyle(8);
+		nl_obs->SetMarkerSize(1.2);
+		nl_obs->SetLineWidth(2);
+		nl_obs->SetLineColor(kBlack);
+		nl_obs->SetFillColor(kBlack);
+			
+		TLegend *leg = new TLegend(0.75,0.60,0.89,0.88);
+		leg->AddEntry(ntight_data, "Data",      "p");
+		leg->AddEntry(ntight_qcd,  "QCD",       "f");
+		leg->AddEntry(ntight_db,   "WZ",        "f");
+		leg->AddEntry(ntight_rare, "Rare SM",   "f");
+		leg->AddEntry(ntight_ewk,  "W/Z/WW/ZZ", "f");
+		leg->AddEntry(ntight_ttj,  "Top",       "f");
+		
 		leg->SetFillStyle(0);
 		leg->SetTextFont(42);
 		leg->SetBorderSize(0);
-
+		
 		TCanvas *c_tight = new TCanvas(Form("NTight_%s", FRatioPlots::var_name[i].Data()), "Tight Stack", 0, 0, 800, 600);
 		TCanvas *c_loose = new TCanvas(Form("NLoose_%s", FRatioPlots::var_name[i].Data()), "Loose Stack", 0, 0, 800, 600);
-
-
+		
 		c_tight->cd();
 		gPad->SetLogy();
-		hsntight->Draw("hist");
+		ntight->Draw("hist");
+		nt_obs->Draw("P same");
 		leg->Draw();
-
+		
 		c_loose->cd();
 		gPad->SetLogy();
-		hsnloose->Draw("hist");
+		nloose->Draw("hist");
+		nl_obs->Draw("P same");		
 		leg->Draw();
 
 		Util::PrintNoEPS(c_tight, Form("NTight_%s", FRatioPlots::var_name[i].Data()), fOutputDir + fOutputSubDir, fOutputFile);
 		Util::PrintNoEPS(c_loose, Form("NLoose_%s", FRatioPlots::var_name[i].Data()), fOutputDir + fOutputSubDir, fOutputFile);	
-		delete hsntight, hsnloose, c_tight, c_loose, leg;
+		delete ntight, nloose, c_tight, c_loose, leg;
+		delete ntight_data,ntight_qcd, ntight_ttj, ntight_rare, ntight_db;
+		delete nloose_data,nloose_qcd, nloose_ttj, nloose_rare, nloose_db;
 	}
 	fOutputSubDir = "";
 }
@@ -7025,6 +7056,7 @@ void SSDLPlotter::makeIsoVsMETPlot(gSample sample){
 //____________________________________________________________________________
 void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples, int datamc){
 	if(datamc == 0){
+	  cout << "Filling ratios for Data... " << endl;
 		fH1D_MufRatio = fillRatioPt(Muon, musamples, SigSup, false);
 		fH1D_MupRatio = fillRatioPt(Muon, musamples, ZDecay, false);
 		fH1D_ElfRatio = fillRatioPt(Elec, elsamples, SigSup, false);
@@ -7035,6 +7067,7 @@ void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples, int d
 		fH2D_ElpRatio = fillRatio(  Elec, elsamples, ZDecay, false);
 	}
 	if(datamc == 1){
+	  cout << "Filling ratios for MC... " << endl;
 		fH1D_MufRatio_MC = fillRatioPt(Muon, musamples, SigSup, false);
 		fH1D_MupRatio_MC = fillRatioPt(Muon, musamples, ZDecay, false);
 		fH1D_ElfRatio_MC = fillRatioPt(Elec, elsamples, SigSup, false);
@@ -7608,9 +7641,11 @@ void SSDLPlotter::makeAllIntPredictions(){
 	vector<int> ewkregions;
 	ewkregions.push_back(gRegion["HT0MET120NJ2bV"]);
 	ewkregions.push_back(gRegion["HT0MET200"]);
+	ewkregions.push_back(gRegion["HT0MET120V"]);
 	ewkregions.push_back(gRegion["HT0MET120NJ2bVlV"]);
 	ewkregions.push_back(gRegion["HT0MET200lV"]);
-	
+	ewkregions.push_back(gRegion["HT0MET120VlV"]);	
+
 	for (size_t i = 0; i<ewkregions.size(); i++) {
 		int reg = ewkregions.at(i);
 		// old gRegion reg = gRegion(ewkregions.at(i));
@@ -7667,8 +7702,59 @@ void SSDLPlotter::makeAllIntPredictions(){
 		}
 		fOUTSTREAM.close();
 	
-
+		
 		// PRODUCE SUMMARY TABLE
+		// Names for the regions
+		std::vector<TString> reg_met,reg_jet,reg_lV;
+		for (size_t i=0; i<ewkregions.size(); i++) {
+		         int reg = ewkregions.at(i);
+			 if (gRegions[reg]->maxMet < 201) reg_met.push_back("120$<$\\MET$<$200 \\GeV");
+			 else                             reg_met.push_back("\\MET$>$200 \\GeV");
+			 
+			 if (gRegions[reg]->app3rdVet !=0) reg_lV.push_back("$3^{rd}$ lepton veto "); 
+			 else                              reg_lV.push_back(" "); 
+
+			 if (gRegions[reg]->maxNjets == 0)         reg_jet.push_back("$N_{jets} = 0$");
+			 else if (gRegions[reg]->maxNbjets == 0 ||
+				  gRegions[reg]->maxNbjmed == 0)   reg_jet.push_back("$N_{jets} \\leq 2$, $N_{bjets} = 0$");
+			 else                                      reg_jet.push_back(" ");
+		}
+
+		// cuts
+		TString MetLine  = "                ";
+		TString JetLine  = "                ";
+		TString lVLine   = "                ";
+		// pred
+		TString FakeLine = " Fakes          ";
+		TString CMidLine = " Charge MisID   ";
+		TString RareLine = " Rare SM        ";
+		TString WZLine   = " WZ Prod.       ";
+		TString TotLine  = " Total Bkg      ";
+		TString DataLine = " Data           ";
+		for (size_t i=0; i<ewkregions.size(); i++) {
+ 		         int reg = ewkregions.at(i);
+			 MetLine  += Form("& %s ",reg_met[i].Data());
+			 JetLine  += Form("& %s ",reg_jet[i].Data());
+			 lVLine   += Form("& %s ",reg_lV[i].Data());
+			 //
+			 FakeLine += Form("&  %3.1f $\\pm$ %3.1f ",sspreds[reg].fake, sqrt(sspreds[reg].fake_err*sspreds[reg].fake_err + sspreds[reg].fake_stat*sspreds[reg].fake_stat));
+			 CMidLine += Form("&  %4.2f $\\pm$ %4.2f ",sspreds[reg].cmid, sqrt(sspreds[reg].cmid_err*sspreds[reg].cmid_err + sspreds[reg].cmid_stat*sspreds[reg].cmid_stat));
+			 RareLine += Form("&  %3.1f $\\pm$ %3.1f ",sspreds[reg].rare, sqrt(sspreds[reg].rare_err*sspreds[reg].rare_err + sspreds[reg].rare_stat*sspreds[reg].rare_stat));
+			 WZLine   += Form("&  %3.1f $\\pm$ %3.1f ",sspreds[reg].wz  , sqrt(sspreds[reg].wz_err  *sspreds[reg].wz_err   + sspreds[reg].wz_stat  *sspreds[reg].wz_stat  ));
+			 TotLine  += Form("&  %3.1f $\\pm$ %3.1f ",sspreds[reg].bkg , sqrt(sspreds[reg].bkg_err *sspreds[reg].bkg_err  + sspreds[reg].bkg_stat *sspreds[reg].bkg_stat ));
+			 DataLine += Form("&   %d    "            ,sspreds[reg].obs);
+		}
+		
+		MetLine  += "   \\\\"; 
+		JetLine  += "   \\\\";
+		lVLine   += "   \\\\";
+		FakeLine += "   \\\\";
+		CMidLine += "   \\\\"; 
+		RareLine += "   \\\\";
+		WZLine   += "   \\\\";
+		TotLine  += "   \\\\";
+		DataLine += "   \\\\";
+		
 		TString SS_Table = outputdir + "SS_Table.tex";
 		fOUTSTREAM.open(SS_Table.Data(), ios::trunc);
 		fOUTSTREAM << "\\begin{table}[htb]" << endl;
@@ -7679,62 +7765,39 @@ void SSDLPlotter::makeAllIntPredictions(){
 		fOUTSTREAM << "           Uncertainties include statistical and systematic contributions.}" << endl;
 		fOUTSTREAM << "   \\label{tab:SSYields}" << endl;
 		fOUTSTREAM << "   \\small "            << endl;
-		fOUTSTREAM << "    \\begin{tabular}{c|c|c|c|c}" << endl;
+		fOUTSTREAM << "   \\resizebox{\\textwidth}{!}{\\begin{tabular}{c|c|c|c|c|c|c}" << endl;
+		fOUTSTREAM << "    \\hline\\hline" << endl;
+		fOUTSTREAM << MetLine  << endl;
+		fOUTSTREAM << JetLine  << endl;
+		fOUTSTREAM << lVLine   << endl;
+		fOUTSTREAM << "    \\hline" << endl;
+		fOUTSTREAM << FakeLine << endl;
+		fOUTSTREAM << CMidLine << endl;
+		fOUTSTREAM << RareLine << endl;
+		fOUTSTREAM << WZLine   << endl;
+		fOUTSTREAM << "    \\hline" << endl;
+		fOUTSTREAM << TotLine  << endl;
+		fOUTSTREAM << "    \\hline" << endl;
+		fOUTSTREAM << DataLine << endl;
+		fOUTSTREAM << "    \\hline" << endl;
 		fOUTSTREAM << "    \\hline" << endl; 
-		fOUTSTREAM << "                & 120$<$\\MET$<$200 \\GeV              & 120$<$\\MET$<$200 \\GeV             & \\MET$>$200 \\GeV & \\MET$>$200 \\GeV    \\\\ " << endl; 
-		fOUTSTREAM << "	               & $N_{jets} \\leq 2$, $N_{bjets} = 0$  & $N_{jets} \\leq 2$, $N_{bjets} = 0$ &                   &                      \\\\ " << endl;
-		fOUTSTREAM << "                &                                      & $3^{rd}$ lepton veto                &                   & $3^{rd}$ lepton veto \\\\ \\hline " << endl; 
-		fOUTSTREAM << Form(" Double Fakes   & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f \\\\",
-				   sspreds[gRegion["HT0MET120NJ2bV"]]  .df,sqrt(sspreds[gRegion["HT0MET120NJ2bV"]]  .df_err*sspreds[gRegion["HT0MET120NJ2bV"]]  .df_err + sspreds[gRegion["HT0MET120NJ2bV"]]  .df_stat*sspreds[gRegion["HT0MET120NJ2bV"]]  .df_stat),
-				   sspreds[gRegion["HT0MET120NJ2bVlV"]].df,sqrt(sspreds[gRegion["HT0MET120NJ2bVlV"]].df_err*sspreds[gRegion["HT0MET120NJ2bVlV"]].df_err + sspreds[gRegion["HT0MET120NJ2bVlV"]].df_stat*sspreds[gRegion["HT0MET120NJ2bVlV"]].df_stat),
-				   sspreds[gRegion["HT0MET200"]]       .df,sqrt(sspreds[gRegion["HT0MET200"]]       .df_err*sspreds[gRegion["HT0MET200"]]       .df_err + sspreds[gRegion["HT0MET200"]]       .df_stat*sspreds[gRegion["HT0MET200"]]       .df_stat),
-				   sspreds[gRegion["HT0MET200lV"]]     .df,sqrt(sspreds[gRegion["HT0MET200lV"]]     .df_err*sspreds[gRegion["HT0MET200lV"]]     .df_err + sspreds[gRegion["HT0MET200lV"]]     .df_stat*sspreds[gRegion["HT0MET200lV"]]     .df_stat)) << endl;			  
-		fOUTSTREAM << Form(" Single Fakes   & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f \\\\",
-				   sspreds[gRegion["HT0MET120NJ2bV"]]  .sf,sqrt(sspreds[gRegion["HT0MET120NJ2bV"]]  .sf_err*sspreds[gRegion["HT0MET120NJ2bV"]]  .sf_err + sspreds[gRegion["HT0MET120NJ2bV"]]  .sf_stat*sspreds[gRegion["HT0MET120NJ2bV"]]  .sf_stat),
-				   sspreds[gRegion["HT0MET120NJ2bVlV"]].sf,sqrt(sspreds[gRegion["HT0MET120NJ2bVlV"]].sf_err*sspreds[gRegion["HT0MET120NJ2bVlV"]].sf_err + sspreds[gRegion["HT0MET120NJ2bVlV"]].sf_stat*sspreds[gRegion["HT0MET120NJ2bVlV"]].sf_stat),
-				   sspreds[gRegion["HT0MET200"]]       .sf,sqrt(sspreds[gRegion["HT0MET200"]]       .sf_err*sspreds[gRegion["HT0MET200"]]       .sf_err + sspreds[gRegion["HT0MET200"]]       .sf_stat*sspreds[gRegion["HT0MET200"]]       .sf_stat),
-				   sspreds[gRegion["HT0MET200lV"]]     .sf,sqrt(sspreds[gRegion["HT0MET200lV"]]     .sf_err*sspreds[gRegion["HT0MET200lV"]]     .sf_err + sspreds[gRegion["HT0MET200lV"]]     .sf_stat*sspreds[gRegion["HT0MET200lV"]]     .sf_stat)) << endl;			  
-		fOUTSTREAM << Form(" Charge MisID   & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f \\\\",
-				   sspreds[gRegion["HT0MET120NJ2bV"]]  .cmid,sqrt(sspreds[gRegion["HT0MET120NJ2bV"]]  .cmid_err*sspreds[gRegion["HT0MET120NJ2bV"]]  .cmid_err + sspreds[gRegion["HT0MET120NJ2bV"]]  .cmid_stat*sspreds[gRegion["HT0MET120NJ2bV"]]  .cmid_stat),
-				   sspreds[gRegion["HT0MET120NJ2bVlV"]].cmid,sqrt(sspreds[gRegion["HT0MET120NJ2bVlV"]].cmid_err*sspreds[gRegion["HT0MET120NJ2bVlV"]].cmid_err + sspreds[gRegion["HT0MET120NJ2bVlV"]].cmid_stat*sspreds[gRegion["HT0MET120NJ2bVlV"]].cmid_stat),
-				   sspreds[gRegion["HT0MET200"]]       .cmid,sqrt(sspreds[gRegion["HT0MET200"]]       .cmid_err*sspreds[gRegion["HT0MET200"]]       .cmid_err + sspreds[gRegion["HT0MET200"]]       .cmid_stat*sspreds[gRegion["HT0MET200"]]       .cmid_stat),
-				   sspreds[gRegion["HT0MET200lV"]]     .cmid,sqrt(sspreds[gRegion["HT0MET200lV"]]     .cmid_err*sspreds[gRegion["HT0MET200lV"]]     .cmid_err + sspreds[gRegion["HT0MET200lV"]]     .cmid_stat*sspreds[gRegion["HT0MET200lV"]]     .cmid_stat)) << endl;			  
-		fOUTSTREAM << Form(" Rare SM        & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f \\\\",
-				   sspreds[gRegion["HT0MET120NJ2bV"]]  .rare,sqrt(sspreds[gRegion["HT0MET120NJ2bV"]]  .rare_err*sspreds[gRegion["HT0MET120NJ2bV"]]  .rare_err + sspreds[gRegion["HT0MET120NJ2bV"]]  .rare_stat*sspreds[gRegion["HT0MET120NJ2bV"]]  .rare_stat),
-				   sspreds[gRegion["HT0MET120NJ2bVlV"]].rare,sqrt(sspreds[gRegion["HT0MET120NJ2bVlV"]].rare_err*sspreds[gRegion["HT0MET120NJ2bVlV"]].rare_err + sspreds[gRegion["HT0MET120NJ2bVlV"]].rare_stat*sspreds[gRegion["HT0MET120NJ2bVlV"]].rare_stat),
-				   sspreds[gRegion["HT0MET200"]]       .rare,sqrt(sspreds[gRegion["HT0MET200"]]       .rare_err*sspreds[gRegion["HT0MET200"]]       .rare_err + sspreds[gRegion["HT0MET200"]]       .rare_stat*sspreds[gRegion["HT0MET200"]]       .rare_stat),
-				   sspreds[gRegion["HT0MET200lV"]]     .rare,sqrt(sspreds[gRegion["HT0MET200lV"]]     .rare_err*sspreds[gRegion["HT0MET200lV"]]     .rare_err + sspreds[gRegion["HT0MET200lV"]]     .rare_stat*sspreds[gRegion["HT0MET200lV"]]     .rare_stat)) << endl;			  
-		fOUTSTREAM << Form(" WZ Prod.       & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f \\\\",
-				   sspreds[gRegion["HT0MET120NJ2bV"]]  .wz,sqrt(sspreds[gRegion["HT0MET120NJ2bV"]]  .wz_err*sspreds[gRegion["HT0MET120NJ2bV"]]  .wz_err + sspreds[gRegion["HT0MET120NJ2bV"]]  .wz_stat*sspreds[gRegion["HT0MET120NJ2bV"]]  .wz_stat),
-				   sspreds[gRegion["HT0MET120NJ2bVlV"]].wz,sqrt(sspreds[gRegion["HT0MET120NJ2bVlV"]].wz_err*sspreds[gRegion["HT0MET120NJ2bVlV"]].wz_err + sspreds[gRegion["HT0MET120NJ2bVlV"]].wz_stat*sspreds[gRegion["HT0MET120NJ2bVlV"]].wz_stat),
-				   sspreds[gRegion["HT0MET200"]]       .wz,sqrt(sspreds[gRegion["HT0MET200"]]       .wz_err*sspreds[gRegion["HT0MET200"]]       .wz_err + sspreds[gRegion["HT0MET200"]]       .wz_stat*sspreds[gRegion["HT0MET200"]]       .wz_stat),
-				   sspreds[gRegion["HT0MET200lV"]]     .wz,sqrt(sspreds[gRegion["HT0MET200lV"]]     .wz_err*sspreds[gRegion["HT0MET200lV"]]     .wz_err + sspreds[gRegion["HT0MET200lV"]]     .wz_stat*sspreds[gRegion["HT0MET200lV"]]     .wz_stat)) << endl;			  
-		fOUTSTREAM << Form(" Total Bkg      & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f & %4.2f $\\pm$ %4.2f \\\\",
-				   sspreds[gRegion["HT0MET120NJ2bV"]]  .bkg,sqrt(sspreds[gRegion["HT0MET120NJ2bV"]]  .bkg_err*sspreds[gRegion["HT0MET120NJ2bV"]]  .bkg_err + sspreds[gRegion["HT0MET120NJ2bV"]]  .bkg_stat*sspreds[gRegion["HT0MET120NJ2bV"]]  .bkg_stat),
-				   sspreds[gRegion["HT0MET120NJ2bVlV"]].bkg,sqrt(sspreds[gRegion["HT0MET120NJ2bVlV"]].bkg_err*sspreds[gRegion["HT0MET120NJ2bVlV"]].bkg_err + sspreds[gRegion["HT0MET120NJ2bVlV"]].bkg_stat*sspreds[gRegion["HT0MET120NJ2bVlV"]].bkg_stat),
-				   sspreds[gRegion["HT0MET200"]]       .bkg,sqrt(sspreds[gRegion["HT0MET200"]]       .bkg_err*sspreds[gRegion["HT0MET200"]]       .bkg_err + sspreds[gRegion["HT0MET200"]]       .bkg_stat*sspreds[gRegion["HT0MET200"]]       .bkg_stat),
-				   sspreds[gRegion["HT0MET200lV"]]     .bkg,sqrt(sspreds[gRegion["HT0MET200lV"]]     .bkg_err*sspreds[gRegion["HT0MET200lV"]]     .bkg_err + sspreds[gRegion["HT0MET200lV"]]     .bkg_stat*sspreds[gRegion["HT0MET200lV"]]     .bkg_stat)) << endl;			  
-		fOUTSTREAM << "    \\hline" << endl; 
-		fOUTSTREAM << Form(" Data           & %d & %d & %d & %d \\\\",
-				   sspreds[gRegion["HT0MET120NJ2bV"]]  .obs,
-				   sspreds[gRegion["HT0MET120NJ2bVlV"]].obs,
-				   sspreds[gRegion["HT0MET200"]]       .obs,
-				   sspreds[gRegion["HT0MET200lV"]]     .obs) << endl;			  
-		fOUTSTREAM << "    \\hline" << endl; 
-		fOUTSTREAM << "    \\end{tabular}" << endl;
+		fOUTSTREAM << "    \\end{tabular}}" << endl;
 		fOUTSTREAM << " \\end{center}" << endl;
 		fOUTSTREAM << "\\end{table}" << endl;
 		fOUTSTREAM << endl;
 		fOUTSTREAM.close();
 	}	
 	// PRODUCE SUMMARY PLOTS ONLY FOR CERTAIN REGIONS
-	TH1D    *h_obs        = new TH1D("h_observed",   "Observed number of events",  4, 0., 4.);
-	TH1D    *h_pred_sfake = new TH1D("h_pred_sfake", "Predicted single fakes", 4, 0., 4.);
-	TH1D    *h_pred_dfake = new TH1D("h_pred_dfake", "Predicted double fakes", 4, 0., 4.);
-	TH1D    *h_pred_chmid = new TH1D("h_pred_chmid", "Predicted charge mis id", 4, 0., 4.);
-	TH1D    *h_pred_mc    = new TH1D("h_pred_mc",    "Predicted Rare SM", 4, 0., 4.);
-	TH1D    *h_pred_ttw   = new TH1D("h_pred_ttw",   "Predicted WZ", 4, 0., 4.);
-	TH1D    *h_pred_tot   = new TH1D("h_pred_tot",   "Total Prediction", 4, 0., 4.);
+	int nbins    = ewkregions.size();
+	float maxbin = (float)ewkregions.size();
+	TH1D    *h_obs        = new TH1D("h_observed",   "Observed number of events", nbins, 0., maxbin);
+	TH1D    *h_pred_sfake = new TH1D("h_pred_sfake", "Predicted single fakes",    nbins, 0., maxbin);
+	TH1D    *h_pred_dfake = new TH1D("h_pred_dfake", "Predicted double fakes",    nbins, 0., maxbin);
+	TH1D    *h_pred_fakes = new TH1D("h_pred_fakes", "Predicted fakes",           nbins, 0., maxbin);
+	TH1D    *h_pred_chmid = new TH1D("h_pred_chmid", "Predicted charge mis id",   nbins, 0., maxbin);
+	TH1D    *h_pred_mc    = new TH1D("h_pred_mc",    "Predicted Rare SM",         nbins, 0., maxbin);
+	TH1D    *h_pred_ttw   = new TH1D("h_pred_ttw",   "Predicted WZ",              nbins, 0., maxbin);
+	TH1D    *h_pred_tot   = new TH1D("h_pred_tot",   "Total Prediction",          nbins, 0., maxbin);
 	THStack *hs_pred      = new THStack("hs_predicted", "Predicted number of events");
 	
 	h_pred_tot->Sumw2();
@@ -7744,15 +7807,17 @@ void SSDLPlotter::makeAllIntPredictions(){
 	  h_obs       ->SetBinContent(i+1, sspreds[reg].obs );
 	  h_pred_sfake->SetBinContent(i+1, sspreds[reg].sf  );
 	  h_pred_dfake->SetBinContent(i+1, sspreds[reg].df  );
+	  h_pred_fakes->SetBinContent(i+1, sspreds[reg].fake);
 	  h_pred_chmid->SetBinContent(i+1, sspreds[reg].cmid);
 	  h_pred_mc   ->SetBinContent(i+1, sspreds[reg].rare);
 	  h_pred_ttw  ->SetBinContent(i+1, sspreds[reg].wz  );
 	  
-	  h_pred_sfake->SetBinError(i+1, sspreds[reg].sf_err  );
-	  h_pred_dfake->SetBinError(i+1, sspreds[reg].df_err  );
-	  h_pred_chmid->SetBinError(i+1, sspreds[reg].cmid_err);
-	  h_pred_mc   ->SetBinError(i+1, sspreds[reg].rare_err);
-	  h_pred_ttw  ->SetBinError(i+1, sspreds[reg].wz_err  );
+ 	  h_pred_sfake->SetBinError(i+1, sqrt(sspreds[reg].sf_err  *sspreds[reg].sf_err   + sspreds[reg].sf_stat  *sspreds[reg].sf_stat  ));
+	  h_pred_dfake->SetBinError(i+1, sqrt(sspreds[reg].df_err  *sspreds[reg].df_err   + sspreds[reg].df_stat  *sspreds[reg].df_stat  ));
+	  h_pred_fakes->SetBinError(i+1, sqrt(sspreds[reg].fake_err*sspreds[reg].fake_err + sspreds[reg].fake_stat*sspreds[reg].fake_stat));
+	  h_pred_chmid->SetBinError(i+1, sqrt(sspreds[reg].cmid_err*sspreds[reg].cmid_err + sspreds[reg].cmid_stat*sspreds[reg].cmid_stat));
+	  h_pred_mc   ->SetBinError(i+1, sqrt(sspreds[reg].rare_err*sspreds[reg].rare_err + sspreds[reg].rare_stat*sspreds[reg].rare_stat));
+	  h_pred_ttw  ->SetBinError(i+1, sqrt(sspreds[reg].wz_err  *sspreds[reg].wz_err   + sspreds[reg].wz_stat  *sspreds[reg].wz_stat  ));
 	}
 	FakeRatios *FR = new FakeRatios();
 	FR->setNToyMCs(100);
@@ -7775,6 +7840,7 @@ void SSDLPlotter::makeAllIntPredictions(){
  	
  	h_pred_sfake->SetLineWidth(1);
  	h_pred_dfake->SetLineWidth(1);
+ 	h_pred_fakes->SetLineWidth(1);
  	h_pred_chmid->SetLineWidth(1);
  	h_pred_mc   ->SetLineWidth(1);
  	h_pred_ttw  ->SetLineWidth(1);
@@ -7782,6 +7848,8 @@ void SSDLPlotter::makeAllIntPredictions(){
  	h_pred_sfake->SetFillColor(50);
  	h_pred_dfake->SetLineColor(38);
  	h_pred_dfake->SetFillColor(38);
+ 	h_pred_fakes->SetLineColor(50);
+ 	h_pred_fakes->SetFillColor(50);
  	h_pred_chmid->SetLineColor(42);
  	h_pred_chmid->SetFillColor(42);
  	h_pred_mc   ->SetLineColor(31);
@@ -7800,6 +7868,7 @@ void SSDLPlotter::makeAllIntPredictions(){
  	h_obs       ->SetMaximum(max>1?max+1:1.);
  	h_pred_sfake->SetMaximum(max>1?max+1:1.);
  	h_pred_dfake->SetMaximum(max>1?max+1:1.);
+ 	h_pred_fakes->SetMaximum(max>1?max+1:1.);
  	h_pred_chmid->SetMaximum(max>1?max+1:1.);
  	h_pred_mc   ->SetMaximum(max>1?max+1:1.);
  	h_pred_ttw  ->SetMaximum(max>1?max+1:1.);
@@ -7812,8 +7881,9 @@ void SSDLPlotter::makeAllIntPredictions(){
  	h_pred_tot->Add(h_pred_mc);
  	h_pred_tot->Add(h_pred_ttw);
  	
- 	hs_pred->Add(h_pred_sfake);
- 	hs_pred->Add(h_pred_dfake);
+	// 	hs_pred->Add(h_pred_sfake);
+	// 	hs_pred->Add(h_pred_dfake);
+ 	hs_pred->Add(h_pred_fakes);
  	hs_pred->Add(h_pred_chmid);
  	hs_pred->Add(h_pred_mc);
  	hs_pred->Add(h_pred_ttw);
@@ -7830,12 +7900,20 @@ void SSDLPlotter::makeAllIntPredictions(){
 	  hadString += "}{#splitline{";
 	  
 	  // second line
-	  if (gRegions[reg]->maxNjets < 99 && gRegions[reg]->app3rdVet !=0) {
-	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjets);
+	  if (gRegions[reg]->maxNbjmed > 90 && gRegions[reg]->maxNjets <= 0 && gRegions[reg]->app3rdVet !=0) {
+	    hadString += Form("N_{jets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets);
 	    hadString += Form("}{3^{rd} lepton Veto}}");
 	  }
-	  else if (gRegions[reg]->maxNjets < 99 && gRegions[reg]->app3rdVet == 0) {
-	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjets);
+	  else if (gRegions[reg]->maxNjets <= 2 && gRegions[reg]->app3rdVet !=0) {
+	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjmed);
+	    hadString += Form("}{3^{rd} lepton Veto}}");
+	  }
+	  else if (gRegions[reg]->maxNbjmed > 90 && gRegions[reg]->maxNjets <= 0 && gRegions[reg]->app3rdVet == 0) {
+	    hadString += Form("N_{jets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets);
+	    hadString += Form("}{#color[0]{3^{rd} lepton Veto N_{j}}}}");
+	  }
+	  else if (gRegions[reg]->maxNjets <= 2 && gRegions[reg]->app3rdVet == 0) {
+	    hadString += Form("N_{jets} #leq %1d,  N_{bjets} = %1d #color[0]{3^{rd}}", gRegions[reg]->maxNjets, gRegions[reg]->maxNbjmed);
 	    hadString += Form("}{#color[0]{3^{rd} lepton Veto N_{j}}}}");
 	  }
 	  else if (gRegions[reg]->maxNjets > 90 && gRegions[reg]->app3rdVet !=0){
@@ -7850,12 +7928,13 @@ void SSDLPlotter::makeAllIntPredictions(){
 	}
  	hs_pred->GetXaxis()->SetLabelOffset(0.005);
  	hs_pred->GetXaxis()->SetLabelFont(42);
- 	hs_pred->GetXaxis()->SetLabelSize(0.03);
+ 	hs_pred->GetXaxis()->SetLabelSize(0.021);
  	
  	TLegend *leg = new TLegend(0.60,0.65,0.95,0.88);
  	leg->AddEntry(h_obs,        "Observed","p");
- 	leg->AddEntry(h_pred_sfake, "Single Fakes","f");
- 	leg->AddEntry(h_pred_dfake, "Double Fakes","f");
+	// 	leg->AddEntry(h_pred_sfake, "Single Fakes","f");
+ 	leg->AddEntry(h_pred_fakes, "Fakes","f");
+	// 	leg->AddEntry(h_pred_dfake, "Double Fakes","f");
  	leg->AddEntry(h_pred_chmid, "Charge MisID","f");
  	leg->AddEntry(h_pred_mc,    "Irreducible (MC)","f");
  	leg->AddEntry(h_pred_ttw,   "WZ Production","f");
@@ -7865,7 +7944,7 @@ void SSDLPlotter::makeAllIntPredictions(){
  	// leg->SetTextSize(0.05);
  	leg->SetBorderSize(0);
 	
- 	TCanvas *c_temp = new TCanvas("C_ObsPred", "Observed vs Predicted", 0, 0, 600, 700);
+ 	TCanvas *c_temp = new TCanvas("C_ObsPred", "Observed vs Predicted", 0, 0, 600, 600);
  	c_temp->cd();
  
  	hs_pred->Draw("hist");
@@ -8959,8 +9038,8 @@ SSPrediction SSDLPlotter::makeIntPrediction(TString filename, int reg){
 	calculateChMisIdProb(fMCBG, EB, feb_mc, febE_mc);
 	calculateChMisIdProb(fMCBG, EE, fee_mc, feeE_mc);
 	
-	cout << " this is the number of OS events in EE, BB, and EB from the old intpredictions function: " << nt2_ee_EE_os << " " << nt2_ee_BB_os << " " << nt2_ee_EB_os << endl;
-	cout << "this is the charge mis ID probabilities: fee, fbb, feb: " << fee << " " << fbb << " " << feb << endl;
+	// cout << " this is the number of OS events in EE, BB, and EB from the old intpredictions function: " << nt2_ee_EE_os << " " << nt2_ee_BB_os << " " << nt2_ee_EB_os << endl;
+	// cout << "this is the charge mis ID probabilities: fee, fbb, feb: " << fee << " " << fbb << " " << feb << endl;
 
   	// Simple error propagation assuming error on number of events is sqrt(N)
  	nt2_ee_chmid    = 2*fbb*nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
@@ -9075,6 +9154,7 @@ SSPrediction SSDLPlotter::makeIntPrediction(TString filename, int reg){
  	mcbkg.push_back(WWG);
  	mcbkg.push_back(WWW);
  	mcbkg.push_back(ZZZ);
+	mcbkg.push_back(TTbarWW);
  	for(size_t i = 0; i < mcbkg.size(); ++i){
 	        float temp_nt2_mm(0.),    temp_nt2_em(0.),    temp_nt2_ee(0.); 
 	        float temp_nt2_mm_e1(0.), temp_nt2_em_e1(0.), temp_nt2_ee_e1(0.); 
@@ -11698,6 +11778,1653 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(TString diffVarName, int nbins, 
 	delete h_obs , gr_obs , h_pred_fake , h_pred_chmid , h_pred_rare , h_pred_tot , h_pred_ttz , h_pred_ttw , h_pred_wz , hs_pred ;
 	delete FR;
 }
+TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag){
+	fOutputSubDir = "IntPredictionsSigEventTree/";
+	TString jvString = "";
+	TString sysString = "";
+	TString chargeString = "";
+
+	for( gsystIt = gSystematics.begin(); gsystIt != gSystematics.end(); ++gsystIt) {
+		if (gsystIt->second == systflag) { sysString = gsystIt->first; break; }
+	}
+	if (chVeto == -1) chargeString = "_mm";
+	if (chVeto == +1) chargeString = "_pp";
+
+void SSDLPlotter::makeKinematicPlotsPaper(){
+	fOutputSubDir = "KinPlotsPaper/";
+
+	TLatex *lat = new TLatex();
+	lat->SetNDC(kTRUE);
+	lat->SetTextColor(kBlack);
+	lat->SetTextSize(0.04);
+
+	const float RareESyst  = 0.5;
+	const float RareESyst2 = RareESyst*RareESyst;
+	
+	const float FakeESyst  = 0.5;
+	const float FakeESyst2 = FakeESyst*FakeESyst;
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// THE FINAL HISTOGRAMS ///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+
+	int   htbins( 13 ), metbins( 10 ), njbins(7), nbjbins(5);
+	float htmin ( 80.), metmin (  0.), njmin (2), nbjmin (0);
+	float htmax (600.), metmax (250.), njmax (9), nbjmax (5);
+	// int   htbins(   5 ), metbins(  6 ), njbins(7), nbjbins(5);
+	// float htmin ( 500.), metmin (  0.), njmin (2), nbjmin (0);
+	// float htmax (1000.), metmax (300.), njmax (9), nbjmax (5);
+
+	// FAKES
+	TH1F* fake_loht_histoHT  = new TH1F("eo_fa_histoHT" , "eo_fa_histoHT" , htbins, htmin, htmax);
+	TH1F* fake_loht_histoMET = new TH1F("eo_fa_histoMET", "eo_fa_histoMET", metbins, metmin, metmax);
+	TH1F* fake_loht_histoNJ  = new TH1F("eo_fa_histoNJ" , "eo_fa_histoNJ" , njbins, njmin, njmax);
+	TH1F* fake_loht_histoNBJ = new TH1F("eo_fa_histoNBJ", "eo_fa_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      fake_loht_histoHT  ->Sumw2();
+	      fake_loht_histoMET ->Sumw2();
+	      fake_loht_histoNJ  ->Sumw2();
+	      fake_loht_histoNBJ ->Sumw2();
+
+	TH1F* fake_hiht_histoHT  = new TH1F("eo_fa_histoHT" , "eo_fa_histoHT" , htbins, htmin, htmax);
+	TH1F* fake_hiht_histoMET = new TH1F("eo_fa_histoMET", "eo_fa_histoMET", metbins, metmin, metmax);
+	TH1F* fake_hiht_histoNJ  = new TH1F("eo_fa_histoNJ" , "eo_fa_histoNJ" , njbins, njmin, njmax);
+	TH1F* fake_hiht_histoNBJ = new TH1F("eo_fa_histoNBJ", "eo_fa_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      fake_hiht_histoHT  ->Sumw2();
+	      fake_hiht_histoMET ->Sumw2();
+	      fake_hiht_histoNJ  ->Sumw2();
+	      fake_hiht_histoNBJ ->Sumw2();
+	
+	// MM CHANNEL
+
+	TH1F* mmNTT_loht_histoHT  = new TH1F("mmNTT_loht_histoHT" , "mmNTT_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNTT_loht_histoMET = new TH1F("mmNTT_loht_histoMET", "mmNTT_loht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNTT_loht_histoNJ  = new TH1F("mmNTT_loht_histoNJ" , "mmNTT_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNTT_loht_histoNBJ = new TH1F("mmNTT_loht_histoNBJ", "mmNTT_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNTT_loht_histoHT  ->Sumw2();
+	      mmNTT_loht_histoMET ->Sumw2();
+	      mmNTT_loht_histoNJ  ->Sumw2();
+	      mmNTT_loht_histoNBJ ->Sumw2();
+
+	TH1F* mmNTT_hiht_histoHT  = new TH1F("mmNTT_hiht_histoHT" , "mmNTT_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNTT_hiht_histoMET = new TH1F("mmNTT_hiht_histoMET", "mmNTT_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNTT_hiht_histoNJ  = new TH1F("mmNTT_hiht_histoNJ" , "mmNTT_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNTT_hiht_histoNBJ = new TH1F("mmNTT_hiht_histoNBJ", "mmNTT_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNTT_hiht_histoHT  ->Sumw2();
+	      mmNTT_hiht_histoMET ->Sumw2();
+	      mmNTT_hiht_histoNJ  ->Sumw2();
+	      mmNTT_hiht_histoNBJ ->Sumw2();
+
+	TH1F* mmNTL_loht_histoHT  = new TH1F("mmNTL_loht_histoHT" , "mmNTL_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNTL_loht_histoMET = new TH1F("mmNTL_loht_histoMET", "mmNTL_loht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNTL_loht_histoNJ  = new TH1F("mmNTL_loht_histoNJ" , "mmNTL_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNTL_loht_histoNBJ = new TH1F("mmNTL_loht_histoNBJ", "mmNTL_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNTL_loht_histoHT  ->Sumw2();
+	      mmNTL_loht_histoMET ->Sumw2();
+	      mmNTL_loht_histoNJ  ->Sumw2();
+	      mmNTL_loht_histoNBJ ->Sumw2();
+
+	TH1F* mmNTL_hiht_histoHT  = new TH1F("mmNTL_hiht_histoHT" , "mmNTL_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNTL_hiht_histoMET = new TH1F("mmNTL_hiht_histoMET", "mmNTL_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNTL_hiht_histoNJ  = new TH1F("mmNTL_hiht_histoNJ" , "mmNTL_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNTL_hiht_histoNBJ = new TH1F("mmNTL_hiht_histoNBJ", "mmNTL_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNTL_hiht_histoHT  ->Sumw2();
+	      mmNTL_hiht_histoMET ->Sumw2();
+	      mmNTL_hiht_histoNJ  ->Sumw2();
+	      mmNTL_hiht_histoNBJ ->Sumw2();
+
+	TH1F* mmNLT_loht_histoHT  = new TH1F("mmNLT_loht_histoHT" , "mmNLT_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNLT_loht_histoMET = new TH1F("mmNLT_loht_histoMET", "mmNLT_loht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNLT_loht_histoNJ  = new TH1F("mmNLT_loht_histoNJ" , "mmNLT_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNLT_loht_histoNBJ = new TH1F("mmNLT_loht_histoNBJ", "mmNLT_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNLT_loht_histoHT  ->Sumw2();
+	      mmNLT_loht_histoMET ->Sumw2();
+	      mmNLT_loht_histoNJ  ->Sumw2();
+	      mmNLT_loht_histoNBJ ->Sumw2();
+
+	TH1F* mmNLT_hiht_histoHT  = new TH1F("mmNLT_hiht_histoHT" , "mmNLT_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNLT_hiht_histoMET = new TH1F("mmNLT_hiht_histoMET", "mmNLT_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNLT_hiht_histoNJ  = new TH1F("mmNLT_hiht_histoNJ" , "mmNLT_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNLT_hiht_histoNBJ = new TH1F("mmNLT_hiht_histoNBJ", "mmNLT_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNLT_hiht_histoHT  ->Sumw2();
+	      mmNLT_hiht_histoMET ->Sumw2();
+	      mmNLT_hiht_histoNJ  ->Sumw2();
+	      mmNLT_hiht_histoNBJ ->Sumw2();
+
+	TH1F* mmNLL_loht_histoHT  = new TH1F("mmNLL_loht_histoHT" , "mmNLL_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNLL_loht_histoMET = new TH1F("mmNLL_loht_histoMET", "mmNLL_loht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNLL_loht_histoNJ  = new TH1F("mmNLL_loht_histoNJ" , "mmNLL_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNLL_loht_histoNBJ = new TH1F("mmNLL_loht_histoNBJ", "mmNLL_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNLL_loht_histoHT  ->Sumw2();
+	      mmNLL_loht_histoMET ->Sumw2();
+	      mmNLL_loht_histoNJ  ->Sumw2();
+	      mmNLL_loht_histoNBJ ->Sumw2();
+
+	TH1F* mmNLL_hiht_histoHT  = new TH1F("mmNLL_hiht_histoHT" , "mmNLL_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* mmNLL_hiht_histoMET = new TH1F("mmNLL_hiht_histoMET", "mmNLL_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* mmNLL_hiht_histoNJ  = new TH1F("mmNLL_hiht_histoNJ" , "mmNLL_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* mmNLL_hiht_histoNBJ = new TH1F("mmNLL_hiht_histoNBJ", "mmNLL_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      mmNLL_hiht_histoHT  ->Sumw2();
+	      mmNLL_hiht_histoMET ->Sumw2();
+	      mmNLL_hiht_histoNJ  ->Sumw2();
+	      mmNLL_hiht_histoNBJ ->Sumw2();
+
+	// EM CHANNEL
+
+	TH1F* emNTT_loht_histoHT  = new TH1F("emNTT_loht_histoHT" , "emNTT_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNTT_loht_histoMET = new TH1F("emNTT_loht_histoMET", "emNTT_loht_histoMET", metbins, metmin, metmax);
+	TH1F* emNTT_loht_histoNJ  = new TH1F("emNTT_loht_histoNJ" , "emNTT_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNTT_loht_histoNBJ = new TH1F("emNTT_loht_histoNBJ", "emNTT_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNTT_loht_histoHT  ->Sumw2();
+	      emNTT_loht_histoMET ->Sumw2();
+	      emNTT_loht_histoNJ  ->Sumw2();
+	      emNTT_loht_histoNBJ ->Sumw2();
+
+	TH1F* emNTT_hiht_histoHT  = new TH1F("emNTT_hiht_histoHT" , "emNTT_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNTT_hiht_histoMET = new TH1F("emNTT_hiht_histoMET", "emNTT_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* emNTT_hiht_histoNJ  = new TH1F("emNTT_hiht_histoNJ" , "emNTT_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNTT_hiht_histoNBJ = new TH1F("emNTT_hiht_histoNBJ", "emNTT_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNTT_hiht_histoHT  ->Sumw2();
+	      emNTT_hiht_histoMET ->Sumw2();
+	      emNTT_hiht_histoNJ  ->Sumw2();
+	      emNTT_hiht_histoNBJ ->Sumw2();
+
+	TH1F* emNTL_loht_histoHT  = new TH1F("emNTL_loht_histoHT" , "emNTL_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNTL_loht_histoMET = new TH1F("emNTL_loht_histoMET", "emNTL_loht_histoMET", metbins, metmin, metmax);
+	TH1F* emNTL_loht_histoNJ  = new TH1F("emNTL_loht_histoNJ" , "emNTL_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNTL_loht_histoNBJ = new TH1F("emNTL_loht_histoNBJ", "emNTL_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNTL_loht_histoHT  ->Sumw2();
+	      emNTL_loht_histoMET ->Sumw2();
+	      emNTL_loht_histoNJ  ->Sumw2();
+	      emNTL_loht_histoNBJ ->Sumw2();
+
+	TH1F* emNTL_hiht_histoHT  = new TH1F("emNTL_hiht_histoHT" , "emNTL_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNTL_hiht_histoMET = new TH1F("emNTL_hiht_histoMET", "emNTL_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* emNTL_hiht_histoNJ  = new TH1F("emNTL_hiht_histoNJ" , "emNTL_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNTL_hiht_histoNBJ = new TH1F("emNTL_hiht_histoNBJ", "emNTL_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNTL_hiht_histoHT  ->Sumw2();
+	      emNTL_hiht_histoMET ->Sumw2();
+	      emNTL_hiht_histoNJ  ->Sumw2();
+	      emNTL_hiht_histoNBJ ->Sumw2();
+
+	TH1F* emNLT_loht_histoHT  = new TH1F("emNLT_loht_histoHT" , "emNLT_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNLT_loht_histoMET = new TH1F("emNLT_loht_histoMET", "emNLT_loht_histoMET", metbins, metmin, metmax);
+	TH1F* emNLT_loht_histoNJ  = new TH1F("emNLT_loht_histoNJ" , "emNLT_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNLT_loht_histoNBJ = new TH1F("emNLT_loht_histoNBJ", "emNLT_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNLT_loht_histoHT  ->Sumw2();
+	      emNLT_loht_histoMET ->Sumw2();
+	      emNLT_loht_histoNJ  ->Sumw2();
+	      emNLT_loht_histoNBJ ->Sumw2();
+
+	TH1F* emNLT_hiht_histoHT  = new TH1F("emNLT_hiht_histoHT" , "emNLT_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNLT_hiht_histoMET = new TH1F("emNLT_hiht_histoMET", "emNLT_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* emNLT_hiht_histoNJ  = new TH1F("emNLT_hiht_histoNJ" , "emNLT_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNLT_hiht_histoNBJ = new TH1F("emNLT_hiht_histoNBJ", "emNLT_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNLT_hiht_histoHT  ->Sumw2();
+	      emNLT_hiht_histoMET ->Sumw2();
+	      emNLT_hiht_histoNJ  ->Sumw2();
+	      emNLT_hiht_histoNBJ ->Sumw2();
+
+	TH1F* emNLL_loht_histoHT  = new TH1F("emNLL_loht_histoHT" , "emNLL_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNLL_loht_histoMET = new TH1F("emNLL_loht_histoMET", "emNLL_loht_histoMET", metbins, metmin, metmax);
+	TH1F* emNLL_loht_histoNJ  = new TH1F("emNLL_loht_histoNJ" , "emNLL_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNLL_loht_histoNBJ = new TH1F("emNLL_loht_histoNBJ", "emNLL_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNLL_loht_histoHT  ->Sumw2();
+	      emNLL_loht_histoMET ->Sumw2();
+	      emNLL_loht_histoNJ  ->Sumw2();
+	      emNLL_loht_histoNBJ ->Sumw2();
+
+	TH1F* emNLL_hiht_histoHT  = new TH1F("emNLL_hiht_histoHT" , "emNLL_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* emNLL_hiht_histoMET = new TH1F("emNLL_hiht_histoMET", "emNLL_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* emNLL_hiht_histoNJ  = new TH1F("emNLL_hiht_histoNJ" , "emNLL_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* emNLL_hiht_histoNBJ = new TH1F("emNLL_hiht_histoNBJ", "emNLL_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      emNLL_hiht_histoHT  ->Sumw2();
+	      emNLL_hiht_histoMET ->Sumw2();
+	      emNLL_hiht_histoNJ  ->Sumw2();
+	      emNLL_hiht_histoNBJ ->Sumw2();
+
+	// EE CHANNEL
+
+	TH1F* eeNTT_loht_histoHT  = new TH1F("eeNTT_loht_histoHT" , "eeNTT_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNTT_loht_histoMET = new TH1F("eeNTT_loht_histoMET", "eeNTT_loht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNTT_loht_histoNJ  = new TH1F("eeNTT_loht_histoNJ" , "eeNTT_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNTT_loht_histoNBJ = new TH1F("eeNTT_loht_histoNBJ", "eeNTT_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNTT_loht_histoHT  ->Sumw2();
+	      eeNTT_loht_histoMET ->Sumw2();
+	      eeNTT_loht_histoNJ  ->Sumw2();
+	      eeNTT_loht_histoNBJ ->Sumw2();
+
+	TH1F* eeNTT_hiht_histoHT  = new TH1F("eeNTT_hiht_histoHT" , "eeNTT_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNTT_hiht_histoMET = new TH1F("eeNTT_hiht_histoMET", "eeNTT_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNTT_hiht_histoNJ  = new TH1F("eeNTT_hiht_histoNJ" , "eeNTT_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNTT_hiht_histoNBJ = new TH1F("eeNTT_hiht_histoNBJ", "eeNTT_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNTT_hiht_histoHT  ->Sumw2();
+	      eeNTT_hiht_histoMET ->Sumw2();
+	      eeNTT_hiht_histoNJ  ->Sumw2();
+	      eeNTT_hiht_histoNBJ ->Sumw2();
+
+	TH1F* eeNTL_loht_histoHT  = new TH1F("eeNTL_loht_histoHT" , "eeNTL_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNTL_loht_histoMET = new TH1F("eeNTL_loht_histoMET", "eeNTL_loht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNTL_loht_histoNJ  = new TH1F("eeNTL_loht_histoNJ" , "eeNTL_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNTL_loht_histoNBJ = new TH1F("eeNTL_loht_histoNBJ", "eeNTL_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNTL_loht_histoHT  ->Sumw2();
+	      eeNTL_loht_histoMET ->Sumw2();
+	      eeNTL_loht_histoNJ  ->Sumw2();
+	      eeNTL_loht_histoNBJ ->Sumw2();
+
+	TH1F* eeNTL_hiht_histoHT  = new TH1F("eeNTL_hiht_histoHT" , "eeNTL_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNTL_hiht_histoMET = new TH1F("eeNTL_hiht_histoMET", "eeNTL_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNTL_hiht_histoNJ  = new TH1F("eeNTL_hiht_histoNJ" , "eeNTL_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNTL_hiht_histoNBJ = new TH1F("eeNTL_hiht_histoNBJ", "eeNTL_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNTL_hiht_histoHT  ->Sumw2();
+	      eeNTL_hiht_histoMET ->Sumw2();
+	      eeNTL_hiht_histoNJ  ->Sumw2();
+	      eeNTL_hiht_histoNBJ ->Sumw2();
+
+	TH1F* eeNLT_loht_histoHT  = new TH1F("eeNLT_loht_histoHT" , "eeNLT_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNLT_loht_histoMET = new TH1F("eeNLT_loht_histoMET", "eeNLT_loht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNLT_loht_histoNJ  = new TH1F("eeNLT_loht_histoNJ" , "eeNLT_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNLT_loht_histoNBJ = new TH1F("eeNLT_loht_histoNBJ", "eeNLT_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNLT_loht_histoHT  ->Sumw2();
+	      eeNLT_loht_histoMET ->Sumw2();
+	      eeNLT_loht_histoNJ  ->Sumw2();
+	      eeNLT_loht_histoNBJ ->Sumw2();
+
+	TH1F* eeNLT_hiht_histoHT  = new TH1F("eeNLT_hiht_histoHT" , "eeNLT_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNLT_hiht_histoMET = new TH1F("eeNLT_hiht_histoMET", "eeNLT_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNLT_hiht_histoNJ  = new TH1F("eeNLT_hiht_histoNJ" , "eeNLT_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNLT_hiht_histoNBJ = new TH1F("eeNLT_hiht_histoNBJ", "eeNLT_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNLT_hiht_histoHT  ->Sumw2();
+	      eeNLT_hiht_histoMET ->Sumw2();
+	      eeNLT_hiht_histoNJ  ->Sumw2();
+	      eeNLT_hiht_histoNBJ ->Sumw2();
+
+	TH1F* eeNLL_loht_histoHT  = new TH1F("eeNLL_loht_histoHT" , "eeNLL_loht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNLL_loht_histoMET = new TH1F("eeNLL_loht_histoMET", "eeNLL_loht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNLL_loht_histoNJ  = new TH1F("eeNLL_loht_histoNJ" , "eeNLL_loht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNLL_loht_histoNBJ = new TH1F("eeNLL_loht_histoNBJ", "eeNLL_loht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNLL_loht_histoHT  ->Sumw2();
+	      eeNLL_loht_histoMET ->Sumw2();
+	      eeNLL_loht_histoNJ  ->Sumw2();
+	      eeNLL_loht_histoNBJ ->Sumw2();
+
+	TH1F* eeNLL_hiht_histoHT  = new TH1F("eeNLL_hiht_histoHT" , "eeNLL_hiht_histoHT" , htbins, htmin, htmax);
+	TH1F* eeNLL_hiht_histoMET = new TH1F("eeNLL_hiht_histoMET", "eeNLL_hiht_histoMET", metbins, metmin, metmax);
+	TH1F* eeNLL_hiht_histoNJ  = new TH1F("eeNLL_hiht_histoNJ" , "eeNLL_hiht_histoNJ" , njbins, njmin, njmax);
+	TH1F* eeNLL_hiht_histoNBJ = new TH1F("eeNLL_hiht_histoNBJ", "eeNLL_hiht_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      eeNLL_hiht_histoHT  ->Sumw2();
+	      eeNLL_hiht_histoMET ->Sumw2();
+	      eeNLL_hiht_histoNJ  ->Sumw2();
+	      eeNLL_hiht_histoNBJ ->Sumw2();
+
+
+
+	// RARES
+	TH1F* rare_loht_histoHT  = new TH1F("eo_ra_histoHT" , "eo_ra_histoHT" , htbins, htmin, htmax);
+	TH1F* rare_loht_histoMET = new TH1F("eo_ra_histoMET", "eo_ra_histoMET", metbins, metmin, metmax);
+	TH1F* rare_loht_histoNJ  = new TH1F("eo_ra_histoNJ" , "eo_ra_histoNJ" , njbins, njmin, njmax);
+	TH1F* rare_loht_histoNBJ = new TH1F("eo_ra_histoNBJ", "eo_ra_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      rare_loht_histoHT  ->Sumw2();
+	      rare_loht_histoMET ->Sumw2();
+	      rare_loht_histoNJ  ->Sumw2();
+	      rare_loht_histoNBJ ->Sumw2();
+
+	TH1F* rare_hiht_histoHT  = new TH1F("eo_ra_histoHT" , "eo_ra_histoHT" , htbins, htmin, htmax);
+	TH1F* rare_hiht_histoMET = new TH1F("eo_ra_histoMET", "eo_ra_histoMET", metbins, metmin, metmax);
+	TH1F* rare_hiht_histoNJ  = new TH1F("eo_ra_histoNJ" , "eo_ra_histoNJ" , njbins, njmin, njmax);
+	TH1F* rare_hiht_histoNBJ = new TH1F("eo_ra_histoNBJ", "eo_ra_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      rare_hiht_histoHT  ->Sumw2();
+	      rare_hiht_histoMET ->Sumw2();
+	      rare_hiht_histoNJ  ->Sumw2();
+	      rare_hiht_histoNBJ ->Sumw2();
+
+	// FLIPS
+	TH1F* flip_loht_histoHT  = new TH1F("eo_ch_histoHT" , "eo_ch_histoHT" , htbins, htmin, htmax);
+	TH1F* flip_loht_histoMET = new TH1F("eo_ch_histoMET", "eo_ch_histoMET", metbins, metmin, metmax);
+	TH1F* flip_loht_histoNJ  = new TH1F("eo_ch_histoNJ" , "eo_ch_histoNJ" , njbins, njmin, njmax);
+	TH1F* flip_loht_histoNBJ = new TH1F("eo_ch_histoNBJ", "eo_ch_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      flip_loht_histoHT  ->Sumw2();
+	      flip_loht_histoMET ->Sumw2();
+	      flip_loht_histoNJ  ->Sumw2();
+	      flip_loht_histoNBJ ->Sumw2();
+
+	TH1F* flip_hiht_histoHT  = new TH1F("eo_ch_histoHT" , "eo_ch_histoHT" , htbins, htmin, htmax);
+	TH1F* flip_hiht_histoMET = new TH1F("eo_ch_histoMET", "eo_ch_histoMET", metbins, metmin, metmax);
+	TH1F* flip_hiht_histoNJ  = new TH1F("eo_ch_histoNJ" , "eo_ch_histoNJ" , njbins, njmin, njmax);
+	TH1F* flip_hiht_histoNBJ = new TH1F("eo_ch_histoNBJ", "eo_ch_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      flip_hiht_histoHT  ->Sumw2();
+	      flip_hiht_histoMET ->Sumw2();
+	      flip_hiht_histoNJ  ->Sumw2();
+	      flip_hiht_histoNBJ ->Sumw2();
+
+	// EM channel
+
+	TH1F* flipsemBB_loht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipsemBB_loht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipsemBB_loht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipsemBB_loht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipsemBB_loht_histoHT  ->Sumw2();
+	      flipsemBB_loht_histoMET ->Sumw2();
+	      flipsemBB_loht_histoNJ  ->Sumw2();
+	      flipsemBB_loht_histoNBJ ->Sumw2();
+
+	TH1F* flipsemEE_loht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipsemEE_loht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipsemEE_loht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipsemEE_loht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipsemEE_loht_histoHT  ->Sumw2();
+	      flipsemEE_loht_histoMET ->Sumw2();
+	      flipsemEE_loht_histoNJ  ->Sumw2();
+	      flipsemEE_loht_histoNBJ ->Sumw2();
+
+	TH1F* flipsemBB_hiht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipsemBB_hiht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipsemBB_hiht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipsemBB_hiht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipsemBB_hiht_histoHT  ->Sumw2();
+	      flipsemBB_hiht_histoMET ->Sumw2();
+	      flipsemBB_hiht_histoNJ  ->Sumw2();
+	      flipsemBB_hiht_histoNBJ ->Sumw2();
+
+	TH1F* flipsemEE_hiht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipsemEE_hiht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipsemEE_hiht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipsemEE_hiht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipsemEE_hiht_histoHT  ->Sumw2();
+	      flipsemEE_hiht_histoMET ->Sumw2();
+	      flipsemEE_hiht_histoNJ  ->Sumw2();
+	      flipsemEE_hiht_histoNBJ ->Sumw2();
+
+	// EE channel
+
+	TH1F* flipseeBB_loht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipseeBB_loht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipseeBB_loht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipseeBB_loht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipseeBB_loht_histoHT  ->Sumw2();
+	      flipseeBB_loht_histoMET ->Sumw2();
+	      flipseeBB_loht_histoNJ  ->Sumw2();
+	      flipseeBB_loht_histoNBJ ->Sumw2();
+
+	TH1F* flipseeEB_loht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipseeEB_loht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipseeEB_loht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipseeEB_loht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipseeEB_loht_histoHT  ->Sumw2();
+	      flipseeEB_loht_histoMET ->Sumw2();
+	      flipseeEB_loht_histoNJ  ->Sumw2();
+	      flipseeEB_loht_histoNBJ ->Sumw2();
+
+	TH1F* flipseeEE_loht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipseeEE_loht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipseeEE_loht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipseeEE_loht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipseeEE_loht_histoHT  ->Sumw2();
+	      flipseeEE_loht_histoMET ->Sumw2();
+	      flipseeEE_loht_histoNJ  ->Sumw2();
+	      flipseeEE_loht_histoNBJ ->Sumw2();
+
+	TH1F* flipseeBB_hiht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipseeBB_hiht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipseeBB_hiht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipseeBB_hiht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipseeBB_hiht_histoHT  ->Sumw2();
+	      flipseeBB_hiht_histoMET ->Sumw2();
+	      flipseeBB_hiht_histoNJ  ->Sumw2();
+	      flipseeBB_hiht_histoNBJ ->Sumw2();
+
+	TH1F* flipseeEB_hiht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipseeEB_hiht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipseeEB_hiht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipseeEB_hiht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipseeEB_hiht_histoHT  ->Sumw2();
+	      flipseeEB_hiht_histoMET ->Sumw2();
+	      flipseeEB_hiht_histoNJ  ->Sumw2();
+	      flipseeEB_hiht_histoNBJ ->Sumw2();
+
+	TH1F* flipseeEE_hiht_histoHT  = new TH1F("foobar", "foobar", htbins, htmin, htmax);
+	TH1F* flipseeEE_hiht_histoMET = new TH1F("foobar", "foobar", metbins, metmin, metmax);
+	TH1F* flipseeEE_hiht_histoNJ  = new TH1F("foobar", "foobar", njbins, njmin, njmax);
+	TH1F* flipseeEE_hiht_histoNBJ = new TH1F("foobar", "foobar", nbjbins, nbjmin, nbjmax);
+	      flipseeEE_hiht_histoHT  ->Sumw2();
+	      flipseeEE_hiht_histoMET ->Sumw2();
+	      flipseeEE_hiht_histoNJ  ->Sumw2();
+	      flipseeEE_hiht_histoNBJ ->Sumw2();
+
+	// OBSERVED
+	TH1F* obs_loht_histoHT  = new TH1F("eo_da_histoHT" , "eo_da_histoHT" , htbins, htmin, htmax);
+	TH1F* obs_loht_histoMET = new TH1F("eo_da_histoMET", "eo_da_histoMET", metbins, metmin, metmax);
+	TH1F* obs_loht_histoNJ  = new TH1F("eo_da_histoNJ" , "eo_da_histoNJ" , njbins, njmin, njmax);
+	TH1F* obs_loht_histoNBJ = new TH1F("eo_da_histoNBJ", "eo_da_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      obs_loht_histoHT  ->Sumw2();
+	      obs_loht_histoMET ->Sumw2();
+	      obs_loht_histoNJ  ->Sumw2();
+	      obs_loht_histoNBJ ->Sumw2();
+
+	TH1F* obs_hiht_histoHT  = new TH1F("eo_da_histoHT" , "eo_da_histoHT" , htbins, htmin, htmax);
+	TH1F* obs_hiht_histoMET = new TH1F("eo_da_histoMET", "eo_da_histoMET", metbins, metmin, metmax);
+	TH1F* obs_hiht_histoNJ  = new TH1F("eo_da_histoNJ" , "eo_da_histoNJ" , njbins, njmin, njmax);
+	TH1F* obs_hiht_histoNBJ = new TH1F("eo_da_histoNBJ", "eo_da_histoNBJ", nbjbins, nbjmin, nbjmax);
+	      obs_hiht_histoHT  ->Sumw2();
+	      obs_hiht_histoMET ->Sumw2();
+	      obs_hiht_histoNJ  ->Sumw2();
+	      obs_hiht_histoNBJ ->Sumw2();
+
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// RATIOS /////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	float mufratio_data(0.),  mufratio_data_e(0.);
+	float mupratio_data(0.),  mupratio_data_e(0.);
+	float elfratio_data(0.),  elfratio_data_e(0.);
+	float elpratio_data(0.),  elpratio_data_e(0.);
+
+	calculateRatio(fMuData, Muon, SigSup, mufratio_data, mufratio_data_e);
+	calculateRatio(fMuData, Muon, ZDecay, mupratio_data, mupratio_data_e);
+
+	calculateRatio(fEGData, Elec, SigSup, elfratio_data, elfratio_data_e);
+	calculateRatio(fEGData, Elec, ZDecay, elpratio_data, elpratio_data_e);
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	float nt2_mm(0.), nt10_mm(0.), nt0_mm(0.);
+	float nt2_em(0.), nt10_em(0.), nt01_em(0.), nt0_em(0.);
+	float nt2_ee(0.), nt10_ee(0.), nt0_ee(0.);
+
+	// FR Predictions from event-by-event weights (pre stored)
+	float npp_mm(0.), npf_mm(0.), nff_mm(0.);
+	float npp_em(0.), npf_em(0.), nfp_em(0.), nff_em(0.);
+	float npp_ee(0.), npf_ee(0.), nff_ee(0.);
+
+	// OS yields
+	float nt2_ee_BB_os(0.), nt2_ee_EE_os(0.), nt2_ee_EB_os(0.);
+	float nt2_em_BB_os(0.), nt2_em_EE_os(0.);
+
+	// only take half the events for ++/--
+	// float chargeFactor = chVeto ? 0.5:1.;
+
+	// rare SM yields
+	float nt2_rare_mc_mm(0.),    nt2_rare_mc_em(0.),    nt2_rare_mc_ee(0.);
+	float nt2_rare_mc_mm_e2(0.), nt2_rare_mc_em_e2(0.), nt2_rare_mc_ee_e2(0.);
+
+	float nt2_wz_mc_mm(0.),    nt2_wz_mc_em(0.),    nt2_wz_mc_ee(0.);
+	float nt2_wz_mc_mm_e2(0.), nt2_wz_mc_em_e2(0.), nt2_wz_mc_ee_e2(0.);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	TFile *pFile = TFile::Open(fOutputFileName);
+	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
+	
+	string *sname = 0;
+	int flag;
+	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
+	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float eta1, eta2, mll;
+	int   event, run;
+	int charge;
+	int passZVeto, passes3rdSFLepVeto;
+
+	sigtree->SetBranchAddress("SystFlag", &flag);
+	sigtree->SetBranchAddress("Event",    &event);
+	sigtree->SetBranchAddress("Run",      &run);
+	sigtree->SetBranchAddress("SName",    &sname);
+	sigtree->SetBranchAddress("SType",    &SType);
+	sigtree->SetBranchAddress("PUWeight", &puweight);
+	sigtree->SetBranchAddress("SLumi",    &SLumi);
+	sigtree->SetBranchAddress("Flavor",   &Flavor);
+	sigtree->SetBranchAddress("Charge",   &charge);
+	sigtree->SetBranchAddress("pT1",      &pT1);
+	sigtree->SetBranchAddress("pT2",      &pT2);
+	sigtree->SetBranchAddress("eta1",     &eta1);
+	sigtree->SetBranchAddress("eta2",     &eta2);
+	sigtree->SetBranchAddress("TLCat",    &TLCat);
+	sigtree->SetBranchAddress("HT",       &HT);
+	sigtree->SetBranchAddress("MET",      &MET);
+	sigtree->SetBranchAddress("MT2",      &MT2);
+	sigtree->SetBranchAddress("NJ",       &NJ);
+	sigtree->SetBranchAddress("NbJ",      &NbJ);
+	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
+	sigtree->SetBranchAddress("Mll",      &mll);
+	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+
+	FakeRatios *FR = new FakeRatios();
+
+	std::map< std::string, float > rareMapMM;
+	std::map< std::string, float > rareMapEM;
+	std::map< std::string, float > rareMapEE;
+
+	std::map< std::string, int > rareMapMM_npass;
+	std::map< std::string, int > rareMapEM_npass;
+	std::map< std::string, int > rareMapEE_npass;
+
+	for(size_t i = 0; i < fMCRareSM.size(); ++i){
+		Sample *S = fSamples[fMCRareSM[i]];
+		std::string name = (string) S->sname;
+		rareMapMM[name] = 0.; rareMapMM_npass[name] = 0;
+		rareMapEM[name] = 0.; rareMapEM_npass[name] = 0;
+		rareMapEE[name] = 0.; rareMapEE_npass[name] = 0;
+	}
+
+	float trigScale[3] = {gMMTrigScale, gEMTrigScale, gEETrigScale};
+
+	for( int i = 0; i < sigtree->GetEntries(); i++ ){
+		sigtree->GetEntry(i);
+		
+		// if( flag != systflag ) continue;
+		
+		if ( mll < 8.) continue;
+		// if ( HT  < minHT  || HT  > maxHT)  continue;
+		// if ( MET < minMET || MET > maxMET) continue;
+		if ( NJ  < 2)      continue;
+		// if ( NbJ < minNbjetsL)    continue;
+		// if ( NbJmed < minNbjetsM) continue;
+
+		gChannel chan = gChannel(Flavor);
+		if(chan == ElMu || Flavor == 4){
+			if(pT1 > pT2){
+				if(pT1 < 20.) continue;
+				if(pT2 < 20.) continue;
+			}
+			if(pT1 < pT2){
+				if(pT1 < 20.) continue;
+				if(pT2 < 20.) continue;
+			}
+		}
+		else{
+			if(pT1 < 20.) continue;
+			if(pT2 < 20.) continue;
+		}
+		
+		// GET ALL DATA EVENTS
+		if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
+			if (Flavor < 3) {
+				if (gApplyZVeto && passZVeto == 0)  continue;
+				// if (chVeto && charge != chVeto ) continue;
+				Sample *S = fSampleMap[TString(*sname)];
+
+				float npp(0.) , npf(0.) , nfp(0.) , nff(0.);
+				float f1(0.)  , f2(0.)  , p1(0.)  , p2(0.);
+				f1 = getFRatio(chan, pT1, eta1, S->datamc);
+				f2 = getFRatio(chan, pT2, eta2, S->datamc);
+				p1 = getPRatio(chan, pT1, S->datamc);
+				p2 = getPRatio(chan, pT2, S->datamc);
+				if(chan == ElMu){
+					f1 = getFRatio(Muon, pT1, eta1, S->datamc);
+					f2 = getFRatio(Elec, pT2, eta2, S->datamc);
+					p1 = getPRatio(Muon, pT1, S->datamc);
+					p2 = getPRatio(Elec, pT2, S->datamc);
+				}
+				// Get the weights (don't depend on event selection)
+				npp = FR->getWpp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+				npf = FR->getWpf(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+				nfp = FR->getWfp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+				nff = FR->getWff(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);			
+
+				if (Flavor == 0 ){
+					if (HT < 200.) {
+						fake_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , npf+nfp+nff);
+						fake_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , npf+nfp+nff);
+						fake_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , npf+nfp+nff);
+						fake_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, npf+nfp+nff);
+						if (TLCat == 0){
+							obs_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , 1);
+							obs_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , 1);
+							obs_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , 1);
+							obs_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, 1);
+							mmNTT_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNTT_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNTT_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNTT_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 1){
+							mmNTL_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNTL_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNTL_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNTL_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 2){
+							mmNLT_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNLT_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNLT_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNLT_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 3){
+							mmNLL_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNLL_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNLL_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNLL_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+					}
+					else{
+						fake_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , npf+nfp+nff);
+						fake_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , npf+nfp+nff);
+						fake_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , npf+nfp+nff);
+						fake_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, npf+nfp+nff);
+						if (TLCat == 0){
+							obs_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , 1);
+							obs_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , 1);
+							obs_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , 1);
+							obs_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, 1);
+							mmNTT_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNTT_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNTT_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNTT_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 1){
+							mmNTL_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNTL_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNTL_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNTL_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 2){
+							mmNLT_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNLT_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNLT_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNLT_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 3){
+							mmNLL_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							mmNLL_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							mmNLL_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							mmNLL_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+					}
+				}
+				if (Flavor == 1 ){
+					if (HT < 200.) {
+						fake_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , npf+nfp+nff);
+						fake_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , npf+nfp+nff);
+						fake_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , npf+nfp+nff);
+						fake_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, npf+nfp+nff);
+						if (TLCat == 0){
+							obs_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , 1);
+							obs_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , 1);
+							obs_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , 1);
+							obs_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, 1);
+							emNTT_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNTT_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNTT_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNTT_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 1){
+							emNTL_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNTL_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNTL_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNTL_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 2){
+							emNLT_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNLT_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNLT_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNLT_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 3){
+							emNLL_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNLL_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNLL_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNLL_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+					}
+					else{
+						fake_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , npf+nfp+nff);
+						fake_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , npf+nfp+nff);
+						fake_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , npf+nfp+nff);
+						fake_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, npf+nfp+nff);
+						if (TLCat == 0){
+							obs_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , 1);
+							obs_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , 1);
+							obs_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , 1);
+							obs_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, 1);
+							emNTT_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNTT_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNTT_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNTT_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 1){
+							emNTL_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNTL_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNTL_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNTL_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 2){
+							emNLT_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNLT_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNLT_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNLT_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 3){
+							emNLL_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							emNLL_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							emNLL_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							emNLL_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+					}
+				}
+				if (Flavor == 2 ){
+					if (HT < 200.) {
+						fake_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , npf+nfp+nff);
+						fake_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , npf+nfp+nff);
+						fake_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , npf+nfp+nff);
+						fake_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, npf+nfp+nff);
+						if (TLCat == 0){
+							obs_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , 1);
+							obs_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , 1);
+							obs_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , 1);
+							obs_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, 1);
+							eeNTT_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNTT_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNTT_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNTT_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 1){
+							eeNTL_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNTL_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNTL_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNTL_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 2){
+							eeNLT_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNLT_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNLT_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNLT_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 3){
+							eeNLL_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNLL_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNLL_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNLL_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+					}
+					else{
+						fake_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , npf+nfp+nff);
+						fake_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , npf+nfp+nff);
+						fake_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , npf+nfp+nff);
+						fake_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, npf+nfp+nff);
+						if (TLCat == 0){
+							obs_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , 1);
+							obs_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , 1);
+							obs_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , 1);
+							obs_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, 1);
+							eeNTT_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNTT_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNTT_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNTT_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 1){
+							eeNTL_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNTL_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNTL_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNTL_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 2){
+							eeNLT_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNLT_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNLT_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNLT_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+						else if( TLCat == 3){
+							eeNLL_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+							eeNLL_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+							eeNLL_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+							eeNLL_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+						}
+					}
+				}
+			}
+
+			if (HT < 200.) {
+				if(Flavor == 4) {       // E-MU OS
+					if (TLCat == 0) {
+						flipsemBB_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipsemBB_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipsemBB_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipsemBB_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+					if (TLCat == 1) {
+						flipsemEE_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipsemEE_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipsemEE_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipsemEE_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+				}
+				if(Flavor == 5) {       // E-E OS
+					if (TLCat == 0) {
+						flipseeBB_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipseeBB_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipseeBB_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipseeBB_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+					if (TLCat == 1 || TLCat == 2) {
+						flipseeEB_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipseeEB_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipseeEB_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipseeEB_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+					if (TLCat == 3) {
+						flipseeEE_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipseeEE_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipseeEE_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipseeEE_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+				} // end flavor 4
+			} // end HT < 200 
+			else {  // HT > 200 GeV
+				if(Flavor == 4) {       // E-MU OS
+					if (TLCat == 0) {
+						flipsemBB_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipsemBB_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipsemBB_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipsemBB_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+					if (TLCat == 1) {
+						flipsemEE_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipsemEE_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipsemEE_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipsemEE_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+				}
+				if(Flavor == 5) {       // E-E OS
+					if (TLCat == 0) {
+						flipseeBB_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipseeBB_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipseeBB_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipseeBB_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+					if (TLCat == 1 || TLCat == 2) {
+						flipseeEB_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipseeEB_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipseeEB_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipseeEB_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+					if (TLCat == 3) {
+						flipseeEE_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    );
+						flipseeEE_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   );
+						flipseeEE_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    );
+						flipseeEE_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed);
+					}
+				} // end flavor 5
+			} // end HT > 200
+		} // end data events
+
+
+		// GET RARE MC EVENTS
+		if (SType == 15 && TLCat == 0) { // tight-tight rare MC events
+			if (*sname == "WWTo2L2Nu") continue;
+			if (Flavor > 2) continue;
+			// if (chVeto && charge != chVeto ) continue;
+			// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+			Sample *S = fSampleMap[*sname];
+			float scale = fLumiNorm / S->getLumi();
+			float trig(0.), id(0.);
+			if (Flavor == 0) {
+				trig = getTriggerSFMuMu(eta2);
+				id   = getLeptonSFMu(pT1, eta1)*getLeptonSFMu(pT2, eta2);
+			}
+			if (Flavor == 1) {
+				trig = getTriggerSFMuEl();
+  				id   = getLeptonSFMu(pT1, eta1)*getLeptonSFEl(pT2, eta2);
+			}
+			if (Flavor == 2) {
+				trig = getTriggerSFElEl(pT2);
+				id   = getLeptonSFEl(pT1, eta1)*getLeptonSFEl(pT2, eta2);
+			}
+			scale*=trig*id;
+			if (HT < 200.) {
+				rare_loht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , scale);
+				rare_loht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , scale);
+				rare_loht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , scale);
+				rare_loht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, scale);
+			}
+			else{
+				rare_hiht_histoHT  ->Fill(HT     >  htmax ?  htmax-0.5 : HT    , scale);
+				rare_hiht_histoMET ->Fill(MET    > metmax ? metmax-0.5 : MET   , scale);
+				rare_hiht_histoNJ  ->Fill(NJ     >  njmax ?  njmax-0.5 : NJ    , scale);
+				rare_hiht_histoNBJ ->Fill(NbJmed > nbjmax ? nbjmax-0.5 : NbJmed, scale);
+			}
+		} // end rare mc events
+		
+	}
+
+
+	////////////////////////////////////////////////////////////////////////////////////
+	// MET /////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////
+
+	for(size_t i = 0; i < metbins; ++i){
+		const float FakeESyst2 = 0.25;
+		FakeRatios *FRhi = new FakeRatios();
+		FakeRatios *FRlo = new FakeRatios();
+		FRhi->setNToyMCs(100);  // speedup
+		FRhi->setAddESyst(0.5); // additional systematics
+		FRlo->setNToyMCs(100);  // speedup
+		FRlo->setAddESyst(0.5); // additional systematics
+
+		FRhi->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRhi->setEFRatio(elfratio_data, elfratio_data_e);
+		FRhi->setMPRatio(mupratio_data, mupratio_data_e);
+		FRhi->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRlo->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRlo->setEFRatio(elfratio_data, elfratio_data_e);
+		FRlo->setMPRatio(mupratio_data, mupratio_data_e);
+		FRlo->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRhi->setMMNtl( mmNTT_hiht_histoMET->GetBinContent(i+1), mmNTL_hiht_histoMET->GetBinContent(i+1) + mmNLT_hiht_histoMET->GetBinContent(i+1), mmNLL_hiht_histoMET->GetBinContent(i+1) );
+		FRhi->setEENtl( eeNTT_hiht_histoMET->GetBinContent(i+1), eeNTL_hiht_histoMET->GetBinContent(i+1) + eeNLT_hiht_histoMET->GetBinContent(i+1), eeNLL_hiht_histoMET->GetBinContent(i+1) );
+		FRhi->setEMNtl( emNTT_hiht_histoMET->GetBinContent(i+1), emNTL_hiht_histoMET->GetBinContent(i+1) , emNLT_hiht_histoMET->GetBinContent(i+1), emNLL_hiht_histoMET->GetBinContent(i+1) );
+		FRlo->setMMNtl( mmNTT_loht_histoMET->GetBinContent(i+1), mmNTL_loht_histoMET->GetBinContent(i+1) + mmNLT_loht_histoMET->GetBinContent(i+1), mmNLL_loht_histoMET->GetBinContent(i+1) );
+		FRlo->setEENtl( eeNTT_loht_histoMET->GetBinContent(i+1), eeNTL_loht_histoMET->GetBinContent(i+1) + eeNLT_loht_histoMET->GetBinContent(i+1), eeNLL_loht_histoMET->GetBinContent(i+1) );
+		FRlo->setEMNtl( emNTT_loht_histoMET->GetBinContent(i+1), emNTL_loht_histoMET->GetBinContent(i+1) , emNLT_loht_histoMET->GetBinContent(i+1), emNLL_loht_histoMET->GetBinContent(i+1) );
+		
+		// float mm_tot_fakes = fake_hiht_histoMET->GetBinContent(i+1);
+		// float ee_tot_fakes = fake_hiht_histoMET->GetBinContent(i+1);
+		// float em_tot_fakes = fake_hiht_histoMET->GetBinContent(i+1);
+		float tot_fakes_hi = fake_hiht_histoMET->GetBinContent(i+1);
+		float tot_fakes_lo = fake_loht_histoMET->GetBinContent(i+1);
+		
+		// Errors (add total errors of fakes)
+		//  float esyst2_mm  = FakeESyst2*mm_tot_fakes*mm_tot_fakes;
+		//  float esyst2_ee  = FakeESyst2*ee_tot_fakes*ee_tot_fakes;
+		//  float esyst2_em  = FakeESyst2*em_tot_fakes*em_tot_fakes;
+		//  float esyst2_tot = FakeESyst2*tot_fakes*tot_fakes;
+		float estat2_mm_hi  = FRhi->getMMTotEStat()*FRhi->getMMTotEStat();
+		float estat2_ee_hi  = FRhi->getEETotEStat()*FRhi->getEETotEStat();
+		float estat2_em_hi  = FRhi->getEMTotEStat()*FRhi->getEMTotEStat();
+		float estat2_tot_hi = FRhi->getTotEStat()  *FRhi->getTotEStat();
+
+		float estat2_mm_lo  = FRlo->getMMTotEStat()*FRlo->getMMTotEStat();
+		float estat2_ee_lo  = FRlo->getEETotEStat()*FRlo->getEETotEStat();
+		float estat2_em_lo  = FRlo->getEMTotEStat()*FRlo->getEMTotEStat();
+		float estat2_tot_lo = FRlo->getTotEStat()  *FRlo->getTotEStat();
+
+		//  float prev    = totbg   ->GetBinError(i+1);
+		//  float prev_mm = totbg_mm->GetBinError(i+1);
+		//  float prev_em = totbg_em->GetBinError(i+1);
+		//  float prev_ee = totbg_ee->GetBinError(i+1);
+
+		cout << Form("this is the error in high-HT bin %2d : %.2f", i, estat2_tot_hi) << endl;
+		cout << endl << endl;
+		cout << Form("this is the error in low -HT bin %2d : %.2f", i, estat2_tot_lo) << endl;
+		//  totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		//  totbg_mm->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		//  totbg_em->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		//  totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		fake_hiht_histoMET->SetBinError(i+1, TMath::Sqrt(estat2_tot_hi) );
+		fake_loht_histoMET->SetBinError(i+1, TMath::Sqrt(estat2_tot_lo) );
+		// fake_hiht_histoMET->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		// fake_hiht_histoMET->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		// fake_hiht_histoMET->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		
+		delete FRhi, FRlo;
+
+		// FLIPS
+	
+		// Abbreviations
+		float fbb(0.),fee(0.),feb(0.);
+		float fbbE(0.),feeE(0.),febE(0.);
+		
+		calculateChMisIdProb(fEGData, BB, fbb, fbbE);
+		calculateChMisIdProb(fEGData, EB, feb, febE);
+		calculateChMisIdProb(fEGData, EE, fee, feeE);
+
+		float nt2_ee_BB_os_loht = flipseeBB_loht_histoMET->GetBinContent(i+1);
+		float nt2_ee_EB_os_loht = flipseeEB_loht_histoMET->GetBinContent(i+1);
+		float nt2_ee_EE_os_loht = flipseeEE_loht_histoMET->GetBinContent(i+1);
+		float nt2_em_BB_os_loht = flipsemBB_loht_histoMET->GetBinContent(i+1);
+		float nt2_em_EE_os_loht = flipsemEE_loht_histoMET->GetBinContent(i+1);
+
+		float nt2_ee_BB_os_hiht = flipseeBB_hiht_histoMET->GetBinContent(i+1);
+		float nt2_ee_EB_os_hiht = flipseeEB_hiht_histoMET->GetBinContent(i+1);
+		float nt2_ee_EE_os_hiht = flipseeEE_hiht_histoMET->GetBinContent(i+1);
+		float nt2_em_BB_os_hiht = flipsemBB_hiht_histoMET->GetBinContent(i+1);
+		float nt2_em_EE_os_hiht = flipsemEE_hiht_histoMET->GetBinContent(i+1);
+
+		// Errors
+		FakeRatios *FR = new FakeRatios();
+
+		// // Simple error propagation assuming error on number of events is FR->getEStat2()
+		// nt11_ee_cm->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os + 2*fee*nt2_ee_EE_os + 2*feb*nt2_ee_EB_os);
+		// float nt11_ee_cm_e1 = sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os) ); // stat only
+		// float nt11_ee_cm_e2 = sqrt( (4*nt2_ee_BB_os*nt2_ee_BB_os*fbbE*fbbE) + (4*nt2_ee_EE_os*nt2_ee_EE_os*feeE*feeE) + 4*(febE*febE)*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
+
+		// nt11_em_cm->SetBinContent(i+i, fbb*nt2_em_BB_os + fee*nt2_em_EE_os);
+		// float nt11_em_cm_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
+		// float nt11_em_cm_e2 = sqrt( nt2_em_BB_os*nt2_em_BB_os * fbbE*fbbE + nt2_em_EE_os*nt2_em_EE_os * feeE*feeE );
+
+
+		flip_loht_histoMET->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_loht + 2*fee*nt2_ee_EE_os_loht + 2*feb*nt2_ee_EB_os_loht
+		                                     +  fbb*nt2_em_BB_os_loht +   fee*nt2_em_EE_os_loht                          );
+
+		flip_loht_histoMET->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_loht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_loht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_loht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_loht) + fee*fee*FR->getEStat2(nt2_em_EE_os_loht) ) );
+
+
+		flip_hiht_histoMET->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_hiht + 2*fee*nt2_ee_EE_os_hiht + 2*feb*nt2_ee_EB_os_hiht
+		                                     +  fbb*nt2_em_BB_os_hiht +   fee*nt2_em_EE_os_hiht                          );
+		flip_hiht_histoMET->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_hiht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_hiht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_hiht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_hiht) + fee*fee*FR->getEStat2(nt2_em_EE_os_hiht) ) );
+
+
+		
+		
+		// float esyst2_ee  = nt11_ee_cm_e2*nt11_ee_cm_e2;
+		// float esyst2_em  = nt11_em_cm_e2*nt11_em_cm_e2;
+		// float esyst2_tot = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2;
+		// float estat2_ee  = nt11_ee_cm_e1*nt11_ee_cm_e1;
+		// float estat2_em  = nt11_em_cm_e1*nt11_em_cm_e1;
+		// float estat2_tot = nt11_ee_cm_e1*nt11_ee_cm_e1 + nt11_em_cm_e1*nt11_em_cm_e1;
+
+		// float prev    = totbg   ->GetBinError(i+1);
+		// float prev_em = totbg_em->GetBinError(i+1);
+		// float prev_ee = totbg_ee->GetBinError(i+1);
+
+		// totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		// totbg_em->SetBinError(i+1, prev_em + esyst2_em  + estat2_em);
+		// totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee  + estat2_ee);
+
+		delete FR;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////
+	// HT //////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////
+
+	for(size_t i = 0; i < htbins; ++i){
+		const float FakeESyst2 = 0.25;
+		FakeRatios *FRhi = new FakeRatios();
+		FakeRatios *FRlo = new FakeRatios();
+		FRhi->setNToyMCs(100);  // speedup
+		FRhi->setAddESyst(0.5); // additional systematics
+		FRlo->setNToyMCs(100);  // speedup
+		FRlo->setAddESyst(0.5); // additional systematics
+
+		FRhi->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRhi->setEFRatio(elfratio_data, elfratio_data_e);
+		FRhi->setMPRatio(mupratio_data, mupratio_data_e);
+		FRhi->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRlo->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRlo->setEFRatio(elfratio_data, elfratio_data_e);
+		FRlo->setMPRatio(mupratio_data, mupratio_data_e);
+		FRlo->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRhi->setMMNtl( mmNTT_hiht_histoHT->GetBinContent(i+1), mmNTL_hiht_histoHT->GetBinContent(i+1) + mmNLT_hiht_histoHT->GetBinContent(i+1), mmNLL_hiht_histoHT->GetBinContent(i+1) );
+		FRhi->setEENtl( eeNTT_hiht_histoHT->GetBinContent(i+1), eeNTL_hiht_histoHT->GetBinContent(i+1) + eeNLT_hiht_histoHT->GetBinContent(i+1), eeNLL_hiht_histoHT->GetBinContent(i+1) );
+		FRhi->setEMNtl( emNTT_hiht_histoHT->GetBinContent(i+1), emNTL_hiht_histoHT->GetBinContent(i+1) , emNLT_hiht_histoHT->GetBinContent(i+1), emNLL_hiht_histoHT->GetBinContent(i+1) );
+		FRlo->setMMNtl( mmNTT_loht_histoHT->GetBinContent(i+1), mmNTL_loht_histoHT->GetBinContent(i+1) + mmNLT_loht_histoHT->GetBinContent(i+1), mmNLL_loht_histoHT->GetBinContent(i+1) );
+		FRlo->setEENtl( eeNTT_loht_histoHT->GetBinContent(i+1), eeNTL_loht_histoHT->GetBinContent(i+1) + eeNLT_loht_histoHT->GetBinContent(i+1), eeNLL_loht_histoHT->GetBinContent(i+1) );
+		FRlo->setEMNtl( emNTT_loht_histoHT->GetBinContent(i+1), emNTL_loht_histoHT->GetBinContent(i+1) , emNLT_loht_histoHT->GetBinContent(i+1), emNLL_loht_histoHT->GetBinContent(i+1) );
+		
+		// float mm_tot_fakes = fake_hiht_histoHT->GetBinContent(i+1);
+		// float ee_tot_fakes = fake_hiht_histoHT->GetBinContent(i+1);
+		// float em_tot_fakes = fake_hiht_histoHT->GetBinContent(i+1);
+		float tot_fakes_hi = fake_hiht_histoHT->GetBinContent(i+1);
+		float tot_fakes_lo = fake_loht_histoHT->GetBinContent(i+1);
+		
+		// Errors (add total errors of fakes)
+		//  float esyst2_mm  = FakeESyst2*mm_tot_fakes*mm_tot_fakes;
+		//  float esyst2_ee  = FakeESyst2*ee_tot_fakes*ee_tot_fakes;
+		//  float esyst2_em  = FakeESyst2*em_tot_fakes*em_tot_fakes;
+		//  float esyst2_tot = FakeESyst2*tot_fakes*tot_fakes;
+		float estat2_mm_hi  = FRhi->getMMTotEStat()*FRhi->getMMTotEStat();
+		float estat2_ee_hi  = FRhi->getEETotEStat()*FRhi->getEETotEStat();
+		float estat2_em_hi  = FRhi->getEMTotEStat()*FRhi->getEMTotEStat();
+		float estat2_tot_hi = FRhi->getTotEStat()  *FRhi->getTotEStat();
+
+		float estat2_mm_lo  = FRlo->getMMTotEStat()*FRlo->getMMTotEStat();
+		float estat2_ee_lo  = FRlo->getEETotEStat()*FRlo->getEETotEStat();
+		float estat2_em_lo  = FRlo->getEMTotEStat()*FRlo->getEMTotEStat();
+		float estat2_tot_lo = FRlo->getTotEStat()  *FRlo->getTotEStat();
+
+		//  float prev    = totbg   ->GetBinError(i+1);
+		//  float prev_mm = totbg_mm->GetBinError(i+1);
+		//  float prev_em = totbg_em->GetBinError(i+1);
+		//  float prev_ee = totbg_ee->GetBinError(i+1);
+
+		cout << Form("this is the error in high-HT bin %2d : %.2f", i, estat2_tot_hi) << endl;
+		cout << endl << endl;
+		cout << Form("this is the error in low -HT bin %2d : %.2f", i, estat2_tot_lo) << endl;
+		//  totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		//  totbg_mm->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		//  totbg_em->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		//  totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		fake_hiht_histoHT->SetBinError(i+1, TMath::Sqrt(estat2_tot_hi) );
+		fake_loht_histoHT->SetBinError(i+1, TMath::Sqrt(estat2_tot_lo) );
+		// fake_hiht_histoHT->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		// fake_hiht_histoHT->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		// fake_hiht_histoHT->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		
+		delete FRhi, FRlo;
+
+		// FLIPS
+	
+		// Abbreviations
+		float fbb(0.),fee(0.),feb(0.);
+		float fbbE(0.),feeE(0.),febE(0.);
+		
+		calculateChMisIdProb(fEGData, BB, fbb, fbbE);
+		calculateChMisIdProb(fEGData, EB, feb, febE);
+		calculateChMisIdProb(fEGData, EE, fee, feeE);
+
+		float nt2_ee_BB_os_loht = flipseeBB_loht_histoHT->GetBinContent(i+1);
+		float nt2_ee_EB_os_loht = flipseeEB_loht_histoHT->GetBinContent(i+1);
+		float nt2_ee_EE_os_loht = flipseeEE_loht_histoHT->GetBinContent(i+1);
+		float nt2_em_BB_os_loht = flipsemBB_loht_histoHT->GetBinContent(i+1);
+		float nt2_em_EE_os_loht = flipsemEE_loht_histoHT->GetBinContent(i+1);
+
+		float nt2_ee_BB_os_hiht = flipseeBB_hiht_histoHT->GetBinContent(i+1);
+		float nt2_ee_EB_os_hiht = flipseeEB_hiht_histoHT->GetBinContent(i+1);
+		float nt2_ee_EE_os_hiht = flipseeEE_hiht_histoHT->GetBinContent(i+1);
+		float nt2_em_BB_os_hiht = flipsemBB_hiht_histoHT->GetBinContent(i+1);
+		float nt2_em_EE_os_hiht = flipsemEE_hiht_histoHT->GetBinContent(i+1);
+
+		// Errors
+		FakeRatios *FR = new FakeRatios();
+
+		// // Simple error propagation assuming error on number of events is FR->getEStat2()
+		// nt11_ee_cm->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os + 2*fee*nt2_ee_EE_os + 2*feb*nt2_ee_EB_os);
+		// float nt11_ee_cm_e1 = sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os) ); // stat only
+		// float nt11_ee_cm_e2 = sqrt( (4*nt2_ee_BB_os*nt2_ee_BB_os*fbbE*fbbE) + (4*nt2_ee_EE_os*nt2_ee_EE_os*feeE*feeE) + 4*(febE*febE)*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
+
+		// nt11_em_cm->SetBinContent(i+i, fbb*nt2_em_BB_os + fee*nt2_em_EE_os);
+		// float nt11_em_cm_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
+		// float nt11_em_cm_e2 = sqrt( nt2_em_BB_os*nt2_em_BB_os * fbbE*fbbE + nt2_em_EE_os*nt2_em_EE_os * feeE*feeE );
+
+
+		flip_loht_histoHT->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_loht + 2*fee*nt2_ee_EE_os_loht + 2*feb*nt2_ee_EB_os_loht
+		                                     +  fbb*nt2_em_BB_os_loht +   fee*nt2_em_EE_os_loht                          );
+
+		flip_loht_histoHT->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_loht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_loht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_loht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_loht) + fee*fee*FR->getEStat2(nt2_em_EE_os_loht) ) );
+
+
+		flip_hiht_histoHT->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_hiht + 2*fee*nt2_ee_EE_os_hiht + 2*feb*nt2_ee_EB_os_hiht
+		                                     +  fbb*nt2_em_BB_os_hiht +   fee*nt2_em_EE_os_hiht                          );
+		flip_hiht_histoHT->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_hiht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_hiht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_hiht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_hiht) + fee*fee*FR->getEStat2(nt2_em_EE_os_hiht) ) );
+
+
+		
+		
+		// float esyst2_ee  = nt11_ee_cm_e2*nt11_ee_cm_e2;
+		// float esyst2_em  = nt11_em_cm_e2*nt11_em_cm_e2;
+		// float esyst2_tot = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2;
+		// float estat2_ee  = nt11_ee_cm_e1*nt11_ee_cm_e1;
+		// float estat2_em  = nt11_em_cm_e1*nt11_em_cm_e1;
+		// float estat2_tot = nt11_ee_cm_e1*nt11_ee_cm_e1 + nt11_em_cm_e1*nt11_em_cm_e1;
+
+		// float prev    = totbg   ->GetBinError(i+1);
+		// float prev_em = totbg_em->GetBinError(i+1);
+		// float prev_ee = totbg_ee->GetBinError(i+1);
+
+		// totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		// totbg_em->SetBinError(i+1, prev_em + esyst2_em  + estat2_em);
+		// totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee  + estat2_ee);
+
+		delete FR;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////
+	// NJ  /////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////
+
+	for(size_t i = 0; i < njbins; ++i){
+		const float FakeESyst2 = 0.25;
+		FakeRatios *FRhi = new FakeRatios();
+		FakeRatios *FRlo = new FakeRatios();
+		FRhi->setNToyMCs(100);  // speedup
+		FRhi->setAddESyst(0.5); // additional systematics
+		FRlo->setNToyMCs(100);  // speedup
+		FRlo->setAddESyst(0.5); // additional systematics
+
+		FRhi->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRhi->setEFRatio(elfratio_data, elfratio_data_e);
+		FRhi->setMPRatio(mupratio_data, mupratio_data_e);
+		FRhi->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRlo->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRlo->setEFRatio(elfratio_data, elfratio_data_e);
+		FRlo->setMPRatio(mupratio_data, mupratio_data_e);
+		FRlo->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRhi->setMMNtl( mmNTT_hiht_histoNJ->GetBinContent(i+1), mmNTL_hiht_histoNJ->GetBinContent(i+1) + mmNLT_hiht_histoNJ->GetBinContent(i+1), mmNLL_hiht_histoNJ->GetBinContent(i+1) );
+		FRhi->setEENtl( eeNTT_hiht_histoNJ->GetBinContent(i+1), eeNTL_hiht_histoNJ->GetBinContent(i+1) + eeNLT_hiht_histoNJ->GetBinContent(i+1), eeNLL_hiht_histoNJ->GetBinContent(i+1) );
+		FRhi->setEMNtl( emNTT_hiht_histoNJ->GetBinContent(i+1), emNTL_hiht_histoNJ->GetBinContent(i+1) , emNLT_hiht_histoNJ->GetBinContent(i+1), emNLL_hiht_histoNJ->GetBinContent(i+1) );
+		FRlo->setMMNtl( mmNTT_loht_histoNJ->GetBinContent(i+1), mmNTL_loht_histoNJ->GetBinContent(i+1) + mmNLT_loht_histoNJ->GetBinContent(i+1), mmNLL_loht_histoNJ->GetBinContent(i+1) );
+		FRlo->setEENtl( eeNTT_loht_histoNJ->GetBinContent(i+1), eeNTL_loht_histoNJ->GetBinContent(i+1) + eeNLT_loht_histoNJ->GetBinContent(i+1), eeNLL_loht_histoNJ->GetBinContent(i+1) );
+		FRlo->setEMNtl( emNTT_loht_histoNJ->GetBinContent(i+1), emNTL_loht_histoNJ->GetBinContent(i+1) , emNLT_loht_histoNJ->GetBinContent(i+1), emNLL_loht_histoNJ->GetBinContent(i+1) );
+		
+		// float mm_tot_fakes = fake_hiht_histoNJ->GetBinContent(i+1);
+		// float ee_tot_fakes = fake_hiht_histoNJ->GetBinContent(i+1);
+		// float em_tot_fakes = fake_hiht_histoNJ->GetBinContent(i+1);
+		float tot_fakes_hi = fake_hiht_histoNJ->GetBinContent(i+1);
+		float tot_fakes_lo = fake_loht_histoNJ->GetBinContent(i+1);
+		
+		// Errors (add total errors of fakes)
+		//  float esyst2_mm  = FakeESyst2*mm_tot_fakes*mm_tot_fakes;
+		//  float esyst2_ee  = FakeESyst2*ee_tot_fakes*ee_tot_fakes;
+		//  float esyst2_em  = FakeESyst2*em_tot_fakes*em_tot_fakes;
+		//  float esyst2_tot = FakeESyst2*tot_fakes*tot_fakes;
+		float estat2_mm_hi  = FRhi->getMMTotEStat()*FRhi->getMMTotEStat();
+		float estat2_ee_hi  = FRhi->getEETotEStat()*FRhi->getEETotEStat();
+		float estat2_em_hi  = FRhi->getEMTotEStat()*FRhi->getEMTotEStat();
+		float estat2_tot_hi = FRhi->getTotEStat()  *FRhi->getTotEStat();
+
+		float estat2_mm_lo  = FRlo->getMMTotEStat()*FRlo->getMMTotEStat();
+		float estat2_ee_lo  = FRlo->getEETotEStat()*FRlo->getEETotEStat();
+		float estat2_em_lo  = FRlo->getEMTotEStat()*FRlo->getEMTotEStat();
+		float estat2_tot_lo = FRlo->getTotEStat()  *FRlo->getTotEStat();
+
+		//  float prev    = totbg   ->GetBinError(i+1);
+		//  float prev_mm = totbg_mm->GetBinError(i+1);
+		//  float prev_em = totbg_em->GetBinError(i+1);
+		//  float prev_ee = totbg_ee->GetBinError(i+1);
+
+		cout << Form("this is the error in high-HT bin %2d : %.2f", i, estat2_tot_hi) << endl;
+		cout << endl << endl;
+		cout << Form("this is the error in low -HT bin %2d : %.2f", i, estat2_tot_lo) << endl;
+		//  totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		//  totbg_mm->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		//  totbg_em->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		//  totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		fake_hiht_histoNJ->SetBinError(i+1, TMath::Sqrt(estat2_tot_hi) );
+		fake_loht_histoNJ->SetBinError(i+1, TMath::Sqrt(estat2_tot_lo) );
+		// fake_hiht_histoNJ->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		// fake_hiht_histoNJ->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		// fake_hiht_histoNJ->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		
+		delete FRhi, FRlo;
+
+		// FLIPS
+	
+		// Abbreviations
+		float fbb(0.),fee(0.),feb(0.);
+		float fbbE(0.),feeE(0.),febE(0.);
+		
+		calculateChMisIdProb(fEGData, BB, fbb, fbbE);
+		calculateChMisIdProb(fEGData, EB, feb, febE);
+		calculateChMisIdProb(fEGData, EE, fee, feeE);
+
+		float nt2_ee_BB_os_loht = flipseeBB_loht_histoNJ->GetBinContent(i+1);
+		float nt2_ee_EB_os_loht = flipseeEB_loht_histoNJ->GetBinContent(i+1);
+		float nt2_ee_EE_os_loht = flipseeEE_loht_histoNJ->GetBinContent(i+1);
+		float nt2_em_BB_os_loht = flipsemBB_loht_histoNJ->GetBinContent(i+1);
+		float nt2_em_EE_os_loht = flipsemEE_loht_histoNJ->GetBinContent(i+1);
+
+		float nt2_ee_BB_os_hiht = flipseeBB_hiht_histoNJ->GetBinContent(i+1);
+		float nt2_ee_EB_os_hiht = flipseeEB_hiht_histoNJ->GetBinContent(i+1);
+		float nt2_ee_EE_os_hiht = flipseeEE_hiht_histoNJ->GetBinContent(i+1);
+		float nt2_em_BB_os_hiht = flipsemBB_hiht_histoNJ->GetBinContent(i+1);
+		float nt2_em_EE_os_hiht = flipsemEE_hiht_histoNJ->GetBinContent(i+1);
+
+		// Errors
+		FakeRatios *FR = new FakeRatios();
+
+		// // Simple error propagation assuming error on number of events is FR->getEStat2()
+		// nt11_ee_cm->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os + 2*fee*nt2_ee_EE_os + 2*feb*nt2_ee_EB_os);
+		// float nt11_ee_cm_e1 = sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os) ); // stat only
+		// float nt11_ee_cm_e2 = sqrt( (4*nt2_ee_BB_os*nt2_ee_BB_os*fbbE*fbbE) + (4*nt2_ee_EE_os*nt2_ee_EE_os*feeE*feeE) + 4*(febE*febE)*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
+
+		// nt11_em_cm->SetBinContent(i+i, fbb*nt2_em_BB_os + fee*nt2_em_EE_os);
+		// float nt11_em_cm_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
+		// float nt11_em_cm_e2 = sqrt( nt2_em_BB_os*nt2_em_BB_os * fbbE*fbbE + nt2_em_EE_os*nt2_em_EE_os * feeE*feeE );
+
+
+		flip_loht_histoNJ->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_loht + 2*fee*nt2_ee_EE_os_loht + 2*feb*nt2_ee_EB_os_loht
+		                                     +  fbb*nt2_em_BB_os_loht +   fee*nt2_em_EE_os_loht                          );
+
+		flip_loht_histoNJ->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_loht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_loht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_loht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_loht) + fee*fee*FR->getEStat2(nt2_em_EE_os_loht) ) );
+
+
+		flip_hiht_histoNJ->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_hiht + 2*fee*nt2_ee_EE_os_hiht + 2*feb*nt2_ee_EB_os_hiht
+		                                     +  fbb*nt2_em_BB_os_hiht +   fee*nt2_em_EE_os_hiht                          );
+		flip_hiht_histoNJ->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_hiht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_hiht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_hiht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_hiht) + fee*fee*FR->getEStat2(nt2_em_EE_os_hiht) ) );
+
+
+		
+		
+		// float esyst2_ee  = nt11_ee_cm_e2*nt11_ee_cm_e2;
+		// float esyst2_em  = nt11_em_cm_e2*nt11_em_cm_e2;
+		// float esyst2_tot = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2;
+		// float estat2_ee  = nt11_ee_cm_e1*nt11_ee_cm_e1;
+		// float estat2_em  = nt11_em_cm_e1*nt11_em_cm_e1;
+		// float estat2_tot = nt11_ee_cm_e1*nt11_ee_cm_e1 + nt11_em_cm_e1*nt11_em_cm_e1;
+
+		// float prev    = totbg   ->GetBinError(i+1);
+		// float prev_em = totbg_em->GetBinError(i+1);
+		// float prev_ee = totbg_ee->GetBinError(i+1);
+
+		// totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		// totbg_em->SetBinError(i+1, prev_em + esyst2_em  + estat2_em);
+		// totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee  + estat2_ee);
+
+		delete FR;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////
+	// NBJ  ////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////
+
+	for(size_t i = 0; i < nbjbins; ++i){
+		const float FakeESyst2 = 0.25;
+		FakeRatios *FRhi = new FakeRatios();
+		FakeRatios *FRlo = new FakeRatios();
+		FRhi->setNToyMCs(100);  // speedup
+		FRhi->setAddESyst(0.5); // additional systematics
+		FRlo->setNToyMCs(100);  // speedup
+		FRlo->setAddESyst(0.5); // additional systematics
+
+		FRhi->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRhi->setEFRatio(elfratio_data, elfratio_data_e);
+		FRhi->setMPRatio(mupratio_data, mupratio_data_e);
+		FRhi->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRlo->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+		FRlo->setEFRatio(elfratio_data, elfratio_data_e);
+		FRlo->setMPRatio(mupratio_data, mupratio_data_e);
+		FRlo->setEPRatio(elpratio_data, elpratio_data_e);
+
+		FRhi->setMMNtl( mmNTT_hiht_histoNBJ->GetBinContent(i+1), mmNTL_hiht_histoNBJ->GetBinContent(i+1) + mmNLT_hiht_histoNBJ->GetBinContent(i+1), mmNLL_hiht_histoNBJ->GetBinContent(i+1) );
+		FRhi->setEENtl( eeNTT_hiht_histoNBJ->GetBinContent(i+1), eeNTL_hiht_histoNBJ->GetBinContent(i+1) + eeNLT_hiht_histoNBJ->GetBinContent(i+1), eeNLL_hiht_histoNBJ->GetBinContent(i+1) );
+		FRhi->setEMNtl( emNTT_hiht_histoNBJ->GetBinContent(i+1), emNTL_hiht_histoNBJ->GetBinContent(i+1) , emNLT_hiht_histoNBJ->GetBinContent(i+1), emNLL_hiht_histoNBJ->GetBinContent(i+1) );
+		FRlo->setMMNtl( mmNTT_loht_histoNBJ->GetBinContent(i+1), mmNTL_loht_histoNBJ->GetBinContent(i+1) + mmNLT_loht_histoNBJ->GetBinContent(i+1), mmNLL_loht_histoNBJ->GetBinContent(i+1) );
+		FRlo->setEENtl( eeNTT_loht_histoNBJ->GetBinContent(i+1), eeNTL_loht_histoNBJ->GetBinContent(i+1) + eeNLT_loht_histoNBJ->GetBinContent(i+1), eeNLL_loht_histoNBJ->GetBinContent(i+1) );
+		FRlo->setEMNtl( emNTT_loht_histoNBJ->GetBinContent(i+1), emNTL_loht_histoNBJ->GetBinContent(i+1) , emNLT_loht_histoNBJ->GetBinContent(i+1), emNLL_loht_histoNBJ->GetBinContent(i+1) );
+		
+		// float mm_tot_fakes = fake_hiht_histoNBJ->GetBinContent(i+1);
+		// float ee_tot_fakes = fake_hiht_histoNBJ->GetBinContent(i+1);
+		// float em_tot_fakes = fake_hiht_histoNBJ->GetBinContent(i+1);
+		float tot_fakes_hi = fake_hiht_histoNBJ->GetBinContent(i+1);
+		float tot_fakes_lo = fake_loht_histoNBJ->GetBinContent(i+1);
+		
+		// Errors (add total errors of fakes)
+		//  float esyst2_mm  = FakeESyst2*mm_tot_fakes*mm_tot_fakes;
+		//  float esyst2_ee  = FakeESyst2*ee_tot_fakes*ee_tot_fakes;
+		//  float esyst2_em  = FakeESyst2*em_tot_fakes*em_tot_fakes;
+		//  float esyst2_tot = FakeESyst2*tot_fakes*tot_fakes;
+		float estat2_mm_hi  = FRhi->getMMTotEStat()*FRhi->getMMTotEStat();
+		float estat2_ee_hi  = FRhi->getEETotEStat()*FRhi->getEETotEStat();
+		float estat2_em_hi  = FRhi->getEMTotEStat()*FRhi->getEMTotEStat();
+		float estat2_tot_hi = FRhi->getTotEStat()  *FRhi->getTotEStat();
+
+		float estat2_mm_lo  = FRlo->getMMTotEStat()*FRlo->getMMTotEStat();
+		float estat2_ee_lo  = FRlo->getEETotEStat()*FRlo->getEETotEStat();
+		float estat2_em_lo  = FRlo->getEMTotEStat()*FRlo->getEMTotEStat();
+		float estat2_tot_lo = FRlo->getTotEStat()  *FRlo->getTotEStat();
+
+		//  float prev    = totbg   ->GetBinError(i+1);
+		//  float prev_mm = totbg_mm->GetBinError(i+1);
+		//  float prev_em = totbg_em->GetBinError(i+1);
+		//  float prev_ee = totbg_ee->GetBinError(i+1);
+
+		cout << Form("this is the error in high-HT bin %2d : %.2f", i, estat2_tot_hi) << endl;
+		cout << endl << endl;
+		cout << Form("this is the error in low -HT bin %2d : %.2f", i, estat2_tot_lo) << endl;
+		//  totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		//  totbg_mm->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		//  totbg_em->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		//  totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		fake_hiht_histoNBJ->SetBinError(i+1, TMath::Sqrt(estat2_tot_hi) );
+		fake_loht_histoNBJ->SetBinError(i+1, TMath::Sqrt(estat2_tot_lo) );
+		// fake_hiht_histoNBJ->SetBinError(i+1, prev_mm + esyst2_mm + estat2_mm);
+		// fake_hiht_histoNBJ->SetBinError(i+1, prev_em + esyst2_em + estat2_em);
+		// fake_hiht_histoNBJ->SetBinError(i+1, prev_ee + esyst2_ee + estat2_ee);
+		
+		delete FRhi, FRlo;
+
+		// FLIPS
+	
+		// Abbreviations
+		float fbb(0.),fee(0.),feb(0.);
+		float fbbE(0.),feeE(0.),febE(0.);
+		
+		calculateChMisIdProb(fEGData, BB, fbb, fbbE);
+		calculateChMisIdProb(fEGData, EB, feb, febE);
+		calculateChMisIdProb(fEGData, EE, fee, feeE);
+
+		float nt2_ee_BB_os_loht = flipseeBB_loht_histoNBJ->GetBinContent(i+1);
+		float nt2_ee_EB_os_loht = flipseeEB_loht_histoNBJ->GetBinContent(i+1);
+		float nt2_ee_EE_os_loht = flipseeEE_loht_histoNBJ->GetBinContent(i+1);
+		float nt2_em_BB_os_loht = flipsemBB_loht_histoNBJ->GetBinContent(i+1);
+		float nt2_em_EE_os_loht = flipsemEE_loht_histoNBJ->GetBinContent(i+1);
+
+		float nt2_ee_BB_os_hiht = flipseeBB_hiht_histoNBJ->GetBinContent(i+1);
+		float nt2_ee_EB_os_hiht = flipseeEB_hiht_histoNBJ->GetBinContent(i+1);
+		float nt2_ee_EE_os_hiht = flipseeEE_hiht_histoNBJ->GetBinContent(i+1);
+		float nt2_em_BB_os_hiht = flipsemBB_hiht_histoNBJ->GetBinContent(i+1);
+		float nt2_em_EE_os_hiht = flipsemEE_hiht_histoNBJ->GetBinContent(i+1);
+
+		// Errors
+		FakeRatios *FR = new FakeRatios();
+
+		// // Simple error propagation assuming error on number of events is FR->getEStat2()
+		// nt11_ee_cm->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os + 2*fee*nt2_ee_EE_os + 2*feb*nt2_ee_EB_os);
+		// float nt11_ee_cm_e1 = sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os) ); // stat only
+		// float nt11_ee_cm_e2 = sqrt( (4*nt2_ee_BB_os*nt2_ee_BB_os*fbbE*fbbE) + (4*nt2_ee_EE_os*nt2_ee_EE_os*feeE*feeE) + 4*(febE*febE)*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
+
+		// nt11_em_cm->SetBinContent(i+i, fbb*nt2_em_BB_os + fee*nt2_em_EE_os);
+		// float nt11_em_cm_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
+		// float nt11_em_cm_e2 = sqrt( nt2_em_BB_os*nt2_em_BB_os * fbbE*fbbE + nt2_em_EE_os*nt2_em_EE_os * feeE*feeE );
+
+
+		flip_loht_histoNBJ->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_loht + 2*fee*nt2_ee_EE_os_loht + 2*feb*nt2_ee_EB_os_loht
+		                                     +  fbb*nt2_em_BB_os_loht +   fee*nt2_em_EE_os_loht                          );
+
+		flip_loht_histoNBJ->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_loht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_loht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_loht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_loht) + fee*fee*FR->getEStat2(nt2_em_EE_os_loht) ) );
+
+
+		flip_hiht_histoNBJ->SetBinContent(i+1, 2*fbb*nt2_ee_BB_os_hiht + 2*fee*nt2_ee_EE_os_hiht + 2*feb*nt2_ee_EB_os_hiht
+		                                     +  fbb*nt2_em_BB_os_hiht +   fee*nt2_em_EE_os_hiht                          );
+		flip_hiht_histoNBJ->SetBinError  (i+1,  sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os_hiht)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os_hiht)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os_hiht) )
+		                                     + sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os_hiht) + fee*fee*FR->getEStat2(nt2_em_EE_os_hiht) ) );
+
+
+		
+		
+		// float esyst2_ee  = nt11_ee_cm_e2*nt11_ee_cm_e2;
+		// float esyst2_em  = nt11_em_cm_e2*nt11_em_cm_e2;
+		// float esyst2_tot = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2;
+		// float estat2_ee  = nt11_ee_cm_e1*nt11_ee_cm_e1;
+		// float estat2_em  = nt11_em_cm_e1*nt11_em_cm_e1;
+		// float estat2_tot = nt11_ee_cm_e1*nt11_ee_cm_e1 + nt11_em_cm_e1*nt11_em_cm_e1;
+
+		// float prev    = totbg   ->GetBinError(i+1);
+		// float prev_em = totbg_em->GetBinError(i+1);
+		// float prev_ee = totbg_ee->GetBinError(i+1);
+
+		// totbg   ->SetBinError(i+1, prev    + esyst2_tot + estat2_tot);
+		// totbg_em->SetBinError(i+1, prev_em + esyst2_em  + estat2_em);
+		// totbg_ee->SetBinError(i+1, prev_ee + esyst2_ee  + estat2_ee);
+
+		delete FR;
+	}
+
+	
+	Util::MakeOutputDir(fOutputDir+fOutputSubDir);
+	TFile * res_hi = new TFile(fOutputDir+fOutputSubDir+"ethfile_highpt_highHT.root", "RECREATE", "res_hi");
+	TFile * res_lo = new TFile(fOutputDir+fOutputSubDir+"ethfile_highpt_lowHT.root" , "RECREATE", "res_lo");
+
+	res_hi->cd();
+
+	fake_hiht_histoHT  ->Write();
+	fake_hiht_histoMET ->Write();
+	fake_hiht_histoNJ  ->Write();
+	fake_hiht_histoNBJ ->Write();
+
+	rare_hiht_histoHT  ->Write();
+	rare_hiht_histoMET ->Write();
+	rare_hiht_histoNJ  ->Write();
+	rare_hiht_histoNBJ ->Write();
+
+	flip_hiht_histoHT  ->Write();
+	flip_hiht_histoMET ->Write();
+	flip_hiht_histoNJ  ->Write();
+	flip_hiht_histoNBJ ->Write();
+
+	obs_hiht_histoHT  ->Write();
+	obs_hiht_histoMET ->Write();
+	obs_hiht_histoNJ  ->Write();
+	obs_hiht_histoNBJ ->Write();
+	res_hi->Close();
+
+	res_lo->cd();
+	fake_loht_histoHT  ->Write();
+	fake_loht_histoMET ->Write();
+	fake_loht_histoNJ  ->Write();
+	fake_loht_histoNBJ ->Write();
+
+	rare_loht_histoHT  ->Write();
+	rare_loht_histoMET ->Write();
+	rare_loht_histoNJ  ->Write();
+	rare_loht_histoNBJ ->Write();
+
+	flip_loht_histoHT  ->Write();
+	flip_loht_histoMET ->Write();
+	flip_loht_histoNJ  ->Write();
+	flip_loht_histoNBJ ->Write();
+
+	obs_loht_histoHT  ->Write();
+	obs_loht_histoMET ->Write();
+	obs_loht_histoNJ  ->Write();
+	obs_loht_histoNBJ ->Write();
+
+	res_lo->Close();
+
+	delete
+	fake_loht_histoHT ,
+	fake_loht_histoMET,
+	fake_loht_histoNJ ,
+	fake_loht_histoNBJ,
+	fake_hiht_histoHT ,
+	fake_hiht_histoMET,
+	fake_hiht_histoNJ ,
+	fake_hiht_histoNBJ,
+
+	rare_loht_histoHT ,
+	rare_loht_histoMET,
+	rare_loht_histoNJ ,
+	rare_loht_histoNBJ,
+	rare_hiht_histoHT ,
+	rare_hiht_histoMET,
+	rare_hiht_histoNJ ,
+	rare_hiht_histoNBJ,
+
+	flip_loht_histoHT ,
+	flip_loht_histoMET,
+	flip_loht_histoNJ ,
+	flip_loht_histoNBJ,
+	flip_hiht_histoHT ,
+	flip_hiht_histoMET,
+	flip_hiht_histoNJ ,
+	flip_hiht_histoNBJ,
+
+	obs_loht_histoHT ,
+	obs_loht_histoMET,
+	obs_loht_histoNJ ,
+	obs_loht_histoNBJ,
+	obs_hiht_histoHT ,
+	obs_hiht_histoMET,
+	obs_hiht_histoNJ ,
+	obs_hiht_histoNBJ;
+
+	// float nt2_rare_mc_mm_e1 = sqrt(nt2_rare_mc_mm_e2);
+	// float nt2_rare_mc_em_e1 = sqrt(nt2_rare_mc_em_e2);
+	// float nt2_rare_mc_ee_e1 = sqrt(nt2_rare_mc_ee_e2);
+
+	// float nt2_wz_mc_mm_e1 = sqrt(nt2_wz_mc_mm_e2);
+	// float nt2_wz_mc_em_e1 = sqrt(nt2_wz_mc_em_e2);
+	// float nt2_wz_mc_ee_e1 = sqrt(nt2_wz_mc_ee_e2);
+
+	//////      ///////////////////////////////////////////////////////////////////////////////////
+	//////      // PREDICTIONS ////////////////////////////////////////////////////////////////////
+	//////      ///////////////////////////////////////////////////////////////////////////////////
+	//////      // FakeRatios *FR = new FakeRatios();
+	//////      FR->setNToyMCs(100);
+	//////      FR->setAddESyst(0.5);
+
+	//////      FR->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+	//////      FR->setEFRatio(elfratio_data, elfratio_data_e);
+	//////      FR->setMPRatio(mupratio_data, mupratio_data_e);
+	//////      FR->setEPRatio(elpratio_data, elpratio_data_e);
+
+	//////      FR->setMMNtl(nt2_mm, nt10_mm, nt0_mm);
+	//////      FR->setEENtl(nt2_ee, nt10_ee, nt0_ee);
+	//////      FR->setEMNtl(nt2_em, nt10_em, nt01_em, nt0_em);
+
+	//////      // Event-by-event differential ratios:
+	//////      float nF_mm = npf_mm + nff_mm;
+	//////      float nF_em = npf_em + nfp_em + nff_em;
+	//////      float nF_ee = npf_ee + nff_ee;
+	//////      float nSF   = npf_mm + npf_em + nfp_em + npf_ee;
+	//////      float nDF   = nff_mm + nff_em + nff_ee;
+	//////      float nF    = nF_mm + nF_em + nF_ee;
+
+	//////      OUT << endl << endl << endl;
+ 	//////      OUT << "  Fake Predictions:" << endl;
+ 	//////      OUT << "------------------------------------------------------------------------------------------" << endl;
+ 	//////      OUT << "                 |          Mu/Mu        |         El/El         |          El/Mu        |" << endl;
+ 	//////      OUT << "------------------------------------------------------------------------------------------" << endl;
+ 	//////      OUT << " Npp             |" << Form(" %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f |",
+ 	//////      npp_mm, FR->getMMNppEStat(), FakeESyst*npp_mm,
+ 	//////      npp_ee, FR->getEENppEStat(), FakeESyst*npp_ee, 
+ 	//////      npp_em, FR->getEMNppEStat(), FakeESyst*npp_em) << endl;
+ 	//////      OUT << " Npf             |" << Form(" %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f |",
+ 	//////      npf_mm, FR->getMMNpfEStat(), FakeESyst*npf_mm,
+ 	//////      npf_ee, FR->getEENpfEStat(), FakeESyst*npf_ee, 
+ 	//////      npf_em, FR->getEMNpfEStat(), FakeESyst*npf_em) << endl;
+ 	//////      OUT << " Nfp             |" << Form("    -                  |    -                  | %5.1f ± %5.1f ± %5.1f |",
+ 	//////      nfp_em, FR->getEMNfpEStat(), FakeESyst*nfp_em) << endl;
+ 	//////      OUT << " Nff             |" << Form(" %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f |",
+ 	//////      nff_mm, FR->getMMNffEStat(), FakeESyst*nff_mm,
+ 	//////      nff_ee, FR->getEENffEStat(), FakeESyst*nff_ee, 
+ 	//////      nff_em, FR->getEMNffEStat(), FakeESyst*nff_em) << endl;
+ 	//////      OUT << "------------------------------------------------------------------------------------------" << endl;
+ 	//////      OUT << " Total Fakes     |" << Form(" %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f |",
+ 	//////      nF_mm, FR->getMMTotEStat(), FakeESyst*nF_mm,
+ 	//////      nF_ee, FR->getEETotEStat(), FakeESyst*nF_ee, 
+ 	//////      nF_em, FR->getEMTotEStat(), FakeESyst*nF_em) << endl;
+ 	//////      OUT << "------------------------------------------------------------------------------------------" << endl;
+ 	//////      OUT << " (Value ± E_stat ± E_syst) " << endl;
+ 	//////      OUT << "//////////////////////////////////////////////////////////////////////////////////////////" << endl;
+ 	//////      OUT << endl;
+	//////      ///////////////////////////////////////////////////////////////////////////////////
+	//////      // E-CHARGE MISID /////////////////////////////////////////////////////////////////
+	//////      ///////////////////////////////////////////////////////////////////////////////////
+	//////      float nt2_ee_chmid(0.), nt2_ee_chmid_e1(0.), nt2_ee_chmid_e2(0.);
+	//////      float nt2_em_chmid(0.), nt2_em_chmid_e1(0.), nt2_em_chmid_e2(0.);
+	//////      
+	//////      // Abbreviations
+	//////      float fbb(0.),fee(0.),feb(0.);
+	//////      float fbbE(0.),feeE(0.),febE(0.);
+	//////      float fbb_mc(0.),fee_mc(0.),feb_mc(0.);
+	//////      float fbbE_mc(0.),feeE_mc(0.),febE_mc(0.);
+	//////      
+	//////      calculateChMisIdProb(fEGData, BB, fbb, fbbE);
+	//////      calculateChMisIdProb(fEGData, EB, feb, febE);
+	//////      calculateChMisIdProb(fEGData, EE, fee, feeE);
+	//////      
+	//////      calculateChMisIdProb(fMCBG, BB, fbb_mc, fbbE_mc);
+	//////      calculateChMisIdProb(fMCBG, EB, feb_mc, febE_mc);
+	//////      calculateChMisIdProb(fMCBG, EE, fee_mc, feeE_mc);
+	//////      
+	//////      cout << "this is the number of OS events in EE, BB, and EB from the SigEventsTree: " << nt2_ee_EE_os << " " << nt2_ee_BB_os << " " << nt2_ee_EB_os << endl;
+	//////      cout << "this is the charge mis ID probabilities: fee, fbb, feb: " << fee << " " << fbb << " " << feb << endl;
+	//////      // Simple error propagation assuming error on number of events is sqrt(N)
+	//////      nt2_ee_chmid    = 2*fbb*nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
+	//////      nt2_ee_chmid_e1 = sqrt( 4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)  + 4*fee*fee*FR->getEStat2(nt2_ee_EE_os)   + 4*feb*feb*FR->getEStat2(nt2_ee_EB_os) ); // stat only
+	//////      nt2_ee_chmid_e2 = sqrt( 4*fbbE*fbbE*nt2_ee_BB_os*nt2_ee_BB_os  + 4*feeE*feeE*nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
+	//////      
+	//////      nt2_em_chmid    = fbb*nt2_em_BB_os + fee*nt2_em_EE_os;
+	//////      nt2_em_chmid_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
+	//////      nt2_em_chmid_e2 = fbbE*fbbE*sqrt( nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os );
+
+
+}
+
+
 TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag){
 	fOutputSubDir = "IntPredictionsSigEventTree/";
 	TString jvString = "";
@@ -14729,6 +16456,10 @@ void SSDLPlotter::makeAllClosureTests(){
  	for(size_t i = 0; i < gNREGIONS; ++i){
  		TString outputname = outputdir + "MCClosure_" + gRegions[i]->sname + ".txt";
 		makeIntMCClosure(fMCBGNoQCDNoGJets, outputname, i);
+ 		outputname = outputdir + "NoRaresClosure_" + gRegions[i]->sname + ".txt";
+		makeIntMCClosure(fClosureSamples, outputname, i);
+ 		outputname = outputdir + "TTbarClosure_" + gRegions[i]->sname + ".txt";
+		makeIntMCClosure(fTTJets, outputname, i);
  	}
 	if (fMCBGNoQCDNoGJetsSig.size() > 0) {
 	        for(size_t i = 0; i < gNREGIONS; ++i){
@@ -14753,11 +16484,16 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	///////////////////////////////////////////////////////////////////////////////////
  	float mf(0.), mf_e(0.), mp(0.), mp_e(0.), ef(0.), ef_e(0.), ep(0.), ep_e(0.);
  
- 	calculateRatio(fMCBGMuEnr, Muon, SigSup, mf, mf_e);
- 	calculateRatio(fMCBGMuEnr, Muon, ZDecay, mp, mp_e);
- 	calculateRatio(fMCBGEMEnr, Elec, SigSup, ef, ef_e);
- 	calculateRatio(fMCBGEMEnr, Elec, ZDecay, ep, ep_e);
+ 	// calculateRatio(fMCBGMuEnr, Muon, SigSup, mf, mf_e);
+ 	// calculateRatio(fMCBGMuEnr, Muon, ZDecay, mp, mp_e);
+ 	// calculateRatio(fMCBGEMEnr, Elec, SigSup, ef, ef_e);
+ 	// calculateRatio(fMCBGEMEnr, Elec, ZDecay, ep, ep_e);
  
+ 	calculateRatio(fMCOnlyQCD, Muon, SigSup, mf, mf_e);
+ 	calculateRatio(fMCBGMuEnr, Muon, ZDecay, mp, mp_e);
+ 	calculateRatio(fMCOnlyQCD, Elec, SigSup, ef, ef_e);
+ 	calculateRatio(fMCBGEMEnr, Elec, ZDecay, ep, ep_e);
+
  	///////////////////////////////////////////////////////////////////////////////////
  	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
  	///////////////////////////////////////////////////////////////////////////////////
@@ -14789,9 +16525,12 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	vector<TString> names;
  	for(size_t i = 0; i < samples.size(); ++i){
  		Sample *S = fSamples[samples[i]];
+		// if (S->sname == "WJets") continue;
  		float scale = fLumiNorm / S->getLumi();
  		names.push_back(S->sname);
+		//		if (samples.size() == 1) scale = 1.;
  		scales.push_back(scale);
+		
  		ntt_mm.push_back(S->numbers[reg][Muon].nt2);
  		ntl_mm.push_back(S->numbers[reg][Muon].nt10);
  		nll_mm.push_back(S->numbers[reg][Muon].nt0);
@@ -14956,13 +16695,13 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	vector<float> ntt_cm_ee_e1, ntt_cm_em_e1; // squared errors, includes stat errors on yields and errors on probabilities
  	for(size_t i = 0; i < nsamples; ++i){
  		Sample *S = fSamples[samples[i]];
- 		ntt_cm_ee.push_back(2*fbb*ntt_os_BB_ee[i] + 2*fee*ntt_os_EE_ee[i] + 2*feb*ntt_os_EB_ee[i]);
+ 		ntt_cm_ee    .push_back(2*fbb*ntt_os_BB_ee[i] + 2*fee*ntt_os_EE_ee[i] + 2*feb*ntt_os_EB_ee[i]);
  		ntt_cm_ee_e1.push_back((4*fbb*fbb* S->getError(ntt_os_BB_ee[i])) + (4*fee*fee*S->getError(ntt_os_EE_ee[i])) + 4*feb*feb*S->getError(ntt_os_EB_ee[i])
- 		    + (4*ntt_os_BB_ee[i]*ntt_os_BB_ee[i]*fbbE*fbbE) + (4*ntt_os_EE_ee[i]*ntt_os_EE_ee[i]*feeE*feeE) + 4*febE*febE*ntt_os_EB_ee[i]*ntt_os_EB_ee[i]);
- 
+				       + (4*ntt_os_BB_ee[i]*ntt_os_BB_ee[i]*fbbE*fbbE) + (4*ntt_os_EE_ee[i]*ntt_os_EE_ee[i]*feeE*feeE) + 4*febE*febE*ntt_os_EB_ee[i]*ntt_os_EB_ee[i]);
+		
  		ntt_cm_em.push_back(  fbb*ntt_os_BB_em[i] +   fee*ntt_os_EE_em[i]);
  		ntt_cm_em_e1.push_back(fbb*fbb*S->getError(ntt_os_BB_em[i]) + fee*fee*S->getError(ntt_os_EE_em[i]) 
- 		    + ntt_os_BB_em[i]*ntt_os_BB_em[i] * fbbE*fbbE + ntt_os_EE_em[i]*ntt_os_EE_em[i] * feeE*feeE);
+				       + ntt_os_BB_em[i]*ntt_os_BB_em[i] * fbbE*fbbE + ntt_os_EE_em[i]*ntt_os_EE_em[i] * feeE*feeE);
  	}
  
  	// Sums
@@ -14986,13 +16725,14 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	float npp_cm_sum_ee(0.),    npp_cm_sum_em(0.);
  	float npp_tt_cm_sum_ee(0.), npp_tt_cm_sum_em(0.);
  
- 	///////////////////////////////////////////
+	///////////////////////////////////////////
  	// Rare SM
  	float ntt_rare_mm(0.), ntt_rare_em(0.), ntt_rare_ee(0.);
  	float ntt_rare_mm_e1(0.), ntt_rare_em_e1(0.), ntt_rare_ee_e1(0.); // squared stat errors
  	for(size_t i = 0; i < fMCRareSM.size(); ++i){
  		Sample *S = fSamples[fMCRareSM[i]];
  		float scale = fLumiNorm/S->getLumi();
+		//		OUT << Form("for sample %d adding: mumu %.2f  emu: %.2f  ee: %.2f", i, scale*S->numbers[reg][Muon].nt2, scale*S->numbers[reg][ElMu].nt2, scale*S->numbers[reg][Elec].nt2)<<endl;
  		ntt_rare_mm += scale*S->numbers[reg][Muon].nt2;
  		ntt_rare_em += scale*S->numbers[reg][ElMu].nt2;
  		ntt_rare_ee += scale*S->numbers[reg][Elec].nt2;
@@ -15072,7 +16812,7 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  
  		ntt_cm_sum_ee_e1 += scales[i]*scales[i] * ntt_cm_ee_e1[i];
  		ntt_cm_sum_em_e1 += scales[i]*scales[i] * ntt_cm_em_e1[i];
- 
+		
  		npp_cm_sum_ee    += scales[i] * npp_cm_ee[i];
  		npp_cm_sum_em    += scales[i] * npp_cm_em[i];
  		npp_tt_cm_sum_ee += scales[i] * npp_tt_cm_ee[i];
@@ -15172,43 +16912,44 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	OUT << "==========================================================================================================================" << endl;
  	OUT << endl;
  	
- 	OUT << "==========================================================================================================================" << endl;
- 	OUT << "                 ||            Mu/Mu            ||                   E/Mu                ||             E/E             ||" << endl;
- 	OUT << "     TRUTH IN TT ||   Npp   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nff   ||" << endl;
- 	OUT << "--------------------------------------------------------------------------------------------------------------------------" << endl;
- 	for(size_t i = 0; i < nsamples; ++i){
- 		OUT << setw(16) << names[i] << " || ";
- 		OUT << setw(7)  << Form("%6.3f", mp*mp*scales[i]*npp_mm[i]) << " | ";
- 		OUT << setw(7)  << Form("%6.3f", mp*mf*scales[i]*(npf_mm[i]+nfp_mm[i])) << " | ";
- 		OUT << setw(7)  << Form("%6.3f", mf*mf*scales[i]*nff_mm[i]) << " || ";
- 		OUT << setw(7)  << Form("%6.3f", mp*ep*scales[i]*npp_em[i]) << " | ";
- 		OUT << setw(7)  << Form("%6.3f", mp*ef*scales[i]*npf_em[i]) << " | ";
- 		OUT << setw(7)  << Form("%6.3f", mf*ep*scales[i]*nfp_em[i]) << " | ";
- 		OUT << setw(7)  << Form("%6.3f", mf*ef*scales[i]*nff_em[i]) << " || ";
- 		OUT << setw(7)  << Form("%6.3f", ep*ep*scales[i]*npp_ee[i]) << " | ";
- 		OUT << setw(7)  << Form("%6.3f", ep*ef*scales[i]*(npf_ee[i]+nfp_ee[i])) << " | ";
- 		OUT << setw(7)  << Form("%6.3f", ef*ef*scales[i]*nff_ee[i]) << " || ";
- 		OUT << endl;
- 	}
- 	OUT << "--------------------------------------------------------------------------------------------------------------------------" << endl;
- 	OUT << setw(16) << "Npf Sum"  << " || ";
- 	OUT << setw(7) << Form("%6.3f", mp*mp*npp_sum_mm) << " | ";
- 	OUT << setw(7) << Form("%6.3f", mp*mf*npf_sum_mm) << " | ";
- 	OUT << setw(7) << Form("%6.3f", mf*mf*nff_sum_mm) << " || ";
- 	OUT << setw(7) << Form("%6.3f", mp*ep*npp_sum_em) << " | ";
- 	OUT << setw(7) << Form("%6.3f", mp*ef*npf_sum_em) << " | ";
- 	OUT << setw(7) << Form("%6.3f", mf*ep*nfp_sum_em) << " | ";
- 	OUT << setw(7) << Form("%6.3f", mf*ef*nff_sum_em) << " || ";
- 	OUT << setw(7) << Form("%6.3f", ep*ep*npp_sum_ee) << " | ";
- 	OUT << setw(7) << Form("%6.3f", ep*ef*npf_sum_ee) << " | ";
- 	OUT << setw(7) << Form("%6.3f", ef*ef*nff_sum_ee) << " || ";
- 	OUT << endl;
- 	OUT << "==========================================================================================================================" << endl;
- 	OUT << endl;
+ 	// this is truth matched OUT << "==========================================================================================================================" << endl;
+ 	// this is truth matched OUT << "                 ||            Mu/Mu            ||                   E/Mu                ||             E/E             ||" << endl;
+ 	// this is truth matched OUT << "     TRUTH IN TT ||   Npp   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nff   ||" << endl;
+ 	// this is truth matched OUT << "--------------------------------------------------------------------------------------------------------------------------" << endl;
+ 	// this is truth matched for(size_t i = 0; i < nsamples; ++i){
+ 	// this is truth matched 	OUT << setw(16) << names[i] << " || ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", mp*mp*scales[i]*npp_mm[i]) << " | ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", mp*mf*scales[i]*(npf_mm[i]+nfp_mm[i])) << " | ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", mf*mf*scales[i]*nff_mm[i]) << " || ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", mp*ep*scales[i]*npp_em[i]) << " | ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", mp*ef*scales[i]*npf_em[i]) << " | ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", mf*ep*scales[i]*nfp_em[i]) << " | ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", mf*ef*scales[i]*nff_em[i]) << " || ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", ep*ep*scales[i]*npp_ee[i]) << " | ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", ep*ef*scales[i]*(npf_ee[i]+nfp_ee[i])) << " | ";
+ 	// this is truth matched 	OUT << setw(7)  << Form("%6.3f", ef*ef*scales[i]*nff_ee[i]) << " || ";
+ 	// this is truth matched 	OUT << endl;
+ 	// this is truth matched }
+ 	// this is truth matched OUT << "--------------------------------------------------------------------------------------------------------------------------" << endl;
+ 	// this is truth matched OUT << setw(16) << "Npf Sum"  << " || ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", mp*mp*npp_sum_mm) << " | ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", mp*mf*npf_sum_mm) << " | ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", mf*mf*nff_sum_mm) << " || ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", mp*ep*npp_sum_em) << " | ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", mp*ef*npf_sum_em) << " | ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", mf*ep*nfp_sum_em) << " | ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", mf*ef*nff_sum_em) << " || ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", ep*ep*npp_sum_ee) << " | ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", ep*ef*npf_sum_ee) << " | ";
+ 	// this is truth matched OUT << setw(7) << Form("%6.3f", ef*ef*nff_sum_ee) << " || ";
+ 	// this is truth matched OUT << endl;
+ 	// this is truth matched OUT << "==========================================================================================================================" << endl;
+ 	// this is truth matched OUT << endl;
  	
+	// the following are the values coming from the storeWeightedPred function
  	OUT << "==========================================================================================================================" << endl;
  	OUT << "                 ||            Mu/Mu            ||                   E/Mu                ||             E/E             ||" << endl;
- 	OUT << "     PRED. IN TT ||   Npp   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nff   ||" << endl;
+ 	OUT << "     PREDICTED   ||   Npp   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nfp   |   Nff   ||   Npp   |   Npf   |   Nff   ||" << endl;
  	OUT << "--------------------------------------------------------------------------------------------------------------------------" << endl;
  	for(size_t i = 0; i < nsamples; ++i){
  		OUT << setw(16) << names[i] << " || ";
@@ -15256,42 +16997,60 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	OUT << setw(7)  << Form("%6.3f | %6.3f || ", ntt_cm_sum_ee, npp_tt_cm_sum_ee) << endl;
  	OUT << "=========================================================" << endl;
  	OUT << endl;
- 
+	
+	
  	OUT << "===================================================================================================" << endl;
  	OUT << "                 ||       Mu/Mu       |       E/Mu        |        E/E        |        Sum        |" << endl;
  	OUT << "---------------------------------------------------------------------------------------------------" << endl;
- 	float fakesum = npf_pred_sum_mm+npf_pred_sum_em+nfp_pred_sum_em+npf_pred_sum_ee+nff_pred_sum_mm+nff_pred_sum_em+nff_pred_sum_ee;
+ 	float fakesum    = npf_pred_sum_mm+npf_pred_sum_em+nfp_pred_sum_em+npf_pred_sum_ee+nff_pred_sum_mm+nff_pred_sum_em+nff_pred_sum_ee;
  	float fakesum_e1 = nF_pred_sum_mm_e1+nF_pred_sum_em_e1+nF_pred_sum_ee_e1;
- 	OUT << Form(" Fakes           || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
- 	npf_pred_sum_mm+nff_pred_sum_mm,                 sqrt(nF_pred_sum_mm_e1),
- 	npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em, sqrt(nF_pred_sum_em_e1),
- 	npf_pred_sum_ee+nff_pred_sum_ee,                 sqrt(nF_pred_sum_ee_e1),
- 	fakesum, sqrt(fakesum_e1)) << endl;
- 	OUT << Form(" Charge MisID    ||                   & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
- 	ntt_cm_sum_em,               sqrt(ntt_cm_sum_em_e1),
- 	ntt_cm_sum_ee,               sqrt(ntt_cm_sum_ee_e1),
- 	ntt_cm_sum_ee+ntt_cm_sum_em, sqrt(ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1)) << endl;
- 	OUT << Form(" Irreducible     || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
- 	ntt_rare_mm,                         sqrt(ntt_rare_mm_e1),
- 	ntt_rare_em,                         sqrt(ntt_rare_em_e1),
- 	ntt_rare_ee,                         sqrt(ntt_rare_ee_e1),
- 	ntt_rare_mm+ntt_rare_em+ntt_rare_ee, sqrt(ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) << endl;
- 	OUT << Form(" WZ Production   || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
- 	ntt_wz_mm,                     sqrt(ntt_wz_mm_e1),
- 	ntt_wz_em,                     sqrt(ntt_wz_em_e1),
- 	ntt_wz_ee,                     sqrt(ntt_wz_ee_e1),
- 	ntt_wz_mm+ntt_wz_em+ntt_wz_ee, sqrt(ntt_wz_mm_e1+ntt_wz_em_e1+ntt_wz_ee_e1)) << endl;
+	if (samples.size() > 1 ){
+	  OUT << Form(" Fakes           || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+		      npf_pred_sum_mm+nff_pred_sum_mm,                 sqrt(nF_pred_sum_mm_e1),
+		      npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em, sqrt(nF_pred_sum_em_e1),
+		      npf_pred_sum_ee+nff_pred_sum_ee,                 sqrt(nF_pred_sum_ee_e1),
+		      fakesum, sqrt(fakesum_e1)) << endl;
+	  OUT << Form(" Charge MisID    ||                   & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+		      ntt_cm_sum_em,               sqrt(ntt_cm_sum_em_e1),
+		      ntt_cm_sum_ee,               sqrt(ntt_cm_sum_ee_e1),
+		      ntt_cm_sum_ee+ntt_cm_sum_em, sqrt(ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1)) << endl;
+	}
+	//SANTI 	OUT << Form(" Irreducible     || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+	//SANTI 	ntt_rare_mm,                         sqrt(ntt_rare_mm_e1),
+	//SANTI 	ntt_rare_em,                         sqrt(ntt_rare_em_e1),
+	//SANTI 	ntt_rare_ee,                         sqrt(ntt_rare_ee_e1),
+	//SANTI 	ntt_rare_mm+ntt_rare_em+ntt_rare_ee, sqrt(ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) << endl;
+	//SANTI 	OUT << Form(" WZ Production   || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+	//SANTI 	ntt_wz_mm,                     sqrt(ntt_wz_mm_e1),
+	//SANTI 	ntt_wz_em,                     sqrt(ntt_wz_em_e1),
+	//SANTI 	ntt_wz_ee,                     sqrt(ntt_wz_ee_e1),
+	//SANTI 	ntt_wz_mm+ntt_wz_em+ntt_wz_ee, sqrt(ntt_wz_mm_e1+ntt_wz_em_e1+ntt_wz_ee_e1)) << endl;
  
- 	float tot_bg_mm = npf_pred_sum_mm                +nff_pred_sum_mm              +ntt_rare_mm + ntt_wz_mm;
- 	float tot_bg_em = npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em+ntt_cm_sum_em+ntt_rare_em + ntt_wz_em;
- 	float tot_bg_ee = npf_pred_sum_ee                +nff_pred_sum_ee+ntt_cm_sum_ee+ntt_rare_ee + ntt_wz_ee;
- 	float tot_bg = tot_bg_mm + tot_bg_em + tot_bg_ee;
- 	float tot_bg_mm_e1 = nF_pred_sum_mm_e1                    + ntt_rare_mm_e1 + ntt_wz_mm_e1;
- 	float tot_bg_em_e1 = nF_pred_sum_em_e1 + ntt_cm_sum_em_e1 + ntt_rare_em_e1 + ntt_wz_em_e1;
- 	float tot_bg_ee_e1 = nF_pred_sum_ee_e1 + ntt_cm_sum_ee_e1 + ntt_rare_ee_e1 + ntt_wz_ee_e1;
- 	float tot_bg_e1    = tot_bg_mm_e1 + tot_bg_em_e1 + tot_bg_ee_e1;
+ 	float tot_bg_mm = npf_pred_sum_mm                +nff_pred_sum_mm              ;//+ntt_rare_mm + ntt_wz_mm;
+ 	float tot_bg_em = npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em; // +ntt_cm_sum_em;//+ntt_rare_em + ntt_wz_em;
+ 	float tot_bg_ee = npf_pred_sum_ee                +nff_pred_sum_ee; // +ntt_cm_sum_ee;//+ntt_rare_ee + ntt_wz_ee;
+ 	float tot_bg_mm_e1 = nF_pred_sum_mm_e1                    ;//+ ntt_rare_mm_e1 + ntt_wz_mm_e1;
+ 	float tot_bg_em_e1 = nF_pred_sum_em_e1;//  + ntt_cm_sum_em_e1 ;//+ ntt_rare_em_e1 + ntt_wz_em_e1;
+ 	float tot_bg_ee_e1 = nF_pred_sum_ee_e1;// + ntt_cm_sum_ee_e1 ;//+ ntt_rare_ee_e1 + ntt_wz_ee_e1;
+	
+	if (samples.size() > 11) {
+	  ntt_sum_mm =  ntt_sum_mm - ntt_rare_mm - ntt_wz_mm;
+	  ntt_sum_em =  ntt_sum_em - ntt_rare_em - ntt_wz_em;
+	  ntt_sum_ee =  ntt_sum_ee - ntt_rare_ee - ntt_wz_ee;
+	}
+	if (samples.size() > 1) {
+	  tot_bg_em += ntt_cm_sum_em;   tot_bg_em_e1 += ntt_cm_sum_em_e1;
+	  tot_bg_ee += ntt_cm_sum_ee;   tot_bg_ee_e1 += ntt_cm_sum_ee_e1;
+	}
+//	if (samples.size() == 1){
+//	  ntt_sum_em -= npp_tt_cm_sum_em;
+//	  ntt_sum_ee -= npp_tt_cm_sum_ee;
+//	}
  	float ntt_sum    = ntt_sum_mm+ntt_sum_em+ntt_sum_ee;
  	float ntt_sum_e1 = ntt_sum_mm_e1+ntt_sum_em_e1+ntt_sum_ee_e1;
+ 	float tot_bg     = tot_bg_mm + tot_bg_em + tot_bg_ee;
+ 	float tot_bg_e1  = tot_bg_mm_e1 + tot_bg_em_e1 + tot_bg_ee_e1;
+	
  	OUT << Form(" Total Pred.     || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
  	tot_bg_mm, sqrt(tot_bg_mm_e1),
  	tot_bg_em, sqrt(tot_bg_em_e1),
@@ -15304,13 +17063,18 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
  	ntt_sum,    sqrt(ntt_sum_e1)) << endl;
  	OUT << Form(" Pred./Obs.      || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
  	tot_bg_mm/ntt_sum_mm,
- 	sqrt(nF_pred_sum_mm_e1                  +  ntt_rare_mm_e1 * pow(((ntt_sum_mm-tot_bg_mm)/tot_bg_mm),2) + (tot_bg_mm_e1 - ntt_rare_mm_e1) * pow(tot_bg_mm/ntt_sum_mm,2)  )/ntt_sum_mm,
+	tot_bg_mm/ntt_sum_mm * fabs( ( sqrt(tot_bg_mm_e1)/tot_bg_mm - sqrt(ntt_sum_mm_e1)/ntt_sum_mm) ),
+ 	//sqrt(nF_pred_sum_mm_e1                  +  ntt_rare_mm_e1 * pow(((ntt_sum_mm-tot_bg_mm)/tot_bg_mm),2) + (tot_bg_mm_e1 - ntt_rare_mm_e1) * pow(tot_bg_mm/ntt_sum_mm,2)  )/ntt_sum_mm,
  	tot_bg_em/ntt_sum_em,
- 	sqrt(nF_pred_sum_em_e1+ntt_cm_sum_em_e1 +  ntt_rare_em_e1 * pow(((ntt_sum_em-tot_bg_em)/tot_bg_em),2) + (tot_bg_em_e1 - ntt_rare_em_e1) * pow(tot_bg_em/ntt_sum_em,2)  )/ntt_sum_em,
+	tot_bg_em/ntt_sum_em * fabs( ( sqrt(tot_bg_em_e1)/tot_bg_em - sqrt(ntt_sum_em_e1)/ntt_sum_em) ),
+ 	//sqrt(nF_pred_sum_em_e1+ntt_cm_sum_em_e1 +  ntt_rare_em_e1 * pow(((ntt_sum_em-tot_bg_em)/tot_bg_em),2) + (tot_bg_em_e1 - ntt_rare_em_e1) * pow(tot_bg_em/ntt_sum_em,2)  )/ntt_sum_em,
  	tot_bg_ee/ntt_sum_ee,
- 	sqrt(nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1 +  ntt_rare_ee_e1 * pow(((ntt_sum_ee-tot_bg_ee)/tot_bg_ee),2) + (tot_bg_ee_e1 - ntt_rare_ee_e1) * pow(tot_bg_ee/ntt_sum_ee,2)  )/ntt_sum_ee,
+	tot_bg_ee/ntt_sum_ee * fabs( ( sqrt(tot_bg_ee_e1)/tot_bg_ee - sqrt(ntt_sum_ee_e1)/ntt_sum_ee) ),
+ 	//sqrt(nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1 +  ntt_rare_ee_e1 * pow(((ntt_sum_ee-tot_bg_ee)/tot_bg_ee),2) + (tot_bg_ee_e1 - ntt_rare_ee_e1) * pow(tot_bg_ee/ntt_sum_ee,2)  )/ntt_sum_ee,
  	tot_bg/ntt_sum,
- 	sqrt(fakesum_e1 + ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1 +  (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1) * pow(((ntt_sum-tot_bg)/tot_bg),2) + (tot_bg_e1 - (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) * pow(tot_bg/ntt_sum,2)  )/ntt_sum
+//this error is a bit odd
+ 	//sqrt(fakesum_e1 + ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1 +  (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1) * pow(((ntt_sum-tot_bg)/tot_bg),2) + (tot_bg_e1 - (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) * pow(tot_bg/ntt_sum,2)  )/ntt_sum
+	tot_bg/ntt_sum * fabs( ( sqrt(tot_bg_e1)/tot_bg - sqrt(ntt_sum_e1)/ntt_sum) )
  	) << endl;
  
  	OUT << Form(" Pred.-Obs./Pred || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
@@ -16849,8 +18613,8 @@ void SSDLPlotter::makeTTbarClosure(){
 	// calculateRatio(ttjets, Elec, ZDecay, elpratio_allmc, elpratio_allmc_e);
 	calculateRatio(fMCBGMuEnr, Muon, SigSup, mufratio_allmc, mufratio_allmc_e);
 	calculateRatio(fMCBGMuEnr, Muon, ZDecay, mupratio_allmc, mupratio_allmc_e);
-	calculateRatio(fMCBG,      Elec, SigSup, elfratio_allmc, elfratio_allmc_e);
-	calculateRatio(fMCBG,      Elec, ZDecay, elpratio_allmc, elpratio_allmc_e);
+	calculateRatio(fMCBGEMEnr, Elec, SigSup, elfratio_allmc, elfratio_allmc_e);
+	calculateRatio(fMCBGEMEnr, Elec, ZDecay, elpratio_allmc, elpratio_allmc_e);
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
@@ -16860,9 +18624,9 @@ void SSDLPlotter::makeTTbarClosure(){
 	float nt_me(0.), nl_me(0.),  np_me(0.), nf_me(0.);
 	float nt_ee(0.), nl_ee(0.),  np_ee(0.), nf_ee(0.);
 
-	Sample *S = fSamples[TTJets];
-	TTree *tree = S->getTree();
-	fCurrentSample = TTJets;
+
+	TFile * file_ = new TFile("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/TT_CT10_TuneZ2star_8TeV-powheg-tauola-Summer12_DR53X-PU_S10_START53_V7A-v1_output_0.root", "READ", "file_");
+	TTree * tree = (TTree *) file_->Get("Analysis");
 
 	// Event loop
 	tree->ResetBranchAddresses();
@@ -16873,7 +18637,7 @@ void SSDLPlotter::makeTTbarClosure(){
 	Long64_t nentries = fChain->GetEntriesFast();
 	Long64_t nbytes = 0, nb = 0;
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
-		printProgress(jentry, nentries, S->name);
+		printProgress(jentry, nentries, fSamples[TTJets]->name);
 
 		Long64_t ientry = LoadTree(jentry);
 		if (ientry < 0) break;
@@ -16946,7 +18710,7 @@ void SSDLPlotter::makeTTbarClosure(){
 		}
 	}
 	cout << endl;
-	S->cleanUp();
+	//	S->cleanUp();
 	// Scale by luminosity:
 	float scale = fLumiNorm / fSamples[TTJets]->getLumi();
 	nt_mm*=scale; nl_mm*=scale; np_mm*=scale; nf_mm*=scale;
@@ -17154,6 +18918,9 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 		tree_opt->Branch( "MET",         &MET,         "MET/F" );
 	}
 
+	ofstream debugOUTSTREAM;
+	debugOUTSTREAM.open("debugOUTSTREAM.txt", ios::trunc);
+
 	
 	for( int i = 0; i < sigtree->GetEntries(); i++ ){
 		sigtree->GetEntry(i);
@@ -17173,12 +18940,16 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 			p1 = getPRatio(Muon, pT1, S->datamc);
 			p2 = getPRatio(Elec, pT2, S->datamc);
 		}
-				
+
 		// Get the weights (don't depend on event selection)
 		npp = FR->getWpp(FakeRatios::gTLCat(cat), f1, f2, p1, p2);
 		npf = FR->getWpf(FakeRatios::gTLCat(cat), f1, f2, p1, p2);
 		nfp = FR->getWfp(FakeRatios::gTLCat(cat), f1, f2, p1, p2);
-		nff = FR->getWff(FakeRatios::gTLCat(cat), f1, f2, p1, p2);			
+		nff = FR->getWff(FakeRatios::gTLCat(cat), f1, f2, p1, p2);
+
+		if (datamc == 0) {
+			debugOUTSTREAM << Form("Event: %12d tlcat: %d pT1: %5.1f f1: %.3f pT2: %5.1f f2: %.3f npp: %.4f npf: %.4f nfp: %.4f nff: %.4f", event, cat, pT1, f2, pT2, f2, npp, npf, nfp, nff) << endl;
+		}
 
 		// Store them in the right places for the different purposes
 		// Integrated predictions
@@ -17340,8 +19111,8 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 	// if(chan == Muon) return 0.0672; // flat ratios
 	// if(chan == Elec) return 0.224;
 
-	const float mu_flatout = 30.;
-	const float el_flatout = 30.;
+	const float mu_flatout = 40.;
+	const float el_flatout = 40.;
 	
 	if(chan == Muon){
 		TH1D *histo          = fH1D_MufRatio;
@@ -17375,8 +19146,8 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 float SSDLPlotter::getFRatio(gChannel chan, float pt, float eta, int datamc){
 	// if(chan == Muon) return 0.0672; // flat ratios
 	// if(chan == Elec) return 0.224;
-	const float mu_flatout = 30.;
-	const float el_flatout = 30.;
+	const float mu_flatout = 40.;
+	const float el_flatout = 40.;
 	
 	eta = fabs(eta); // make sure we take the absolute value
 
@@ -17858,7 +19629,7 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, int reg){
 		if(MET    < gRegions[reg]->minMet    || MET >    gRegions[reg]->maxMet) continue;
 		if(njets  < gRegions[reg]->minNjets  || njets  > gRegions[reg]->maxNjets ) continue;
 		if(nbjets < gRegions[reg]->minNbjets || nbjets > gRegions[reg]->maxNbjets) continue;
-		
+
 		ht.push_back(HT);
 		met.push_back(MET);
 	}
@@ -17899,7 +19670,7 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, float HTmin, float HTmax, f
 	string *sname = 0;
 	int flag;
 	int   stype, flav, cat;
-	float HT, MET;
+	float HT, MET, pT1,pT2;
 	int njets, nbjets;
 
 	sigtree->SetBranchAddress("SystFlag", &flag);
@@ -17911,6 +19682,8 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, float HTmin, float HTmax, f
 	sigtree->SetBranchAddress("MET",      &MET);
 	sigtree->SetBranchAddress("NbJ",      &nbjets);
 	sigtree->SetBranchAddress("NJ",       &njets);
+	sigtree->SetBranchAddress("pT1",      &pT1);
+	sigtree->SetBranchAddress("pT2",      &pT2);
 	
 	for( int i = 0; i < sigtree->GetEntries(); i++ ){
 		sigtree->GetEntry(i);
@@ -17925,6 +19698,7 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, float HTmin, float HTmax, f
 		// Region selections
 		if(HT  < HTmin  || HT  > HTmax ) continue;
 		if(MET < METmin || MET > METmax) continue;
+		if(passesPtCuts(pT1, pT2, gRegion[gBaseRegion], chan) == false) continue;
 		
 		// ht.push_back(HT);
 		// met.push_back(MET);
@@ -19220,7 +20994,7 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	systs[7] = "METdown";
 	
 	int nbins, min, max;
-	// other scans:
+	// all scans:
 	nbins =  300;
 	min   =    0;
 	max   = 1500;
@@ -19228,6 +21002,12 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	TH2D  * Model_nPass_noScale_[nSyst];
 	TH2D  * Model_nPass_        [nSyst];
 	TH2D  * Model_eff_          [nSyst];
+	TH2D  * Model_lepSyst_      [nSyst];
+	TH2D  * Model_puUp_         [nSyst];
+	TH2D  * Model_puDn_         [nSyst];
+	TH2D  * Model_isrUp_        [nSyst];
+	TH2D  * Model_isrDn_        [nSyst];
+	TH2D  * Model_puNo_         [nSyst];
 	for (int j = 0; j<nSyst; j++) {
 		Model_nPass_         [j] = new TH2D(model+"_nPass_"+systs[j]         , model+"_nPass_"+systs[j]         , nbins, min, max, nbins, min, max);
 		Model_nPass_         [j]->Sumw2();
@@ -19235,20 +21015,80 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 		Model_nPass_noScale_ [j]->Sumw2();
 		Model_eff_           [j] = new TH2D(model+"_eff_"+systs[j]           , model+"_eff_"+systs[j]           , nbins, min, max, nbins, min, max);
 		Model_eff_           [j]->Sumw2();
+		Model_lepSyst_       [j] = new TH2D(model+"_lepSyst_"+systs[j]       , model+"_lepSyst_"+systs[j]       , nbins, min, max, nbins, min, max);
+		Model_lepSyst_       [j]->Sumw2();
+		Model_puUp_          [j] = new TH2D(model+"_puUp_"+systs[j]          , model+"_puUp_"+systs[j]          , nbins, min, max, nbins, min, max);
+		Model_puUp_          [j]->Sumw2();
+		Model_puDn_          [j] = new TH2D(model+"_puDn_"+systs[j]          , model+"_puDn_"+systs[j]          , nbins, min, max, nbins, min, max);
+		Model_puDn_          [j]->Sumw2();
+		Model_isrUp_         [j] = new TH2D(model+"_isrUp_"+systs[j]         , model+"_isrUp_"+systs[j]         , nbins, min, max, nbins, min, max);
+		Model_isrUp_         [j]->Sumw2();
+		Model_isrDn_         [j] = new TH2D(model+"_isrDn_"+systs[j]         , model+"_isrDn_"+systs[j]         , nbins, min, max, nbins, min, max);
+		Model_isrDn_         [j]->Sumw2();
+		Model_puNo_         [j] = new TH2D(model+"_puNo_"+systs[j]           , model+"_puNo_"+systs[j]          , nbins, min, max, nbins, min, max);
+		Model_puNo_         [j]->Sumw2();
 	}
 	TH2D * Model_yield_ ;
 	Model_yield_  = new TH2D(model+"_yield"      , model+"_yield"  , nbins, min, max, nbins, min, max);
 	Model_yield_ ->Sumw2();
 
-	TFile * xsecFile_ = new TFile("/shome/mdunser/xsecfiles/"+model+"_xsecs.root", "READ", "xsecFile_");
-	TH1D  * xsecs     = (TH1D *) xsecFile_->Get("xsecs");
-	TF1   * xsecfit =  xsecs->GetFunction("xsec_fit1");
+	// TFile * xsecFile_ = new TFile("/shome/mdunser/xsecfiles/"+model+"_xsecs.root", "READ", "xsecFile_");
+	// TH1D  * xsecs     = (TH1D *) xsecFile_->Get("xsecs");
+	// TF1   * xsecfit =  xsecs->GetFunction("xsec_fit1");
 
+	TFile * file_ = TFile::Open(filestring);
 	// get the histo with the count for each point
-	TFile * file_ = TFile::Open(filestring); //, "READ", "file_");
 	TH2D  * Model_nTot_ ;
 	Model_nTot_ = (TH2D  *) file_->Get("ModelCountAll");
 	Model_nTot_ ->Sumw2();
+
+	TH2D  * Model_nTot_ISRweight_ ;
+	Model_nTot_ISRweight_ = (TH2D  *) file_->Get("ModelCountAll_ISRweight");
+	Model_nTot_ISRweight_ ->Sumw2();
+
+	TH2D  * Model_nTot_ISRweightDn_ ;
+	Model_nTot_ISRweightDn_ = (TH2D  *) file_->Get("ModelCountAll_ISRweightDn");
+	Model_nTot_ISRweightDn_ ->Sumw2();
+
+	TH2D  * Model_nTot_nChi2_ ;
+	Model_nTot_nChi2_ = (TH2D  *) file_->Get("ModelCountAll_nChi2");
+	if (Model_nTot_nChi2_ != NULL) Model_nTot_nChi2_ ->Sumw2();
+
+	TH2D  * Model_nTot_nChi2_ISRweight_ ;
+	Model_nTot_nChi2_ISRweight_ = (TH2D  *) file_->Get("ModelCountAll_nChi2_ISRweight");
+	if (Model_nTot_nChi2_ISRweight_ != NULL) Model_nTot_nChi2_ISRweight_ ->Sumw2();
+
+	TH2D  * Model_nTot_nChi2_ISRweightDn_ ;
+	Model_nTot_nChi2_ISRweightDn_ = (TH2D  *) file_->Get("ModelCountAll_nChi2_ISRweightDn");
+	if (Model_nTot_nChi2_ISRweightDn_ != NULL) Model_nTot_nChi2_ISRweightDn_ ->Sumw2();
+
+	// ===============================================================
+	// ======== one dimensional distributions ========================
+	// ===============================================================
+	int xVal = 775;
+	int yVal = 525;
+	
+	TH1F  * Model_HT_xVal_yVal_       ;
+	TH1F  * Model_MET_xVal_yVal_      ;
+	TH1F  * Model_NJETS_xVal_yVal_    ;
+	TH1F  * Model_JETPT_xVal_yVal_    ;
+	TH1F  * Model_GENJETPT_xVal_yVal_ ;
+	TH1F  * Model_PT_xVal_yVal_       ;
+	Model_HT_xVal_yVal_        = new TH1F(model+Form("_HT_%d_%d"      , xVal, yVal), model+Form("_HT_%d_%d"      , xVal, yVal), 100, 200., 700.);
+	Model_MET_xVal_yVal_       = new TH1F(model+Form("_MET_%d_%d"     , xVal, yVal), model+Form("_MET_%d_%d"     , xVal, yVal), 100,  50., 400.);
+	Model_NJETS_xVal_yVal_     = new TH1F(model+Form("_NJETS_%d_%d"   , xVal, yVal), model+Form("_NJETS_%d_%d"   , xVal, yVal),  10,   2 ,  12 );
+	Model_JETPT_xVal_yVal_     = new TH1F(model+Form("_JETPT_%d_%d"   , xVal, yVal), model+Form("_JETPT_%d_%d"   , xVal, yVal), 100,   0., 200.);
+	Model_GENJETPT_xVal_yVal_  = new TH1F(model+Form("_GENJETPT_%d_%d", xVal, yVal), model+Form("_GENJETPT_%d_%d", xVal, yVal), 100,   0., 200.);
+	Model_PT_xVal_yVal_        = new TH1F(model+Form("_PT_%d_%d"      , xVal, yVal), model+Form("_PT_%d_%d"      , xVal, yVal), 100,  10., 200.);
+	Model_HT_xVal_yVal_       -> Sumw2();
+	Model_MET_xVal_yVal_      -> Sumw2();
+	Model_NJETS_xVal_yVal_    -> Sumw2();
+	Model_JETPT_xVal_yVal_    -> Sumw2();
+	Model_GENJETPT_xVal_yVal_ -> Sumw2();
+	Model_PT_xVal_yVal_       -> Sumw2();
+	// ===============================================================
+	// ===============================================================
+
 	// get the Analysis tree from the file, initialize it
 	TTree * tree_ = (TTree *) file_->Get("Analysis");
 	tree_->ResetBranchAddresses();
@@ -19269,128 +21109,166 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	SSDLDumper::fRand3       = new TRandom3(10);
 	SSDLDumper::fRand3Normal = new TRandom3(10);
 
+
+	// BTAG CORRECTION FACTOR FOR FASTSIM!!!!!
+	// =========================================================
+	// T7btw, T1tttt, T5tttt: "T1tttt"
+	// T6ttWW, T6ttWWx05, T6ttWWx08: "T2tt"
+	// T5lnu, T5VV: "T1"
+	TString btagCorrection = "T2tt";
+
+
+	// PDF uncertainties 
+	// ===========================================================
+	int ncteq(40), nct10(52), nmstw(40);
+	TH2D  * Model_nTot_cteq_[ncteq];
+	TH2D  * Model_nTot_ct10_[nct10];
+	TH2D  * Model_nTot_mstw_[nmstw];
+	TH2D  * Model_nPass_cteq_[ncteq];
+	TH2D  * Model_nPass_ct10_[nct10];
+	TH2D  * Model_nPass_mstw_[nmstw];
+	for (int j = 0; j<ncteq; j++) {
+		Model_nTot_cteq_         [j] = new TH2D(model+Form("_nTot_cteq_%d",j) , model+Form("_nTot_cteq_%d",j) , nbins, min, max, nbins, min, max);
+		Model_nPass_cteq_        [j] = new TH2D(model+Form("_nPass_cteq_%d",j), model+Form("_nPass_cteq_%d",j), nbins, min, max, nbins, min, max);
+		Model_nTot_cteq_         [j]->Sumw2();
+		Model_nPass_cteq_        [j]->Sumw2();
+	}
+	for (int j = 0; j<nct10; j++) {
+		Model_nTot_ct10_         [j] = new TH2D(model+Form("_nTot_ct10_%d",j) , model+Form("_nTot_ct10_%d",j) , nbins, min, max, nbins, min, max);
+		Model_nPass_ct10_        [j] = new TH2D(model+Form("_nPass_ct10_%d",j), model+Form("_nPass_ct10_%d",j), nbins, min, max, nbins, min, max);
+		Model_nTot_ct10_         [j]->Sumw2();
+		Model_nPass_ct10_        [j]->Sumw2();
+	}
+	for (int j = 0; j<nmstw; j++) {
+		Model_nTot_mstw_         [j] = new TH2D(model+Form("_nTot_mstw_%d",j) , model+Form("_nTot_mstw_%d",j) , nbins, min, max, nbins, min, max);
+		Model_nPass_mstw_        [j] = new TH2D(model+Form("_nPass_mstw_%d",j), model+Form("_nPass_mstw_%d",j), nbins, min, max, nbins, min, max);
+		Model_nTot_mstw_         [j]->Sumw2();
+		Model_nPass_mstw_        [j]->Sumw2();
+	}
+	// ===========================================================
+	// ===========================================================
+
 	float xvar(-1);
 	float yvar(-1);
 	for (Long64_t jentry=0; jentry<tree_->GetEntriesFast();jentry++) {
 		setRegionCuts(reg);
 		if (lowpt) setLowPtCuts();
 		printProgress(jentry, tot_events, model+" Scan "+gRegions[reg]->sname);
+
 		for (int i = 0; i<nSyst; i++) {
-			if (Event == 45978937) cout << filestring << endl;
-			if (Event == 45978937) cout << "AT SYSTEMATIC " << i << endl;
-			if (Event == 45978937) cout << "======================================================================"<< endl;
 			tree_->GetEntry(jentry); // have to reload the entry for each systematic
-			if (Event == 45978937) cout << Form("before systematics: ht: %.2f  met %.2f ", getHT(), getMET())<< endl;
 			fRand3       ->SetSeed(Event);
 			fRand3Normal ->SetSeed(Event);
-			if (i==0) {
-				if (Event == 16104387) {
-					fOUTSTREAM << "DEBUG AFTER B-TAG SCALING" << endl;
-					fOUTSTREAM << "-------------------------" << endl;
-					fOUTSTREAM << Form("%d DEBUG nte: %d ntm: %d l1pt: %.2f l2pt: %.2f njets: %d nbjets: %d met: %.2f ht: %.2f", Event, getNTightElectrons(), getNTightMuons(), ElPt[0], ElPt[1], getNJets(), getNBTagsMed(), getMET(), getHT()) << endl;
-					for (int ij=0; ij<NJets; ++ij){
-						if (!isGoodJet(ij)) continue;
-						fOUTSTREAM << Form(" j%dpt: %.2f j%dbt: %.2f", ij, JetPt[ij], ij, JetCSVBTag[ij]) << endl;
-					}
-					fOUTSTREAM << "leptons:" << endl << "-----------" << endl;
-					fOUTSTREAM << Form("l1pt: %.2f l1eta: %.2f sig1: %d l2pt: %.2f l2eta: %.2f sig2: %d eSCeta: %.2f passesZ: %d passesGstar: %d", ElPt[0], ElEta[0], IsSignalElectron[0], ElPt[1], ElEta[1], IsSignalElectron[1], ElSCEta[0], passesZVeto(), passesGammaStarVeto(0, 1, 2)) << endl;
-				}
-				if (Event == 16380983) {
-					fOUTSTREAM << "DEBUG AFTER B-TAG SCALING" << endl;
-					fOUTSTREAM << "-------------------------" << endl;
-					fOUTSTREAM << Form("%d DEBUG nte: %d ntm: %d l1pt: %.2f l2pt: %.2f njets: %d nbjets: %d met: %.2f ht: %.2f", Event, getNTightElectrons(), getNTightMuons(), MuPt[0], ElPt[0], getNJets(), getNBTagsMed(), getMET(), getHT()) << endl;
-					for (int ij=0; ij<NJets; ++ij){
-						if (!isGoodJet(ij)) continue;
-						fOUTSTREAM << Form(" j%dpt: %.2f j%dbt: %.2f", ij, JetPt[ij], ij, JetCSVBTag[ij]) << endl;
-					}
-					fOUTSTREAM << "leptons:" << endl << "-----------" << endl;
-					fOUTSTREAM << Form("l1pt: %.2f l1eta: %.2f sgi1: %d l2pt: %.2f l2eta: %.2f sig2: %d eSCeta: %.2f passesZ: %d passesGstar: %d", MuPt[0], MuEta[0], IsSignalMuon[0], ElPt[0], ElEta[0], IsSignalElectron[0], ElSCEta[0], passesZVeto(), passesGammaStarVeto(0, 1, 1)) << endl;
-				}
-			}
 			saveBTags();      // save the values of the new btag
-			scaleBTags(S, 0, "T2tt"); // this applies the bTagSF
-			if (i==0) {
-				if (Event == 16104387) {
-					fOUTSTREAM << "DEBUG AFTER B-TAG SCALING" << endl;
-					fOUTSTREAM << "-------------------------" << endl;
-					fOUTSTREAM << Form("%d DEBUG nte: %d ntm: %d l1pt: %.2f l2pt: %.2f njets: %d nbjets: %d met: %.2f ht: %.2f", Event, getNTightElectrons(), getNTightMuons(), ElPt[0], ElPt[1], getNJets(), getNBTagsMed(), getMET(), getHT()) << endl;
-					for (int ij=0; ij<NJets; ++ij){
-						if (!isGoodJet(ij)) continue;
-						fOUTSTREAM << Form(" j%dpt: %.2f j%dbt: %.2f", ij, JetPt[ij], ij, JetCSVBTag[ij]) << endl;
-					}
-					fOUTSTREAM << "leptons:" << endl << "-----------" << endl;
-					fOUTSTREAM << Form("l1pt: %.2f l1eta: %.2f sig1: %d l2pt: %.2f l2eta: %.2f sig2: %d eSCeta: %.2f passesZ: %d passesGstar: %d", ElPt[0], ElEta[0], IsSignalElectron[0], ElPt[1], ElEta[1], IsSignalElectron[1], ElSCEta[0], passesZVeto(), passesGammaStarVeto(0, 1, 2)) << endl;
-				}
-				if (Event == 16380983) {
-					fOUTSTREAM << "DEBUG AFTER B-TAG SCALING" << endl;
-					fOUTSTREAM << "-------------------------" << endl;
-					fOUTSTREAM << Form("%d DEBUG nte: %d ntm: %d l1pt: %.2f l2pt: %.2f njets: %d nbjets: %d met: %.2f ht: %.2f", Event, getNTightElectrons(), getNTightMuons(), MuPt[0], ElPt[0], getNJets(), getNBTagsMed(), getMET(), getHT()) << endl;
-					for (int ij=0; ij<NJets; ++ij){
-						if (!isGoodJet(ij)) continue;
-						fOUTSTREAM << Form(" j%dpt: %.2f j%dbt: %.2f", ij, JetPt[ij], ij, JetCSVBTag[ij]) << endl;
-					}
-					fOUTSTREAM << "leptons:" << endl << "-----------" << endl;
-					fOUTSTREAM << Form("l1pt: %.2f l1eta: %.2f sgi1: %d l2pt: %.2f l2eta: %.2f sig2: %d eSCeta: %.2f passesZ: %d passesGstar: %d", MuPt[0], MuEta[0], IsSignalMuon[0], ElPt[0], ElEta[0], IsSignalElectron[0], ElSCEta[0], passesZVeto(), passesGammaStarVeto(0, 1, 1)) << endl;
-				}
-				if (Event == 45978937) {
-					fOUTSTREAM << Form("%d DEBUG nte: %d ntm: %d l1pt: %.2f l2pt: %.2f njets: %d nbjets: %d met: %.2f ht: %.2f", Event, getNTightElectrons(), getNTightMuons(), MuPt[0], MuPt[1], getNJets(), getNBTagsMed(), getMET(), getHT()) << endl;
-					fOUTSTREAM << "leptons:" << endl << "-----------" << endl;
-					fOUTSTREAM << Form("l1pt: %.2f l1eta: %.2f l1phi: %.2f sgi1: %d l2pt: %.2f l2eta: %.2f l2phi: %.2f sig2: %d passesZ: %d passesGstar: %d", MuPt[0], MuEta[0], MuPhi[0], IsSignalMuon[0], MuPt[1], MuEta[1], MuPhi[1], IsSignalMuon[1], passesZVeto(), passesGammaStarVeto(0, 1, 1)) << endl;
-				}
-			}
-			 
-			// if ( (i == 0 || i == 4 || i == 5 ) && Event==45001){
-			// 	for (int ij = 0; ij<NJets; ++ij){
-			// 		cout << Form("index: %d btag after scaling: %.2f", ij, JetCSVBTag[ij]) << endl;
-			// 	}
-			// }
+			scaleBTags(S, 0, btagCorrection); // this applies the bTagSF
+
 			if (!doSystematic && i!=0) continue;
 			if (i == 1) smearJetPts(S, 1);
 			if (i == 2) smearJetPts(S, 2);
 			if (i == 3) smearJetPts(S, 3);
-			if (i == 4) {resetBTags(); scaleBTags(S, 1, "T2tt");}
-			if (i == 5) {resetBTags(); scaleBTags(S, 2, "T2tt");}
+			if (i == 4) {resetBTags(); scaleBTags(S, 1, btagCorrection);}
+			if (i == 5) {resetBTags(); scaleBTags(S, 2, btagCorrection);}
 			if (i == 6) scaleMET(S, 0);
 			if (i == 7) scaleMET(S, 1);
-			if (Event == 45978937) cout << Form("after systematic #%d: ht: %.2f  met %.2f ", i, getHT(), getMET())<< endl;
 
 			// T6ttWW     scan: xvar = mGlu and yvar = mChi
 			// T6ttWW x05 scan: xvar = mGlu and yvar = mLSP
+			// T6ttWW x08 scan: xvar = mGlu and yvar = mLSP
 			// T5tttt     scan: xvar = mGlu and yvar = mChi
+			// T7btw      scan: xvar = mGlu and yvar = mChi
+			// T1tttt     scan: xvar = mGlu and yvar = mLSP
+			// T5VV       scan: xvar = mGlu and yvar = mChi
 			xvar = mGlu;
-			yvar = mLSP;
+			yvar = 50;//mLSP;
 
-			// int m1(-1),m2(-1),m3(-1),e3(-1),e1(-1),e2(-1);
-			// cleanedJetIndices(15.);
-			// if (i == 3 || i == 0){
-			// 	if ( Event == 45978937) { // && (isSSLLMuEvent(m1, m2) || isSSLLElMuEvent(m3, e3) || isSSLLElEvent(e1, e2)) )
-			// 		fOUTSTREAM << "----------------------------" << endl;
-			// 		fOUTSTREAM << filestring << endl;
-			// 		for (int ij = 0; ij<=fC_cleanJetIndices.size(); ++ij){
-			// 			// if (!isGoodJet(ij, 15.)) continue;
-			// 			cout << Form("systematic: %d jetpt: %.3f jeteta: %.3f", i, JetPt[ij], JetEta[ij]) << endl;
-			// 		}
-			// 		cout << Form("%d systematic: %d njets: %d nbjets: %d met: %.3f ht: %.3f jetpt[0]: %.3f jetpt[1]: %.3f", Event, i, getNJets(), getNBTagsMed(), getMET(), getHT(), JetPt[0], JetPt[1]) << endl;
-			// 	}	
-			// }
+			// PDF uncertainties:
+			// =====================================================================
+			if ( i ==0) {
+				for (int j = 0; j<nct10; j++) {
+					if (j < 40 ) Model_nTot_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+					Model_nTot_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+					if (j < 40 ) Model_nTot_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+				}
 
-			float nloXsec      = xsecfit->Eval(xvar);
+				int m1(-1), m2(-1);
+				if( isSSLLMuEvent(m1, m2) ){ // Same-sign loose-loose di muon event
+					if(isTightMuon(m1) &&  isTightMuon(m2) ){ // Tight-tight
+						if ( IsSignalMuon[m1] != 1 || IsSignalMuon[m2] != 1 ) continue;
+							for (int j = 0; j<nct10; j++) {
+								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+							}
+					}
+				}
+				int m(-1), e(-1);
+				if( isSSLLElMuEvent(m, e) ){
+					if(  isTightElectron(e) &&  isTightMuon(m) ){ // Tight-tight
+						if ( IsSignalMuon[m] != 1 || IsSignalElectron[e] != 1 ) continue;
+							for (int j = 0; j<nct10; j++) {
+								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+							}
+					}
+				}
+				int e1(-1), e2(-1);
+				if( isSSLLElEvent(e1, e2) ){
+					if(  isTightElectron(e1) &&  isTightElectron(e2) ){ // Tight-tight
+						if ( IsSignalElectron[e1] != 1 || IsSignalElectron[e2] != 1 ) continue;
+							for (int j = 0; j<nct10; j++) {
+								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+							}
+					}
+				}
+				// =====================================================================
+			}
+
+			 
+
+			if (xvar == xVal && yvar == yVal) {
+				Model_HT_xVal_yVal_     -> Fill(getHT()   );
+				Model_MET_xVal_yVal_    -> Fill(getMET()  );
+				Model_NJETS_xVal_yVal_  -> Fill(getNJets());
+				for (int i = 0; i <NJets; ++i) {
+					Model_JETPT_xVal_yVal_  -> Fill(JetPt[i]);
+					Model_GENJETPT_xVal_yVal_  -> Fill(JetGenPt[i]);
+				}
+				for (int i = 0; i < NMus; ++i) Model_PT_xVal_yVal_    -> Fill(MuPt[i]);
+				for (int i = 0; i < NEls; ++i) Model_PT_xVal_yVal_    -> Fill(ElPt[i]);
+			}
+
+			// float nloXsec      = xsecfit->Eval(xvar);
 			int   nGenBin      = Model_nTot_->FindBin(xvar, yvar);
 			float nGen         = Model_nTot_->GetBinContent(nGenBin);
-			float weight       = fLumiNorm * nloXsec / nGen;
+			float weight       = fLumiNorm / nGen;
 			float idsf(-999.), trigsf(-999.);
+			float lepsyst(0.);
+			float isrweight(-999.), isrweightdn(-999.);
 
 			int mu1(-1), mu2(-1);
 			if( isSSLLMuEvent(mu1, mu2) ){ // Same-sign loose-loose di muon event
 				if(isTightMuon(mu1) &&  isTightMuon(mu2) ){ // Tight-tight
 					n_tot++;
 					if ( IsSignalMuon[mu1] != 1 || IsSignalMuon[mu2] != 1 ) continue;
+					if ( (model == "T5VV" || model == "T5VVlowpt") && nChi != 2) continue;
 					signalTot++;
 					idsf   = getLeptonSFMu(MuPt[mu1], MuEta[mu1])*getLeptonSFMu(MuPt[mu2], MuEta[mu2]);
 					trigsf = getTriggerSFMuMu(MuEta[mu2]);
 					if (lowpt) trigsf =  getTriggerSFMuMuLowpt(MuEta[mu2]);
-					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf); // fill weighted by SFs
+					lepsyst = getLeptonSystematic(MuPt[mu1], MuPt[mu2], Muon);
+					isrweight   = getISRSystematic(susyPt, 0);
+					isrweightdn = getISRSystematic(susyPt, 2);
+					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweight); // fill weighted by SFs
+					Model_isrUp_         [i]-> Fill(xvar, yvar, idsf*trigsf); // isr weight = 1
+					Model_isrDn_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweightdn);
+					Model_puNo_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeight  *isrweight);
+					Model_puUp_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightUp*isrweight);
+					Model_puDn_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightDn*isrweight);
 					Model_nPass_noScale_ [i]-> Fill(xvar, yvar);
+					Model_lepSyst_       [i]-> Fill(xvar, yvar, lepsyst);
 					if (i==0) {
 						Model_yield_-> Fill(xvar, yvar, weight * gMMTrigScale);
 					}
@@ -19407,12 +21285,22 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 				if(  isTightElectron(el) &&  isTightMuon(mu) ){ // Tight-tight
 					n_tot++;
 					if ( IsSignalMuon[mu] != 1 || IsSignalElectron[el] != 1 ) continue;
+					if ( (model == "T5VV" || model == "T5VVlowpt") && nChi != 2) continue;
 					signalTot++;
 					idsf   = getLeptonSFMu(MuPt[mu], MuEta[mu])*getLeptonSFEl(ElPt[el], ElEta[el]);
 					trigsf = getTriggerSFMuEl();
 					if (lowpt) trigsf =  getTriggerSFMuElLowpt();
-					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf); // fill weighted by SFs
+					lepsyst = getLeptonSystematic(MuPt[mu], ElPt[el], ElMu);
+					isrweight   = getISRSystematic(susyPt, 0);
+					isrweightdn = getISRSystematic(susyPt, 2);
+					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweight); // fill weighted by SFs
+					Model_isrUp_         [i]-> Fill(xvar, yvar, idsf*trigsf); // isr weight = 1
+					Model_isrDn_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweightdn);
+					Model_puNo_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeight  *isrweight);
+					Model_puUp_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightUp*isrweight);
+					Model_puDn_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightDn*isrweight);
 					Model_nPass_noScale_ [i]-> Fill(xvar, yvar);
+					Model_lepSyst_       [i]-> Fill(xvar, yvar, lepsyst);
 					if (i==0) {
 						Model_yield_-> Fill(xvar, yvar, weight * gEMTrigScale);
 					}
@@ -19429,12 +21317,22 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 				if(  isTightElectron(el1) &&  isTightElectron(el2) ){ // Tight-tight
 					n_tot++;
 					if ( IsSignalElectron[el1] != 1 || IsSignalElectron[el2] != 1 ) continue;
+					if ( (model == "T5VV" || model == "T5VVlowpt") && nChi != 2) continue;
 					signalTot++;
 					idsf   = getLeptonSFEl(ElPt[el1], ElEta[el1])*getLeptonSFEl(ElPt[el2], ElEta[el2]);
 					trigsf = getTriggerSFElEl(ElPt[el2]);
 					if (lowpt) trigsf =  getTriggerSFElElLowpt();
-					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf); // fill weighted by SFs
+					lepsyst = getLeptonSystematic(ElPt[el1], ElPt[el2], Elec);
+					isrweight   = getISRSystematic(susyPt, 0);
+					isrweightdn = getISRSystematic(susyPt, 2);
+					Model_nPass_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweight); // fill weighted by SFs
+					Model_isrUp_         [i]-> Fill(xvar, yvar, idsf*trigsf); // isr weight = 1
+					Model_isrDn_         [i]-> Fill(xvar, yvar, idsf*trigsf*isrweightdn);
+					Model_puNo_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeight  *isrweight);
+					Model_puUp_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightUp*isrweight);
+					Model_puDn_          [i]-> Fill(xvar, yvar, idsf*trigsf*PUWeightDn*isrweight);
 					Model_nPass_noScale_ [i]-> Fill(xvar, yvar);
+					Model_lepSyst_       [i]-> Fill(xvar, yvar, lepsyst);
 					if (i==0) {
 						Model_yield_-> Fill(xvar, yvar, weight * gEETrigScale);
 					}
@@ -19463,14 +21361,43 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 
 	Model_yield_ ->Write();
 	Model_nTot_  ->Write();
+	Model_nTot_ISRweight_   ->Write();
+	Model_nTot_ISRweightDn_ ->Write();
+	if (Model_nTot_nChi2_ != NULL) {
+		Model_nTot_nChi2_  ->Write();
+		Model_nTot_nChi2_ISRweight_   ->Write();
+		Model_nTot_nChi2_ISRweightDn_ ->Write();
+	}
+	Model_HT_xVal_yVal_    ->Write();
+	Model_MET_xVal_yVal_   ->Write();
+	Model_NJETS_xVal_yVal_ ->Write();
+	Model_JETPT_xVal_yVal_ ->Write();
+	Model_GENJETPT_xVal_yVal_ ->Write();
+	Model_PT_xVal_yVal_   ->Write();
 
 	for (int i=0; i<nSyst; i++) {
-		Model_eff_           [i]->Write();
-		Model_nPass_         [i]->Write();
-		Model_nPass_noScale_ [i]->Write();
+		Model_eff_             [i]->Write();
+		Model_nPass_           [i]->Write();
+		Model_nPass_noScale_   [i]->Write();
+		Model_lepSyst_         [i]->Write();
+		Model_puNo_            [i]->Write();
+		Model_puUp_            [i]->Write();
+		Model_puDn_            [i]->Write();
+		Model_isrUp_           [i]->Write();
+		Model_isrDn_           [i]->Write();
+	}
+	for (int i=0; i<nct10; ++i){
+		Model_nTot_ct10_ [i] ->Write();
+		Model_nPass_ct10_[i] ->Write();
+		if (i<40) {
+			Model_nTot_cteq_ [i] ->Write();
+			Model_nTot_mstw_ [i] ->Write();
+			Model_nPass_cteq_[i] ->Write();
+			Model_nPass_mstw_[i] ->Write();
+		}
 	}
 	file_->Close();
 	res_->Close();
 
-	delete res_, Model_nTot_;
+	delete res_, Model_nTot_, Model_nTot_ISRweight_, Model_nTot_ISRweightDn_;
 }
