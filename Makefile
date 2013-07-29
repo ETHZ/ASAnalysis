@@ -3,8 +3,6 @@
 #
 # First run 'make deps', then: 'make [-j n] [targets]'
 #
-# In order to compile JES feature in UserAnalysisBase, run: 'make [-j n] "DOJES=1" [targets]'
-#
 ROOTCFLAGS     = $(shell root-config --cflags)
 ROOTLIBS       = $(shell root-config --libs)
 ROOTGLIBS      = $(shell root-config --glibs)
