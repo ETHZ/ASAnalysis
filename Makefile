@@ -48,10 +48,10 @@ RunUserAnalyzer: src/exe/RunUserAnalyzer.C src/UserAnalyzer.cc src/UserAnalysis.
 	mv RunUserAnalyzer /scratch/$$USER/RunUserAnalyzer 
 	mv /scratch/$$USER/RunUserAnalyzer RunUserAnalyzer
 
-RunJZBAnalyzer: src/exe/RunJZBAnalyzer.C src/JZBAnalyzer.cc src/JZBAnalysis.cc $(OBJS)
-	$(CXX) $(CXXFLAGS) -ldl $(GLIBS) $(LDFLAGS) -o $@ $^
-	mv RunJZBAnalyzer /scratch/$$USER/RunJZBAnalyzer
-	mv /scratch/$$USER/RunJZBAnalyzer RunJZBAnalyzer
+#RunJZBAnalyzer: src/exe/RunJZBAnalyzer.C src/JZBAnalyzer.cc src/JZBAnalysis.cc $(OBJS)
+#	$(CXX) $(CXXFLAGS) -ldl $(GLIBS) $(LDFLAGS) -o $@ $^
+#	mv RunJZBAnalyzer /scratch/$$USER/RunJZBAnalyzer
+#	mv /scratch/$$USER/RunJZBAnalyzer RunJZBAnalyzer
 
 #RunQuickAnalyzer: src/exe/RunQuickAnalyzer.C src/QuickAnalyzer.cc src/QuickAnalysis.cc $(OBJS)
 #	$(CXX) $(CXXFLAGS) -ldl $(GLIBS) $(LDFLAGS) -o $@ $^
