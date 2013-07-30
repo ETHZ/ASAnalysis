@@ -304,7 +304,6 @@ public:
 	void makeMIDIsolationPlots(gChannel chan, gFPSwitch);
 	void getMIDIsolationPlots(vector<int>, gChannel, gFPSwitch, TH1D*&, TH1D*&, TH1D*&, TH1D*&);
 	void drawMIDIsolationPlots(TString, gChannel, gFPSwitch, TH1D*, TH1D*, TH1D*, TH1D*);
-	void makeTTWNLOPlots(float, float, float, float, int, int, int, float, float, int, bool, int);
 
 	void makeOriginPlots(int);
 	// old void makeOriginPlots(gRegion);
@@ -330,8 +329,6 @@ public:
 	void makeSystPlot(TString outputname, TString label, TH1D *nom, TH1D *plus, TH1D *minus=NULL);
 
 	void makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw    =false, int flag=0);
-	void makeTTWDiffPredictionsSigEvent();
-	void makeTTWDiffPredictionSigEvent(TString, int, double*);
 	TTWZPrediction makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw=false, int flag=0);
 	void makeDiffPrediction();
 	void makeTTWDiffPredictions();
