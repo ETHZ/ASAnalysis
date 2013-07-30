@@ -82,6 +82,9 @@ private:
 	static const int fMaxNmus  = 5;
 	static const int fMaxNeles = 5;
 	static const int fMaxNtaus = 5;
+	static const int fNCTEQ = 100;
+	static const int fNCT10 = 100;
+	static const int fNMRST = 100;
 	
 	static const int nx = 3;
 	static const float x_values[nx]; // = {0.05, 0.5, 0.95};
@@ -244,6 +247,14 @@ private:
 	float fTTauMVAElRej    [fMaxNtaus];
 	float fTTauTightMuRej  [fMaxNtaus];
 	float fTTauLCombIsoDB  [fMaxNtaus];
+
+	// PDF stuff
+	int   fTNPdfCTEQ;
+	float fTWPdfCTEQ[fNCTEQ];
+	int   fTNPdfCT10;
+	float fTWPdfCT10[fNCT10];
+	int   fTNPdfMRST;
+	float fTWPdfMRST[fNMRST];
 
 	TTree *fLepEffTree; // lepton efficiency tree, filled once per lepton
 	int   fLETrun;
