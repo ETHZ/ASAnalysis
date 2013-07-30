@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Wed May 22 12:43:41 2013 by ROOT version 5.32/00
+// Sun Jul 14 11:51:27 2013 by ROOT version 5.32/00
 // from TTree Analysis/AnalysisTree
-// found on file: dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/May21_T6ttWW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_9.root
+// found on file: dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/Jul13/SMS-T6ttWW-withPDFs/output_23.root
 //////////////////////////////////////////////////////////
 
 #ifndef MetaTreeClassBase_h
@@ -152,6 +152,12 @@ public :
    Float_t         JetGenPt[30];   //[NJets]
    Float_t         JetGenEta[30];   //[NJets]
    Float_t         JetGenPhi[30];   //[NJets]
+   Int_t           NPdfCTEQ;
+   Float_t         WPdfCTEQ[40];   //[NPdfCTEQ]
+   Int_t           NPdfCT10;
+   Float_t         WPdfCT10[52];   //[NPdfCT10]
+   Int_t           NPdfMRST;
+   Float_t         WPdfMRST[40];   //[NPdfMRST]
 
    // List of branches
    TBranch        *b_Run;   //!
@@ -284,6 +290,12 @@ public :
    TBranch        *b_JetGenPt;   //!
    TBranch        *b_JetGenEta;   //!
    TBranch        *b_JetGenPhi;   //!
+   TBranch        *b_NPdfCTEQ;   //!
+   TBranch        *b_WPdfCTEQ;   //!
+   TBranch        *b_NPdfCT10;   //!
+   TBranch        *b_WPdfCT10;   //!
+   TBranch        *b_NPdfMRST;   //!
+   TBranch        *b_WPdfMRST;   //!
 
    MetaTreeClassBase(TTree *tree=0);
    virtual ~MetaTreeClassBase();
@@ -304,9 +316,9 @@ MetaTreeClassBase::MetaTreeClassBase(TTree *tree) : fChain(0)
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/May21_T6ttWW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_9.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/Jul13/SMS-T6ttWW-withPDFs/output_23.root");
       if (!f || !f->IsOpen()) {
-         f = new TFile("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/May21_T6ttWW/SMS-T4tW-Msbottom-325to700-mChargino-150to625-8TeV-Madgraph/output_9.root");
+         f = new TFile("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/mdunser/SSDLTrees/2013/Jul13/SMS-T6ttWW-withPDFs/output_23.root");
       }
       f->GetObject("Analysis",tree);
 
@@ -485,6 +497,12 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("JetGenPt", JetGenPt, &b_JetGenPt);
    fChain->SetBranchAddress("JetGenEta", JetGenEta, &b_JetGenEta);
    fChain->SetBranchAddress("JetGenPhi", JetGenPhi, &b_JetGenPhi);
+   fChain->SetBranchAddress("NPdfCTEQ", &NPdfCTEQ, &b_NPdfCTEQ);
+   fChain->SetBranchAddress("WPdfCTEQ", WPdfCTEQ, &b_WPdfCTEQ);
+   fChain->SetBranchAddress("NPdfCT10", &NPdfCT10, &b_NPdfCT10);
+   fChain->SetBranchAddress("WPdfCT10", WPdfCT10, &b_WPdfCT10);
+   fChain->SetBranchAddress("NPdfMRST", &NPdfMRST, &b_NPdfMRST);
+   fChain->SetBranchAddress("WPdfMRST", WPdfMRST, &b_WPdfMRST);
    Notify();
 }
 
