@@ -21139,6 +21139,8 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 		Model_nTot_mstw_         [j]->Sumw2();
 		Model_nPass_mstw_        [j]->Sumw2();
 	}
+
+	bool doPDFs = false;
 	// ===========================================================
 	// ===========================================================
 
