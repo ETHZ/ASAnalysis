@@ -21110,14 +21110,8 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	SSDLDumper::fRand3Normal = new TRandom3(10);
 
 
-	// BTAG CORRECTION FACTOR FOR FASTSIM!!!!!
-	// =========================================================
-	// T7btw, T1tttt, T5tttt: "T1tttt"
-	// T6ttWW, T6ttWWx05, T6ttWWx08: "T2tt"
-	// T5lnu, T5VV: "T1"
-	TString btagCorrection = "T2tt";
-
-
+	// ===========================================================
+	// ===========================================================
 	// PDF uncertainties 
 	// ===========================================================
 	int ncteq(40), nct10(52), nmstw(40);
@@ -21147,6 +21141,14 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	}
 	// ===========================================================
 	// ===========================================================
+
+	// BTAG CORRECTION FACTOR FOR FASTSIM!!!!!
+	// =========================================================
+	// T7btw, T1tttt, T5tttt: "T1tttt"
+	// T6ttWW, T6ttWWx05, T6ttWWx08: "T2tt"
+	// T5lnu, T5VV: "T1"
+	TString btagCorrection = "T2tt";
+
 
 	float xvar(-1);
 	float yvar(-1);
@@ -21181,50 +21183,53 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 			xvar = mGlu;
 			yvar = 50;//mLSP;
 
-			// PDF uncertainties:
-			// =====================================================================
-			if ( i ==0) {
-				for (int j = 0; j<nct10; j++) {
-					if (j < 40 ) Model_nTot_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-					Model_nTot_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-					if (j < 40 ) Model_nTot_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-				}
 
-				int m1(-1), m2(-1);
-				if( isSSLLMuEvent(m1, m2) ){ // Same-sign loose-loose di muon event
-					if(isTightMuon(m1) &&  isTightMuon(m2) ){ // Tight-tight
-						if ( IsSignalMuon[m1] != 1 || IsSignalMuon[m2] != 1 ) continue;
-							for (int j = 0; j<nct10; j++) {
-								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-							}
-					}
-				}
-				int m(-1), e(-1);
-				if( isSSLLElMuEvent(m, e) ){
-					if(  isTightElectron(e) &&  isTightMuon(m) ){ // Tight-tight
-						if ( IsSignalMuon[m] != 1 || IsSignalElectron[e] != 1 ) continue;
-							for (int j = 0; j<nct10; j++) {
-								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-							}
-					}
-				}
-				int e1(-1), e2(-1);
-				if( isSSLLElEvent(e1, e2) ){
-					if(  isTightElectron(e1) &&  isTightElectron(e2) ){ // Tight-tight
-						if ( IsSignalElectron[e1] != 1 || IsSignalElectron[e2] != 1 ) continue;
-							for (int j = 0; j<nct10; j++) {
-								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-							}
-					}
-				}
+			if (doPDFs) {
+				// PDF uncertainties:
 				// =====================================================================
-			}
+				if ( i ==0) {
+					for (int j = 0; j<nct10; j++) {
+						if (j < 40 ) Model_nTot_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+						Model_nTot_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+						if (j < 40 ) Model_nTot_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+					}
+
+					int m1(-1), m2(-1);
+					if( isSSLLMuEvent(m1, m2) ){ // Same-sign loose-loose di muon event
+						if(isTightMuon(m1) &&  isTightMuon(m2) ){ // Tight-tight
+							if ( IsSignalMuon[m1] != 1 || IsSignalMuon[m2] != 1 ) continue;
+								for (int j = 0; j<nct10; j++) {
+									if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+									Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+									if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+								}
+						}
+					}
+					int m(-1), e(-1);
+					if( isSSLLElMuEvent(m, e) ){
+						if(  isTightElectron(e) &&  isTightMuon(m) ){ // Tight-tight
+							if ( IsSignalMuon[m] != 1 || IsSignalElectron[e] != 1 ) continue;
+								for (int j = 0; j<nct10; j++) {
+									if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+									Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+									if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+								}
+						}
+					}
+					int e1(-1), e2(-1);
+					if( isSSLLElEvent(e1, e2) ){
+						if(  isTightElectron(e1) &&  isTightElectron(e2) ){ // Tight-tight
+							if ( IsSignalElectron[e1] != 1 || IsSignalElectron[e2] != 1 ) continue;
+								for (int j = 0; j<nct10; j++) {
+									if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
+									Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
+									if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
+								}
+						}
+					}
+					// =====================================================================
+				} // end i ==0
+			} // end doPDFs
 
 			 
 
@@ -21386,16 +21391,18 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 		Model_isrUp_           [i]->Write();
 		Model_isrDn_           [i]->Write();
 	}
-	for (int i=0; i<nct10; ++i){
-		Model_nTot_ct10_ [i] ->Write();
-		Model_nPass_ct10_[i] ->Write();
-		if (i<40) {
-			Model_nTot_cteq_ [i] ->Write();
-			Model_nTot_mstw_ [i] ->Write();
-			Model_nPass_cteq_[i] ->Write();
-			Model_nPass_mstw_[i] ->Write();
+	if (doPDFs) { // only save the histograms if we want to do the pdfs
+		for (int i=0; i<nct10; ++i){
+			Model_nTot_ct10_ [i] ->Write();
+			Model_nPass_ct10_[i] ->Write();
+			if (i<40) {
+				Model_nTot_cteq_ [i] ->Write();
+				Model_nTot_mstw_ [i] ->Write();
+				Model_nPass_cteq_[i] ->Write();
+				Model_nPass_mstw_[i] ->Write();
+			}
 		}
-	}
+	} // end doPDFs
 	file_->Close();
 	res_->Close();
 
