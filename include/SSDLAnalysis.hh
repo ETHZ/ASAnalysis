@@ -37,7 +37,6 @@ public:
 	void Analyze();
 	void End();
 	
-	inline void DoFillEffTree(bool fill){fDoFillEffTree = fill;};
 	
 	void ReadTriggers(const char* = "HLTPaths_SSDL.dat");
 	void AddTriggerBranches();
@@ -45,17 +44,11 @@ public:
 	void FillAnalysisTree();
 	void BookTree();
 	void ResetTree();
-	
-	void FillEffTree();
-	void BookEffTree();
-	void ResetEffTree();
 
 	bool IsSignalMuon(int);
         bool IsSignalMuon(int, int&, int&, int&);
 	bool IsSignalElectron(int);
         bool IsSignalElectron(int, int&, int&, int&);
-	bool IsTightMuon(int, int);
-	bool IsTightEle(int, int);
 	
 	int JetPartonMatch(int);
 	int GenJetMatch(int);
@@ -73,7 +66,6 @@ public:
 private:
 	TH1F *fHEvCount;
 	
-	bool fDoFillEffTree;
 	
 	Monitor fCounter;
 	string fCutnames[4];
@@ -256,22 +248,5 @@ private:
 	int   fTNPdfMRST;
 	float fTWPdfMRST[fNMRST];
 
-	TTree *fLepEffTree; // lepton efficiency tree, filled once per lepton
-	int   fLETrun;
-	int   fLETevent;
-	int   fLETlumi;
-	float fLETrho;
-	int   fLETnvrtx;
-	float fLETpuweight;
-	int   fLETtype; // mu(0), el(1)
-	float fLETpt;
-	float fLETeta;
-	float fLETphi;
-	float fLETiso;
-	int   fLETpassed1;
-	int   fLETpassed2;
-	int   fLETpassed3;
-	int   fLETpassed4;
-	
 };
 #endif

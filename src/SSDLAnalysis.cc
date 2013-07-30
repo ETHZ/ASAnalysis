@@ -79,7 +79,6 @@ void SSDLAnalysis::Begin(const char* filename){
 	}
 	BookTree();
 	fHEvCount = new TH1F("EventCount", "Event Counter", 1, 0., 1.); // count number of generated events
-	if(!fIsData && fDoFillEffTree) BookEffTree();
 }
 
 //____________________________________________________________________________
@@ -112,7 +111,6 @@ void SSDLAnalysis::End(){
 	fOutputFile->cd();
 	fHEvCount->Write();
 	fAnalysisTree->Write();
-	if(fDoFillEffTree && !fIsData) fLepEffTree->Write();
 	fOutputFile->Close();
 	fCounter.print();
 }
@@ -347,33 +345,10 @@ void SSDLAnalysis::BookTree(){
 
 }
 
-void SSDLAnalysis::BookEffTree(){
-	fOutputFile->cd();
-	fLepEffTree = new TTree("LeptonEfficiency", "LeptonEfficiencyTree");
-
-    // run/sample properties
-	fLepEffTree->Branch("Run",              &fLETrun      ,       "Run/I");
-	fLepEffTree->Branch("Event",            &fLETevent    ,       "Event/I");
-	fLepEffTree->Branch("LumiSec",          &fLETlumi     ,       "LumiSec/I");
-	fLepEffTree->Branch("Rho",              &fLETrho      ,       "Rho/F");
-	fLepEffTree->Branch("NVrtx",            &fLETnvrtx    ,       "NVrtx/I");
-	fLepEffTree->Branch("PUWeight",         &fLETpuweight ,       "PUWeight/F");
-	fLepEffTree->Branch("Type",             &fLETtype     ,       "Type/I");
-	fLepEffTree->Branch("Pt",               &fLETpt       ,       "Pt/F");
-	fLepEffTree->Branch("Eta",              &fLETeta      ,       "Eta/F");
-	fLepEffTree->Branch("Phi",              &fLETphi      ,       "Phi/F");
-	fLepEffTree->Branch("Iso",              &fLETiso      ,       "Iso/F");
-	fLepEffTree->Branch("Pass1",            &fLETpassed1  ,       "Pass1/I");
-	fLepEffTree->Branch("Pass2",            &fLETpassed2  ,       "Pass2/I");
-	fLepEffTree->Branch("Pass3",            &fLETpassed3  ,       "Pass3/I");
-	fLepEffTree->Branch("Pass4",            &fLETpassed4  ,       "Pass4/I");
-}
-
 //____________________________________________________________________________
 void SSDLAnalysis::Analyze(){
 	fHEvCount->Fill(0.);
 	FillAnalysisTree();
-	if(fDoFillEffTree && !fIsData) FillEffTree();
 }
 void SSDLAnalysis::FillAnalysisTree(){
 	fCounter.fill(fCutnames[0]);
@@ -784,56 +759,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	fAnalysisTree->Fill();
 }
-void SSDLAnalysis::FillEffTree(){
-	if(fIsData){
-		if(fVerbose > 0) cout << "Trying to fill MC lepton efficiencies on data, Stupid..." << endl;
-		return;
-	}
-	ResetEffTree();
-
-	fLETevent    = fTR->Run;
-	fLETrun      = fTR->Event;
-	fLETlumi     = fTR->LumiSection;
-	fLETrho      = fTR->Rho;
-	fLETnvrtx    = fTR->NVrtx;
-	fLETpuweight = GetPUWeight(fTR->PUnumInteractions);
-
-	// Muon loop
-	for(int i = 0; i < fTR->NMus; ++i){
-		if(IsSignalMuon(i) == false) continue; // match to signal mu
-		if(fTR->MuPt[i] < 5.) continue; // pt cut
-		fLETtype   = 0; // mu
-		fLETpt     = fTR->MuPt      [i];
-		fLETeta    = fTR->MuEta     [i];
-		fLETphi    = fTR->MuPhi     [i];
-		// fLETiso    = fTR->MuRelIso03[i];
-		fLETiso    = MuPFIso(i);
-		
-		fLETpassed1 = IsTightMuon(1,i)?1:0;
-		fLETpassed2 = IsTightMuon(2,i)?1:0;
-		fLETpassed3 = IsTightMuon(3,i)?1:0;
-		fLETpassed4 = IsTightMuon(4,i)?1:0;
-		fLepEffTree->Fill();
-	}
-
-	// Electron loop
-	for(int i = 0; i < fTR->NEles; ++i){
-		if(IsSignalElectron(i) == false) continue; // match to signal el
-		if(fTR->ElPt[i] < 5.) continue; // pt cut
-		fLETtype   = 1; // mu
-		fLETpt     = fTR->ElPt      [i];
-		fLETeta    = fTR->ElEta     [i];
-		fLETphi    = fTR->ElPhi     [i];
-		// fLETiso    = relElIso(i);
-		fLETiso    = ElPFIso(i);
-		
-		fLETpassed1 = IsTightEle(1,i)?1:0;
-		fLETpassed2 = IsTightEle(2,i)?1:0;
-		fLETpassed3 = IsTightEle(3,i)?1:0;
-		fLETpassed4 = IsTightEle(4,i)?1:0;
-		fLepEffTree->Fill();
-	}
-}
 
 //____________________________________________________________________________
 void SSDLAnalysis::ResetTree(){
@@ -984,23 +909,6 @@ void SSDLAnalysis::ResetTree(){
 	fTpfMETphi   = -999.99;
 	fTpfMETType1      = -999.99;
 	fTpfMETType1phi   = -999.99;
-}
-void SSDLAnalysis::ResetEffTree(){
-	fLETevent      = -999;
-	fLETrun        = -999;
-	fLETlumi       = -999;
-	fLETrho        = -999.99;
-	fLETnvrtx      = -999;
-	fLETpuweight   = -999.99;
-	fLETtype       = -999;
-	fLETpt         = -999.99;
-	fLETeta        = -999.99;
-	fLETphi        = -999.99;
-	fLETiso        = -999.99;
-	fLETpassed1    = -999;
-	fLETpassed2    = -999;
-	fLETpassed3    = -999;
-	fLETpassed4    = -999;
 }
 
 //____________________________________________________________________________
@@ -1173,70 +1081,6 @@ bool SSDLAnalysis::IsSignalElectron(int index, int &elid, int &elmoid, int &elgm
 	elmoid = 0;
 	elgmoid= 0;
 	return false;	
-}
-bool SSDLAnalysis::IsTightMuon(int toggle, int index){
-	if(toggle == 1){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(MuPFIso(index) > 0.09) return false;
-		return true;
-	}
-	if(toggle == 2){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(corrMuIso(index) > 0.15) return false;
-		return true;
-	}
-	if(toggle == 3){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(MuPFIso(index) > 0.09) return false;
-		return true;
-	}
-	if(toggle == 4){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(corrMuIso(index) > 0.1) return false;
-		return true;
-	}
-	cout << "Choose your toggle!" << endl;
-	return false;
-}
-bool SSDLAnalysis::IsTightEle(int toggle, int index){
-	if(toggle == 1){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(ElPFIso(index) > 0.15) return false;
-		return true;		
-	}
-	if(toggle == 2){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(corrElIso(index) > 0.15) return false;
-		return true;
-	}
-	if(toggle == 3){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(ElPFIso(index) > 0.1) return false;
-		return true;		
-	}
-	if(toggle == 4){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(corrElIso(index) > 0.1) return false;
-		return true;
-	}
-	cout << "Choose your toggle!" << endl;
-	return false;
 }
 
 //____________________________________________________________________________
