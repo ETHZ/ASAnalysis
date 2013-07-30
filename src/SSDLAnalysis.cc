@@ -16,6 +16,9 @@ const int SSDLAnalysis::nx;
 const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
 
 
+const bool gDoPDFs = false;
+
+
 TString SSDLAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/";
 // TString SSDLAnalysis::gBaseDir = "/shome/stiegerb/Workspace/cmssw/CMSSW_4_2_8/src/DiLeptonAnalysis/NTupleProducer/macros/";
 
@@ -481,116 +484,93 @@ void SSDLAnalysis::FillAnalysisTree(){
 		TChiSlepSnu   ? fTisTChiSlepSnu = 1 : fTisTChiSlepSnu = 0;
 		isRightHanded ? fTisRightHanded = 1 : fTisRightHanded = 0;
 
-	// ===========================================================================
+
+		if (gDoPDFs) {
+
+			// ===========================================================================
 	
-		// pdfstuff /swshare/cms/slc5_amd64_gcc462/external/lhapdf/5.8.5-cms2/share/lhapdf/PDFsets/
-		// "MRST2006nnlo.LHgrid"
-		// "NNPDF10_100.LHgrid"
-		// "cteq66.LHgrid"
-		float x1 = fTR->PDFx1;
-		float x2 = fTR->PDFx2;
-		float Q  = fTR->PDFScalePDF;
-		int id1  = fTR->PDFID1;
-		int id2  = fTR->PDFID2;
-		double pdf_xpdf1, pdf_xpdf2;
-		double newxfx1, newxfx2;
+			// pdfstuff /swshare/cms/slc5_amd64_gcc462/external/lhapdf/5.8.5-cms2/share/lhapdf/PDFsets/
+			// "MRST2006nnlo.LHgrid"
+			// "NNPDF10_100.LHgrid"
+			// "cteq66.LHgrid"
+			float x1 = fTR->PDFx1;
+			float x2 = fTR->PDFx2;
+			float Q  = fTR->PDFScalePDF;
+			int id1  = fTR->PDFID1;
+			int id2  = fTR->PDFID2;
+			double pdf_xpdf1, pdf_xpdf2;
+			double newxfx1, newxfx2;
 
-		// SAVE WEIGHTS FOR CTEQ
-		// ==========================
-		// std::cout << LHAPDF::numberPDF() << std::endl;
-		//LHAPDF::initPDFSet(1,"CT10.LHgrid");
-		LHAPDF::initPDFSet(1,"cteq61.LHgrid");
-		
-		LHAPDF::initPDF(1,0);
-		LHAPDF::usePDFMember(1,0);
-		fTNPdfCTEQ = (int)LHAPDF::numberPDF(1);
-		pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
-		pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
+			// SAVE WEIGHTS FOR CTEQ
+			// ==========================
+			// std::cout << LHAPDF::numberPDF() << std::endl;
+			//LHAPDF::initPDFSet(1,"CT10.LHgrid");
+			LHAPDF::initPDFSet(1,"cteq61.LHgrid");
 			
-		// std::vector<float> pdfweight;
-		// float pdfWsum=0;
-		for(int pdf=0; pdf < fTNPdfCTEQ; pdf++){
-			// LHAPDF::initPDF(pdf);
-			LHAPDF::usePDFMember(1, pdf);
-			newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
-			newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
-			fTWPdfCTEQ[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-			// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-			// pdfWsum += pdfweight.back();
-		}
+			LHAPDF::initPDF(1,0);
+			LHAPDF::usePDFMember(1,0);
+			fTNPdfCTEQ = (int)LHAPDF::numberPDF(1);
+			pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
+				
+			// std::vector<float> pdfweight;
+			// float pdfWsum=0;
+			for(int pdf=0; pdf < fTNPdfCTEQ; pdf++){
+				// LHAPDF::initPDF(pdf);
+				LHAPDF::usePDFMember(1, pdf);
+				newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
+				newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
+				fTWPdfCTEQ[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+				// pdfWsum += pdfweight.back();
+			}
 
-		
-		//LHAPDF::initPDFSet(2,"cteq61.LHgrid");
-		LHAPDF::initPDFSet(2, "CT10.LHgrid");
-		LHAPDF::initPDF(2, 0);
-		LHAPDF::usePDFMember(2, 0);
-		fTNPdfCT10 = (int)LHAPDF::numberPDF(2);
-		pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
-		pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
 			
-		// std::vector<float> pdfweight;
-		// float pdfWsum=0;
-		for(int pdf=0; pdf < fTNPdfCT10; pdf++){
-			// LHAPDF::initPDF(pdf);
-			LHAPDF::usePDFMember(2, pdf);
-			newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
-			newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
-			fTWPdfCT10[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-			// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-			// pdfWsum += pdfweight.back();
-		}
+			//LHAPDF::initPDFSet(2,"cteq61.LHgrid");
+			LHAPDF::initPDFSet(2, "CT10.LHgrid");
+			LHAPDF::initPDF(2, 0);
+			LHAPDF::usePDFMember(2, 0);
+			fTNPdfCT10 = (int)LHAPDF::numberPDF(2);
+			pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
+				
+			// std::vector<float> pdfweight;
+			// float pdfWsum=0;
+			for(int pdf=0; pdf < fTNPdfCT10; pdf++){
+				// LHAPDF::initPDF(pdf);
+				LHAPDF::usePDFMember(2, pdf);
+				newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
+				newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
+				fTWPdfCT10[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+				// pdfWsum += pdfweight.back();
+			}
 
 
-		
-		//LHAPDF::initPDFSet(3, "MRST2006nnlo.LHgrid");
-		LHAPDF::initPDFSet(3, "MSTW2008nnlo90cl.LHgrid");
-		LHAPDF::initPDF(3, 0);
-		LHAPDF::usePDFMember(3, 0);
-		fTNPdfMRST = (int)LHAPDF::numberPDF(3);
-		pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
-		pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
 			
-		// std::vector<float> pdfweight;
-		// float pdfWsum=0;
-		for(int pdf=0; pdf < fTNPdfMRST; pdf++){
-			// LHAPDF::initPDF(pdf);
-			LHAPDF::usePDFMember(3, pdf);
-			newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
-			newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
-			fTWPdfMRST[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-			// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-			// pdfWsum += pdfweight.back();
-		}
+			//LHAPDF::initPDFSet(3, "MRST2006nnlo.LHgrid");
+			LHAPDF::initPDFSet(3, "MSTW2008nnlo90cl.LHgrid");
+			LHAPDF::initPDF(3, 0);
+			LHAPDF::usePDFMember(3, 0);
+			fTNPdfMRST = (int)LHAPDF::numberPDF(3);
+			pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
+				
+			// std::vector<float> pdfweight;
+			// float pdfWsum=0;
+			for(int pdf=0; pdf < fTNPdfMRST; pdf++){
+				// LHAPDF::initPDF(pdf);
+				LHAPDF::usePDFMember(3, pdf);
+				newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
+				newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
+				fTWPdfMRST[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+				// pdfWsum += pdfweight.back();
+			}
 
-		// for (int i=0; i<pdfweight.size(); ++i){
-		// 	cout << i << ": " << pdfweight[i] << " ";
-		// }
+			// ===========================================================================
 
-		// // SAVE WEIGHTS FOR MRST
-		// // ==========================
-		// // std::cout << LHAPDF::numberPDF() << std::endl;
-		// LHAPDF::initPDFSet("MRST2006nnlo.LHgrid",1);
-		// fTNPdfMRST = (int)LHAPDF::numberPDF();
-		// 
-		// //LHAPDF::initPDF(0);
-		// newpdf1_0 = LHAPDF::xfx(x1, Q, id1)/x1;
-		// newpdf2_0 = LHAPDF::xfx(x2, Q, id2)/x2;
-		// 	
-		// // std::vector<float> pdfweight;
-		// // float pdfWsum=0;
-		// for(int pdf=1; pdf <= fTNPdfMRST; pdf++){
-		// 	LHAPDF::initPDF(pdf);
-		// 	newpdf1 = LHAPDF::xfx(x1, Q, id1)/x1;
-		// 	newpdf2 = LHAPDF::xfx(x2, Q, id2)/x2;
-		// 	fTWPdfMRST[pdf-1] = newpdf1/newpdf1_0*newpdf2/newpdf2_0;
-		// 	// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-		// 	// pdfWsum += pdfweight.back();
-		// }
-		// for (int i=0; i<pdfweight.size(); ++i){
-		// 	cout << i << ": " << pdfweight[i] << " ";
-		// }
-
-	// ===========================================================================
+		} // end if gDoPDFs
 
 	}// end if fIsData
 
