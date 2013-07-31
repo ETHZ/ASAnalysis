@@ -50,12 +50,7 @@ void SSDLAnalysis::Begin(const char* filename){
 	ReadPDGTable(gBaseDir + "pdgtable.txt");
 
 	cout << "ssdlanalysis ----------------  isdata "  << fIsData << endl;
-	static const int gM0bins(150), gM0min(0), gM0max(3000), gM12bins(50), gM12min(0), gM12max(1000);
 	if(!fIsData){
-		fMsugraCount = new TH2D("msugra_count", "msugra_count", gM0bins, gM0min+10, gM0max+10, gM12bins, gM12min+10, gM12max+10);
-		for (int i=0; i<10; i++) {
-			fProcessCount[i] = new TH2D(Form("msugra_count_process%i",i+1), Form("msugra_count_process%i",i+1), gM0bins, gM0min+10, gM0max+10, gM12bins, gM12min+10, gM12max+10);
-		}
 		// define all x-values for your scan in the header before running this code!
 		fRightHandedSlepCountAll    = new TH2D("RightHandedSlepCountAll" , "RightHandedSlepCountAll" , 300 , 0 , 1500 , 300 , 0 , 1500);
 		fRightHandedCountAll        = new TH2D("RightHandedCountAll"     , "RightHandedCountAll"     , 300 , 0 , 1500 , 300 , 0 , 1500);
@@ -84,10 +79,6 @@ void SSDLAnalysis::Begin(const char* filename){
 //____________________________________________________________________________
 void SSDLAnalysis::End(){
 	if (!fIsData) {
-		fMsugraCount->Write();
-		for (int i=0; i<10; i++) {
-			fProcessCount[i]->Write();
-		}
 		fRightHandedSlepCountAll -> Write();
 		fRightHandedCountAll     -> Write();
 		fTChiSlepSlepCountAll    -> Write();
@@ -216,10 +207,8 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("Event",            &fTEventNumber,       "Event/I");
 	fAnalysisTree->Branch("LumiSec",          &fTLumiSection,       "LumiSec/I");
 
-	fAnalysisTree->Branch("m0",            &fTm0,         "m0/F");
-	fAnalysisTree->Branch("m12",           &fTm12,        "m12/F");
-	fAnalysisTree->Branch("process",       &fTprocess,    "process/I");
 
+	fAnalysisTree->Branch("xSMS",          &fTxSMS,       "xSMS/F");
 	fAnalysisTree->Branch("mGlu",          &fTmGlu,       "mGlu/F");
 	fAnalysisTree->Branch("mChi",          &fTmChi,       "mChi/F");
 	fAnalysisTree->Branch("mLSP",          &fTmLSP,       "mLSP/F");
@@ -232,11 +221,12 @@ void SSDLAnalysis::BookTree(){
 	AddTriggerBranches();
 	
 	// event properties
-	fAnalysisTree->Branch("Rho",           &fTrho,       "Rho/F");
-	fAnalysisTree->Branch("NVrtx",         &fTnvrtx,     "NVrtx/I");
-	fAnalysisTree->Branch("PUWeight",      &fTpuweight,  "PUWeight/F");
-	fAnalysisTree->Branch("PUWeightUp",      &fTpuweightUp,  "PUWeightUp/F");
-	fAnalysisTree->Branch("PUWeightDn",      &fTpuweightDn,  "PUWeightDn/F");
+	fAnalysisTree->Branch("Rho",           &fTrho,         "Rho/F");
+	fAnalysisTree->Branch("NVrtx",         &fTnvrtx,       "NVrtx/I");
+	fAnalysisTree->Branch("PUNInt",        &fTpunint,      "PUNInt/I");
+	fAnalysisTree->Branch("PUWeight",      &fTpuweight,    "PUWeight/F");
+	fAnalysisTree->Branch("PUWeightUp",    &fTpuweightUp,  "PUWeightUp/F");
+	fAnalysisTree->Branch("PUWeightDn",    &fTpuweightDn,  "PUWeightDn/F");
 
 	// single-muon properties
 	fAnalysisTree->Branch("NMus"          ,&fTnqmus,          "NMus/I");
@@ -358,8 +348,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 	if (!fIsData){
 		// --------- all the necessary histograms for counting nEvents in an SMS scan are put here. it's a bit messy
 		// ---------------------------------------------------------------------------------------------------------
-		fMsugraCount->Fill(fTR->M0, fTR->M12);
-		if (fTR->process > 0 && fTR->process < 11) fProcessCount[(fTR->process)-1]->Fill(fTR->M0, fTR->M12);
 		// define some SMS relevant variables here:
 		// isRightHanded: chargino1 decays into taus
 		// TChiSlepSnu 	: charged leptons come from chargino1 ...
@@ -447,9 +435,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 	fTLumiSection = fTR->LumiSection;
 
 	if(!fIsData) {
-		fTm0   = fTR->M0;
-		fTm12  = fTR->M12;
-		fTprocess = fTR->process;
+		fTxSMS = fTR->MassChi; // this doesn't make a lot of sense, but it's the way it is.
 		// sbottom = 1000005 , stop = 1000006, neutralino = 1000022, chi1 = 1000024, gluino = 1000021
 		fTmGlu = fTR->MassGlu; //getSusyMass(1000021, 25);
 		fTmChi = 0.2*fTR->MassGlu + 0.8*fTR->MassLSP; // getSusyMass(1000022, 25);
@@ -550,9 +536,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 	}// end if fIsData
 
 	else {
-		fTm0      = -1;
-		fTm12     = -1;
-		fTprocess = -1;
+		fTxSMS    = -1;
 		fTmGlu    = -1;
 		fTmChi    = -1;
 		fTmLSP    = -1;
@@ -606,8 +590,10 @@ void SSDLAnalysis::FillAnalysisTree(){
 	// if (fabs(1-newmet.first/fTpfMETType1) > 0.001) cout << "Type1MET from marc  with phi: " << newmet.first << " " << newmet.second   << endl;
 
 	// PU correction
-	fTrho   = fTR->Rho;
-	fTnvrtx = fTR->NVrtx;
+	fTrho    = fTR->Rho;
+	fTnvrtx  = fTR->NVrtx;
+	fTpunint = fTR->PUnumInteractions;
+
 	if(!fIsData) {
 		// this is the nominal!! fTpuweight   = GetPUWeight  (fTR->PUnumInteractions);
 		// fTpuweight   = GetPUWeight    (fTR->NVrtx * 1.38); // the factor of 1.38 is derived from 20000 ttW events
@@ -767,9 +753,7 @@ void SSDLAnalysis::ResetTree(){
 	fTEventNumber                = 0;
 	fTLumiSection                = 0;
 
-	fTm0      = -999.99;
-	fTm12     = -999.99;
-	fTprocess = -999;
+	fTxSMS    = -999.99;
 	fTmGlu    = -999.99;
 	fTmChi    = -999.99;
 	fTmLSP    = -999.99;
@@ -798,6 +782,7 @@ void SSDLAnalysis::ResetTree(){
 	
 	fTrho      = -999.99;
 	fTnvrtx    = -999;
+	fTpunint   = -999;
 	fTpuweight = -999.99;
 	fTpuweightUp = -999.99;
 	fTpuweightDn = -999.99;

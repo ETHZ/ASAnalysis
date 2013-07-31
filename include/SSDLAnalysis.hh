@@ -86,8 +86,6 @@ private:
 	JetCorrectionUncertainty *fJetCorrUnc;
 	
 	TTree* fAnalysisTree;
-	TH2D* fMsugraCount;
-	TH2D* fProcessCount[10];
 	TH2D* fRightHandedSlepCountAll;
 	TH2D* fRightHandedCountAll;
 	TH2D* fTChiSlepSlepCountAll;
@@ -113,9 +111,7 @@ private:
 	int   fTEventNumber;
 	int   fTLumiSection;
 
-	float  fTm0;
-	float  fTm12;
-	int    fTprocess;
+	float  fTxSMS;
 	float  fTmGlu;
 	float  fTmChi;
 	float  fTmLSP;
@@ -127,6 +123,7 @@ private:
 	// PileUP info
 	float fTrho;
 	int   fTnvrtx;
+	int   fTpunint;
 	float fTpuweight;
 	float fTpuweightUp;
 	float fTpuweightDn;
