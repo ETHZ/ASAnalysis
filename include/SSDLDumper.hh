@@ -436,11 +436,35 @@ public:
 	std::map<TString , int> gRegion;
 	//std::map< TString , ofstream > outStreamMap;
 	int gNREGIONS;
-	TString gBaseRegion;
+  //	TString gBaseRegion;
 	std::map<TString , int> gSystematics;
 	std::map<TString , int>::const_iterator gsystIt;
-	bool gApplyZVeto;
-        bool gDoWZValidation;
+        
+        // FLAGS FOR THE DUMPER / PLOTTER   
+        bool gDoSystStudies;   
+        bool gTTWZ;            
+        bool gInvertZVeto;     
+        bool gApplyGStarVeto;  
+        TString gBaseRegion;
+        TString gJSONfile;        
+        bool gApplyZVeto;
+        float gMuMaxIso;
+        float gElMaxIso;        
+        float gMaxJetEta;       
+        float gMinJetPt;        
+        bool gMETType1;        
+        
+        bool gDoCutFlowHistos; 
+        bool gDoDiffYields;    
+        bool gDoKinPlots;      
+        bool gDoWZValidation;  
+        bool gDoIDElePlots;    
+        bool gDoIsoPlots;      
+        bool gDoPileUpPlots;   
+        bool gDoRatioPlots;    
+        bool gDoTLRatioPlots;  
+        bool gDoChMisIDPlots;  
+        bool gDoIntPredYields; 
 
 	class Sample{
 	public:
@@ -657,7 +681,8 @@ public:
 
 	SSDLDumper(TString configfile = "dumperconfig.cfg");
 	virtual ~SSDLDumper();
-
+        
+        virtual void setVariables(char*);
 	virtual void init();
 	virtual void init(TString); // samples read from a datacard
 	virtual void init(TString, TString, int, float, int = -1); // running on single sample

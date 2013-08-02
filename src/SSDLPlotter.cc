@@ -432,10 +432,9 @@ void SSDLPlotter::doAnalysis(){
 	ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
 
 	// makeROCCurve(); return;
-	// makePileUpPlots(); // loops on all data!
+	if (gDoPileUpPlots)   makePileUpPlots(); // loops on all data!
+	if (gDoCutFlowHistos) printCutFlows(fOutputDir + "CutFlow.txt");
 	
-	// printCutFlows(fOutputDir + "CutFlow.txt");
-
 	// makeOriginPlots(gRegion["Baseline"]);
 	// printOrigins(gRegion["Baseline"]);
 	// makeOriginPlots(HT0MET120);
@@ -443,45 +442,55 @@ void SSDLPlotter::doAnalysis(){
 	// makeOriginPlots(HT0MET120lV);
 	// printOrigins(HT0MET120lV);
 
-	// makeMuIsolationPlots(true); // if true, loops on TTbar sample
-	// makeElIsolationPlots(true); // if true, loops on TTbar sample
-	// makeElIdPlots();
-	// makeNT2KinPlots(false);
-	//	makeNT2KinPlots(true);
+	if (gDoIsoPlots)  {
+	        makeMuIsolationPlots(true); // if true, loops on TTbar sample
+		makeElIsolationPlots(true); // if true, loops on TTbar sample
+	}
+	if (gDoIDElePlots)  makeElIdPlots();
+	if (gDoKinPlots)  { 
+	        makeNT2KinPlots(false);
+		makeNT2KinPlots(true);
+	}
+	
 	// makeMETvsHTPlot(fMuData, fEGData, fMuEGData, HighPt);
 
 	// makeMETvsHTPlotPRL();
 	//	makeMETvsHTPlot0HT();
 	// makeMETvsHTPlotTau();
 
-	// makeRatioPlots(Muon);
-	// makeRatioPlots(Elec);
-	// make2DRatioPlots(Muon);
-	// make2DRatioPlots(Elec);
-	// makeNTightLoosePlots(Muon);
-	// makeNTightLoosePlots(Elec);
-
-	// makeFRvsPtPlots(Muon, SigSup);
-	// makeFRvsPtPlots(Elec, SigSup);
-	// makeFRvsPtPlots(Muon, ZDecay);
-	// makeFRvsPtPlots(Elec, ZDecay);
-	// // makeFRvsNVPlots(Muon, ZDecay); 
-	// // makeFRvsNVPlots(Elec, ZDecay);
-	// makeFRvsEtaPlots(Muon);
-	// makeFRvsEtaPlots(Elec);
-	// makeChMidvsPtPlots();
-
-	// makeAllClosureTestsTTW();
-	//makeAllIntPredictions();
-	//makeAllClosureTests();
-
-	makeKinematicPlotsPaper();
-	//makeDiffPrediction();
-	// makeTTWDiffPredictions();
-	// makeTTWIntPredictions();
-	//printAllYieldTables();
+	if (gDoRatioPlots) {
+	       makeRatioPlots(Muon);
+	       makeRatioPlots(Elec);
+	       make2DRatioPlots(Muon);
+	       make2DRatioPlots(Elec);
+	       makeNTightLoosePlots(Muon);
+	       makeNTightLoosePlots(Elec);
+	}
+	if (gDoTLRatioPlots) {
+	       makeFRvsPtPlots(Muon, SigSup);
+	       makeFRvsPtPlots(Elec, SigSup);
+	       makeFRvsPtPlots(Muon, ZDecay);
+	       makeFRvsPtPlots(Elec, ZDecay);
+	       // makeFRvsNVPlots(Muon, ZDecay); 
+	       // // makeFRvsNVPlots(Elec, ZDecay);
+	       // makeFRvsEtaPlots(Muon);
+	       // makeFRvsEtaPlots(Elec);
+	       // makeChMidvsPtPlots();
+	}
 	
+	if (gDoIntPredYields){
+	       // makeAllClosureTestsTTW();
+	       makeAllIntPredictions();
+	       // makeAllClosureTests();
+	       //printAllYieldTables();
+	       // makeTTWDiffPredictions();
+	       // makeTTWIntPredictions();
+	}
 
+	if (gDoDiffYields){
+	       makeDiffPrediction();
+	}
+	makeKinematicPlotsPaper();
 	
 //	makeFakeGenIDTables();
 //	makeMIDIsolationPlots(Muon, SigSup);
@@ -18350,95 +18359,85 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 		}
 		
 		// Differential predictions
-		if(flag != 0) continue;
-		float maxpt = TMath::Max(pT1, pT2);
- 		float minpt = TMath::Min(pT1, pT2);
+		if (gDoDiffYields) {
+		        if(flag != 0) continue;
+			float maxpt = TMath::Max(pT1, pT2);
+			float minpt = TMath::Min(pT1, pT2);
+			
+			if(MET > 30. && maxpt > 20. && minpt > 20.){
+			        fillWithoutOF(S->diffyields[chan].hnpp[8], MET, puweight * npp);
+				fillWithoutOF(S->diffyields[chan].hnpf[8], MET, puweight * npf);
+				fillWithoutOF(S->diffyields[chan].hnfp[8], MET, puweight * nfp);
+				fillWithoutOF(S->diffyields[chan].hnff[8], MET, puweight * nff);
+			}
+
+			// Check pt cuts of baseRegion:
+			bool passespt = passesPtCuts(pT1, pT2, baseRegion, chan);
 		
- 		if(MET > 30. && maxpt > 20. && minpt > 20.){
-		  // not in benjamins code if(HT        >= gRegions[baseRegion]->minHT     &&
-		  // not in benjamins code    HT        <  gRegions[baseRegion]->maxHT     &&
-		  // not in benjamins code    njets     >= gRegions[baseRegion]->minNjets  &&
-		  // not in benjamins code    njets     <= gRegions[baseRegion]->maxNjets  && 
-		  // not in benjamins code    nbjets    >= gRegions[baseRegion]->minNbjets &&
-		  // not in benjamins code    nbjets    <= gRegions[baseRegion]->maxNbjets &&
-		  // not in benjamins code    nbjetsmed >= gRegions[baseRegion]->minNbjmed &&
-		  // not in benjamins code    nbjetsmed <= gRegions[baseRegion]->maxNbjmed){
-			fillWithoutOF(S->diffyields[chan].hnpp[8], MET, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[8], MET, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[8], MET, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[8], MET, puweight * nff);
-		  // not in benjamins code    }
+			if(HT        >= gRegions[baseRegion]->minHT     &&
+			   HT        <  gRegions[baseRegion]->maxHT     &&
+			   MET       >  gRegions[baseRegion]->minMet    &&
+			   MET       <  gRegions[baseRegion]->maxMet    &&
+			   nbjets    >= gRegions[baseRegion]->minNbjets &&
+			   nbjets    <= gRegions[baseRegion]->maxNbjets &&
+			   nbjetsmed >= gRegions[baseRegion]->minNbjmed &&
+			   nbjetsmed <= gRegions[baseRegion]->maxNbjmed &&
+			   passespt) 		  			  {
+			        fillWithoutOF(S->diffyields[chan].hnpp[2], njets+0.5, puweight * npp);
+				fillWithoutOF(S->diffyields[chan].hnpf[2], njets+0.5, puweight * npf);
+				fillWithoutOF(S->diffyields[chan].hnfp[2], njets+0.5, puweight * nfp);
+				fillWithoutOF(S->diffyields[chan].hnff[2], njets+0.5, puweight * nff);
+				
+				if(njets     >= gRegions[baseRegion]->minNjets  &&
+				   njets     <= gRegions[baseRegion]->maxNjets  )				  {
+
+				        fillWithoutOF(S->diffyields[chan].hnpp[0], HT, puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[0], HT, puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[0], HT, puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[0], HT, puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[1], MET, puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[1], MET, puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[1], MET, puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[1], MET, puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[3], MT2, puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[3], MT2, puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[3], MT2, puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[3], MT2, puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[4], std::max(pT1,pT2), puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[4], std::max(pT1,pT2), puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[4], std::max(pT1,pT2), puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[4], std::max(pT1,pT2), puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[5], std::min(pT1,pT2), puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[5], std::min(pT1,pT2), puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[5], std::min(pT1,pT2), puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[5], std::min(pT1,pT2), puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[6], nbjets+0.5, puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[6], nbjets+0.5, puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[6], nbjets+0.5, puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[6], nbjets+0.5, puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[7], MET, puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[7], MET, puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[7], MET, puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[7], MET, puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[9], nbjetsmed+0.5, puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[9], nbjetsmed+0.5, puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[9], nbjetsmed+0.5, puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[9], nbjetsmed+0.5, puweight * nff);
+					
+					fillWithoutOF(S->diffyields[chan].hnpp[10], nbjetsmed+0.5, puweight * npp);
+					fillWithoutOF(S->diffyields[chan].hnpf[10], nbjetsmed+0.5, puweight * npf);
+					fillWithoutOF(S->diffyields[chan].hnfp[10], nbjetsmed+0.5, puweight * nfp);
+					fillWithoutOF(S->diffyields[chan].hnff[10], nbjetsmed+0.5, puweight * nff);
+				}
+			}
 		}
-
-		// Check pt cuts of baseRegion:
- 		bool passespt = passesPtCuts(pT1, pT2, baseRegion, chan);
-		
-		if(HT        >= gRegions[baseRegion]->minHT     &&
-		   HT        <  gRegions[baseRegion]->maxHT     &&
- 		   MET       >  gRegions[baseRegion]->minMet    &&
- 		   MET       <  gRegions[baseRegion]->maxMet    &&
- 		   nbjets    >= gRegions[baseRegion]->minNbjets &&
- 		   nbjets    <= gRegions[baseRegion]->maxNbjets &&
- 		   nbjetsmed >= gRegions[baseRegion]->minNbjmed &&
-		   nbjetsmed <= gRegions[baseRegion]->maxNbjmed &&
- 		   passespt) 		  
-		{
-			fillWithoutOF(S->diffyields[chan].hnpp[2], njets+0.5, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[2], njets+0.5, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[2], njets+0.5, puweight * nfp);
- 			fillWithoutOF(S->diffyields[chan].hnff[2], njets+0.5, puweight * nff);
-  	
- 		if(njets     >= gRegions[baseRegion]->minNjets  &&
-		   njets     <= gRegions[baseRegion]->maxNjets  )
-		   {
-
-			fillWithoutOF(S->diffyields[chan].hnpp[0], HT, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[0], HT, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[0], HT, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[0], HT, puweight * nff);
-			
-			fillWithoutOF(S->diffyields[chan].hnpp[1], MET, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[1], MET, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[1], MET, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[1], MET, puweight * nff);
-			
-			fillWithoutOF(S->diffyields[chan].hnpp[3], MT2, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[3], MT2, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[3], MT2, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[3], MT2, puweight * nff);
-			
-			fillWithoutOF(S->diffyields[chan].hnpp[4], std::max(pT1,pT2), puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[4], std::max(pT1,pT2), puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[4], std::max(pT1,pT2), puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[4], std::max(pT1,pT2), puweight * nff);
-			
-			fillWithoutOF(S->diffyields[chan].hnpp[5], std::min(pT1,pT2), puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[5], std::min(pT1,pT2), puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[5], std::min(pT1,pT2), puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[5], std::min(pT1,pT2), puweight * nff);
-			
-			fillWithoutOF(S->diffyields[chan].hnpp[6], nbjets+0.5, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[6], nbjets+0.5, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[6], nbjets+0.5, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[6], nbjets+0.5, puweight * nff);
-			
-			fillWithoutOF(S->diffyields[chan].hnpp[7], MET, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[7], MET, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[7], MET, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[7], MET, puweight * nff);
-
-			fillWithoutOF(S->diffyields[chan].hnpp[9], nbjetsmed+0.5, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[9], nbjetsmed+0.5, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[9], nbjetsmed+0.5, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[9], nbjetsmed+0.5, puweight * nff);
-			
-			fillWithoutOF(S->diffyields[chan].hnpp[10], nbjetsmed+0.5, puweight * npp);
-			fillWithoutOF(S->diffyields[chan].hnpf[10], nbjetsmed+0.5, puweight * npf);
-			fillWithoutOF(S->diffyields[chan].hnfp[10], nbjetsmed+0.5, puweight * nfp);
-			fillWithoutOF(S->diffyields[chan].hnff[10], nbjetsmed+0.5, puweight * nff);
-		   }
-		}
-
 		if( fDO_OPT && flav<3 && flag == 0){
 			float lumi_pb = 9000.;
 			eventWeight = lumi_pb*puweight/slumi;
