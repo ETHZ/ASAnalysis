@@ -9,7 +9,6 @@ SSDLAnalyzer::SSDLAnalyzer(std::vector<std::string>& fileList, bool isdata, stri
 
 SSDLAnalyzer::~SSDLAnalyzer(){
 	delete fSSDLAnalysis;
-	// MARC if(!fTR->fChain) cout << "SSDLAnalyzer ==> No chain!" << endl;
 }
 
 // Method for looping over the tree
@@ -31,10 +30,6 @@ void SSDLAnalyzer::Loop(){
 			++(*fTR) ) 
 		{
 			PrintProgress(jentry++);
-
-			// MARC PrintProgress(jentry);
-			// MARC // Prescale processing...
-			// MARC if ( prescale>1 && jentry%prescale ) continue;
 
 			fTR->GetEntry(jentry);
 
