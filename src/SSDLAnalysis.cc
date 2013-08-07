@@ -243,6 +243,8 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("MuPFNeIsoUnc"  ,&fTmupfneisounc,   "MuPFNeIsoUnc[NMus]/F");
 	fAnalysisTree->Branch("MuRadIso"      ,&fTmuradiso,       "MuRadIso[NMus]/F");
 	fAnalysisTree->Branch("MuD0"          ,&fTmud0,           "MuD0[NMus]/F");
+	fAnalysisTree->Branch("MuD03D"        ,&fTmud03D,         "MuD03D[NMus]/F");
+	fAnalysisTree->Branch("MuD03DE"       ,&fTmud03DErr,      "MuD03DE[NMus]/F");
 	fAnalysisTree->Branch("MuDz"          ,&fTmudz,           "MuDz[NMus]/F");
 	fAnalysisTree->Branch("MuEMVetoEt"    ,&fTmuEMVetoEt,     "MuEMVetoEt[NMus]/F");
 	fAnalysisTree->Branch("MuHadVetoEt"   ,&fTmuHadVetoEt,    "MuHadVetoEt[NMus]/F");
@@ -267,6 +269,8 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElPhi",                  &fTElphi,               "ElPhi[NEls]/F");
 	fAnalysisTree->Branch("ElD0",                   &fTEld0,                "ElD0[NEls]/F");
 	fAnalysisTree->Branch("ElD0Err",                &fTElD0Err,             "ElD0Err[NEls]/F");
+	fAnalysisTree->Branch("ElD03D",                 &fTEld03D,              "ElD03D[NEls]/F");
+	fAnalysisTree->Branch("ElD03DErr",              &fTElD03DErr,           "ElD03DErr[NEls]/F");
 	fAnalysisTree->Branch("ElDz",                   &fTEldz,                "ElDz[NEls]/F");
 	fAnalysisTree->Branch("ElDzErr",                &fTElDzErr,             "ElDzErr[NEls]/F");
 	fAnalysisTree->Branch("ElDetIso",               &fTElDetIso,            "ElDetIso[NEls]/F");
@@ -414,19 +418,17 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	// Do object selections
 	vector<int> selectedMuInd  = MuonSelection(           &UserAnalysisBase::IsMostBasicMu);
-	vector<int> looseMuInd     = MuonSelection(           &UserAnalysisBase::IsLooseMu);
-	vector<int> selectedElInd  = ElectronSelection(       &UserAnalysisBase::IsLooseEl);
+	vector<int> selectedElInd  = ElectronSelection(       &UserAnalysisBase::ElPassesPOGVetoID);
 	vector<int> selectedTauInd = TauSelection(            &UserAnalysisBase::IsLooseTau);
 	vector<int> selectedJetInd = PFJetSelection(15., 2.5, &UserAnalysisBase::IsGoodBasicPFJet);
 	fTnqmus  = std::min( (int)selectedMuInd .size(), fMaxNmus );
 	fTnqels  = std::min( (int)selectedElInd .size(), fMaxNeles);
 	fTnqtaus = std::min( (int)selectedTauInd.size(), fMaxNtaus);
 	fTnqjets = std::min( (int)selectedJetInd.size(), fMaxNjets);
-	int nLooseMus = std::min( (int)looseMuInd .size(), fMaxNmus );
 
 	// Require at least one loose lepton
 	// if( (fTnqmus + fTnqels) < 1 ) return;
-	if( (nLooseMus + fTnqels) < 1 ) return;
+	if( (fTnqmus + fTnqels) < 1 ) return;
 	fCounter.fill(fCutnames[3]);
 
 	// Event and run info
@@ -449,7 +451,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 		if (gDoPDFs) {
 
 			// ===========================================================================
-	
 			// pdfstuff /swshare/cms/slc5_amd64_gcc462/external/lhapdf/5.8.5-cms2/share/lhapdf/PDFsets/
 			// "MRST2006nnlo.LHgrid"
 			// "NNPDF10_100.LHgrid"
@@ -462,10 +463,8 @@ void SSDLAnalysis::FillAnalysisTree(){
 			double pdf_xpdf1, pdf_xpdf2;
 			double newxfx1, newxfx2;
 
-			// SAVE WEIGHTS FOR CTEQ
-			// ==========================
-			// std::cout << LHAPDF::numberPDF() << std::endl;
-			//LHAPDF::initPDFSet(1,"CT10.LHgrid");
+			// SAVE WEIGHTS FOR FIRST PDFSET
+			// ==================================
 			LHAPDF::initPDFSet(1,"cteq61.LHgrid");
 			
 			LHAPDF::initPDF(1,0);
@@ -474,20 +473,16 @@ void SSDLAnalysis::FillAnalysisTree(){
 			pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
 				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
 			for(int pdf=0; pdf < fTNPdfCTEQ; pdf++){
-				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(1, pdf);
 				newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
 				fTWPdfCTEQ[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
 			}
 
 			
-			//LHAPDF::initPDFSet(2,"cteq61.LHgrid");
+			// SAVE WEIGHTS FOR SECOND PDFSET
+			// ==================================
 			LHAPDF::initPDFSet(2, "CT10.LHgrid");
 			LHAPDF::initPDF(2, 0);
 			LHAPDF::usePDFMember(2, 0);
@@ -495,21 +490,16 @@ void SSDLAnalysis::FillAnalysisTree(){
 			pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
 				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
 			for(int pdf=0; pdf < fTNPdfCT10; pdf++){
-				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(2, pdf);
 				newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
 				fTWPdfCT10[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
 			}
 
 
-			
-			//LHAPDF::initPDFSet(3, "MRST2006nnlo.LHgrid");
+			// SAVE WEIGHTS FOR THIRD PDFSET
+			// ==================================
 			LHAPDF::initPDFSet(3, "MSTW2008nnlo90cl.LHgrid");
 			LHAPDF::initPDF(3, 0);
 			LHAPDF::usePDFMember(3, 0);
@@ -517,16 +507,11 @@ void SSDLAnalysis::FillAnalysisTree(){
 			pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
 				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
 			for(int pdf=0; pdf < fTNPdfMRST; pdf++){
-				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(3, pdf);
 				newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
 				fTWPdfMRST[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
 			}
 
 			// ===========================================================================
@@ -595,14 +580,15 @@ void SSDLAnalysis::FillAnalysisTree(){
 	fTpunint = fTR->PUnumInteractions;
 
 	if(!fIsData) {
-		// this is the nominal!! fTpuweight   = GetPUWeight  (fTR->PUnumInteractions);
+		fTpuweight   = GetPUWeight    (fTR->PUnumInteractions);
+		fTpuweightUp = GetPUWeightUp  (fTR->PUnumInteractions);
+		fTpuweightDn = GetPUWeightDown(fTR->PUnumInteractions);
+		// =============================================================
+		// the commented lines are for samples which don't have the PUnumInteractions variables
 		// fTpuweight   = GetPUWeight    (fTR->NVrtx * 1.38); // the factor of 1.38 is derived from 20000 ttW events
 		// fTpuweightUp = GetPUWeightUp  (fTR->NVrtx * 1.38);
 		// fTpuweightDn = GetPUWeightDown(fTR->NVrtx * 1.38);
 		// =============================================================
-		fTpuweight   = GetPUWeight    (fTR->PUnumInteractions); // the factor of 1.38 is derived from 20000 ttW events
-		fTpuweightUp = GetPUWeightUp  (fTR->PUnumInteractions);
-		fTpuweightDn = GetPUWeightDown(fTR->PUnumInteractions);
 	}
 	else {
 		fTpuweight   = 1.;
@@ -619,26 +605,40 @@ void SSDLAnalysis::FillAnalysisTree(){
 	// Dump muon properties
 	for(int i = 0; i < fTnqmus; ++i){
 		int index = selectedMuInd[i];
-		fTmupt    [i] = fTR->MuPt      [index];
-		fTmueta   [i] = fTR->MuEta     [index];
-		fTmuphi   [i] = fTR->MuPhi     [index];
-		fTmucharge[i] = fTR->MuCharge  [index];
-		fTmupfiso [i] = MuPFIso(index);
-		fTmupfiso04 [i] = MuPFIso04(index);
-		fTmudetiso[i] = fTR->MuRelIso03[index];
-		fTmupfchiso[i] = fTR->MuPfIsoR03ChHad[index] / fTR->MuPt[index];
-		fTmupfneiso[i] = (fTR->MuPfIsoR03NeHad[index] + fTR->MuPfIsoR03Photon[index] - 0.5*fTR->MuPfIsoR03SumPUPt[index] ) / fTR->MuPt[index];
-		fTmupfneisounc[i] = (fTR->MuPfIsoR03NeHad[index] + fTR->MuPfIsoR03Photon[index]) / fTR->MuPt[index];
-		fTmuradiso[i] = MuRadIso(index);
-		fTmud0    [i] = fTR->MuD0PV    [index];
-		fTmudz    [i] = fTR->MuDzPV    [index];
-		fTmuptE   [i] = fTR->MuPtE     [index];
-		fTmuEMVetoEt [i] = fTR->MuIso03EMVetoEt [index];
-		fTmuHadVetoEt[i] = fTR->MuIso03HadVetoEt[index];
-		fTmuPassesTightID[i] = IsGoodBasicMu(index);
+		fTmupt    [i]        = fTR->MuPt      [index];
+		fTmueta   [i]        = fTR->MuEta     [index];
+		fTmuphi   [i]        = fTR->MuPhi     [index];
+		fTmucharge[i]        = fTR->MuCharge  [index];
+
+		// Muon ID variables
+		fTmud0           [i] = fTR->MuD0PV    [index];
+		fTmud03D         [i] = fTR->MuD03DPV  [index];
+		fTmud03DErr      [i] = fTR->MuD03DE   [index];
+		fTmudz           [i] = fTR->MuDzPV    [index];
+		fTmuptE          [i] = fTR->MuPtE     [index];
+		fTmuEMVetoEt     [i] = fTR->MuIso03EMVetoEt [index];
+		fTmuHadVetoEt    [i] = fTR->MuIso03HadVetoEt[index];
+		fTmuPassesTightID[i] = MuPassesPOGTightID(index);
+
+		// Muon isolations
+		fTmupfiso     [i]    = MuPFIso(index);
+		fTmupfiso04   [i]    = MuPFIso04(index);
+		fTmudetiso    [i]    = fTR->MuRelIso03[index];
+		fTmupfchiso   [i]    = fTR->MuPfIsoR03ChHad[index] / fTR->MuPt[index];
+		fTmupfneiso   [i]    = (fTR->MuPfIsoR03NeHad[index] + fTR->MuPfIsoR03Photon[index] - 0.5*fTR->MuPfIsoR03SumPUPt[index] ) / fTR->MuPt[index];
+		fTmupfneisounc[i]    = (fTR->MuPfIsoR03NeHad[index] + fTR->MuPfIsoR03Photon[index]) / fTR->MuPt[index];
+		fTmuradiso    [i]    = MuRadIso(index);
 		
+		// Calculate mT:
+		TLorentzVector pmu;
+		pmu.SetXYZM(fTR->MuPx[index], fTR->MuPy[index], fTR->MuPz[index], 0.105);	
+		double ETlept = sqrt(pmu.M2() + pmu.Perp2());
+		double METpx  = fTR->PFType1METpx;
+		double METpy  = fTR->PFType1METpy;
+		fTmuMT[i]     = sqrt( 2*(fTR->PFType1MET*ETlept - pmu.Px()*METpx - pmu.Py()*METpy ));
+
 		if(fIsData == false){ // mc truth information
-		        fTIsSignalMuon[i] = IsSignalMuon(index, fTmuid[i], fTmumoid[i], fTmugmoid[i])? 1:0;
+			fTIsSignalMuon[i] = IsSignalMuon(index, fTmuid[i], fTmumoid[i], fTmugmoid[i])? 1:0;
 			pdgparticle mu, mo, gmo;
 			GetPDGParticle(mu,  abs(fTmuid     [i]));
 			GetPDGParticle(mo,  abs(fTmumoid   [i]));
@@ -656,40 +656,71 @@ void SSDLAnalysis::FillAnalysisTree(){
 			fTIsSignalMuon[i] = -999;
 		}
 		
-		// Calculate mT:
-		TLorentzVector pmu;
-		pmu.SetXYZM(fTR->MuPx[index], fTR->MuPy[index], fTR->MuPz[index], 0.105);	
-		double ETlept = sqrt(pmu.M2() + pmu.Perp2());
-		double METpx  = fTR->PFType1METpx;
-		double METpy  = fTR->PFType1METpy;
-		fTmuMT[i]     = sqrt( 2*(fTR->PFType1MET*ETlept - pmu.Px()*METpx - pmu.Py()*METpy ));
 	}
 
 	// Dump electron properties
 	for(int ind = 0; ind < fTnqels; ind++){
 		int elindex = selectedElInd[ind];
-		fTElcharge          [ind] = fTR->ElCharge                [elindex];
-		fTElChargeIsCons    [ind] = fTR->ElCInfoIsGsfCtfScPixCons[elindex];
+
 		fTElpt              [ind] = fTR->ElPt                    [elindex];
 		fTEleta             [ind] = fTR->ElEta                   [elindex];
-		fTElSCeta           [ind] = fTR->ElSCEta                 [elindex];
 		fTElphi             [ind] = fTR->ElPhi                   [elindex];
-		fTEld0              [ind] = fTR->ElD0PV                  [elindex];
-		fTElD0Err           [ind] = fTR->ElD0E                   [elindex];
+		fTElSCeta           [ind] = fTR->ElSCEta                 [elindex];
+		fTElcharge          [ind] = fTR->ElCharge                [elindex];
+
+		// Electron ID variables
+		fTElChargeIsCons    [ind] = fTR->ElCInfoIsGsfCtfScPixCons[elindex];
 		fTEldz              [ind] = fTR->ElDzPV                  [elindex];
 		fTElDzErr           [ind] = fTR->ElDzE                   [elindex];
-		fTElPFIso           [ind] = ElPFIso(elindex);
-		fTElDetIso          [ind] = relElIso(elindex);
+
+		fTEld0              [ind] = fTR->ElD0PV                  [elindex];
+		fTElD0Err           [ind] = fTR->ElD0E                   [elindex];
+		fTEld03D            [ind] = fTR->ElD03DPV                [elindex];
+		fTElD03DErr         [ind] = fTR->ElD03DE                 [elindex];
+
+		fTElDPhi            [ind] = fTR->ElDeltaPhiSuperClusterAtVtx[elindex];
+		fTElDEta            [ind] = fTR->ElDeltaEtaSuperClusterAtVtx[elindex];
+		fTElSigmaIetaIeta   [ind] = fTR->ElSigmaIetaIeta            [elindex];
+		fTElHoverE          [ind] = fTR->ElHcalOverEcal             [elindex];
+		fTElEPthing         [ind] = ElEPThing(elindex);
+		
+
+		// full ID sets
+		fTElIsGoodElId_LooseWP [ind] = ElPassesPOGLooseWP (elindex);
+		fTElIsGoodElId_MediumWP[ind] = ElPassesPOGMediumWP(elindex);
+		fTElIsGoodTriggerEl    [ind] = IsGoodTriggerEl    (elindex);
+
+		fTElMVAIDnoTrig        [ind] = fTR->ElIDMVANoTrig[elindex];
+		fTElMVAIDTrig          [ind] = fTR->ElIDMVATrig[elindex];
+		
+		// Electron Isolation variables
+
+		// detector isolation
+		// --------------------------
+		fTElDetIso          [ind] = ElRelDetIso(elindex); // standard detector isolation
+		fTElEcalRecHitSumEt [ind] = fTR->ElDR03EcalRecHitSumEt      [elindex];
+		fTElHcalTowerSumEt  [ind] = fTR->ElDR03HcalTowerSumEt       [elindex];
+		fTElTkSumPt         [ind] = fTR->ElDR03TkSumPt              [elindex];
+
+		// PF isolation
+		// --------------------------
+		fTElPFIso           [ind] = ElPFIso(elindex);     // standard, corrected PF isolation
 		fTElPFchiso         [ind] = fTR->ElEventelPFIsoValueCharged03PFIdStandard[elindex] / fTR->ElPt[elindex];
 		double neutral = fTR->ElEventelPFIsoValueNeutral03PFIdStandard[elindex] + fTR->ElEventelPFIsoValueGamma03PFIdStandard[elindex];
 		double rhocorr = fTR->RhoForIso * Aeff(fTR->ElSCEta[elindex]);
 		fTElPFneiso         [ind] = TMath::Max(0., neutral - rhocorr) / fTR->ElPt[elindex];
 		fTElRadIso          [ind] = ElRadIso(elindex);
-		fTElMVAIDnoTrig     [ind] = fTR->ElIDMVANoTrig[elindex];
-		fTElMVAIDTrig       [ind] = fTR->ElIDMVATrig[elindex];
 		
+		// Calculate mT:
+		TLorentzVector pel;
+		pel.SetXYZM(fTR->ElPx[elindex], fTR->ElPy[elindex], fTR->ElPz[elindex], 0.0005);
+		double ETlept = sqrt(pel.M2() + pel.Perp2());
+		double METpx  = fTR->PFType1METpx;
+		double METpy  = fTR->PFType1METpy;
+		fTElMT[ind]   = sqrt( 2*(fTR->PFType1MET*ETlept - pel.Px()*METpx - pel.Py()*METpy ));
+
 		if(fIsData == false){ // mc truth information		
-		        fTIsSignalElectron[ind] = IsSignalElectron(elindex, fTElGenID  [ind], fTElGenMID [ind], fTElGenGMID[ind])? 1:0;
+			fTIsSignalElectron[ind] = IsSignalElectron(elindex, fTElGenID  [ind], fTElGenMID [ind], fTElGenGMID[ind])? 1:0;
 			pdgparticle el, emo, egmo;
 			GetPDGParticle(el,   abs(fTElGenID  [ind]));
 			GetPDGParticle(emo,  abs(fTElGenMID [ind]));
@@ -707,28 +738,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 			fTElGenGMType[ind] = -888;   
 			fTIsSignalElectron[ind] = -999;
 		}
-		
-		// Calculate mT:
-		TLorentzVector pel;
-		pel.SetXYZM(fTR->ElPx[elindex], fTR->ElPy[elindex], fTR->ElPz[elindex], 0.0005);
-		double ETlept = sqrt(pel.M2() + pel.Perp2());
-		double METpx  = fTR->PFType1METpx;
-		double METpy  = fTR->PFType1METpy;
-		fTElMT[ind]   = sqrt( 2*(fTR->PFType1MET*ETlept - pel.Px()*METpx - pel.Py()*METpy ));
-
-		// Electron ID
-		fTElEcalRecHitSumEt[ind] = fTR->ElDR03EcalRecHitSumEt      [elindex];
-		fTElHcalTowerSumEt [ind] = fTR->ElDR03HcalTowerSumEt       [elindex];
-		fTElTkSumPt        [ind] = fTR->ElDR03TkSumPt              [elindex];
-		fTElDPhi           [ind] = fTR->ElDeltaPhiSuperClusterAtVtx[elindex];
-		fTElDEta           [ind] = fTR->ElDeltaEtaSuperClusterAtVtx[elindex];
-		fTElSigmaIetaIeta  [ind] = fTR->ElSigmaIetaIeta            [elindex];
-		fTElHoverE         [ind] = fTR->ElHcalOverEcal             [elindex];
-		fTElEPthing          [ind] = fabs(1/fTR->ElCaloEnergy[elindex] - fTR->ElESuperClusterOverP[elindex]/fTR->ElCaloEnergy[elindex]);
-		
-		fTElIsGoodElId_LooseWP [ind] = IsGoodElId_LooseWP (elindex);
-		fTElIsGoodElId_MediumWP[ind] = IsGoodElId_MediumWP(elindex);
-		fTElIsGoodTriggerEl    [ind] = IsGoodTriggerEl    (elindex);
 	}
 
 	// Dump tau properties
@@ -803,6 +812,8 @@ void SSDLAnalysis::ResetTree(){
 		fTmupfneisounc  [i] = -999.99;
 		fTmuradiso      [i] = -999.99;
 		fTmud0          [i] = -999.99;
+		fTmud03D        [i] = -999.99;
+		fTmud03DErr     [i] = -999.99;
 		fTmudz          [i] = -999.99;
 		fTmuptE         [i] = -999.99;
 		fTmuEMVetoEt    [i] = -999.99;
@@ -829,6 +840,8 @@ void SSDLAnalysis::ResetTree(){
 		fTElphi             [i] = -999.99;
 		fTEld0              [i] = -999.99;
 		fTElD0Err           [i] = -999.99;
+		fTEld03D            [i] = -999.99;
+		fTElD03DErr         [i] = -999.99;
 		fTEldz              [i] = -999.99;
 		fTElDzErr           [i] = -999.99;
 		fTElDetIso          [i] = -999.99;
@@ -879,8 +892,6 @@ void SSDLAnalysis::ResetTree(){
 		fTJetenergy[i]    = -999.99;
 		fTJetbtag1[i]     = -999.99;
 		fTJetbtag2[i]     = -999.99;
-		// MARC fTJetbtag3[i]     = -999.99;
-		// MARC fTJetbtag4[i]     = -999.99;
 		fTJetArea[i]      = -999.99;
 		fTJetCorr[i]      = -999.99;
 		fTJetCorrUnc[i]   = -999.99;
@@ -1126,17 +1137,4 @@ int SSDLAnalysis::GenJetMatch(int index){
 		match = i;
 	}
 	return match;
-}
-
-//____________________________________________________________________________
-// Same-sign specific isolation
-double SSDLAnalysis::corrMuIso(int index){
-	double newiso = fTR->MuRelIso03[index] - TMath::Log(fTR->MuPt[index]) * (fTR->NVrtx - 1) / (30. * fTR->MuPt[index]);
-	if(newiso < 0.) newiso = 0.; // cut off at 0
-	return newiso;
-}
-double SSDLAnalysis::corrElIso(int index){
-	double newiso = relElIso(index) - TMath::Log(fTR->ElPt[index]) * (fTR->NVrtx - 1) / (30. * fTR->ElPt[index]);
-	if(newiso < 0.) newiso = 0.; // cut off at 0
-	return newiso;
 }

@@ -5479,7 +5479,8 @@ bool SSDLDumper::passesJet50CutdPhi(int ind, gChannel chan){
 	// float leppt  = (chan == Muon) ? MuPt[ind]  : ElPt[ind];
 	// float lepm   = (chan == Muon) ? gMMU       : gMEL;
 	// get dphi to only jet with pt > 50
-	float dphi = fabs(JetPhi[jetinds[0]] - lepphi);
+	// float dphi = fabs(JetPhi[jetinds[0]] - lepphi);
+	float dphi = Util::DeltaPhi(JetPhi[jetinds[0]], lepphi );
 	// TLorentzVector lep, jet;
 	// lep.SetPtEtaPhiM(leppt, lepeta, lepphi, lepm);
 	// jet.SetPtEtaPhiE(JetPt[jetinds[0]], JetEta[jetinds[0]], JetPhi[jetinds[0]], JetEnergy[jetinds[0]]);

@@ -173,6 +173,8 @@ private:
 	float fTmuradiso      [fMaxNmus];
 	int   fTmucharge      [fMaxNmus];
 	float fTmud0          [fMaxNmus];
+	float fTmud03D        [fMaxNmus];
+	float fTmud03DErr     [fMaxNmus];
 	float fTmudz          [fMaxNmus];
 	float fTmuptE         [fMaxNmus];
 	float fTmuEMVetoEt    [fMaxNmus];
@@ -197,6 +199,8 @@ private:
 	float fTElphi            [fMaxNeles];
 	float fTEld0             [fMaxNeles];
 	float fTElD0Err          [fMaxNeles];
+	float fTEld03D           [fMaxNeles];
+	float fTElD03DErr        [fMaxNeles];
 	float fTEldz             [fMaxNeles];
 	float fTElDzErr          [fMaxNeles];
 	float fTElDetIso         [fMaxNeles];
@@ -214,8 +218,6 @@ private:
 	float fTElSigmaIetaIeta  [fMaxNeles];
 	float fTElHoverE         [fMaxNeles];
 	float fTElEPthing        [fMaxNeles];
-	// MARC int   fTElIsGoodElId_WP80[fMaxNeles];
-	// MARC int   fTElIsGoodElId_WP90[fMaxNeles];
 	int   fTElIsGoodElId_LooseWP[fMaxNeles];
 	int   fTElIsGoodElId_MediumWP[fMaxNeles];
 	int   fTElIsGoodTriggerEl[fMaxNeles];
