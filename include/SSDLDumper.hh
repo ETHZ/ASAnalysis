@@ -465,6 +465,7 @@ public:
         bool gDoTLRatioPlots;  
         bool gDoChMisIDPlots;  
         bool gDoIntPredYields; 
+        bool gDoValidation; 
 
 	class Sample{
 	public:
@@ -1096,7 +1097,6 @@ public:
 	Monitor fCounter[3];	
         Monitor fCounterSync[3];
         Monitor fCounterPurities[3];
-        Monitor fCounterWZ[3];
 	vector<string> fSyncCutNames;
 	vector<string> fPuritiesCutNames;
 	vector<string> fWZCutNames;
