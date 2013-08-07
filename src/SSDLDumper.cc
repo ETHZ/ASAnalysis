@@ -53,26 +53,7 @@ bool gDPS = false;
 
 float gSigSupJetPt = 65.;
 bool ttbarSigSup = true;
-//bool gDoSystStudies;
 static const bool gDoSyncExercise = false;
-//float gMuMaxIso     ;
-//float gElMaxIso     ;
-//float gMinJetPt     ;
-//float gMaxJetEta    ;
-//bool  gTTWZ         ;
-//bool  gInvertZVeto  ;
-//bool  tmp_gApplyZVeto;
-//bool  gApplyGStarVeto    ;
-//TString tmp_gBaseRegion  ;
-//TString gJSONfile        ;
-//bool  tmp_gDoWZValidation;
-//bool  gMETType1          ;
-
-// std::vector< SSDLDumper::Region* > gRegions;
-// std::vector< SSDLDumper::Region* >::iterator regIt;
-// std::map<TString , int> gRegion;
-// int gNREGIONS;
-
 
 //////////////////////////////////////////////////////////////////////////////////
 static const float gMMU = 0.1057;
@@ -175,9 +156,6 @@ SSDLDumper::SSDLDumper(TString configfile){
 	float miHT, maHT, miMET, maMET, miJetPt  ;
 	int   miNj, maNj, miNb, maNb, miNbm, maNbm, ve3rd, veTTZ, veCha, veGStar;
 	
-//FLAGS	char va[1], t[100], n[100], val[100];
-//FLAGS	TString v, type, var, value;
-	
 	char name[100];
 	cout << "====================================" << endl;
 	cout << "Reading Configuration file " << configfile << endl;
@@ -191,42 +169,8 @@ SSDLDumper::SSDLDumper(TString configfile){
 		       continue;
 		}
 
-//FLAGS		if( sscanf(buffer, "%s\t%s\t%s\t%s", va, t, n, val) > 3){
-//FLAGS		        v = va; type = t; var = n; value = val;
-//FLAGS		        if (v != "v")  continue;
-//FLAGS			  
-//FLAGS			if      (type == "bool"    && var =="gDoSystStudies"  ) SSDLDumper::gDoSystStudies   = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gTTWZ"           ) SSDLDumper::gTTWZ            = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gInvertZVeto"    ) SSDLDumper::gInvertZVeto     = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gApplyGStarVeto" ) SSDLDumper::gApplyGStarVeto  = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "TString" && var =="gBaseRegion"     ) SSDLDumper::gBaseRegion      = value; // this and the next are the only ones used in the plotter
-//FLAGS			else if (type == "TString" && var =="gJSONfile"       ) SSDLDumper::gJSONfile        = value;
-//FLAGS			else if (type == "bool"    && var =="gApplyZVeto"     ) SSDLDumper::gApplyZVeto      = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "float"   && var =="gMuMaxIso"       ) SSDLDumper::gMuMaxIso        = value.Atof();
-//FLAGS			else if (type == "float"   && var =="gElMaxIso"       ) SSDLDumper::gElMaxIso        = value.Atof();
-//FLAGS			else if (type == "float"   && var =="gMaxJetEta"      ) SSDLDumper::gMaxJetEta       = value.Atof();
-//FLAGS			else if (type == "float"   && var =="gMinJetPt"       ) SSDLDumper::gMinJetPt        = value.Atof();
-//FLAGS			else if (type == "bool"    && var =="gMETType1"       ) SSDLDumper::gMETType1        = ((value == "1" || value == "true") ? true:false);
-//FLAGS			// Allow FLAGS for faster proccessing			 
-//FLAGS			else if (type == "bool"    && var =="gDoCutFlowHistos") SSDLDumper::gDoCutFlowHistos = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoDiffYields"   ) SSDLDumper::gDoDiffYields    = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoKinPlots"     ) SSDLDumper::gDoKinPlots      = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoWZValidation" ) SSDLDumper::gDoWZValidation  = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoIDElePlots"   ) SSDLDumper::gDoIDElePlots    = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoIsoPlots"     ) SSDLDumper::gDoIsoPlots      = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoPileUpPlots"  ) SSDLDumper::gDoPileUpPlots   = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoRatioPlots"   ) SSDLDumper::gDoRatioPlots    = ((value == "1" || value == "true") ? true:false);		
-//FLAGS			else if (type == "bool"    && var =="gDoTLRatioPlots" ) SSDLDumper::gDoTLRatioPlots  = ((value == "1" || value == "true") ? true:false);		
-//FLAGS			else if (type == "bool"    && var =="gDoChMisIDPlots" ) SSDLDumper::gDoChMisIDPlots  = ((value == "1" || value == "true") ? true:false);
-//FLAGS			else if (type == "bool"    && var =="gDoIntPredYields") SSDLDumper::gDoIntPredYields = ((value == "1" || value == "true") ? true:false);
-//FLAGS		
-//FLAGS			// ERROR 
-//FLAGS			//			else { cout << name <<" ERROR in reading variables!!" << endl; exit(1); }
-//FLAGS			continue;
-//FLAGS		}
 		if( sscanf(buffer, "%s\t%f\t%f\t%f\t%f\t%d\t%d\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%f\t%d\t%d\t%d", 
 			   name, &miHT, &maHT, &miMET, &maMET, &miNj, &maNj, &miNb, &maNb, &miNbm, &maNbm, &miMu1, &miMu2, &miEl1, &miEl2, &ve3rd, &veTTZ, &veCha) > 17){
-               //             name, &miHT, &maHT, &miMET, &maMET, &miNj, &maNj, &miNb, &maNb, &miNbm, &maNbm, &miMu1, &miMu2, &miEl1, &miEl2, &ve3rd, &veTTZ, &veCha) > 17){
 			SSDLDumper::Region * tmp_region  = new SSDLDumper::Region();
 			tmp_region->sname      = (TString) name;
 			tmp_region->minHT      = miHT;
@@ -246,7 +190,7 @@ SSDLDumper::SSDLDumper(TString configfile){
 			tmp_region->app3rdVet  = ve3rd;
 			tmp_region->vetoTTZSel = veTTZ;
 			tmp_region->chargeVeto = veCha;
-			//			tmp_region->GStarVeto  = veGStar;
+
 			SSDLDumper::gRegion[name] = counter;
 			counter++;
 
@@ -297,9 +241,6 @@ SSDLDumper::SSDLDumper(TString configfile){
 		     gDoTLRatioPlots,		     gDoChMisIDPlots,
 		     gDoIntPredYields) << endl;
 	cout << "========================================================" << endl;
-//	Ssdldumper::ggDoIntPredYieldsBgDoIntPredYieldsaseRegion = tmp_gBaseRegion;
-//	SSDLDumper::gApplyZVeto = tmp_gApplyZVeto;
-//	SSDLDumper::gDoWZValidation = tmp_gDoWZValidation;
 
 	// initializing all the systematics here out of a lack of other places
 	gSystematics["Normal"]   = 0;
@@ -349,6 +290,7 @@ void SSDLDumper::setVariables(char buffer[1000]){
 		else if (type == "bool"    && name =="gDoTLRatioPlots" ) SSDLDumper::gDoTLRatioPlots  = ((value == "1" || value == "true") ? true:false);		
 		else if (type == "bool"    && name =="gDoChMisIDPlots" ) SSDLDumper::gDoChMisIDPlots  = ((value == "1" || value == "true") ? true:false);
 		else if (type == "bool"    && name =="gDoIntPredYields") SSDLDumper::gDoIntPredYields = ((value == "1" || value == "true") ? true:false);
+		else if (type == "bool"    && name =="gDoValidation"   ) SSDLDumper::gDoValidation    = ((value == "1" || value == "true") ? true:false);
 		// ERROR 
 		else { cout << name <<" ERROR in reading variables!!" << endl; exit(1); }
 	}
@@ -689,11 +631,6 @@ void SSDLDumper::loopEvents(Sample *S){
 		scaleMET(S, 2);
 		fillSigEventTree(S, gSystematics["METDown"]);
 	}
-	//FOR PABLO	cout << "--------------------------------------------------" << endl;
-	//FOR PABLO	cout << "--------------------------------------------------" << endl;
-	//FOR PABLO	cout << "--" << Form("fired the trigger: %d   used in my analysis: %d", ntrigger, nused) << endl;
-	//FOR PABLO	cout << "--------------------------------------------------" << endl;
-	//FOR PABLO	cout << "--------------------------------------------------" << endl;
 
 	// Stuff to execute for each sample AFTER looping on the events
 	if (gDoCutFlowHistos) fillCutFlowHistos(S);
@@ -1753,19 +1690,15 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	fSETree_NMus = NMus;
 	fSETree_NEls = NEls;
 
-	// for testing!!!! fChargeSwitch = 1;
-	
 	if( Event==gDEBUG_EVENTNUMBER_ && Run==gDEBUG_RUNNUMBER_ ) {
-
 		std::cout << std::endl << std::endl << "------------------------------------------------------------" << std::endl;
 		std::cout << "  Debug log for run: " << Run << "  LS: " << LumiSec << "  Event: " << Event << std::endl;
 
 		std::cout << std::endl << "Here are the jets: " << std::endl;
 		for(size_t i = 0; i < NJets; ++i) 
 			std::cout << "Pt: " << getJetPt(i) << "  Eta: " << JetEta[i] << " TCHE: " << JetCSVBTag[i] << std::endl;
-
 	}
-
+	
 
 	int ind1(-1), ind2(-1), mu3(-1), el3(-1);
 	
@@ -2885,16 +2818,6 @@ void SSDLDumper::initCounters(){
 	fCounterPurities[ElMu].fill(fPuritiesCutNames[1],0.);
 	fCounterPurities[ElMu].fill(fPuritiesCutNames[2],0.);
 	fCounterPurities[ElMu].fill(fPuritiesCutNames[3],0.);
-//
-//	fCounterWZ[Muon].fill(fWZCutNames[0],0.);
-//	fCounterWZ[Muon].fill(fWZCutNames[1],0.);
-//	fCounterWZ[Muon].fill(fWZCutNames[2],0.);
-//	fCounterWZ[Elec].fill(fWZCutNames[0],0.);
-//	fCounterWZ[Elec].fill(fWZCutNames[1],0.);
-//	fCounterWZ[Elec].fill(fWZCutNames[2],0.);
-//	fCounterWZ[ElMu].fill(fWZCutNames[0],0.);
-//	fCounterWZ[ElMu].fill(fWZCutNames[1],0.);
-//	fCounterWZ[ElMu].fill(fWZCutNames[2],0.);
 	
 }
 void SSDLDumper::fillCutFlowHistos(Sample *S){
@@ -2903,18 +2826,17 @@ void SSDLDumper::fillCutFlowHistos(Sample *S){
 	for(int i=0; i<fEMCutNames.size(); i++) S->cutFlowHisto[ElMu]->SetBinContent(i+1, fCounter[ElMu].counts(fEMCutNames[i]));	
 }
 void SSDLDumper::printCutFlow(gChannel chan){
-  TString ch = "";
-  if(chan == Muon) ch = "MM";
-  if(chan == Elec) ch = "EE";
-  if(chan == ElMu) ch = "EM";
-
-  fOUTSTREAM << "--------------------------------------------------------" << endl;
-  fOUTSTREAM << " Cutname                                 | " << endl;  
-  for( int c = 0; c < fSyncCutNames.size(); c++ ){
-    fOUTSTREAM << setw(40) << ch + fSyncCutNames[c] << " | ";
-    fOUTSTREAM << setw(11) << setprecision(11) << fCounterSync[chan].counts(fSyncCutNames[c]) << endl;
-  }
-  
+        TString ch = "";
+	if(chan == Muon) ch = "MM";
+	if(chan == Elec) ch = "EE";
+	if(chan == ElMu) ch = "EM";
+	
+	fOUTSTREAM << "--------------------------------------------------------" << endl;
+	fOUTSTREAM << " Cutname                                 | " << endl;  
+	for( int c = 0; c < fSyncCutNames.size(); c++ ){
+	       fOUTSTREAM << setw(40) << ch + fSyncCutNames[c] << " | ";
+	       fOUTSTREAM << setw(11) << setprecision(11) << fCounterSync[chan].counts(fSyncCutNames[c]) << endl;
+	}
 }
 
 void SSDLDumper::printCutFlow(gChannel chan, gSample indmin, gSample indmax){
@@ -3629,7 +3551,7 @@ void SSDLDumper::deleteHistos(Sample *S){
 			delete S->tlratios[l].fnloose_nv;
 			delete S->tlratios[l].pntight_nv;
 			delete S->tlratios[l].pnloose_nv;
-			
+
 			delete S->tlratios[l].fratio_nv;
 			delete S->tlratios[l].pratio_nv;
 			// duplicate for ttbar only ratios
