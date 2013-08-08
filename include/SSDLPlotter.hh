@@ -262,6 +262,8 @@ public:
 	SSDLPlotter(TString);
 	SSDLPlotter(TString, TString);
 	virtual ~SSDLPlotter();
+	
+	static void showStatusBar(int, int, int = 100, bool = false, bool = true);
 
 	virtual void init(TString filename = "samples.dat");
 	virtual void doSMSscans(TString, TString, TString);
@@ -304,6 +306,9 @@ public:
 	void makeMIDIsolationPlots(gChannel chan, gFPSwitch);
 	void getMIDIsolationPlots(vector<int>, gChannel, gFPSwitch, TH1D*&, TH1D*&, TH1D*&, TH1D*&);
 	void drawMIDIsolationPlots(TString, gChannel, gFPSwitch, TH1D*, TH1D*, TH1D*, TH1D*);
+	void makeTTWNLOPlots(float, float, float, float, int, int, int, float, float, int, bool, int);
+	void makeTTWNLOPlot(vector<TString>, vector<int>, vector<double>, vector<double>, vector<TString>, vector<TString>, int = -1, int = 0);
+	void makeTTWNLOPlots();
 
 	void makeOriginPlots(int);
 	// old void makeOriginPlots(gRegion);
@@ -328,8 +333,16 @@ public:
 	void makeKinematicPlotsPaper();
 	void makeSystPlot(TString outputname, TString label, TH1D *nom, TH1D *plus, TH1D *minus=NULL);
 
-	void makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw    =false, int flag=0);
+	void makeTTWIntPredictionsSigEvent();
+	map< TString, TTWZPrediction > makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw    =false, int flag=0);
+	void makeTTWDiffPredictionsSigEvent();
+//	void makeTTWDiffPredictionSigEvent(TString, int, double*);
+	void makeTTWDiffPredictionSigEvent(vector<TString>, vector<int>, vector<double*>, vector<TString>, vector<TString>, int = -1, int = 0, int = 0);
 	TTWZPrediction makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw=false, int flag=0);
+	void makeTTWKinPlotsSigEvent();
+	void makeTTWKinPlotSigEvent(vector<TString>, vector<int>, vector<double>, vector<double>, vector<TString>, vector<TString>, int = -1, int = 0);
+	void makeTTWKinPlotSigEvent(TString, int, double*, TString = "", TString = "", int = -1, int = 0);
+	void makeTTWKinPlotSigEvent(TString, int, double, double, TString = "", TString = "", int = -1, int = 0);
 	void makeDiffPrediction();
 	void makeTTWDiffPredictions();
 	void makeDiffPredictionTTW(int);

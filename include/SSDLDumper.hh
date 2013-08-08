@@ -91,25 +91,39 @@ public:
 	enum gSample {
 		sample_begin,
 		// data samples
-		DoubleMu1 = sample_begin, DoubleMu1a , DoubleMu2 , DoubleMu3 , DoubleMu4 , DoubleMu5 ,
-		DoubleEle1              , DoubleEle1a, DoubleEle2, DoubleEle3, DoubleEle4, DoubleEle5,
-		MuEG1                   , MuEG1a     , MuEG2     , MuEG3     , MuEG4     , MuEG5     ,
+		DoubleMu1 = sample_begin, DoubleMu1a , DoubleMu2 ,              DoubleMu3 , DoubleMu4 ,              DoubleMu5 , DoubleMu6 ,
+		DoubleEle1              , DoubleEle1a, DoubleEle2, DoubleEle2a, DoubleEle3, DoubleEle4, DoubleEle4a, DoubleEle5, DoubleEle6, DoubleEle6a,
+//		DoubleEle1              , DoubleEle1a, DoubleEle2,              DoubleEle3, DoubleEle4,              DoubleEle5,
+		MuEG1                   , MuEG1a     , MuEG2     ,              MuEG3     , MuEG4     ,              MuEG5     , MuEG6     ,
+//		DoubleMu1 = sample_begin, DoubleMu1a , DoubleMu2 ,  DoubleMu3 , DoubleMu4 , DoubleMu5 , 
+//		DoubleEle1              , DoubleEle1a, DoubleEle2,  DoubleEle3, DoubleEle4, DoubleEle5, 
+//		MuEG1                   , MuEG1a     , MuEG2     ,  MuEG3     , MuEG4     , MuEG5     , 
 		// fake samples
-		TTJets, SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
-		WJets, DYJets,
+		TTJets,
+		SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
+		WJets,
+		DYJets,
 		// no longer needed GVJets,
-		// not here yet GJets200, GJets400, 
-		WGstarMu, WGstarTau, WW,
+		// not here yet GJets200, GJets400,
+		GJets200, GJets400,
+		WGstarMu, WGstarTau,
+		WW,
 		// start of the rares
 		WZ,ZZ,
-		HWW, HZZ, HTauTau, 
-		TTbarW, TTbarZ, TTbarG, TbZ, DPSWW,
-		WWZ, WZZ, WWG, ZZZ, WWW,
-		TTbarWW, WpWp, WmWm,
+		HWW,
+		HZZ, HTauTau,
+		TTbarW,
+		TTbarWNLO,
+		TTbarZ, TTbarG, TbZ, DPSWW,
+		WWZ, WZZ, 
+		WWG, ZZZ,
+		WWW,
+		TTbarWW,
+		WpWp, WmWm,
 		// QCD samples
 		QCDMuEnr15,
 		QCD50, QCD80, QCD120, QCD170, QCD300, QCD470, QCD600, QCD800,
-		QCDEM30, QCDEM80, //QCDEM170, 
+		QCDEM30, QCDEM80, //QCDEM170,
 		QCDEM250, QCDEM350,
 		QCDbEnr50, QCDbEnr150,
 		gNSAMPLES
@@ -441,6 +455,9 @@ public:
 	std::map<TString , int>::const_iterator gsystIt;
 	bool gApplyZVeto;
         bool gDoWZValidation;
+	float tmp_gMinJetPt     ;
+	float tmp_gMuMaxIso;
+	float tmp_gElMaxIso;
 
 	class Sample{
 	public:
@@ -758,6 +775,7 @@ public:
 	virtual float getNthJetPt(int = 0);
 	virtual int getNBTags();
 	virtual int getNBTagsMed();
+	virtual float getBetaStar(int);
 	virtual std::vector< int > getNBTagsMedIndices();
 	virtual float getHT();
 	virtual float getWeightedHT();
@@ -1008,6 +1026,16 @@ public:
 	float       fSETree_eta2;
 	float		fSETree_PFIso1;
 	float		fSETree_PFIso2;
+    float       fSETree_D01;
+    float       fSETree_D02;
+    float       fSETree_Rho;
+	float		fSETree_MTLep1;
+	float		fSETree_MTLep2;
+	float       fSETree_BetaStar1;
+	float       fSETree_BetaStar2;
+	float       fSETree_BetaStar3;
+	float       fSETree_BetaStar4;
+	float       fSETree_BetaStar5;
 	float		fSETree_MVAID1;
 	float		fSETree_MVAID2;
 	float		fSETree_medWP1;

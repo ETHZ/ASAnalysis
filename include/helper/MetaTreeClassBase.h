@@ -158,6 +158,9 @@ public :
    Float_t         WPdfCT10[52];   //[NPdfCT10]
    Int_t           NPdfMRST;
    Float_t         WPdfMRST[40];   //[NPdfMRST]
+	Float_t         JetBetaStar[20];   //[NJets]
+	Float_t         JetBeta[20];   //[NJets]
+	Float_t         JetBetaSq[20];   //[NJets]
 
    // List of branches
    TBranch        *b_Run;   //!
@@ -296,6 +299,9 @@ public :
    TBranch        *b_WPdfCT10;   //!
    TBranch        *b_NPdfMRST;   //!
    TBranch        *b_WPdfMRST;   //!
+   TBranch        *b_JetBetaStar;   //!
+   TBranch        *b_JetBeta;   //!
+   TBranch        *b_JetBetaSq;   //!
 
    MetaTreeClassBase(TTree *tree=0);
    virtual ~MetaTreeClassBase();
@@ -503,6 +509,9 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("WPdfCT10", WPdfCT10, &b_WPdfCT10);
    fChain->SetBranchAddress("NPdfMRST", &NPdfMRST, &b_NPdfMRST);
    fChain->SetBranchAddress("WPdfMRST", WPdfMRST, &b_WPdfMRST);
+   fChain->SetBranchAddress("JetBetaStar", JetBetaStar, &b_JetBetaStar);
+   fChain->SetBranchAddress("JetBeta", JetBeta, &b_JetBeta);
+   fChain->SetBranchAddress("JetBetaSq", JetBetaSq, &b_JetBetaSq);
    Notify();
 }
 

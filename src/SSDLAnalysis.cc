@@ -335,6 +335,9 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("JetGenPt",      &fTJetGenpt ,     "JetGenPt[NJets]/F");
 	fAnalysisTree->Branch("JetGenEta",     &fTJetGeneta,     "JetGenEta[NJets]/F");
 	fAnalysisTree->Branch("JetGenPhi",     &fTJetGenphi,     "JetGenPhi[NJets]/F");
+	fAnalysisTree->Branch("JetBetaStar",   &fTJetBetaStar,   "JetBetaStar[NJets]/F");
+	fAnalysisTree->Branch("JetBeta",       &fTJetBeta,       "JetBeta[NJets]/F");
+	fAnalysisTree->Branch("JetBetaSq",     &fTJetBetaSq,     "JetBetaSq[NJets]/F");
 
 	fAnalysisTree->Branch("NPdfCTEQ", &fTNPdfCTEQ , "NPdfCTEQ/I");
 	fAnalysisTree->Branch("WPdfCTEQ", &fTWPdfCTEQ , "WPdfCTEQ[NPdfCTEQ]/F");
@@ -579,6 +582,9 @@ void SSDLAnalysis::FillAnalysisTree(){
 		// fTJetJEC     [ind] = GetJECUncert(fTR->JPt[jetindex], fTR->JEta[jetindex])/fTR->JEcorr[jetindex];
 		fTJetPartonID[ind] = JetPartonMatch(jetindex);
 		fTJetPartonFlav[ind] = fTR->JPartonFlavour[jetindex];
+		fTJetBetaStar[ind] = fTR->JBetaStar[jetindex];
+		fTJetBeta[ind]     = fTR->JBeta[jetindex];
+		fTJetBetaSq[ind]   = fTR->JBetaSq[jetindex];
 		int genjetind = GenJetMatch(jetindex);
 		if(genjetind > -1){
 			fTJetGenpt [ind] = fTR->GenJetPt [genjetind];
@@ -904,6 +910,9 @@ void SSDLAnalysis::ResetTree(){
 		fTJetGenpt [i]    = -999.99;
 		fTJetGeneta[i]    = -999.99;
 		fTJetGenphi[i]    = -999.99;
+		fTJetBetaStar[i]  = -999.99;
+		fTJetBeta[i]      = -999.99;
+		fTJetBetaSq[i]    = -999.99;
 	}
 	fTpfMET      = -999.99;
 	fTpfMETphi   = -999.99;

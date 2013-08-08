@@ -34,10 +34,12 @@
 using namespace std;
 //////////////////////////////////////////////////////////////////////////////////
 // Global parameters:
+static const bool gEWKino = false;
 static const bool gRunSMSscan = false;
 static const bool gRatiosFromTTbar = false;
 static const bool gFullDataBlind = false;
 static const bool gTTHBG = true;
+static const bool gTTWZ = true;
 
 static const float gMMU = 0.1057;
 static const float gMEL = 0.0005;
@@ -327,11 +329,10 @@ void SSDLPlotter::init(TString filename){
 	fMCRareSM.push_back(WGstarMu);
 	fMCRareSM.push_back(WGstarTau);
 	fMCRareSM.push_back(DPSWW);
-	fMCRareSM.push_back(HWW);
-	fMCRareSM.push_back(HZZ);
-	fMCRareSM.push_back(HTauTau);
-	fMCRareSM.push_back(TTbarW);
-	fMCRareSM.push_back(TTbarZ);
+	// if(gEWKino || gTTHBG)  fMCRareSM.push_back(TTbarH);
+	if(gEWKino || gTTHBG)  { fMCRareSM.push_back(HWW); fMCRareSM.push_back(HZZ); fMCRareSM.push_back(HTauTau); }
+	if(gEWKino)  fMCRareSM.push_back(TTbarW);
+	if(gEWKino)  fMCRareSM.push_back(TTbarZ);
 	fMCRareSM.push_back(TTbarG);
 	fMCRareSM.push_back(TbZ);
 	fMCRareSM.push_back(WpWp);
@@ -417,19 +418,23 @@ void SSDLPlotter::doAnalysis(){
         if(readHistos(fOutputFileName) != 0) return;
 	fillRatios(fMuData,    fEGData,    0);
 	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
-	
-	// fill fake ratios to run closure tests
-	//	fillRatios(fMuData, fEGData, 0);
-	//	fillRatios(fMuEnr, fEMEnr, fDYJets, fDYJets, 1);
-	//	fillRatios(fMuData, fEGData, 0);
-	//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 0);
-	//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 1);
-	//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 0);
-	//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
-	//	storeWeightedPred(gRegion[gBaseRegion]);
-	
 	storeWeightedPred(gRegion[gBaseRegion]);
 	ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
+	
+	// fill fake ratios to run closure tests
+//	fillRatios(fMuData, fEGData, 0);
+//	fillRatios(fMuEnr, fEMEnr, fDYJets, fDYJets, 1);
+//	fillRatios(fMuData, fEGData, 0);
+//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 0);
+//	fillRatios(fMuEnr, fEMEnr, fMCBGMuEnr, fMCBGEMEnr, 1);
+//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 0);
+//	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
+//	fillRatios(fMuData, fEGData, 0);
+//	fillRatios(fMuData, fEGData, 1);
+//	fillRatios(fTTJets, fTTJets, 0);
+//	fillRatios(fTTJets, fTTJets, 1);
+//	storeWeightedPred(gRegion[gBaseRegion]);
+	
 
 	// makeROCCurve(); return;
 	// makePileUpPlots(); // loops on all data!
@@ -443,51 +448,133 @@ void SSDLPlotter::doAnalysis(){
 	// makeOriginPlots(HT0MET120lV);
 	// printOrigins(HT0MET120lV);
 
-	// makeMuIsolationPlots(true); // if true, loops on TTbar sample
-	// makeElIsolationPlots(true); // if true, loops on TTbar sample
+//	makeMuIsolationPlots(false); // if true, loops on TTbar sample
+	// makeElIsolationPlots(false); // if true, loops on TTbar sample
 	// makeElIdPlots();
-	// makeNT2KinPlots(false);
-	//	makeNT2KinPlots(true);
-	// makeMETvsHTPlot(fMuData, fEGData, fMuEGData, HighPt);
+//	makeNT2KinPlots(false);
+//	makeNT2KinPlots(true);
+	//makeMETvsHTPlot(fMuData, fEGData, fMuEGData, HighPt);
 
 	// makeMETvsHTPlotPRL();
 	//	makeMETvsHTPlot0HT();
 	// makeMETvsHTPlotTau();
 
-	// makeRatioPlots(Muon);
-	// makeRatioPlots(Elec);
-	// make2DRatioPlots(Muon);
-	// make2DRatioPlots(Elec);
-	// makeNTightLoosePlots(Muon);
-	// makeNTightLoosePlots(Elec);
-
-	// makeFRvsPtPlots(Muon, SigSup);
-	// makeFRvsPtPlots(Elec, SigSup);
-	// makeFRvsPtPlots(Muon, ZDecay);
-	// makeFRvsPtPlots(Elec, ZDecay);
-	// // makeFRvsNVPlots(Muon, ZDecay); 
-	// // makeFRvsNVPlots(Elec, ZDecay);
-	// makeFRvsEtaPlots(Muon);
-	// makeFRvsEtaPlots(Elec);
-	// makeChMidvsPtPlots();
-
-	// makeAllClosureTestsTTW();
-	//makeAllIntPredictions();
-	//makeAllClosureTests();
-
-	makeKinematicPlotsPaper();
-	//makeDiffPrediction();
-	// makeTTWDiffPredictions();
-	// makeTTWIntPredictions();
-	//printAllYieldTables();
+//	makeRatioPlots(Muon);
+//	makeRatioPlots(Elec);
+//	make2DRatioPlots(Muon);
+//	make2DRatioPlots(Elec);
+//	// // makeNTightLoosePlots(Muon);
+//	// // makeNTightLoosePlots(Elec);
+//	// 
+//	makeFRvsPtPlots(Muon, SigSup);
+//	makeFRvsPtPlots(Elec, SigSup);
+//	makeFRvsPtPlots(Muon, ZDecay);
+//	makeFRvsPtPlots(Elec, ZDecay);
+//	makeFRvsNVPlots(Muon, ZDecay);
+//	makeFRvsNVPlots(Elec, ZDecay);
+//	makeFRvsEtaPlots(Muon);
+//	makeFRvsEtaPlots(Elec);
+//	makeChMidvsPtPlots();
+//
+//	makeAllClosureTestsTTW();
+//	makeAllIntPredictions();
+//	makeAllClosureTests();
+//
+	// makeDiffPrediction();
+//	makeTTWDiffPredictions();
+//	makeTTWIntPredictions();
+	// printAllYieldTables();
 	
+	
+	makeTTWDiffPredictionsSigEvent();
+//	makeTTWKinPlotsSigEvent();
+	
+// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
+	
+	// presel
+//	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20., 0, true);
+//	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20.,-1, true);
+//	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20.,+1, true);
+	
+	// optimized selection
+// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
+// 	makeTTWIntPredictionsSigEvent(260., 8000., 0., 8000., 3, 1, 1, 31., 31.,-1, true);
+// 	makeTTWIntPredictionsSigEvent(175, 8000., 0., 8000., 3, 1, 1, 33., 33.,+1, true);
+	
+	// optimized selection March 20
+// 	makeTTWIntPredictionsSigEvent(260., 8000., 0., 8000., 3, 1, 1, 33., 33.,-1, true);
+// 	makeTTWIntPredictionsSigEvent(175., 8000., 0., 8000., 3, 1, 1, 33., 33.,+1, true);
+// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 
+	// optimized selection July 27 jet pT 30
+//	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 33., 33.,+1, true);
+//	makeTTWIntPredictionsSigEvent(160., 8000., 0., 8000., 3, 1, 1, 27., 27.,-1, true);
+
+	// optimized selection July 27 jet pT 40
+//	makeTTWIntPredictionsSigEvent(120., 8000., 0., 8000., 3, 1, 1, 33., 33.,+1, true);
+//	makeTTWIntPredictionsSigEvent(170., 8000., 0., 8000., 3, 1, 1, 29., 29.,-1, true);
+//	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 28., 28., 0, true);
+
+	// optimized selection July 27 jet pT 20
+//	makeTTWIntPredictionsSigEvent(225., 8000., 0., 8000., 3, 1, 1, 33., 33.,+1, true);
+//	makeTTWIntPredictionsSigEvent(165., 8000., 0., 8000., 3, 1, 1, 47., 29.,-1, true);
+
+	// optimized selection July 31 jet pT 30
+//	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
+//	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
+
+//	makeTTWIntPredictionsSigEvent();
+	
+//	makeTTWNLOPlots();
+	
+	//makeTTWNLOPlots(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag)
+//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            0,              0,              0,           0.,           0.,          0,     true,            0);
+//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            0,              0,              0,           0.,           0.,          1,     true,            0);
+//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            0,              0,              0,           0.,           0.,         -1,     true,            0);
+//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
+//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          1,     true,            0);
+//	makeTTWNLOPlots(           0.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,         -1,     true,            0);
+//	makeTTWNLOPlots(         175.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
+//	makeTTWNLOPlots(         260.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
+//	makeTTWNLOPlots(         175.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,          1,     true,            0);
+//	makeTTWNLOPlots(         260.,       8000.,           0.,        8000.,            3,              1,              1,          33.,          33.,         -1,     true,            0);
+//	makeTTWNLOPlots(           0.,        300.,           0.,        8000.,            3,              1,              1,          33.,          33.,          0,     true,            0);
+//	makeTTWNLOPlots(           0.,        300.,           0.,        8000.,            0,              0,              0,           0.,           0.,          0,     true,            0);
+	
+	
+// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,-1, true);
+// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,+1, true);
+	
+	
+// 	makeTTWIntPredictionsSigEvent(268.235, 8000., 0., 8000., 3, 1, 1, 35.5956, 35.5956, 0, true);
+// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,-1, true);
+// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,+1, true);
+//	makePredictionSignalEvents(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,-1, true);
+//	makePredictionSignalEvents(285., 8000., 0., 8000., 3, 1, 1, 40., 40.,+1, true);
+//	makePredictionSignalEvents(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
+//	makePredictionSignalEvents(100., 8000., 0., 8000., 3, 1, 1, 55., 35., 0, true);
+//	makePredictionSignalEvents(175., 8000., 0., 7000., 3, 1, 1, 35., 35., 0, true);
+	//makePredictionSignalEvents(280., 8000., 0., 7000., 3, 1, 1, 40., 40., 0, true);
+	// makeRelIsoTTSigPlots();
 	
 //	makeFakeGenIDTables();
 //	makeMIDIsolationPlots(Muon, SigSup);
 //	makeMIDIsolationPlots(Muon, Sig);
 }
-
+void SSDLPlotter::showStatusBar(int nEvent, int nEvents, int updateIntervall, bool show, bool makeNewLine) {
+	if (nEvent+1 >= nEvents) nEvent++;
+	cout.precision(3);
+	int percentageLength = 50;
+	if (nEvent%(int)updateIntervall == 0 || nEvent >= nEvents-1 || show){
+		double percentage = (double)(nEvent)/(double)nEvents*(double)100;
+		cout << "\rfinished with " << setw(8) << nEvent << " of " << setw(10) << nEvents << ": " << setw(6) << std::setprecision(2) << fixed << percentage << "%\t\tSTATUS:\t\t";
+		for (int i=0;i<percentageLength;i++)
+			if (i*10 < percentage*(double)percentageLength/(double)10) cout << "%";
+			else cout << "_";
+		cout << " " << flush;
+    }
+	if (makeNewLine&&nEvent+1 >= nEvents) cout << endl;
+}
 //____________________________________________________________________________
 void SSDLPlotter::sandBox(){
 	FakeRatios *FR = new FakeRatios();
@@ -2326,7 +2413,7 @@ void SSDLPlotter::makeMuIsolationPlots(bool dottbar){
 //		cout << "Apply weights to MC histos" << endl;
 		for(size_t j = 0; j < gNSAMPLES; ++j){
 			Sample *S = fSamples[j];
-//			cout << "at sample: " << S->sname << "\txsec: " << S->xsec << "\tget lumi of this sample: " << S->getLumi() << "\tintegral of the iso histo: " << S->isoplots[0].hiso[i]->Integral() << endl;
+//			cout << "at sample: " << setw(20) << S->sname << "\txsec: " << setw(12) << S->xsec << "\tget lumi of this sample: " << setw(12) << S->getLumi()/* << "\tintegral of the iso histo: " << S->isoplots[0].hiso[i]->Integral()*/ << endl;
 
 			float lumiscale = fLumiNorm / S->getLumi();
 			if(S->datamc == 0) continue;
@@ -3415,8 +3502,8 @@ void SSDLPlotter::makeNT2KinPlots(bool loglin){
 		for(size_t i = 0; i < gNKinVars; ++i){
 			// Create plots
 			bool intlabel = false;
-			if(i == 2 || i == 10 || i == 11) intlabel = true;
-
+			if(i == 2 || i == 10 || i == 11 || i == 12) intlabel = true;
+			
 			hvar_data[i]->SetXTitle(KinPlots::axis_label[i]);
 			hvar_data[i]->SetLineWidth(3);
 			hvar_data[i]->SetLineColor(kBlack);
@@ -3462,29 +3549,38 @@ void SSDLPlotter::makeNT2KinPlots(bool loglin){
 
 			// Fill MC stacks
 			for(size_t j = 0; j < mcsamples.size();   ++j){
-			  Sample *S = fSamples[mcsamples[j]];
-			  TString s_name = S->sname;
-			  //			  if (s_name == "TTJets2") continue;
-			  // sample type: QCD = 1 , Top = 2, EWK = 3 , Rare = 4 , DB = 5
- 			  if ( S->getType() == 1)                       hvar_qcd [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // ttZ
- 			  if ( S->getType() == 5 && S->getProc() == 7 ) hvar_db  [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // ttW
- 			  if ( S->getType() == 2)                       hvar_ttj [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // top + qcd
- 			  if ( S->getType() == 3 || 
-			       (S->getType() == 5 && S->getProc() != 7)) hvar_ewk [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // single boson
-			  if ( S->getType() == 4)                       hvar_rare[i]->Add( S->kinplots[s][HighPt].hvar[i] ); // di boson
- 			}
- 			hvar_mc_s[i]->Add(hvar_ttj[i]);
- 			hvar_mc_s[i]->Add(hvar_ewk[i]);
- 			hvar_mc_s[i]->Add(hvar_rare[i]);
- 			hvar_mc_s[i]->Add(hvar_db[i]);
- 			hvar_mc_s[i]->Add(hvar_qcd[i]);
- 			hvar_mc_s[i]->Draw("goff");
-			hvar_mc_s[i]->GetXaxis()->SetTitle(KinPlots::axis_label[i]);
-			//			if(intlabel) for(size_t j = 1; j <= hvar_data[i]->GetNbinsX(); ++j)            hvar_data[i]->GetXaxis()->SetBinLabel(j, Form("%d", j-1));
-			//			if(intlabel) for(size_t j = 1; j <= hvar_mc_s[i]->GetXaxis()->GetNbins(); ++j) hvar_mc_s[i]->GetXaxis()->SetBinLabel(j, Form("%d", j-1));
- 			for(size_t j = 1; j <= hvar_data[i]->GetNbinsX(); ++j)            hvar_data[i]->GetXaxis()->SetBinLabel(j, "");
- 			for(size_t j = 1; j <= hvar_mc_s[i]->GetXaxis()->GetNbins(); ++j) hvar_mc_s[i]->GetXaxis()->SetBinLabel(j, "");
-
+				Sample *S = fSamples[mcsamples[j]];
+				TString s_name = S->sname;
+				// sample type: QCD = 1 , Top = 2, EWK = 3 , Rare = 4 , DB = 5
+				if ( S->getProc() == 12)                                           hvar_qcd [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // ttZ
+				if ( S->getProc() == 11)                                           hvar_db  [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // ttW
+				if ( S->getType() == 2 || S->getType() == 1 || S->getProc() == 18) hvar_ttj [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // top + qcd
+				if ( S->getType() == 3 )                                           hvar_ewk [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // single boson
+				if ( S->getType() == 5)                                            hvar_rare[i]->Add( S->kinplots[s][HighPt].hvar[i] ); // di boson
+				if ( S->getType() == 4 &&
+					(S->getProc() != 11 && S->getProc() != 12) )                   hvar_rare[i]->Add( S->kinplots[s][HighPt].hvar[i] ); // rare (no ttW/Z)
+				
+				// this was not up to date anymore
+//				if ( S->getProc() == 11)                                           hvar_qcd [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // ttZ
+//				if ( S->getProc() == 10)                                           hvar_db  [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // ttW
+//				if ( S->getType() == 2 || S->getType() == 1 || S->getProc() == 14) hvar_ttj [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // top + qcd
+//				if ( S->getType() == 3 )                                           hvar_ewk [i]->Add( S->kinplots[s][HighPt].hvar[i] ); // single boson
+//				if ( S->getType() == 5)                                            hvar_rare[i]->Add( S->kinplots[s][HighPt].hvar[i] ); // di boson
+//				if ( S->getType() == 4 &&
+//					(S->getProc() != 10 || S->getProc() != 11) )                      hvar_rare[i]->Add( S->kinplots[s][HighPt].hvar[i] ); // rare (no ttW/Z)
+			}
+			hvar_mc_s[i]->Add(hvar_ttj[i]);
+			hvar_mc_s[i]->Add(hvar_ewk[i]);
+			hvar_mc_s[i]->Add(hvar_rare[i]);
+			hvar_mc_s[i]->Add(hvar_db[i]);
+			hvar_mc_s[i]->Add(hvar_qcd[i]);
+			hvar_mc_s[i]->Draw("goff");
+			// hvar_mc_s[i]->GetXaxis()->SetTitle(KinPlots::axis_label[i]);
+			// if(intlabel) for(size_t j = 1; j <= hvar_data[i]->GetNbinsX(); ++j)            hvar_data[i]->GetXaxis()->SetBinLabel(j, Form("%d", j-1));
+			// if(intlabel) for(size_t j = 1; j <= hvar_mc_s[i]->GetXaxis()->GetNbins(); ++j) hvar_mc_s[i]->GetXaxis()->SetBinLabel(j, Form("%d", j-1));
+			for(size_t j = 1; j <= hvar_data[i]->GetNbinsX(); ++j)            hvar_data[i]->GetXaxis()->SetBinLabel(j, "");
+			for(size_t j = 1; j <= hvar_mc_s[i]->GetXaxis()->GetNbins(); ++j) hvar_mc_s[i]->GetXaxis()->SetBinLabel(j, "");
+			
 			hvar_tot[i]->Add(hvar_qcd[i]);
 			hvar_tot[i]->Add(hvar_db[i]);
 			hvar_tot[i]->Add(hvar_ewk[i]);
@@ -3589,10 +3685,10 @@ void SSDLPlotter::makeNT2KinPlots(bool loglin){
 // 			leg->AddEntry(hvar_rat[i],  "Ratio",     "f");
 
 			leg->AddEntry(hvar_data[i], "Data",      "p");
-			leg->AddEntry(hvar_qcd[i],  "QCD",       "f");
-			leg->AddEntry(hvar_db[i],   "WZ",       "f");
-			leg->AddEntry(hvar_rare[i], "Rare SM",   "f");
-			leg->AddEntry(hvar_ewk[i],  "W/Z/WW/ZZ", "f");
+			leg->AddEntry(hvar_qcd[i],  "ttZ",       "f");
+			leg->AddEntry(hvar_db[i],   "ttW",       "f");
+			leg->AddEntry(hvar_rare[i], "Diboson",   "f");
+			leg->AddEntry(hvar_ewk[i],  "Single boson", "f");
 			leg->AddEntry(hvar_ttj[i],  "Top",       "f");
 			leg->AddEntry(hvar_rat[i],  "Ratio",     "f");
 	
@@ -6484,6 +6580,413 @@ void SSDLPlotter::drawMIDIsolationPlots(TString title, gChannel chan, gFPSwitch 
 //	delete h_ptratio_mc, h_ptratio_data, h_ptratio_qcd, h_ptratio_wjets;
 	delete c_temp, lat, leg;
 }
+void SSDLPlotter::makeTTWNLOPlots(){
+	vector<TString> diffVarName, xAxisTitle, yAxisTitle;
+	vector<int> nbins;
+	vector<double> xmin, xmax;
+	
+	diffVarName.push_back("HT"    );   nbins.push_back(KinPlots::nbins[ 0]);   xmin.push_back(KinPlots::xmin[ 0]);   xmax.push_back(KinPlots::xmax[ 0]);   xAxisTitle.push_back("H_{T} [GeV]"                     );   yAxisTitle.push_back("Events / 100 GeV");
+    diffVarName.push_back("MET"   );   nbins.push_back(KinPlots::nbins[ 1]);   xmin.push_back(KinPlots::xmin[ 1]);   xmax.push_back(KinPlots::xmax[ 1]);   xAxisTitle.push_back("Particle Flow E_{T}^{miss} [GeV]");   yAxisTitle.push_back("Events / 20 GeV" );
+//    diffVarName.push_back("NJ"    );   nbins.push_back(KinPlots::nbins[ 2]);   xmin.push_back(KinPlots::xmin[ 2]);   xmax.push_back(KinPlots::xmax[ 2]);   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("NJ"    );   nbins.push_back(                 5 );   xmin.push_back(                3 );   xmax.push_back(                8 );   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("NbJmed");   nbins.push_back(KinPlots::nbins[11]);   xmin.push_back(KinPlots::xmin[11]);   xmax.push_back(KinPlots::xmax[11]);   xAxisTitle.push_back("b-Jet Multiplicity (medium)"     );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("pT1"   );   nbins.push_back(KinPlots::nbins[ 3]);   xmin.push_back(KinPlots::xmin[ 3]);   xmax.push_back(KinPlots::xmax[ 3]);   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
+    diffVarName.push_back("pT2"   );   nbins.push_back(KinPlots::nbins[ 4]);   xmin.push_back(KinPlots::xmin[ 4]);   xmax.push_back(KinPlots::xmax[ 4]);   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
+//    diffVarName.push_back("Mll"   );   nbins.push_back(KinPlots::nbins[ 5]);   xmin.push_back(KinPlots::xmin[ 5]);   xmax.push_back(KinPlots::xmax[ 5]);   xAxisTitle.push_back("m_{ll} [GeV]"                    );   yAxisTitle.push_back("Events"          );
+//    diffVarName.push_back("NVrtx" );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("N_{Vertices}"                    );   yAxisTitle.push_back("Events"          );
+	//    diffVarName.push_back("MT"    );   nbins.push_back(KinPlots::nbins[ 9]);   xmin.push_back(KinPlots::xmin[ 9]);   xmax.push_back(KinPlots::xmax[ 9]);   xAxisTitle.push_back("M_{T}"                           );   yAxisTitle.push_back("Events"          );
+//    diffVarName.push_back("PFIso1");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Leading Lepton PF Iso"           );   yAxisTitle.push_back("Events"          );
+//    diffVarName.push_back("PFIso2");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Subleading Lepton PF Iso"        );   yAxisTitle.push_back("Events"          );
+//    diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
+//    diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
+//    diffVarName.push_back("Rho"   );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("rho"                             );   yAxisTitle.push_back("Events"          );
+//	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  0);
+	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  1);
+	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1, -1);
+}
+void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins, vector<double> xmin, vector<double> xmax, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel){
+	//	TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag){
+	if (diffVarName.size() != nbins     .size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != xmin      .size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != xmax      .size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != xAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != yAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
+	
+	int chVeto(0);
+	float chargeFactor = chVeto ? 0.5:1.;
+	int systflag  (  0 );
+	float minHT   (  0.), maxHT     ( 8000.);
+	float minMET  (  0.), maxMET    ( 8000.);
+	int minNjets  (  3 ), maxNjets  (   99 );
+	int minNbjetsL(  0 ), maxNbjetsL(   99 );
+	int minNbjetsM(  0 ), maxNbjetsM(   99 );
+	float minPt1  ( 20.), maxPt1    ( 8000.);
+	float minPt2  ( 20.), maxPt2    ( 8000.);
+	float minMll  (  8.); // 8.
+	bool samesign = true;
+	bool loglin = true;
+	bool ttbarEnr = false;
+	bool wzEnr = false;
+	bool looseSel = false;
+	TString sysString = "";
+	TString chargeString = "_PreSel";
+	TString flavorString = "";
+
+	if (region_sel == 1) {
+		minHT  = 200.;
+		minPt1 = 32.;
+		minPt2 = 32.;
+		chargeString = "_pp";
+	}
+	if (region_sel == -1) {
+		minHT  = 205.;
+		minPt1 = 30.;
+		minPt2 = 30.;
+		chargeString = "_mm";
+	}
+	
+	fOutputSubDir = "TTWNLOPlots/";
+	TString jvString = "";
+//	TString sysString = "";
+//	TString chargeString = "";
+	
+	for( gsystIt = gSystematics.begin(); gsystIt != gSystematics.end(); ++gsystIt) {
+		if (gsystIt->second == systflag) { sysString = gsystIt->first; break; }
+	}
+	if (chVeto == -1) chargeString = "_mm";
+	if (chVeto == +1) chargeString = "_pp";
+	
+	if (maxHT < 20.) jvString = "JV";
+//	ofstream OUT(fOutputDir+fOutputSubDir+Form("DataPred_customRegion_HT%.0f"+jvString+"MET%.0fNJ%.0iNbjL%.0iNbjM%.0iPT1%.0fPT2%.0f_"+sysString+chargeString+".txt", minHT, minMET, minNjets, minNbjetsL, minNbjetsM, minPt1, minPt2), ios::trunc);
+	ofstream OUT(fOutputDir+fOutputSubDir+"generator_syst_table"+chargeString+".tex", ios::trunc);
+	
+	//		TLatex *lat = new TLatex();
+	//		lat->SetNDC(kTRUE);
+	//		lat->SetTextColor(kBlack);
+	//		lat->SetTextSize(0.04);
+	
+	OUT << "%/////////////////////////////////////////////////////////////////////////////" << endl;
+	OUT << "% Producing predictions " ;
+	OUT << "%  scaling MC to " << fLumiNorm << " /pb" << endl << endl;
+	OUT << "%-----------------------------------------------------------------------------" << endl;
+	OUT << "% These are the cuts: " << endl;
+	OUT << Form("%  minHT:    %4.0f  || maxHT:     %4.0f", minHT   , maxHT    ) << endl;
+	OUT << Form("%  minMET:   %4.0f  || maxMET:    %4.0f", minMET  , maxMET   ) << endl;
+	OUT << Form("%  minNjets:   %2i  ", minNjets) << endl;
+	OUT << Form("%  minNbjetsL: %2i  ", minNbjetsL) << endl;
+	OUT << Form("%  minNbjetsM: %2i  ", minNbjetsM) << endl;
+	OUT << Form("%  minpT1:     %2.0f  ", minPt1) << endl;
+	OUT << Form("%  minpT2:     %2.0f  ", minPt2) << endl;
+	OUT << "%-----------------------------------------------------------------------------" << endl;
+	
+	// only take half the events for ++/--
+//	float chargeFactor = chVeto ? 0.5:1.;
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	TFile *pFile = TFile::Open(fOutputFileName);
+	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
+	
+	string *sname = 0;
+	int flag;
+	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
+	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float eta1, eta2, mll;
+	int   event, run;
+	int charge;
+	int passZVeto, passes3rdSFLepVeto;
+	float diffVar(-999.);
+	
+	sigtree->SetBranchAddress("SystFlag", &flag);
+	sigtree->SetBranchAddress("Event",    &event);
+	sigtree->SetBranchAddress("Run",      &run);
+	sigtree->SetBranchAddress("SName",    &sname);
+	sigtree->SetBranchAddress("SType",    &SType);
+	sigtree->SetBranchAddress("PUWeight", &puweight);
+	sigtree->SetBranchAddress("SLumi",    &SLumi);
+	sigtree->SetBranchAddress("Flavor",   &Flavor);
+	sigtree->SetBranchAddress("Charge",   &charge);
+	sigtree->SetBranchAddress("pT1",      &pT1);
+	sigtree->SetBranchAddress("pT2",      &pT2);
+	sigtree->SetBranchAddress("eta1",     &eta1);
+	sigtree->SetBranchAddress("eta2",     &eta2);
+	sigtree->SetBranchAddress("TLCat",    &TLCat);
+	sigtree->SetBranchAddress("HT",       &HT);
+	sigtree->SetBranchAddress("MET",      &MET);
+	sigtree->SetBranchAddress("MT2",      &MT2);
+	sigtree->SetBranchAddress("NJ",       &NJ);
+	sigtree->SetBranchAddress("NbJ",      &NbJ);
+	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
+	sigtree->SetBranchAddress("Mll",      &mll);
+	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+	
+	
+	// {  0 ,   1  ,    2   ,   3  ,   4  ,   5  ,    6    ,   7   ,      8     ,      9      }
+	// {"HT", "MET", "NJets", "MT2", "PT1", "PT2", "NBJets", "MET3", "NBJetsMed", "NBJetsMed2"}
+	//	float binwidthscale[gNDiffVars] = {100., 20., 1., 25., 20., 10., 1., 10., 1., 1.};
+	//	TH1D *h_TTWLO[gNDiffVars];
+	//	TH1D *h_TTWNLO[gNDiffVars];
+	
+	// Loop on the different variables
+	//	for (size_t i = 0; i < gNDiffVars; ++i) {
+	//		int varbin = i;
+	//		TString varname    = DiffPredYields::var_name[varbin];
+	//		const int nbins    = DiffPredYields::nbins[varbin];
+	//		const double *bins = DiffPredYields::bins[varbin];
+	//
+	//
+	//		h_TTWLO  = new TH1D(Form("TTW_LO_%s" , varname.Data()), varname, nbins, bins); nt11_mm->Sumw2();
+	//		h_TTWNLO = new TH1D(Form("TTW_NLO_%s", varname.Data()), varname, nbins, bins); nt11_mm->Sumw2();
+	//	}
+	
+	//	TH1D *h_TTWLO_HT  = new TH1D("TTW_LO_HT" , "HT", DiffPredYields::nbins[0], DiffPredYields::bins[0]); h_TTWLO_HT ->Sumw2();
+	//	TH1D *h_TTWNLO_HT = new TH1D("TTW_NLO_HT", "HT", DiffPredYields::nbins[0], DiffPredYields::bins[0]); h_TTWNLO_HT->Sumw2();
+	//	TH1D *h_HT_ratio  = new TH1D("TTW_LO_to_NLO_Ratio" , "HT", DiffPredYields::nbins[0], DiffPredYields::bins[0]); h_HT_ratio->Sumw2();
+	
+	vector<TH1D*> h_TTWLO_HT, h_TTWNLO_HT, h_HT_ratio;
+	TString histoname;
+	
+	for (int i = 0; i < diffVarName.size(); i++) {
+		histoname = "TTW_LO_"              + diffVarName[i];   h_TTWLO_HT .push_back(new TH1D(histoname , histoname, nbins[i], xmin[i], xmax[i]));   h_TTWLO_HT[i]  ->Sumw2();
+		histoname = "TTW_NLO_"             + diffVarName[i];   h_TTWNLO_HT.push_back(new TH1D(histoname , histoname, nbins[i], xmin[i], xmax[i]));   h_TTWNLO_HT[i] ->Sumw2();
+		histoname = "TTW_LO_to_NLO_Ratio_" + diffVarName[i];   h_HT_ratio .push_back(new TH1D(histoname , histoname, nbins[i], xmin[i], xmax[i]));   h_HT_ratio[i]  ->Sumw2();
+	}
+	
+	for( int i = 0; i < sigtree->GetEntries(); i++ ){
+		showStatusBar(i, sigtree->GetEntries(), 10000);
+		sigtree->GetEntry(i);
+		
+		if( flag != systflag ) continue;
+		if (*sname != "TTbarW" && *sname != "TTbarWNLO") continue;
+		
+		if (chVeto && charge != chVeto ) continue;
+		
+		if (TLCat != 0) continue;
+		
+		if ( mll < 8.) continue;
+		if ( HT  < minHT  || HT  > maxHT)  continue;
+		if ( MET < minMET || MET > maxMET) continue;
+		if ( NJ  < minNjets)      continue;
+		if ( NbJ < minNbjetsL)    continue;
+		if ( NbJmed < minNbjetsM) continue;
+		
+		gChannel chan = gChannel(Flavor);
+		if(chan == ElMu || Flavor == 4){
+			if(pT1 > pT2){
+				if(pT1 < minPt1) continue;
+				if(pT2 < minPt2) continue;
+			}
+			if(pT1 < pT2){
+				if(pT1 < minPt2) continue;
+				if(pT2 < minPt1) continue;
+			}
+		}
+		else{
+			if(pT1 < minPt1) continue;
+			if(pT2 < minPt2) continue;
+		}
+		
+		for (int j = 0; j < diffVarName.size(); j++) {
+			if      (diffVarName[j] == "HT"    ) diffVar = HT;
+            else if (diffVarName[j] == "MET"   ) diffVar = MET;
+            else if (diffVarName[j] == "NJ"    ) diffVar = NJ+0.5;
+            else if (diffVarName[j] == "NbJmed") diffVar = NbJmed+0.5;
+            else if (diffVarName[j] == "pT1"   ) {
+                if (pT1 > pT2)                   diffVar = pT1;
+                else                             diffVar = pT2;
+            }
+            else if (diffVarName[j] == "pT2"   ) {
+                if (pT1 > pT2)                   diffVar = pT2;
+                else                             diffVar = pT1;
+            }
+            else if (diffVarName[j] == "Mll"   ) diffVar = mll;
+            else if (diffVarName[j] == "NVrtx" ) diffVar = NVrtx;
+//            else if (diffVarName[j] == "PFIso1") {
+//                if (pT1 > pT2)                   diffVar = PFIso1;
+//                else                             diffVar = PFIso2;
+//                //			TLCat = 0;
+//            }
+//            else if (diffVarName[j] == "PFIso2") {
+//                if (pT1 > pT2)                   diffVar = PFIso2;
+//                else                             diffVar = PFIso1;
+//                //			TLCat = 0;
+//            }
+//			else if (diffVarName[j] == "D01") {
+//				if (pT1 > pT2)                diffVar = D01;
+//				else                          diffVar = D02;
+//			}
+//			else if (diffVarName[j] == "D02") {
+//				if (pT1 > pT2)                diffVar = D02;
+//				else                          diffVar = D01;
+//			}
+//			else if (diffVarName[j] == "Rho")    diffVar = Rho;
+            else                                 diffVar = -9999.;
+			
+			if (*sname == "TTbarW") {
+				h_TTWLO_HT[j]->Fill(diffVar);
+			}
+			if (*sname == "TTbarWNLO") {
+				h_TTWNLO_HT[j]->Fill(diffVar);
+			}
+		}
+	}
+	
+	
+	float border = 0.3;
+	float scale = (1-border)/border;
+
+	if (abs(region_sel) == 1) {
+		OUT << "\\begin{tabular}{l|rrr|rrr|r}\n";
+		OUT << "	\\hline\n";
+		OUT << "	channel &  \\multicolumn{3}{c|}{MadGraph}  &  \\multicolumn{3}{c|}{aMCatNLO}  &  rel diff \\\\\n";
+		OUT << "	        &  nPass  &      nGen  &  sig eff  &  nPass  &      nGen  &  sig eff  &	\\\\\n";
+		OUT << "	\\hline\n";
+		if (region_sel ==  1) OUT << "\t$++$";
+		if (region_sel == -1) OUT << "\t$--$";
+		OUT << Form("    &  %5.0f  &  %8d  &  %7.4f  &  %5.0f  &  %8d  &  %7.4f  &  %6.2f\\%	\\\\",
+				h_TTWLO_HT [0]->Integral(),
+				fSampleMap["TTbarW"]->ngen,
+				h_TTWLO_HT[0]->Integral()/fSampleMap["TTbarW"]->ngen,
+				h_TTWNLO_HT[0]->Integral(),
+				fSampleMap["TTbarWNLO"]->ngen,
+				h_TTWNLO_HT[0]->Integral()/fSampleMap["TTbarWNLO"]->ngen,
+				((h_TTWNLO_HT[0]->Integral()/fSampleMap["TTbarWNLO"]->ngen)/(h_TTWLO_HT[0]->Integral()/fSampleMap["TTbarW"]->ngen)-1) * 100
+			) << endl;
+		OUT << "	\\hline\n";
+		OUT << "\\end{tabular}\n";
+	}
+	
+	for (int i = 0; i < diffVarName.size(); i++) {
+		
+		h_HT_ratio [i]->SetXTitle(xAxisTitle[i].Data());
+		h_HT_ratio [i]->SetYTitle("");
+		h_HT_ratio [i]->GetXaxis()->SetTitleSize(scale * 0.04);
+		h_HT_ratio [i]->GetXaxis()->SetLabelSize(scale *  h_HT_ratio[i]->GetXaxis()->GetLabelSize());
+		h_HT_ratio [i]->GetYaxis()->SetLabelSize(scale *  h_HT_ratio[i]->GetYaxis()->GetLabelSize());
+		h_HT_ratio [i]->GetXaxis()->SetTickLength(scale * h_HT_ratio[i]->GetXaxis()->GetTickLength());
+		h_HT_ratio [i]->GetYaxis()->SetTickLength(h_HT_ratio[i]->GetYaxis()->GetTickLength());
+		
+		h_HT_ratio [i]->SetFillStyle(1001);
+		h_HT_ratio [i]->SetLineWidth(1);
+		h_HT_ratio [i]->SetFillColor(  kGray+1);
+		h_HT_ratio [i]->SetLineColor(  kGray+1);
+		h_HT_ratio [i]->SetMarkerColor(kGray+1);
+		
+		h_TTWLO_HT [i]->SetMarkerColor(kBlue);
+		h_TTWLO_HT [i]->SetMarkerStyle(20);
+		h_TTWLO_HT [i]->SetMarkerSize(1.5);
+		h_TTWLO_HT [i]->SetLineWidth(2);
+		h_TTWLO_HT [i]->SetLineColor(kBlue);
+		h_TTWLO_HT [i]->SetFillColor(kBlue);
+		
+		h_TTWNLO_HT[i]->SetMarkerColor(kRed);
+		h_TTWNLO_HT[i]->SetMarkerStyle(20);
+		h_TTWNLO_HT[i]->SetMarkerSize(1.5);
+		h_TTWNLO_HT[i]->SetLineWidth(2);
+		h_TTWNLO_HT[i]->SetLineColor(kRed);
+		h_TTWNLO_HT[i]->SetFillColor(kRed);
+		//	h_TTWNLO_HT->SetYTitle("N_{pass}/N_{gen}");
+			
+		// Remove bin labels for plot pad
+		for(size_t j = 1; j <= h_TTWLO_HT [i]->GetNbinsX(); ++j) h_TTWLO_HT [i]->GetXaxis()->SetBinLabel(j, "");
+		for(size_t j = 1; j <= h_TTWNLO_HT[i]->GetNbinsX(); ++j) h_TTWNLO_HT[i]->GetXaxis()->SetBinLabel(j, "");
+		
+//		OUT << "\n\n";
+//		OUT << "LO:\n";
+//		OUT << "nPass / nGen = " << h_TTWLO_HT [i]->Integral() << " / " << fSampleMap["TTbarW"]->ngen << " = " <<    h_TTWLO_HT [i]->Integral()/fSampleMap["TTbarW"]->ngen << endl;
+//		                                                                                                                        
+//		OUT << "\n\n";                                                                                                          
+//		OUT << "NLO:\n";                                                                                                        
+//		OUT << "nPass / nGen = " << h_TTWNLO_HT[i]->Integral() << " / " << fSampleMap["TTbarWNLO"]->ngen << " = " << h_TTWNLO_HT[i]->Integral()/fSampleMap["TTbarWNLO"]->ngen << endl;
+//		
+//		OUT << "diff: " << h_TTWNLO_HT[i]->Integral()/fSampleMap["TTbarWNLO"]->ngen / (h_TTWLO_HT[i]->Integral()/fSampleMap["TTbarW"]->ngen) * 100. << " %" << endl;
+		
+		h_TTWLO_HT [i]->Scale(fLumiNorm / fSampleMap["TTbarW"]   ->getLumi());
+		h_TTWNLO_HT[i]->Scale(fLumiNorm / fSampleMap["TTbarWNLO"]->getLumi());
+		//	h_TTWLO_HT ->Scale(1. / fSampleMap["TTbarW"]   ->ngen);
+		//	h_TTWNLO_HT->Scale(1. / fSampleMap["TTbarWNLO"]->ngen);
+		h_HT_ratio[i]->Divide(h_TTWNLO_HT[i], h_TTWLO_HT[i]);
+	
+		float max(100.);
+		max = 1.2 * TMath::Max(h_TTWLO_HT[i]->GetBinContent(h_TTWLO_HT[i]->GetMaximumBin()), h_TTWNLO_HT[i]->GetBinContent(h_TTWNLO_HT[i]->GetMaximumBin()));
+		h_TTWLO_HT [i]->SetMaximum(max);
+		h_TTWNLO_HT[i]->SetMaximum(max);
+		
+		TLatex *lat = new TLatex();
+		lat->SetNDC(kTRUE);
+		lat->SetTextColor(kBlack);
+		lat->SetTextSize(0.04);
+		
+		//	h_TTWLO_HT ->SetLineColor(kBlue);
+		//	h_TTWNLO_HT->SetLineColor(kRed);
+		
+		TLegend *leg;
+		leg = new TLegend(0.60,0.75,0.80,0.88);
+		leg->AddEntry(h_TTWLO_HT [i], "t#bar{t} + W MadGraph", "p");
+		leg->AddEntry(h_TTWNLO_HT[i], "t#bar{t} + W aMCatNLO", "p");
+		leg->SetTextSize(0.04);
+		leg->SetFillStyle(0);
+		leg->SetTextFont(42);
+		leg->SetBorderSize(0);
+		
+		TCanvas *c_temp = new TCanvas("C_HTPlot", "HT", 0, 0, 600, 600);
+		c_temp->cd();
+		
+		
+		
+		TPad *p_plot  = new TPad("plotpad",  "Pad containing the plot", 0.00, border, 1.00, 1.00, 0, 0);
+		p_plot->SetBottomMargin(0.015);
+		p_plot->Draw();
+		TPad *p_ratio = new TPad("ratiopad", "Pad containing the ratio", 0.00, 0.00, 1.00, border, 0, 0);
+		p_ratio->SetTopMargin(0.025);
+		p_ratio->SetBottomMargin(0.35);
+		p_ratio->Draw();
+		
+		
+		p_ratio->cd();
+		h_HT_ratio[i]->DrawCopy("E2 ");
+		TLine *l3 = new TLine(h_HT_ratio[i]->GetXaxis()->GetXmin(), 1.00, h_HT_ratio[i]->GetXaxis()->GetXmax(), 1.00);
+		l3->SetLineWidth(2);
+		l3->SetLineStyle(7);
+		l3->Draw();
+		gPad->RedrawAxis();
+		p_ratio->Draw();
+		
+		
+		
+		
+		p_plot->cd();
+		h_TTWNLO_HT[i]->DrawCopy("PE 0");
+		h_TTWLO_HT [i]->DrawCopy("PE 0 same");
+		leg->Draw();
+		//	lat->DrawLatex(0.70,0.92, Form("L_{int.} = %2.1f fb^{-1}", fLumiNorm/1000.));
+		//	lat->SetTextSize(0.04);
+		//	lat->DrawLatex(0.62,0.85, title);
+		//	if(fp == SigSup) lat->DrawLatex(0.62,0.85, pfname + name);
+		//	if(fp == ZDecay) lat->DrawLatex(0.67,0.15, pfname + name);
+		//	double ymean(0.), yrms(0.);
+		//	getWeightedYMeanRMS(h_ptratio_data, ymean, yrms);
+		drawTopLineSim();
+		//	lat->SetTextSize(0.03);
+		c_temp->Update();
+		//	lat->DrawLatex(0.25,0.92, Form("Mean ratio: %4.2f #pm %4.2f", ymean, yrms));
+		
+		//	TString fpname = "F";
+		//	if(fp == ZDecay) fpname = "P";
+		
+		// Util::PrintNoEPS( c_temp, fpname + "Ratio_" + name + "_Pt", fOutputDir + fOutputSubDir, NULL);
+		//	Util::PrintPDF(c_temp, fpname + "Ratio_" + name + "_Pt", fOutputDir + fOutputSubDir);
+//		Util::PrintPDF(c_temp, Form(diffVarName[i]+"_customRegion_HT%.0f"+jvString+"MET%.0fNJ%.0iNbjL%.0iNbjM%.0iPT1%.0fPT2%.0f_"+sysString+chargeString, minHT, minMET, minNjets, minNbjetsL, minNbjetsM, minPt1, minPt2), fOutputDir + fOutputSubDir);
+		Util::PrintPDF(c_temp, diffVarName[i] + chargeString, fOutputDir + fOutputSubDir);
+		//	delete h_ptratio_mc, h_ptratio_data, h_ptratio_qcd, h_ptratio_wjets;
+		delete c_temp, lat, leg;
+		
+		delete h_TTWNLO_HT[i], h_TTWLO_HT[i], h_HT_ratio[i];
+	}
+	
+	OUT.close();
+	
+}
 void SSDLPlotter::makePRLPlot1(){
 	FakeRatios *FR = new FakeRatios();
 	const int nchans = 8;
@@ -8487,7 +8990,7 @@ void SSDLPlotter::makeSystPlot(TString outputname, TString label, TH1D *nom, TH1
 	TLegend *leg = new TLegend(0.15,0.70,0.50,0.88);
 	leg->AddEntry(nom,   "Mean",              "l");
 	leg->AddEntry(plus,  label+" + 1 #sigma", "l");
-	if(minus!=NULL) leg->AddEntry(minus, label+" + 1 #sigma", "l");
+	if(minus!=NULL) leg->AddEntry(minus, label+" - 1 #sigma", "l");
 	leg->SetFillStyle(0);
 	leg->SetTextFont(42);
 	leg->SetTextSize(0.03);
@@ -10251,8 +10754,467 @@ TTWZPrediction SSDLPlotter::makeIntPredictionTTW(TString filename, int reg){
 	
 	return pred;
 }
+void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
+	TString outputdir = Util::MakeOutputDir(fOutputDir + "IntPredictionsSigEventTree");
+	fOutputSubDir = "IntPredictionsSigEventTree/";
+	time_t rawtime;
+	struct tm* timeinfo;
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	map< TString, TTWZPrediction > ttwzpreds_plpl, ttwzpreds_mimi;
 
-void SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1, float pT2, int chVeto, bool ttw , int flag){
+	// cuts
+	float  minHT_plpl(200.);
+	float  minPt_plpl( 32.);
+	int    minNJ_plpl(  3 );
+	int   minNbJ_plpl(  1 );
+	float minMET_plpl(  0.);
+	float  minHT_mimi(205.);
+	float  minPt_mimi( 30.);
+	int    minNJ_mimi(  3 );
+	int   minNbJ_mimi(  1 );
+	float minMET_mimi(  0.);
+
+	ttwzpreds_plpl = makeTTWIntPredictionsSigEvent(minHT_plpl, 8000., minMET_plpl, 8000., minNJ_plpl, minNbJ_plpl, minNbJ_plpl, minPt_plpl, minPt_plpl, +1, true);
+	ttwzpreds_mimi = makeTTWIntPredictionsSigEvent(minHT_mimi, 8000., minMET_mimi, 8000., minNJ_mimi, minNbJ_mimi, minNbJ_mimi, minPt_mimi, minPt_mimi, -1, true);
+//	ttwzpreds_plpl = makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
+//	ttwzpreds_mimi = makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
+
+	// table for analysis note
+	TString notetable     = outputdir + "ObsPredTable.tex";
+	fOUTSTREAM.open(notetable.Data(), ios::trunc);
+	fOUTSTREAM << "%!TEX root = ../AN-12-445.tex" << endl;
+	fOUTSTREAM << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	fOUTSTREAM << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM << "%% Format is m+m+, e+m+, e+e+, m-m-, e-m-, e-e-" << endl;
+	fOUTSTREAM << endl;
+	fOUTSTREAM << "\\begin{tabular}{l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n";
+	fOUTSTREAM << "                 &\\multicolumn{2}{c|}{$\\mu^+\\mu^+$}&\\multicolumn{2}{c|}{$e^+\\mu^+$}&\\multicolumn{2}{c|}{$e^+e^+$} &\\multicolumn{2}{c|}{$\\mu^-\\mu^-$}&\\multicolumn{2}{c|}{$e^-\\mu^-$}&\\multicolumn{2}{c}{$e^-e^-$} \\\\\n\\hline\n";
+	fOUTSTREAM << Form("Fakes            & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \n",
+						ttwzpreds_plpl["Normal"].fake_mm, ttwzpreds_plpl["Normal"].fake_err_mm,
+						ttwzpreds_plpl["Normal"].fake_em, ttwzpreds_plpl["Normal"].fake_err_em,
+						ttwzpreds_plpl["Normal"].fake_ee, ttwzpreds_plpl["Normal"].fake_err_ee,
+						ttwzpreds_mimi["Normal"].fake_mm, ttwzpreds_mimi["Normal"].fake_err_mm,
+						ttwzpreds_mimi["Normal"].fake_em, ttwzpreds_mimi["Normal"].fake_err_em,
+						ttwzpreds_mimi["Normal"].fake_ee, ttwzpreds_mimi["Normal"].fake_err_ee
+						);
+//	fOUTSTREAM3 << Form("Double Fakes   & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \n",
+//					   nff_mm, sqrt(FR->getMMNffEStat()*FR->getMMNffEStat()+nff_mm*nff_mm*FakeESyst2),
+//					   nff_em, sqrt(FR->getEMNffEStat()*FR->getEMNffEStat()+nff_em*nff_em*FakeESyst2),
+//					   nff_ee, sqrt(FR->getEENffEStat()*FR->getEENffEStat()+nff_ee*nff_ee*FakeESyst2),
+//					   nff_em + nff_mm + nff_ee, sqrt(FR->getTotDoubleEStat()*FR->getTotDoubleEStat() + nDF*nDF*FakeESyst2));
+//	fOUTSTREAM3 << Form("Single Fakes   & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \n",
+//					   npf_mm,          sqrt(FR->getMMNpfEStat()   *FR->getMMNpfEStat()    +  npf_mm*npf_mm*FakeESyst2),
+//					   npf_em + nfp_em, sqrt(FR->getEMSingleEStat()*FR->getEMSingleEStat() + (npf_em+nfp_em)*(npf_em+nfp_em)*FakeESyst2),
+//					   npf_ee,          sqrt(FR->getEENpfEStat()   *FR->getEENpfEStat()    +  npf_ee*npf_ee*FakeESyst2),
+//					   npf_em + nfp_em + npf_mm + npf_ee, sqrt(FR->getTotSingleEStat()*FR->getTotSingleEStat() + nSF*nSF*FakeESyst2));
+	fOUTSTREAM << Form("Charge MisID     & \\multicolumn{2}{c|}{-}        & %13.1f & %13.1f & %13.1f & %13.1f & \\multicolumn{2}{c|}{-}        & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \n",
+						ttwzpreds_plpl["Normal"].cmid_em, ttwzpreds_plpl["Normal"].cmid_err_em,
+						ttwzpreds_plpl["Normal"].cmid_ee, ttwzpreds_plpl["Normal"].cmid_err_ee,
+						ttwzpreds_mimi["Normal"].cmid_em, ttwzpreds_mimi["Normal"].cmid_err_em,
+						ttwzpreds_mimi["Normal"].cmid_ee, ttwzpreds_mimi["Normal"].cmid_err_ee
+						);
+	fOUTSTREAM << Form("Rare SM          & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \n",
+						ttwzpreds_plpl["Normal"].rare_mm, ttwzpreds_plpl["Normal"].rare_err_mm,
+						ttwzpreds_plpl["Normal"].rare_em, ttwzpreds_plpl["Normal"].rare_err_em,
+						ttwzpreds_plpl["Normal"].rare_ee, ttwzpreds_plpl["Normal"].rare_err_ee,
+						ttwzpreds_mimi["Normal"].rare_mm, ttwzpreds_mimi["Normal"].rare_err_mm,
+						ttwzpreds_mimi["Normal"].rare_em, ttwzpreds_mimi["Normal"].rare_err_em,
+						ttwzpreds_mimi["Normal"].rare_ee, ttwzpreds_mimi["Normal"].rare_err_ee
+						);
+	fOUTSTREAM << Form("WZ Prod.         & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \n",
+						ttwzpreds_plpl["Normal"].wz_mm, ttwzpreds_plpl["Normal"].wz_err_mm,
+						ttwzpreds_plpl["Normal"].wz_em, ttwzpreds_plpl["Normal"].wz_err_em,
+						ttwzpreds_plpl["Normal"].wz_ee, ttwzpreds_plpl["Normal"].wz_err_ee,
+						ttwzpreds_mimi["Normal"].wz_mm, ttwzpreds_mimi["Normal"].wz_err_mm,
+						ttwzpreds_mimi["Normal"].wz_em, ttwzpreds_mimi["Normal"].wz_err_em,
+						ttwzpreds_mimi["Normal"].wz_ee, ttwzpreds_mimi["Normal"].wz_err_ee
+						);
+	fOUTSTREAM << Form("ttZ Prod.        & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \\hline \n",
+						ttwzpreds_plpl["Normal"].ttz_mm, ttwzpreds_plpl["Normal"].ttz_err_mm,
+						ttwzpreds_plpl["Normal"].ttz_em, ttwzpreds_plpl["Normal"].ttz_err_em,
+						ttwzpreds_plpl["Normal"].ttz_ee, ttwzpreds_plpl["Normal"].ttz_err_ee,
+						ttwzpreds_mimi["Normal"].ttz_mm, ttwzpreds_mimi["Normal"].ttz_err_mm,
+						ttwzpreds_mimi["Normal"].ttz_em, ttwzpreds_mimi["Normal"].ttz_err_em,
+						ttwzpreds_mimi["Normal"].ttz_ee, ttwzpreds_mimi["Normal"].ttz_err_ee
+						);
+//	if (separateTTH) {
+//		fOUTSTREAM3 << Form("ttH Prod.      & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \\hline \n",
+//							tth_nt2_mm, sqrt(tth_nt2_mm_e1 + RareESyst2*tth_nt2_mm*tth_nt2_mm),
+//							tth_nt2_em, sqrt(tth_nt2_em_e1 + RareESyst2*tth_nt2_em*tth_nt2_em),
+//							tth_nt2_ee, sqrt(tth_nt2_ee_e1 + RareESyst2*tth_nt2_ee*tth_nt2_ee),
+//							tth_nt2_ee + tth_nt2_mm + tth_nt2_em, sqrt(tth_nt2_mm_e1 + tth_nt2_ee_e1 + tth_nt2_em_e1 + RareESyst2*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)));
+//	}
+	fOUTSTREAM << Form("Total Bkg        & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \n",
+						ttwzpreds_plpl["Normal"].fake_mm                                    + ttwzpreds_plpl["Normal"].rare_mm + ttwzpreds_plpl["Normal"].wz_mm + ttwzpreds_plpl["Normal"].ttz_mm, ttwzpreds_plpl["Normal"].tot_err_mm,
+						ttwzpreds_plpl["Normal"].fake_em + ttwzpreds_plpl["Normal"].cmid_em + ttwzpreds_plpl["Normal"].rare_em + ttwzpreds_plpl["Normal"].wz_em + ttwzpreds_plpl["Normal"].ttz_em, ttwzpreds_plpl["Normal"].tot_err_em,
+						ttwzpreds_plpl["Normal"].fake_ee + ttwzpreds_plpl["Normal"].cmid_ee + ttwzpreds_plpl["Normal"].rare_ee + ttwzpreds_plpl["Normal"].wz_ee + ttwzpreds_plpl["Normal"].ttz_ee, ttwzpreds_plpl["Normal"].tot_err_ee,
+						ttwzpreds_mimi["Normal"].fake_mm                                    + ttwzpreds_mimi["Normal"].rare_mm + ttwzpreds_mimi["Normal"].wz_mm + ttwzpreds_mimi["Normal"].ttz_mm, ttwzpreds_mimi["Normal"].tot_err_mm,
+						ttwzpreds_mimi["Normal"].fake_em + ttwzpreds_mimi["Normal"].cmid_em + ttwzpreds_mimi["Normal"].rare_em + ttwzpreds_mimi["Normal"].wz_em + ttwzpreds_mimi["Normal"].ttz_em, ttwzpreds_mimi["Normal"].tot_err_em,
+						ttwzpreds_mimi["Normal"].fake_ee + ttwzpreds_mimi["Normal"].cmid_ee + ttwzpreds_mimi["Normal"].rare_ee + ttwzpreds_mimi["Normal"].wz_ee + ttwzpreds_mimi["Normal"].ttz_ee, ttwzpreds_mimi["Normal"].tot_err_ee
+						);
+	fOUTSTREAM << Form("\\bf{Observed}    & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c}{\\bf{%3d}}  \\\\ \n",
+						ttwzpreds_plpl["Normal"].obs_mm,
+						ttwzpreds_plpl["Normal"].obs_em,
+						ttwzpreds_plpl["Normal"].obs_ee,
+						ttwzpreds_mimi["Normal"].obs_mm,
+						ttwzpreds_mimi["Normal"].obs_em,
+						ttwzpreds_mimi["Normal"].obs_ee
+						);
+	cout << "ttwzpreds_plpl[\"Normal\"].obs_mm: " << ttwzpreds_plpl["Normal"].obs_mm << endl;
+	cout << "ttwzpreds_plpl[\"Normal\"].obs_em: " << ttwzpreds_plpl["Normal"].obs_em << endl;
+	cout << "ttwzpreds_plpl[\"Normal\"].obs_ee: " << ttwzpreds_plpl["Normal"].obs_ee << endl;
+	cout << "ttwzpreds_mimi[\"Normal\"].obs_mm: " << ttwzpreds_mimi["Normal"].obs_mm << endl;
+	cout << "ttwzpreds_mimi[\"Normal\"].obs_em: " << ttwzpreds_mimi["Normal"].obs_em << endl;
+	cout << "ttwzpreds_mimi[\"Normal\"].obs_ee: " << ttwzpreds_mimi["Normal"].obs_ee << endl;
+	fOUTSTREAM << Form("Obs. - Tot. Bkg. & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \\hline \n",
+						ttwzpreds_plpl["Normal"].obs_mm - (ttwzpreds_plpl["Normal"].fake_mm                                    + ttwzpreds_plpl["Normal"].rare_mm + ttwzpreds_plpl["Normal"].wz_mm + ttwzpreds_plpl["Normal"].ttz_mm), ttwzpreds_plpl["Normal"].tot_err_mm,
+						ttwzpreds_plpl["Normal"].obs_em - (ttwzpreds_plpl["Normal"].fake_em + ttwzpreds_plpl["Normal"].cmid_em + ttwzpreds_plpl["Normal"].rare_em + ttwzpreds_plpl["Normal"].wz_em + ttwzpreds_plpl["Normal"].ttz_em), ttwzpreds_plpl["Normal"].tot_err_em,
+						ttwzpreds_plpl["Normal"].obs_ee - (ttwzpreds_plpl["Normal"].fake_ee + ttwzpreds_plpl["Normal"].cmid_ee + ttwzpreds_plpl["Normal"].rare_ee + ttwzpreds_plpl["Normal"].wz_ee + ttwzpreds_plpl["Normal"].ttz_ee), ttwzpreds_plpl["Normal"].tot_err_ee,
+						ttwzpreds_mimi["Normal"].obs_mm - (ttwzpreds_mimi["Normal"].fake_mm                                    + ttwzpreds_mimi["Normal"].rare_mm + ttwzpreds_mimi["Normal"].wz_mm + ttwzpreds_mimi["Normal"].ttz_mm), ttwzpreds_mimi["Normal"].tot_err_mm,
+						ttwzpreds_mimi["Normal"].obs_em - (ttwzpreds_mimi["Normal"].fake_em + ttwzpreds_mimi["Normal"].cmid_em + ttwzpreds_mimi["Normal"].rare_em + ttwzpreds_mimi["Normal"].wz_em + ttwzpreds_mimi["Normal"].ttz_em), ttwzpreds_mimi["Normal"].tot_err_em,
+						ttwzpreds_mimi["Normal"].obs_ee - (ttwzpreds_mimi["Normal"].fake_ee + ttwzpreds_mimi["Normal"].cmid_ee + ttwzpreds_mimi["Normal"].rare_ee + ttwzpreds_mimi["Normal"].wz_ee + ttwzpreds_mimi["Normal"].ttz_ee), ttwzpreds_mimi["Normal"].tot_err_ee
+						);
+	fOUTSTREAM << Form("ttW Prod.        & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\ \\hline \\hline \n",
+						ttwzpreds_plpl["Normal"].ttw_mm, ttwzpreds_plpl["Normal"].ttw_err_mm,
+						ttwzpreds_plpl["Normal"].ttw_em, ttwzpreds_plpl["Normal"].ttw_err_em,
+						ttwzpreds_plpl["Normal"].ttw_ee, ttwzpreds_plpl["Normal"].ttw_err_ee,
+						ttwzpreds_mimi["Normal"].ttw_mm, ttwzpreds_mimi["Normal"].ttw_err_mm,
+						ttwzpreds_mimi["Normal"].ttw_em, ttwzpreds_mimi["Normal"].ttw_err_em,
+						ttwzpreds_mimi["Normal"].ttw_ee, ttwzpreds_mimi["Normal"].ttw_err_ee
+						);
+	fOUTSTREAM << "\\end{tabular}\n";
+	fOUTSTREAM << "\n\n";
+	fOUTSTREAM.close();
+
+
+	TString notenumbers     = outputdir + "numbers.tex";
+	fOUTSTREAM.open(notenumbers.Data(), ios::trunc);
+	fOUTSTREAM << "%!TEX root = ../AN-12-445.tex" << endl;
+	fOUTSTREAM << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	fOUTSTREAM << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM << endl << endl;
+	fOUTSTREAM << "%%% cuts %%%" << endl;
+	fOUTSTREAM << "% gApplyZVeto: " << gApplyZVeto << endl;
+	fOUTSTREAM << Form("\\newcommand    {\\MuMaxIso}{%4.2f}",tmp_gMuMaxIso) << endl;
+	fOUTSTREAM << Form("\\newcommand    {\\ElMaxIso}{%4.2f}",tmp_gElMaxIso) << endl;
+	fOUTSTREAM << Form("\\newcommand    {\\jetPtCut}{%3.0f}",tmp_gMinJetPt) << endl;
+	fOUTSTREAM << endl;
+	fOUTSTREAM << Form("\\newcommand   {\\HTCutPlPl}{%3.0f}",   minHT_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\lepPtCutPlPl}{%3.0f}",   minPt_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand      {\\NJPlPl}{%3d}"  ,   minNJ_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand     {\\NbJPlPl}{%3d}"  ,  minNbJ_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand     {\\METPlPl}{%3.0f}",  minMET_plpl) << endl;
+	fOUTSTREAM << endl;
+	fOUTSTREAM << Form("\\newcommand   {\\HTCutMiMi}{%3.0f}",   minHT_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\lepPtCutMiMi}{%3.0f}",   minPt_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand      {\\NJMiMi}{%3d}"  ,   minNJ_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand     {\\NbJMiMi}{%3d}"  ,  minNbJ_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand     {\\METMiMi}{%3.0f}",  minMET_mimi) << endl;
+	fOUTSTREAM << endl;
+	fOUTSTREAM << "%%% final events %%%" << endl;
+	fOUTSTREAM << Form("\\newcommand{\\nObsPlPl}{%3d}",
+						ttwzpreds_plpl["Normal"].obs_mm +
+						ttwzpreds_plpl["Normal"].obs_em +
+						ttwzpreds_plpl["Normal"].obs_ee
+						) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\nObsMiMi}{%3d}",
+						ttwzpreds_mimi["Normal"].obs_mm +
+						ttwzpreds_mimi["Normal"].obs_em +
+						ttwzpreds_mimi["Normal"].obs_ee
+						) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\nPredPlPl}{%5.1f \\pm %4.1f}",
+						     ttwzpreds_plpl["Normal"].tot     + ttwzpreds_plpl["Normal"].ttw,
+						sqrt(ttwzpreds_plpl["Normal"].tot_err * ttwzpreds_plpl["Normal"].tot_err
+						   + ttwzpreds_plpl["Normal"].ttw_err * ttwzpreds_plpl["Normal"].ttw_err)
+						) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\nPredMiMi}{%5.1f \\pm %4.1f}",
+						     ttwzpreds_mimi["Normal"].tot     + ttwzpreds_mimi["Normal"].ttw,
+						sqrt(ttwzpreds_mimi["Normal"].tot_err * ttwzpreds_mimi["Normal"].tot_err
+						   + ttwzpreds_mimi["Normal"].ttw_err * ttwzpreds_mimi["Normal"].ttw_err)
+						) << endl;
+	fOUTSTREAM << endl;
+
+	fOUTSTREAM.close();
+
+
+	///////////////////////
+	// combined datacard //
+	///////////////////////
+	TString datacard;
+	const float pu_syst = 1.03;
+//	const float match_syst_up = 1.01485;
+//	const float match_syst_dn = 0.997558;
+//	const float scale_syst_up = 1.02302;
+//	const float scale_syst_dn = 0.965962;
+	const float match_syst_up = 0.992;
+	const float match_syst_dn = 0.989;
+	const float scale_syst_up = 1.046;
+	const float scale_syst_dn = 0.961;
+	const float nlo_syst_plpl = 1.038;
+	const float nlo_syst_mimi = 1.270;
+	float nlo_syst = 1.13; // old numbers for the moment
+//	if (chVeto == +1) nlo_syst = nlo_syst_plpl;
+//	if (chVeto == -1) nlo_syst = nlo_syst_mimi;
+	TString lumiError = "1.044";
+	datacard = outputdir + "datacard_ssdl_3channels_ttW_plpl_mimi.txt";
+	fOUTSTREAM.open(datacard.Data(), ios::trunc);
+	fOUTSTREAM <<      "#=========================================================================================" << endl;
+	fOUTSTREAM <<      "# Systematics table for ttW/Z analysis, same-sign channel, subchannels" << endl;
+	fOUTSTREAM << Form("# Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM <<      "# Copy between the dashed lines for datacard" << endl;
+	fOUTSTREAM <<      "#-----------------------------------------------------------------------------------------" << endl;
+	fOUTSTREAM <<      "imax 6" << endl;
+	fOUTSTREAM <<      "jmax 5" << endl;
+	fOUTSTREAM <<      "kmax *" << endl;
+	fOUTSTREAM << endl << endl;
+	fOUTSTREAM <<      "bin\t\t1\t2\t3\t4\t5\t6" << endl;
+	if (gFullDataBlind)
+		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d", 999, 999, 999, 999, 999, 999) << endl;
+	else
+		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d",
+						ttwzpreds_plpl["Normal"].obs_mm, ttwzpreds_plpl["Normal"].obs_em, ttwzpreds_plpl["Normal"].obs_ee,
+						ttwzpreds_mimi["Normal"].obs_mm, ttwzpreds_mimi["Normal"].obs_em, ttwzpreds_mimi["Normal"].obs_ee
+						) << endl;
+	fOUTSTREAM << endl << endl;
+	fOUTSTREAM <<      "bin\t\t1\t\t1\t\t1\t\t1\t\t1\t\t1\t\t2\t\t2\t\t2\t\t2\t\t2\t\t2\t\t3\t\t3\t\t3\t\t3\t\t3\t\t3\t\t4\t\t4\t\t4\t\t4\t\t4\t\t4\t\t5\t\t5\t\t5\t\t5\t\t5\t\t5\t\t6\t\t6\t\t6\t\t6\t\t6\t\t6" << endl;
+	fOUTSTREAM <<      "process\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare" << endl;
+	fOUTSTREAM <<      "process\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5" << endl;
+	fOUTSTREAM << Form("rate\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f",
+					   ttwzpreds_plpl["Normal"].ttw_mm, ttwzpreds_plpl["Normal"].ttz_mm, ttwzpreds_plpl["Normal"].fake_mm, 0.0                             , ttwzpreds_plpl["Normal"].wz_mm, ttwzpreds_plpl["Normal"].rare_mm,
+					   ttwzpreds_plpl["Normal"].ttw_em, ttwzpreds_plpl["Normal"].ttz_em, ttwzpreds_plpl["Normal"].fake_em, ttwzpreds_plpl["Normal"].cmid_em, ttwzpreds_plpl["Normal"].wz_em, ttwzpreds_plpl["Normal"].rare_em,
+					   ttwzpreds_plpl["Normal"].ttw_ee, ttwzpreds_plpl["Normal"].ttz_ee, ttwzpreds_plpl["Normal"].fake_ee, ttwzpreds_plpl["Normal"].cmid_ee, ttwzpreds_plpl["Normal"].wz_ee, ttwzpreds_plpl["Normal"].rare_ee,
+					   ttwzpreds_mimi["Normal"].ttw_mm, ttwzpreds_mimi["Normal"].ttz_mm, ttwzpreds_mimi["Normal"].fake_mm, 0.0                             , ttwzpreds_mimi["Normal"].wz_mm, ttwzpreds_mimi["Normal"].rare_mm,
+					   ttwzpreds_mimi["Normal"].ttw_em, ttwzpreds_mimi["Normal"].ttz_em, ttwzpreds_mimi["Normal"].fake_em, ttwzpreds_mimi["Normal"].cmid_em, ttwzpreds_mimi["Normal"].wz_em, ttwzpreds_mimi["Normal"].rare_em,
+					   ttwzpreds_mimi["Normal"].ttw_ee, ttwzpreds_mimi["Normal"].ttz_ee, ttwzpreds_mimi["Normal"].fake_ee, ttwzpreds_mimi["Normal"].cmid_ee, ttwzpreds_mimi["Normal"].wz_ee, ttwzpreds_mimi["Normal"].rare_ee) << endl;
+	fOUTSTREAM << endl << endl;
+	fOUTSTREAM <<      "#syst" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-",
+					   1.0+ttwzpreds_plpl["Normal"].ttz_err_mm/ttwzpreds_plpl["Normal"].ttz_mm,
+					   1.0+ttwzpreds_plpl["Normal"].ttz_err_em/ttwzpreds_plpl["Normal"].ttz_em,
+					   1.0+ttwzpreds_plpl["Normal"].ttz_err_ee/ttwzpreds_plpl["Normal"].ttz_ee,
+					   1.0+ttwzpreds_mimi["Normal"].ttz_err_mm/ttwzpreds_mimi["Normal"].ttz_mm,
+					   1.0+ttwzpreds_mimi["Normal"].ttz_err_em/ttwzpreds_mimi["Normal"].ttz_em,
+					   1.0+ttwzpreds_mimi["Normal"].ttz_err_ee/ttwzpreds_mimi["Normal"].ttz_ee)   << endl;
+	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-",
+					   1.0+ttwzpreds_plpl["Normal"].fake_err_mm/ttwzpreds_plpl["Normal"].fake_mm,
+					   1.0+ttwzpreds_plpl["Normal"].fake_err_em/ttwzpreds_plpl["Normal"].fake_em,
+					   1.0+ttwzpreds_plpl["Normal"].fake_err_ee/ttwzpreds_plpl["Normal"].fake_ee,
+					   1.0+ttwzpreds_mimi["Normal"].fake_err_mm/ttwzpreds_mimi["Normal"].fake_mm,
+					   1.0+ttwzpreds_mimi["Normal"].fake_err_em/ttwzpreds_mimi["Normal"].fake_em,
+					   1.0+ttwzpreds_mimi["Normal"].fake_err_ee/ttwzpreds_mimi["Normal"].fake_ee) << endl;
+	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-",
+					   1.0+ttwzpreds_plpl["Normal"].cmid_err_em/ttwzpreds_plpl["Normal"].cmid_em,
+					   1.0+ttwzpreds_plpl["Normal"].cmid_err_ee/ttwzpreds_plpl["Normal"].cmid_ee,
+					   1.0+ttwzpreds_mimi["Normal"].cmid_err_em/ttwzpreds_mimi["Normal"].cmid_em,
+					   1.0+ttwzpreds_mimi["Normal"].cmid_err_ee/ttwzpreds_mimi["Normal"].cmid_ee) << endl;
+	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-",
+					   1.0+ttwzpreds_plpl["Normal"].wz_err_mm  /ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+ttwzpreds_plpl["Normal"].wz_err_em  /ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+ttwzpreds_plpl["Normal"].wz_err_ee  /ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+ttwzpreds_mimi["Normal"].wz_err_mm  /ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+ttwzpreds_mimi["Normal"].wz_err_em  /ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+ttwzpreds_mimi["Normal"].wz_err_ee  /ttwzpreds_mimi["Normal"].wz_ee)   << endl;
+	fOUTSTREAM << Form("bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f",
+					   1.0+ttwzpreds_plpl["Normal"].rare_err_mm/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+ttwzpreds_plpl["Normal"].rare_err_em/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+ttwzpreds_plpl["Normal"].rare_err_ee/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+ttwzpreds_mimi["Normal"].rare_err_mm/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+ttwzpreds_mimi["Normal"].rare_err_em/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+ttwzpreds_mimi["Normal"].rare_err_ee/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+	fOUTSTREAM << Form("lept     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds_plpl["LepDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["LepUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["LepDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["LepUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["LepDown"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["LepUp"].wz_mm    -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["LepDown"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["LepUp"].rare_mm  -ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["LepDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["LepUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["LepDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["LepUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["LepDown"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["LepUp"].wz_em    -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["LepDown"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["LepUp"].rare_em  -ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["LepDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["LepUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["LepDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["LepUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["LepDown"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["LepUp"].wz_ee    -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["LepDown"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_plpl["LepUp"].rare_ee  -ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["LepDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["LepUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["LepDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["LepUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["LepDown"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["LepUp"].wz_mm    -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["LepDown"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["LepUp"].rare_mm  -ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["LepDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["LepUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["LepDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["LepUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["LepDown"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["LepUp"].wz_em    -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["LepDown"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["LepUp"].rare_em  -ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["LepDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["LepUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["LepDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["LepUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["LepDown"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["LepUp"].wz_ee    -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["LepDown"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["LepUp"].rare_ee  -ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+	fOUTSTREAM << Form("btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds_plpl["BDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["BUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["BDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["BUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["BDown"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["BUp"].wz_mm    -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["BDown"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["BUp"].rare_mm  -ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["BDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["BUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["BDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["BUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["BDown"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["BUp"].wz_em    -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["BDown"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["BUp"].rare_em  -ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["BDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["BUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["BDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["BUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["BDown"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["BUp"].wz_ee    -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["BDown"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_plpl["BUp"].rare_ee  -ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["BDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["BUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["BDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["BUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["BDown"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["BUp"].wz_mm    -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["BDown"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["BUp"].rare_mm  -ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["BDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["BUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["BDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["BUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["BDown"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["BUp"].wz_em    -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["BDown"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["BUp"].rare_em  -ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["BDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["BUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["BDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["BUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["BDown"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["BUp"].wz_ee    -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["BDown"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["BUp"].rare_ee  -ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+	fOUTSTREAM << Form("jes      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds_plpl["JetDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetDown"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["JetUp"].wz_mm    -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["JetDown"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["JetUp"].rare_mm  -ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["JetDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetDown"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["JetUp"].wz_em    -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["JetDown"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["JetUp"].rare_em  -ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["JetDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetDown"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["JetUp"].wz_ee    -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["JetDown"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_plpl["JetUp"].rare_ee  -ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["JetDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetDown"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["JetUp"].wz_mm    -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["JetDown"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["JetUp"].rare_mm  -ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["JetDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetDown"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["JetUp"].wz_em    -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["JetDown"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["JetUp"].rare_em  -ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["JetDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetDown"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["JetUp"].wz_ee    -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["JetDown"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["JetUp"].rare_ee  -ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmear"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmear"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetSmear"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["JetSmear"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmear"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmear"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmear"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmear"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetSmear"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["JetSmear"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmear"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmear"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst,
+					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
+//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
+//	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+//					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn,
+//					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn,
+//					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn,
+//					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn) << endl;
+	fOUTSTREAM << Form("NLO      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-",
+					   nlo_syst_plpl, nlo_syst_plpl, nlo_syst_plpl,
+					   nlo_syst_mimi, nlo_syst_mimi, nlo_syst_mimi) << endl;
+	fOUTSTREAM << endl;
+	fOUTSTREAM.close();
+}
+map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1, float pT2, int chVeto, bool ttw , int flag){
 	TString outputdir = Util::MakeOutputDir(fOutputDir + "IntPredictionsSigEventTree");
 	fOutputSubDir = "IntPredictionsSigEventTree/";
 	time_t rawtime;
@@ -10390,7 +11352,12 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float 
 	const float match_syst_dn = 0.989;
 	const float scale_syst_up = 1.046;
 	const float scale_syst_dn = 0.961;
-	TString lumiError = "1.045";
+	const float nlo_syst_plpl = 1.038;
+	const float nlo_syst_mimi = 1.270;
+	float nlo_syst = 1.13; // old numbers for the moment
+	if (chVeto == +1) nlo_syst = nlo_syst_plpl;
+	if (chVeto == -1) nlo_syst = nlo_syst_mimi;
+	TString lumiError = "1.044";
 	
 	datacard = outputdir + "datacard_TTWZ" + chargeString + ".txt";
 	fOUTSTREAM.open(datacard.Data(), ios::trunc);
@@ -10520,12 +11487,12 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float 
 					   1.0+(ttwzpreds["JetSmear"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare) << endl;
 	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
 					   pu_syst, pu_syst, pu_syst, pu_syst) << endl;
-	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
-					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
-	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
-					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn) << endl;
+//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
+//	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+//					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn) << endl;
 	fOUTSTREAM << Form("NLO      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-",
-					   1.130) << endl; // old numbers for the moment
+					   nlo_syst) << endl;
 	fOUTSTREAM << endl;
 	fOUTSTREAM.close();
 	
@@ -10982,43 +11949,80 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float 
 					   1.0+(ttwzpreds["JetSmear"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
 	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
 					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
-	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
-					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
-					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
-	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
-					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn,
-					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn) << endl;
+//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
+//	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+//					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn,
+//					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn) << endl;
 	fOUTSTREAM << Form("NLO      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-",
-					   1.130, 1.130, 1.130) << endl; // old numbers for the moment
+					   nlo_syst, nlo_syst, nlo_syst) << endl;
 	fOUTSTREAM << endl;
 	fOUTSTREAM.close();
 	
 	// Produce systematics plots
-	TH1D *h_ttwz_nom = new TH1D("h_ttwz",    "Nominal ttWZ",         4, 0., 4.);
-	TH1D *h_ttwz_ju  = new TH1D("h_ttwz_ju", "ttWZ jets up",         4, 0., 4.);
-	TH1D *h_ttwz_jd  = new TH1D("h_ttwz_jd", "ttWZ jets dn",         4, 0., 4.);
-	TH1D *h_ttwz_js  = new TH1D("h_ttwz_js", "ttWZ jets sm",         4, 0., 4.);
-	TH1D *h_ttwz_bu  = new TH1D("h_ttwz_bu", "ttWZ b-tags up",       4, 0., 4.);
-	TH1D *h_ttwz_bd  = new TH1D("h_ttwz_bd", "ttWZ b-tags dn",       4, 0., 4.);
-	TH1D *h_ttwz_lu  = new TH1D("h_ttwz_lu", "ttWZ lepton up",       4, 0., 4.);
-	TH1D *h_ttwz_ld  = new TH1D("h_ttwz_ld", "ttWZ lepton dn",       4, 0., 4.);
-	TH1D *h_bg_nom   = new TH1D("h_bg",      "Nominal background",   4, 0., 4.);
-	TH1D *h_bg_ju    = new TH1D("h_bg_ju",   "background jets up",   4, 0., 4.);
-	TH1D *h_bg_jd    = new TH1D("h_bg_jd",   "background jets dn",   4, 0., 4.);
-	TH1D *h_bg_js    = new TH1D("h_bg_js",   "background jets sm",   4, 0., 4.);
-	TH1D *h_bg_bu    = new TH1D("h_bg_bu",   "background b-tags up", 4, 0., 4.);
-	TH1D *h_bg_bd    = new TH1D("h_bg_bd",   "background b-tags dn", 4, 0., 4.);
-	TH1D *h_bg_lu    = new TH1D("h_bg_lu",   "background lepton up", 4, 0., 4.);
-	TH1D *h_bg_ld    = new TH1D("h_bg_ld",   "background lepton dn", 4, 0., 4.);
+	bool addTotalBin = false;
+	TH1D *h_ttw_nom ;
+	TH1D *h_ttw_ju  ;
+	TH1D *h_ttw_jd  ;
+	TH1D *h_ttw_js  ;
+	TH1D *h_ttw_bu  ;
+	TH1D *h_ttw_bd  ;
+	TH1D *h_ttw_lu  ;
+	TH1D *h_ttw_ld  ;
+	TH1D *h_bg_nom   ;
+	TH1D *h_bg_ju    ;
+	TH1D *h_bg_jd    ;
+	TH1D *h_bg_js    ;
+	TH1D *h_bg_bu    ;
+	TH1D *h_bg_bd    ;
+	TH1D *h_bg_lu    ;
+	TH1D *h_bg_ld    ;
+	if (addTotalBin) {
+		h_ttw_nom = new TH1D("h_ttwz",    "Nominal ttW",         4, 0., 4.);
+		h_ttw_ju  = new TH1D("h_ttw_ju", "ttW jets up",         4, 0., 4.);
+		h_ttw_jd  = new TH1D("h_ttw_jd", "ttW jets dn",         4, 0., 4.);
+		h_ttw_js  = new TH1D("h_ttw_js", "ttW jets sm",         4, 0., 4.);
+		h_ttw_bu  = new TH1D("h_ttw_bu", "ttW b-tags up",       4, 0., 4.);
+		h_ttw_bd  = new TH1D("h_ttw_bd", "ttW b-tags dn",       4, 0., 4.);
+		h_ttw_lu  = new TH1D("h_ttw_lu", "ttW lepton up",       4, 0., 4.);
+		h_ttw_ld  = new TH1D("h_ttw_ld", "ttW lepton dn",       4, 0., 4.);
+		h_bg_nom   = new TH1D("h_bg",      "Nominal background",   4, 0., 4.);
+		h_bg_ju    = new TH1D("h_bg_ju",   "background jets up",   4, 0., 4.);
+		h_bg_jd    = new TH1D("h_bg_jd",   "background jets dn",   4, 0., 4.);
+		h_bg_js    = new TH1D("h_bg_js",   "background jets sm",   4, 0., 4.);
+		h_bg_bu    = new TH1D("h_bg_bu",   "background b-tags up", 4, 0., 4.);
+		h_bg_bd    = new TH1D("h_bg_bd",   "background b-tags dn", 4, 0., 4.);
+		h_bg_lu    = new TH1D("h_bg_lu",   "background lepton up", 4, 0., 4.);
+		h_bg_ld    = new TH1D("h_bg_ld",   "background lepton dn", 4, 0., 4.);
+	}
+	else {
+		h_ttw_nom = new TH1D("h_ttwz",    "Nominal ttW",         3, 0., 3.);
+		h_ttw_ju  = new TH1D("h_ttw_ju", "ttW jets up",         3, 0., 3.);
+		h_ttw_jd  = new TH1D("h_ttw_jd", "ttW jets dn",         3, 0., 3.);
+		h_ttw_js  = new TH1D("h_ttw_js", "ttW jets sm",         3, 0., 3.);
+		h_ttw_bu  = new TH1D("h_ttw_bu", "ttW b-tags up",       3, 0., 3.);
+		h_ttw_bd  = new TH1D("h_ttw_bd", "ttW b-tags dn",       3, 0., 3.);
+		h_ttw_lu  = new TH1D("h_ttw_lu", "ttW lepton up",       3, 0., 3.);
+		h_ttw_ld  = new TH1D("h_ttw_ld", "ttW lepton dn",       3, 0., 3.);
+		h_bg_nom   = new TH1D("h_bg",      "Nominal background",   3, 0., 3.);
+		h_bg_ju    = new TH1D("h_bg_ju",   "background jets up",   3, 0., 3.);
+		h_bg_jd    = new TH1D("h_bg_jd",   "background jets dn",   3, 0., 3.);
+		h_bg_js    = new TH1D("h_bg_js",   "background jets sm",   3, 0., 3.);
+		h_bg_bu    = new TH1D("h_bg_bu",   "background b-tags up", 3, 0., 3.);
+		h_bg_bd    = new TH1D("h_bg_bd",   "background b-tags dn", 3, 0., 3.);
+		h_bg_lu    = new TH1D("h_bg_lu",   "background lepton up", 3, 0., 3.);
+		h_bg_ld    = new TH1D("h_bg_ld",   "background lepton dn", 3, 0., 3.);
+	}
 	vector<TH1D*> histos;
-	histos.push_back(h_ttwz_nom);
-	histos.push_back(h_ttwz_ju);
-	histos.push_back(h_ttwz_jd);
-	histos.push_back(h_ttwz_js);
-	histos.push_back(h_ttwz_bu);
-	histos.push_back(h_ttwz_bd);
-	histos.push_back(h_ttwz_lu);
-	histos.push_back(h_ttwz_ld);
+	histos.push_back(h_ttw_nom);
+	histos.push_back(h_ttw_ju);
+	histos.push_back(h_ttw_jd);
+	histos.push_back(h_ttw_js);
+	histos.push_back(h_ttw_bu);
+	histos.push_back(h_ttw_bd);
+	histos.push_back(h_ttw_lu);
+	histos.push_back(h_ttw_ld);
 	histos.push_back(h_bg_nom);
 	histos.push_back(h_bg_ju);
 	histos.push_back(h_bg_jd);
@@ -11028,42 +12032,42 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float 
 	histos.push_back(h_bg_lu);
 	histos.push_back(h_bg_ld);
 	
-	h_ttwz_nom->SetBinContent(1, ttwzpreds["Normal"].ttwz_ee);
-	h_ttwz_nom->SetBinContent(2, ttwzpreds["Normal"].ttwz_mm);
-	h_ttwz_nom->SetBinContent(3, ttwzpreds["Normal"].ttwz_em);
-	h_ttwz_nom->SetBinContent(4, ttwzpreds["Normal"].ttwz);
+	h_ttw_nom->SetBinContent(1, ttwzpreds["Normal"].ttw_ee);
+	h_ttw_nom->SetBinContent(2, ttwzpreds["Normal"].ttw_mm);
+	h_ttw_nom->SetBinContent(3, ttwzpreds["Normal"].ttw_em);
+	h_ttw_nom->SetBinContent(4, ttwzpreds["Normal"].ttw);
 	
-	h_ttwz_ju ->SetBinContent(1, ttwzpreds["JetUp"].ttwz_ee);
-	h_ttwz_ju ->SetBinContent(2, ttwzpreds["JetUp"].ttwz_mm);
-	h_ttwz_ju ->SetBinContent(3, ttwzpreds["JetUp"].ttwz_em);
-	h_ttwz_ju ->SetBinContent(4, ttwzpreds["JetUp"].ttwz);
-	h_ttwz_jd ->SetBinContent(1, ttwzpreds["JetDown"].ttwz_ee);
-	h_ttwz_jd ->SetBinContent(2, ttwzpreds["JetDown"].ttwz_mm);
-	h_ttwz_jd ->SetBinContent(3, ttwzpreds["JetDown"].ttwz_em);
-	h_ttwz_jd ->SetBinContent(4, ttwzpreds["JetDown"].ttwz);
+	h_ttw_ju ->SetBinContent(1, ttwzpreds["JetUp"].ttw_ee);
+	h_ttw_ju ->SetBinContent(2, ttwzpreds["JetUp"].ttw_mm);
+	h_ttw_ju ->SetBinContent(3, ttwzpreds["JetUp"].ttw_em);
+	h_ttw_ju ->SetBinContent(4, ttwzpreds["JetUp"].ttw);
+	h_ttw_jd ->SetBinContent(1, ttwzpreds["JetDown"].ttw_ee);
+	h_ttw_jd ->SetBinContent(2, ttwzpreds["JetDown"].ttw_mm);
+	h_ttw_jd ->SetBinContent(3, ttwzpreds["JetDown"].ttw_em);
+	h_ttw_jd ->SetBinContent(4, ttwzpreds["JetDown"].ttw);
 	
-	h_ttwz_js ->SetBinContent(1, ttwzpreds["JetSmear"].ttwz_ee);
-	h_ttwz_js ->SetBinContent(2, ttwzpreds["JetSmear"].ttwz_mm);
-	h_ttwz_js ->SetBinContent(3, ttwzpreds["JetSmear"].ttwz_em);
-	h_ttwz_js ->SetBinContent(4, ttwzpreds["JetSmear"].ttwz);
+	h_ttw_js ->SetBinContent(1, ttwzpreds["JetSmear"].ttw_ee);
+	h_ttw_js ->SetBinContent(2, ttwzpreds["JetSmear"].ttw_mm);
+	h_ttw_js ->SetBinContent(3, ttwzpreds["JetSmear"].ttw_em);
+	h_ttw_js ->SetBinContent(4, ttwzpreds["JetSmear"].ttw);
 	
-	h_ttwz_bu ->SetBinContent(1, ttwzpreds["BUp"].ttwz_ee);
-	h_ttwz_bu ->SetBinContent(2, ttwzpreds["BUp"].ttwz_mm);
-	h_ttwz_bu ->SetBinContent(3, ttwzpreds["BUp"].ttwz_em);
-	h_ttwz_bu ->SetBinContent(4, ttwzpreds["BUp"].ttwz);
-	h_ttwz_bd ->SetBinContent(1, ttwzpreds["BDown"].ttwz_ee);
-	h_ttwz_bd ->SetBinContent(2, ttwzpreds["BDown"].ttwz_mm);
-	h_ttwz_bd ->SetBinContent(3, ttwzpreds["BDown"].ttwz_em);
-	h_ttwz_bd ->SetBinContent(4, ttwzpreds["BDown"].ttwz);
+	h_ttw_bu ->SetBinContent(1, ttwzpreds["BUp"].ttw_ee);
+	h_ttw_bu ->SetBinContent(2, ttwzpreds["BUp"].ttw_mm);
+	h_ttw_bu ->SetBinContent(3, ttwzpreds["BUp"].ttw_em);
+	h_ttw_bu ->SetBinContent(4, ttwzpreds["BUp"].ttw);
+	h_ttw_bd ->SetBinContent(1, ttwzpreds["BDown"].ttw_ee);
+	h_ttw_bd ->SetBinContent(2, ttwzpreds["BDown"].ttw_mm);
+	h_ttw_bd ->SetBinContent(3, ttwzpreds["BDown"].ttw_em);
+	h_ttw_bd ->SetBinContent(4, ttwzpreds["BDown"].ttw);
 	
-	h_ttwz_lu ->SetBinContent(1, ttwzpreds["LepUp"].ttwz_ee);
-	h_ttwz_lu ->SetBinContent(2, ttwzpreds["LepUp"].ttwz_mm);
-	h_ttwz_lu ->SetBinContent(3, ttwzpreds["LepUp"].ttwz_em);
-	h_ttwz_lu ->SetBinContent(4, ttwzpreds["LepUp"].ttwz);
-	h_ttwz_ld ->SetBinContent(1, ttwzpreds["LepDown"].ttwz_ee);
-	h_ttwz_ld ->SetBinContent(2, ttwzpreds["LepDown"].ttwz_mm);
-	h_ttwz_ld ->SetBinContent(3, ttwzpreds["LepDown"].ttwz_em);
-	h_ttwz_ld ->SetBinContent(4, ttwzpreds["LepDown"].ttwz);
+	h_ttw_lu ->SetBinContent(1, ttwzpreds["LepUp"].ttw_ee);
+	h_ttw_lu ->SetBinContent(2, ttwzpreds["LepUp"].ttw_mm);
+	h_ttw_lu ->SetBinContent(3, ttwzpreds["LepUp"].ttw_em);
+	h_ttw_lu ->SetBinContent(4, ttwzpreds["LepUp"].ttw);
+	h_ttw_ld ->SetBinContent(1, ttwzpreds["LepDown"].ttw_ee);
+	h_ttw_ld ->SetBinContent(2, ttwzpreds["LepDown"].ttw_mm);
+	h_ttw_ld ->SetBinContent(3, ttwzpreds["LepDown"].ttw_em);
+	h_ttw_ld ->SetBinContent(4, ttwzpreds["LepDown"].ttw);
 	
 	h_bg_nom->SetBinContent(1, ttwzpreds["Normal"].wz_ee+ttwzpreds["Normal"].rare_ee);
 	h_bg_nom->SetBinContent(2, ttwzpreds["Normal"].wz_mm+ttwzpreds["Normal"].rare_mm);
@@ -11102,54 +12106,698 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float 
 	h_bg_ld ->SetBinContent(3, ttwzpreds["LepDown"].wz_em+ttwzpreds["LepDown"].rare_em);
 	h_bg_ld ->SetBinContent(4, ttwzpreds["LepDown"].wz   +ttwzpreds["LepDown"].rare   );
 	
-	h_ttwz_nom->SetLineColor(kBlack);
+	h_ttw_nom->SetLineColor(kBlack);
 	h_bg_nom  ->SetLineColor(kBlack);
 	
-	h_ttwz_js->SetLineColor(kGreen+1);
-	h_ttwz_ju->SetLineColor(kGreen+1);
-	h_ttwz_bu->SetLineColor(kGreen+1);
-	h_ttwz_lu->SetLineColor(kGreen+1);
+	h_ttw_js->SetLineColor(kGreen+1);
+	h_ttw_ju->SetLineColor(kGreen+1);
+	h_ttw_bu->SetLineColor(kGreen+1);
+	h_ttw_lu->SetLineColor(kGreen+1);
 	h_bg_js  ->SetLineColor(kGreen+1);
 	h_bg_ju  ->SetLineColor(kGreen+1);
 	h_bg_bu  ->SetLineColor(kGreen+1);
 	h_bg_lu  ->SetLineColor(kGreen+1);
 	
-	h_ttwz_jd->SetLineColor(kRed-3);
-	h_ttwz_bd->SetLineColor(kRed-3);
-	h_ttwz_ld->SetLineColor(kRed-3);
+	h_ttw_jd->SetLineColor(kRed-3);
+	h_ttw_bd->SetLineColor(kRed-3);
+	h_ttw_ld->SetLineColor(kRed-3);
 	h_bg_jd  ->SetLineColor(kRed-3);
 	h_bg_bd  ->SetLineColor(kRed-3);
 	h_bg_ld  ->SetLineColor(kRed-3);
-	
+
+	float max_sig(10.), max_bg(4.);
+	max_sig = 1.2 * h_ttw_nom->GetBinContent(h_ttw_nom->GetMaximumBin());
+	max_bg  = 1.2 * h_bg_nom ->GetBinContent(h_bg_nom ->GetMaximumBin());
 	int cnt = 0;
 	for(vector<TH1D*>::iterator it = histos.begin(); it < histos.end(); ++it){
 		(*it)->GetXaxis()->SetBinLabel(1, "ee");
 		(*it)->GetXaxis()->SetBinLabel(2, "#mu#mu");
 		(*it)->GetXaxis()->SetBinLabel(3, "e#mu");
-		(*it)->GetXaxis()->SetBinLabel(4, "Total");
+		if (chVeto == -1) {
+			(*it)->GetXaxis()->SetBinLabel(1, "e^{-}e^{-}");
+			(*it)->GetXaxis()->SetBinLabel(2, "#mu^{-}#mu^{-}");
+			(*it)->GetXaxis()->SetBinLabel(3, "e^{-}#mu^{-}");
+		}
+		if (chVeto == +1) {
+			(*it)->GetXaxis()->SetBinLabel(1, "e^{+}e^{+}");
+			(*it)->GetXaxis()->SetBinLabel(2, "#mu^{+}#mu^{+}");
+			(*it)->GetXaxis()->SetBinLabel(3, "e^{+}#mu^{+}");
+		}
+		if (addTotalBin) (*it)->GetXaxis()->SetBinLabel(4, "Total");
 		(*it)->GetXaxis()->SetLabelSize(0.06);
 		if(cnt<8)(*it)->GetYaxis()->SetTitle("Signal Events");
 		if(cnt>7)(*it)->GetYaxis()->SetTitle("Background Events");
 		(*it)->GetYaxis()->SetTitleOffset(1.15);
 		(*it)->SetMinimum(0);
-		if(cnt<8)(*it)->SetMaximum(10);
-		if(cnt>7)(*it)->SetMaximum(4);
+//		if(cnt<8)(*it)->SetMaximum(10);
+//		if(cnt>7)(*it)->SetMaximum(4);
+		if(cnt<8)(*it)->SetMaximum(max_sig);
+		if(cnt>7)(*it)->SetMaximum(max_bg );
 		(*it)->SetLineWidth(2);
 		(*it)->SetFillStyle(0);
 		cnt++;
 	}
 	
-	makeSystPlot("Syst_Sig_JES"  + chargeString, "JES",          h_ttwz_nom, h_ttwz_ju, h_ttwz_jd);
-	makeSystPlot("Syst_Sig_bTag" + chargeString, "b Tag",        h_ttwz_nom, h_ttwz_bu, h_ttwz_bd);
-	makeSystPlot("Syst_Sig_Lept" + chargeString, "Lepton Scale", h_ttwz_nom, h_ttwz_lu, h_ttwz_ld);
-	makeSystPlot("Syst_Sig_JER"  + chargeString, "JER",          h_ttwz_nom, h_ttwz_js);
+	makeSystPlot("Syst_Sig_JES"  + chargeString, "JES",          h_ttw_nom, h_ttw_ju, h_ttw_jd);
+	makeSystPlot("Syst_Sig_bTag" + chargeString, "b Tag",        h_ttw_nom, h_ttw_bu, h_ttw_bd);
+	makeSystPlot("Syst_Sig_Lept" + chargeString, "Lepton Scale", h_ttw_nom, h_ttw_lu, h_ttw_ld);
+	makeSystPlot("Syst_Sig_JER"  + chargeString, "JER",          h_ttw_nom, h_ttw_js);
 	makeSystPlot("Syst_Bg_JES"   + chargeString, "JES",          h_bg_nom, h_bg_ju, h_bg_jd);
 	makeSystPlot("Syst_Bg_bTag"  + chargeString, "b Tag",        h_bg_nom, h_bg_bu, h_bg_bd);
 	makeSystPlot("Syst_Bg_Lept"  + chargeString, "Lepton Scale", h_bg_nom, h_bg_lu, h_bg_ld);
 	makeSystPlot("Syst_Bg_JER"   + chargeString, "JER",          h_bg_nom, h_bg_js);
 	
+//	return ttwzpreds["Normal"];
+	return ttwzpreds;
 }
+void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
+	vector<TString> diffVarName, xAxisTitle, yAxisTitle;
+	vector<int> nbins;
+	vector<double*> bins;
+	double intbins[4] = {0., 1., 2., 3.};
 
+	int NDiffHTBins   = gNDiffHTBins  ;
+    int NDiffMETBins  = gNDiffMETBins ;
+    int NDiffNJBins   = gNDiffNJBins  ;
+    int NDiffNBJMBins = gNDiffNBJMBins;
+    int NDiffPT1Bins  = gNDiffPT1Bins ;
+    int NDiffPT2Bins  = gNDiffPT2Bins ;
+
+	diffVarName.push_back("HT"     );   nbins.push_back(NDiffHTBins  );   bins.push_back(SSDLDumper::gDiffHTBins  );   xAxisTitle.push_back("H_{T} [GeV]"                     );   yAxisTitle.push_back("Events / 100 GeV");
+	diffVarName.push_back("MET"    );   nbins.push_back(NDiffMETBins );   bins.push_back(SSDLDumper::gDiffMETBins );   xAxisTitle.push_back("Particle Flow E_{T}^{miss} [GeV]");   yAxisTitle.push_back("Events / 20 GeV" );
+	diffVarName.push_back("NJ"     );   nbins.push_back(NDiffNJBins  );   bins.push_back(SSDLDumper::gDiffNJBins  );   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("NbJmed" );   nbins.push_back(NDiffNBJMBins);   bins.push_back(SSDLDumper::gDiffNBJMBins);   xAxisTitle.push_back("b-Jet Multiplicity (medium)"     );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("pT1"    );   nbins.push_back(NDiffPT1Bins );   bins.push_back(SSDLDumper::gDiffPT1Bins );   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
+	diffVarName.push_back("pT2"    );   nbins.push_back(NDiffPT2Bins );   bins.push_back(SSDLDumper::gDiffPT2Bins );   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
+	diffVarName.push_back("Int"    );   nbins.push_back(           3 );   bins.push_back(                 intbins );   xAxisTitle.push_back(""                                );   yAxisTitle.push_back("Events"          );
+
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, -1);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
+}
+void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vector<int> nbins, vector<double*> bins, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel, int chVeto) {
+	fOutputSubDir = "DiffPredictionSigEventTree/";
+	if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTree/FinalSel/";
+	if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTree/FinalSel/";
+	
+	TLatex *lat = new TLatex();
+	lat->SetNDC(kTRUE);
+	lat->SetTextColor(kBlack);
+	lat->SetTextSize(0.04);
+	
+	const float RareESyst  = 0.5;
+	const float RareESyst2 = RareESyst*RareESyst;
+	
+	const float FakeESyst  = 0.5;
+	const float FakeESyst2 = FakeESyst*FakeESyst;
+	
+	const float WZESyst  = 0.15;
+	const float WZESyst2 = WZESyst*WZESyst;
+	
+	const float TTZESyst  = 0.5;
+	const float TTZESyst2 = TTZESyst*TTZESyst;
+	
+	const float TTWESyst  = 0.5;
+	const float TTWESyst2 = TTWESyst*TTWESyst;
+	
+	// only take half the events for ++/--
+	float chargeFactor = chVeto ? 0.5:1.;
+
+	// preselection
+	int   systflag  (  0 );
+	float minHT     (  0.), maxHT     ( 8000.);
+	float minMET    (  0.), maxMET    ( 8000.);
+	int   minNjets  (  3 ), maxNjets  (   99 );
+	int   minNbjetsL(  0 ), maxNbjetsL(   99 );
+	int   minNbjetsM(  0 ), maxNbjetsM(   99 );
+	float minPt1    ( 20.), maxPt1    ( 8000.);
+	float minPt2    ( 20.), maxPt2    ( 8000.);
+	float minMll    (  8.); // 8.
+
+	if (region_sel == 1 && chVeto == +1) {
+		systflag   =   0 ;
+		minHT      = 200., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   3 , maxNjets   =    99 ;
+		minNbjetsL =   1 , maxNbjetsL =    99 ;
+		minNbjetsM =   1 , maxNbjetsM =    99 ;
+		minPt1     =  32., maxPt1     =  8000.;
+		minPt2     =  32., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 1 && chVeto == -1) {
+		systflag   =   0 ;
+		minHT      = 205., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   3 , maxNjets   =    99 ;
+		minNbjetsL =   1 , maxNbjetsL =    99 ;
+		minNbjetsM =   1 , maxNbjetsM =    99 ;
+		minPt1     =  30., maxPt1     =  8000.;
+		minPt2     =  30., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+
+	TString sysString = "";
+	TString chargeString = "";
+	TString chargeSignString = "";
+//	if (diffVarName == "NJ"    ) minNjets = 0;
+	if (chVeto == -1) chargeString = "_mm";
+	if (chVeto == +1) chargeString = "_pp";
+	if (chVeto == -1) chargeSignString = "^{-}";
+	if (chVeto == +1) chargeSignString = "^{+}";
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	// RATIOS /////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	float mufratio_data(0.),  mufratio_data_e(0.);
+	float mupratio_data(0.),  mupratio_data_e(0.);
+	float elfratio_data(0.),  elfratio_data_e(0.);
+	float elpratio_data(0.),  elpratio_data_e(0.);
+	
+	calculateRatio(fMuData, Muon, SigSup, mufratio_data, mufratio_data_e);
+	calculateRatio(fMuData, Muon, ZDecay, mupratio_data, mupratio_data_e);
+	
+	calculateRatio(fEGData, Elec, SigSup, elfratio_data, elfratio_data_e);
+	calculateRatio(fEGData, Elec, ZDecay, elpratio_data, elpratio_data_e);
+	
+	FakeRatios *FR = new FakeRatios();
+	
+	float fbb(0.),fee(0.),feb(0.);
+	float fbbE(0.),feeE(0.),febE(0.);
+	float fbb_mc(0.),fee_mc(0.),feb_mc(0.);
+	float fbbE_mc(0.),feeE_mc(0.),febE_mc(0.);
+	
+	calculateChMisIdProb(fEGData, BB, fbb, fbbE);
+	calculateChMisIdProb(fEGData, EB, feb, febE);
+	calculateChMisIdProb(fEGData, EE, fee, feeE);
+	
+	calculateChMisIdProb(fMCBG, BB, fbb_mc, fbbE_mc);
+	calculateChMisIdProb(fMCBG, EB, feb_mc, febE_mc);
+	calculateChMisIdProb(fMCBG, EE, fee_mc, feeE_mc);
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	// THE FINAL HISTOGRAMS ///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	
+//	if (diffVarName == "NJ"    ) njmin = 0;
+	
+	vector<TH1F*> h_pred_fake, h_pred_fake_mm, h_pred_fake_em, h_pred_fake_ee, h_pred_chmid, h_pred_chmid_npass, h_pred_rare, h_pred_rare_npass, h_pred_wz, h_pred_wz_npass, h_pred_ttz, h_pred_ttz_npass, h_pred_ttw, h_pred_ttw_npass, h_bg_tot, h_bg_tot_npass;
+	vector<THStack*> hs_pred;
+	vector< std::map<TString , TH1F* > > h_pred_rare_samples;
+	vector<TH1D*> h_obs, h_obs_t11_mm, h_obs_t10_mm, h_obs_t00_mm, h_obs_t11_em, h_obs_t10_em, h_obs_t01_em, h_obs_t00_em, h_obs_t11_ee, h_obs_t10_ee, h_obs_t00_ee, h_obs_t11_ee_BB_os, h_obs_t11_ee_EB_os, h_obs_t11_ee_EE_os, h_obs_t11_em_BB_os, h_obs_t11_em_EE_os;
+	TString histoname;
+
+	for (int var = 0; var < diffVarName.size(); var++) {
+		std::map<TString , TH1F*> h_pred_rare_samples_map;
+		h_pred_rare_samples.push_back(h_pred_rare_samples_map);
+		// FAKES
+		histoname = "h_pred_fake_"        + diffVarName[var];   h_pred_fake       .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_fake         [var]->Sumw2();
+		histoname = "h_pred_fake_mm_"     + diffVarName[var];   h_pred_fake_mm    .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_fake_mm      [var]->Sumw2();
+		histoname = "h_pred_fake_em_"     + diffVarName[var];   h_pred_fake_em    .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_fake_em      [var]->Sumw2();
+		histoname = "h_pred_fake_ee_"     + diffVarName[var];   h_pred_fake_ee    .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_fake_ee      [var]->Sumw2();
+		// CHARGE MISID
+		histoname = "h_pred_chmid_"       + diffVarName[var];   h_pred_chmid      .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_chmid        [var]->Sumw2();
+		histoname = "h_pred_chmid_npass_" + diffVarName[var];   h_pred_chmid_npass.push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_chmid_npass  [var]->Sumw2();
+		// RARES
+		histoname = "h_pred_rare_"        + diffVarName[var];   h_pred_rare       .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_rare         [var]->Sumw2();
+		histoname = "h_pred_rare_npass_"  + diffVarName[var];   h_pred_rare_npass .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_rare_npass   [var]->Sumw2();
+		// WZ
+		histoname = "h_pred_wz_"          + diffVarName[var];   h_pred_wz         .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_wz           [var]->Sumw2();
+		histoname = "h_pred_wz_npass_"    + diffVarName[var];   h_pred_wz_npass   .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_wz_npass     [var]->Sumw2();
+		// TTZ
+		histoname = "h_pred_ttz_"         + diffVarName[var];   h_pred_ttz        .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_ttz          [var]->Sumw2();
+		histoname = "h_pred_ttz_npass_"   + diffVarName[var];   h_pred_ttz_npass  .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_ttz_npass    [var]->Sumw2();
+		// TTW
+		histoname = "h_pred_ttw_"         + diffVarName[var];   h_pred_ttw        .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_ttw          [var]->Sumw2();
+		histoname = "h_pred_ttw_npass_"   + diffVarName[var];   h_pred_ttw_npass  .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_pred_ttw_npass    [var]->Sumw2();
+		// TOT
+		histoname = "h_bg_tot_"           + diffVarName[var];   h_bg_tot          .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_bg_tot            [var]->Sumw2();
+		histoname = "h_bg_tot_npass_"     + diffVarName[var];   h_bg_tot_npass    .push_back( new TH1F(   histoname , histoname , nbins[var],  bins[var] ));   h_bg_tot_npass      [var]->Sumw2();
+		histoname = "hs_predicted_"       + diffVarName[var];   hs_pred           .push_back( new THStack(histoname , histoname));
+		// OBSERVED
+		histoname = "h_obs_"              + diffVarName[var];   h_obs             .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs               [var]->Sumw2();
+		histoname = "h_obs_t11_mm_"       + diffVarName[var];   h_obs_t11_mm      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_mm        [var]->Sumw2();
+		histoname = "h_obs_t10_mm_"       + diffVarName[var];   h_obs_t10_mm      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t10_mm        [var]->Sumw2();
+		histoname = "h_obs_t00_mm_"       + diffVarName[var];   h_obs_t00_mm      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t00_mm        [var]->Sumw2();
+		histoname = "h_obs_t11_em_"       + diffVarName[var];   h_obs_t11_em      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_em        [var]->Sumw2();
+		histoname = "h_obs_t10_em_"       + diffVarName[var];   h_obs_t10_em      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t10_em        [var]->Sumw2();
+		histoname = "h_obs_t01_em_"       + diffVarName[var];   h_obs_t01_em      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t01_em        [var]->Sumw2();
+		histoname = "h_obs_t00_em_"       + diffVarName[var];   h_obs_t00_em      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t00_em        [var]->Sumw2();
+		histoname = "h_obs_t11_ee_"       + diffVarName[var];   h_obs_t11_ee      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_ee        [var]->Sumw2();
+		histoname = "h_obs_t10_ee_"       + diffVarName[var];   h_obs_t10_ee      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t10_ee        [var]->Sumw2();
+		histoname = "h_obs_t00_ee_"       + diffVarName[var];   h_obs_t00_ee      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t00_ee        [var]->Sumw2();
+		histoname = "h_obs_t11_ee_BB_os_" + diffVarName[var];   h_obs_t11_ee_BB_os.push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_ee_BB_os  [var]->Sumw2();
+		histoname = "h_obs_t11_ee_EB_os_" + diffVarName[var];   h_obs_t11_ee_EB_os.push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_ee_EB_os  [var]->Sumw2();
+		histoname = "h_obs_t11_ee_EE_os_" + diffVarName[var];   h_obs_t11_ee_EE_os.push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_ee_EE_os  [var]->Sumw2();
+		histoname = "h_obs_t11_em_BB_os_" + diffVarName[var];   h_obs_t11_em_BB_os.push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_em_BB_os  [var]->Sumw2();
+		histoname = "h_obs_t11_em_EE_os_" + diffVarName[var];   h_obs_t11_em_EE_os.push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_em_EE_os  [var]->Sumw2();
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	// SIGEVENT TREE //////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	
+	TFile *pFile = TFile::Open(fOutputFileName);
+	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
+	
+	string *sname = 0;
+	int flag(0);
+	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
+	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float eta1, eta2, mll;
+	int   event, run;
+	int charge;
+	int passZVeto, passes3rdSFLepVeto;
+	float diffVar(-9999.);
+	string samplename;
+	TString flavorString = "";
+	
+	sigtree->SetBranchAddress("SystFlag", &flag);
+	sigtree->SetBranchAddress("Event",    &event);
+	sigtree->SetBranchAddress("Run",      &run);
+	sigtree->SetBranchAddress("SName",    &sname);
+	sigtree->SetBranchAddress("SType",    &SType);
+	sigtree->SetBranchAddress("PUWeight", &puweight);
+	sigtree->SetBranchAddress("SLumi",    &SLumi);
+	sigtree->SetBranchAddress("Flavor",   &Flavor);
+	sigtree->SetBranchAddress("Charge",   &charge);
+	sigtree->SetBranchAddress("pT1",      &pT1);
+	sigtree->SetBranchAddress("pT2",      &pT2);
+	sigtree->SetBranchAddress("eta1",     &eta1);
+	sigtree->SetBranchAddress("eta2",     &eta2);
+	sigtree->SetBranchAddress("TLCat",    &TLCat);
+	sigtree->SetBranchAddress("HT",       &HT);
+	sigtree->SetBranchAddress("MET",      &MET);
+	sigtree->SetBranchAddress("MT2",      &MT2);
+	sigtree->SetBranchAddress("NJ",       &NJ);
+	sigtree->SetBranchAddress("NbJ",      &NbJ);
+	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
+	sigtree->SetBranchAddress("Mll",      &mll);
+	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
+	
+	float trigScale[3] = {gMMTrigScale, gEMTrigScale, gEETrigScale};
+	
+	if (flavor_sel ==  0) flavorString = "_MM";	// MU-MU || E-MU || E-E
+	if (flavor_sel ==  1) flavorString = "_EM";
+	if (flavor_sel ==  2) flavorString = "_EE";
+	
+	if (flavor_sel ==  3) flavorString = "_MM_OS";	// MU-MU || E-MU || E-E
+	if (flavor_sel ==  4) flavorString = "_EM_OS";
+	if (flavor_sel ==  5) flavorString = "_EE_OS";
+	
+	for( int i = 0; i < sigtree->GetEntries(); i++ ){
+		showStatusBar(i, sigtree->GetEntries(), 10000);
+		sigtree->GetEntry(i);
+		
+		
+		if( flag != systflag ) continue;
+
+		if (flavor_sel ==  0) flavorString = "_MM";	// MU-MU || E-MU || E-E
+		if (flavor_sel ==  1) flavorString = "_EM";
+		if (flavor_sel ==  2) flavorString = "_EE";
+		
+		if (flavor_sel ==  3) flavorString = "_MM_OS";	// MU-MU || E-MU || E-E
+		if (flavor_sel ==  4) flavorString = "_EM_OS";
+		if (flavor_sel ==  5) flavorString = "_EE_OS";
+		
+		if ( mll < minMll) continue;
+		if ( HT  < minHT  || HT  > maxHT)  continue;
+		if ( MET < minMET || MET > maxMET) continue;
+		if ( NJ  < minNjets)      continue;
+		if ( NbJ < minNbjetsL)    continue;
+		if ( NbJmed < minNbjetsM) continue;
+		
+		gChannel chan = gChannel(Flavor);
+		if(chan == ElMu || Flavor == 4){
+			if(pT1 > pT2){
+				if(pT1 < minPt1) continue;
+				if(pT2 < minPt2) continue;
+			}
+			if(pT1 < pT2){
+				if(pT1 < minPt2) continue;
+				if(pT2 < minPt1) continue;
+			}
+		}
+		else{
+			if(pT1 < minPt1) continue;
+			if(pT2 < minPt2) continue;
+		}
+		
+		//		if (passes3rdSFLepVeto == 0) continue;
+	
+		for (int var = 0; var < diffVarName.size(); var++) {	
+			if      (diffVarName[var] == "HT"     ) diffVar = HT;
+			else if (diffVarName[var] == "MET"    ) diffVar = MET;
+			else if (diffVarName[var] == "NJ"     ) diffVar = NJ+0.5;
+			else if (diffVarName[var] == "NbJmed" ) diffVar = NbJmed+0.5;
+			else if (diffVarName[var] == "pT1"    ) {
+				if (pT1 > pT2)                      diffVar = pT1;
+				else                                diffVar = pT2;
+			}
+			else if (diffVarName[var] == "pT2"    ) {
+				if (pT1 > pT2)                      diffVar = pT2;
+				else                                diffVar = pT1;
+			}
+			else if (diffVarName[var] == "Int"    ) {
+				if      (Flavor == 0)				diffVar = 1.;
+				else if (Flavor == 1)				diffVar = 2.;
+				else if (Flavor == 2)				diffVar = 0.;
+				else if (Flavor == 4)				diffVar = 2.;
+				else if (Flavor == 5)				diffVar = 0.;
+				else								diffVar = Flavor;
+			}
+			else                                    diffVar = -9999.;
+
+			// GET ALL DATA EVENTS
+			if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
+				if (Flavor < 3) {
+					if (gApplyZVeto && passZVeto == 0)  continue;
+					if (chVeto && charge != chVeto ) continue;
+					Sample *S = fSampleMap[TString(*sname)];
+					
+					float npp(0.) , npf(0.) , nfp(0.) , nff(0.);
+					float f1(0.)  , f2(0.)  , p1(0.)  , p2(0.);
+					f1 = getFRatio(chan, pT1, eta1, S->datamc);
+					f2 = getFRatio(chan, pT2, eta2, S->datamc);
+					p1 = getPRatio(chan, pT1, S->datamc);
+					p2 = getPRatio(chan, pT2, S->datamc);
+					if(chan == ElMu){
+						f1 = getFRatio(Muon, pT1, eta1, S->datamc);
+						f2 = getFRatio(Elec, pT2, eta2, S->datamc);
+						p1 = getPRatio(Muon, pT1, S->datamc);
+						p2 = getPRatio(Elec, pT2, S->datamc);
+					}
+					// Get the weights (don't depend on event selection)
+					npp = FR->getWpp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+					npf = FR->getWpf(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+					nfp = FR->getWfp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+					nff = FR->getWff(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+					
+					if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
+						                 h_pred_fake   [var]->Fill(diffVar    , npf+nfp+nff);
+						if (Flavor == 0) h_pred_fake_mm[var]->Fill(diffVar    , npf+nfp+nff);
+						if (Flavor == 1) h_pred_fake_em[var]->Fill(diffVar    , npf+nfp+nff);
+						if (Flavor == 2) h_pred_fake_ee[var]->Fill(diffVar    , npf+nfp+nff);
+						
+						if (TLCat == 0) {
+							h_obs  [var]->Fill(diffVar    , 1);
+						}
+						if (Flavor == 0) {
+							if (TLCat == 0)               h_obs_t11_mm[var]->Fill(diffVar, 1);
+							if (TLCat == 1 || TLCat == 2) h_obs_t10_mm[var]->Fill(diffVar, 1);
+							if (TLCat == 3)               h_obs_t00_mm[var]->Fill(diffVar, 1);
+						}
+						if (Flavor == 1) {
+							if (TLCat == 0)               h_obs_t11_em[var]->Fill(diffVar, 1);
+							if (TLCat == 1)               h_obs_t10_em[var]->Fill(diffVar, 1);
+							if (TLCat == 2)               h_obs_t01_em[var]->Fill(diffVar, 1);
+							if (TLCat == 3)               h_obs_t00_em[var]->Fill(diffVar, 1);
+						}
+						if (Flavor == 2) {
+							if (TLCat == 0)               h_obs_t11_ee[var]->Fill(diffVar, 1);
+							if (TLCat == 1 || TLCat == 2) h_obs_t10_ee[var]->Fill(diffVar, 1);
+							if (TLCat == 3)               h_obs_t00_ee[var]->Fill(diffVar, 1);
+						}
+					}
+				} // end Flavor < 3
+				
+				if(Flavor == 4) {       // E-MU OS
+					if (TLCat == 0) {
+						h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*fbb);
+						h_obs_t11_em_BB_os[var]->Fill(diffVar    , chargeFactor*fbb);
+					}
+					if (TLCat == 1) {
+						h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*fee);
+						h_obs_t11_em_EE_os[var]->Fill(diffVar    , chargeFactor*fee);
+					}
+				}
+				if(Flavor == 5) {       // E-E OS
+					if (TLCat == 0) {
+						h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*2*fbb);
+						h_obs_t11_ee_BB_os[var]->Fill(diffVar    , chargeFactor*2*fbb);
+					}
+					if (TLCat == 1 || TLCat == 2) {
+						h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*2*feb);
+						h_obs_t11_ee_EB_os[var]->Fill(diffVar    , chargeFactor*2*feb);
+					}
+					if (TLCat == 3) {
+						h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*2*fee);
+						h_obs_t11_ee_EE_os[var]->Fill(diffVar    , chargeFactor*2*fee);
+					}
+				}
+				
+				
+				
+			} // end data events
+			
+			
+			// GET RARE MC EVENTS
+			if ((SType == 15 || *sname == "TTbarWW") && TLCat == 0) { // tight-tight rare MC events
+				if (*sname == "WWTo2L2Nu") continue;
+				if (Flavor > 2) continue;
+				if (chVeto && charge != chVeto ) continue;
+				// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+				Sample *S = fSampleMap[*sname];
+				float scale = fLumiNorm / S->getLumi();
+	//			float weight = puweight*trigScale[Flavor]*scale;
+				float weight = puweight*HLTSF*scale;
+				// float tmp_nt2_rare_mc_e2 = tmp_nt2_rare_mc*tmp_nt2_rare_mc;
+				if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
+					if (*sname == "WZTo3LNu") {
+						h_pred_wz  [var]->Fill(diffVar    , weight);
+					}
+					else if (*sname == "TTbarW") {
+						h_pred_ttw [var]->Fill(diffVar    , weight);
+					}
+					else if (*sname == "TTbarZ") {
+						h_pred_ttz [var]->Fill(diffVar    , weight);
+					}
+					else {
+						h_pred_rare[var]->Fill(diffVar    , weight);
+						if (h_pred_rare_samples[var][*sname] == 0) {
+							TString histoname = "h_pred_rare_npass_"+diffVarName[var]+"_"+(*sname);
+							h_pred_rare_samples[var][*sname] = new TH1F(histoname, histoname, nbins[var],  bins[var] );
+							h_pred_rare_samples[var][*sname]   ->Sumw2();
+						}
+						h_pred_rare_samples[var][*sname]->Fill(diffVar, 1);
+					}
+				}
+			} // end rare mc events
+		} // end loof over variables
+	} // end sigevent tree
+	
+	for (int var = 0; var < diffVarName.size(); var++) {	
+		h_obs         [var]->SetMarkerColor(kBlack);
+		h_obs         [var]->SetMarkerStyle(20);
+		h_obs         [var]->SetMarkerSize(2.0);
+		h_obs         [var]->SetLineWidth(2);
+		h_obs         [var]->SetLineColor(kBlack);
+		h_obs         [var]->SetFillColor(kBlack);
+		
+		h_pred_fake   [var]->SetLineWidth(1);
+		h_pred_chmid  [var]->SetLineWidth(1);
+		h_pred_rare   [var]->SetLineWidth(1);
+		h_pred_wz     [var]->SetLineWidth(1);
+		h_pred_ttz    [var]->SetLineWidth(1);
+		h_pred_ttw    [var]->SetLineWidth(1);
+		
+		h_pred_fake   [var]->SetFillColor(46);
+		h_pred_chmid  [var]->SetFillColor(49);
+		h_pred_rare   [var]->SetFillColor(38);
+		h_pred_wz     [var]->SetFillColor(39);
+		h_pred_ttz    [var]->SetFillColor(42);
+		h_pred_ttw    [var]->SetFillColor(44);
+		
+		h_bg_tot      [var]->SetLineWidth(3);
+		h_bg_tot      [var]->SetFillColor(12);
+		h_bg_tot      [var]->SetFillStyle(3005);
+		
+		TGraphAsymmErrors* gr_obs  = FR->getGraphPoissonErrors( h_obs[var]  );
+		gr_obs   ->SetMarkerColor(kBlack);
+		gr_obs   ->SetMarkerStyle(20);
+		gr_obs   ->SetMarkerSize(2.0);
+		gr_obs   ->SetLineWidth(2);
+		gr_obs   ->SetLineColor(kBlack);
+		gr_obs   ->SetFillColor(kBlack);
+		
+		h_bg_tot [var]->Add(h_pred_fake  [var] );
+		h_bg_tot [var]->Add(h_pred_chmid [var] );
+		h_bg_tot [var]->Add(h_pred_rare  [var] );
+		h_bg_tot [var]->Add(h_pred_wz    [var] );
+		h_bg_tot [var]->Add(h_pred_ttz   [var] );
+		
+		hs_pred  [var]->Add(h_pred_fake  [var]);
+		hs_pred  [var]->Add(h_pred_chmid [var]);
+		hs_pred  [var]->Add(h_pred_rare  [var]);
+		hs_pred  [var]->Add(h_pred_wz    [var]);
+		hs_pred  [var]->Add(h_pred_ttz   [var]);
+		hs_pred  [var]->Add(h_pred_ttw   [var]);
+		
+		////////////
+		// ERRORS //
+		////////////
+		
+		for (size_t b = 0; b < nbins[var]; ++b) {
+			float prev  = h_bg_tot[var]->GetBinError(b+1);
+			float prev2 = prev * prev;
+			Sample *S;
+			
+			//FAKES
+			FR->setNToyMCs(100); // speedup
+			FR->setAddESyst(0.5); // additional systematics
+			
+			FR->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+			FR->setEFRatio(elfratio_data, elfratio_data_e);
+			FR->setMPRatio(mupratio_data, mupratio_data_e);
+			FR->setEPRatio(elpratio_data, elpratio_data_e);
+			
+			FR->setMMNtl(h_obs_t11_mm[var]->GetBinContent(b+1), h_obs_t10_mm[var]->GetBinContent(b+1)                                       , h_obs_t00_mm[var]->GetBinContent(b+1));
+			FR->setEENtl(h_obs_t11_ee[var]->GetBinContent(b+1), h_obs_t10_ee[var]->GetBinContent(b+1)                                       , h_obs_t00_ee[var]->GetBinContent(b+1));
+			FR->setEMNtl(h_obs_t11_em[var]->GetBinContent(b+1), h_obs_t10_em[var]->GetBinContent(b+1), h_obs_t01_em[var]->GetBinContent(b+1), h_obs_t00_em[var]->GetBinContent(b+1));
+			
+			float fake_nPass = h_pred_fake[var]->GetBinContent(b+1);
+			float fake_syst2 = FakeESyst2 * fake_nPass*fake_nPass;
+			float fake_stat2 = FR->getTotEStat() * FR->getTotEStat();
+			prev2 = prev2 + fake_syst2 + fake_stat2;
+			
+			//CHARGE MISID
+			float nt2_ee_BB_os = h_obs_t11_ee_BB_os[var]->GetBinContent(b+1);
+			float nt2_ee_EB_os = h_obs_t11_ee_EB_os[var]->GetBinContent(b+1);
+			float nt2_ee_EE_os = h_obs_t11_ee_EE_os[var]->GetBinContent(b+1);
+			float nt2_em_BB_os = h_obs_t11_em_BB_os[var]->GetBinContent(b+1);
+			float nt2_em_EE_os = h_obs_t11_em_EE_os[var]->GetBinContent(b+1);
+			// Simple error propagation assuming error on number of events is FR->getEStat2()
+			float nt11_ee_cm_e1 = sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os) ); // stat only
+			float nt11_ee_cm_e2 = sqrt( (4*nt2_ee_BB_os*nt2_ee_BB_os*fbbE*fbbE) + (4*nt2_ee_EE_os*nt2_ee_EE_os*feeE*feeE) + 4*(febE*febE)*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
+			float nt11_em_cm_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
+			float nt11_em_cm_e2 = sqrt( nt2_em_BB_os*nt2_em_BB_os * fbbE*fbbE + nt2_em_EE_os*nt2_em_EE_os * feeE*feeE );
+			float cm_syst2 = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2;
+			float cm_stat2 = nt11_ee_cm_e1*nt11_ee_cm_e1 + nt11_em_cm_e1*nt11_em_cm_e1;
+			prev2 = prev2 + cm_syst2 + cm_stat2;
+			
+			// WZ
+			S = fSampleMap["WZTo3LNu"];
+			float wz_scale = fLumiNorm / S->getLumi();
+			float wz_nPass = h_pred_wz_npass[var]->GetBinContent(b+1);
+			float wz_syst2 = WZESyst2 * wz_nPass*wz_nPass * wz_scale*wz_scale;
+			float wz_stat2 = wz_scale*wz_scale * S->getError2(wz_nPass);
+			prev2 = prev2 + wz_syst2 + wz_stat2;
+			
+			// TTZ
+			S = fSampleMap["TTbarZ"];
+			float ttz_scale = fLumiNorm / S->getLumi();
+			float ttz_nPass = h_pred_ttz_npass[var]->GetBinContent(b+1);
+			float ttz_syst2 = TTZESyst2 * ttz_nPass*ttz_nPass * ttz_scale*ttz_scale;
+			float ttz_stat2 = ttz_scale*ttz_scale * S->getError2(ttz_nPass);
+			prev2 = prev2 + ttz_syst2 + ttz_stat2;
+			
+			// TTW
+			S = fSampleMap["TTbarW"];
+			float ttw_scale = fLumiNorm / S->getLumi();
+			float ttw_nPass = h_pred_ttw_npass[var]->GetBinContent(b+1);
+			float ttw_syst2 = TTWESyst2 * ttw_nPass*ttw_nPass * ttw_scale*ttw_scale;
+			float ttw_stat2 = ttw_scale*ttw_scale * S->getError2(ttw_nPass);
+			prev2 = prev2 + ttw_syst2 + ttw_stat2;
+			
+			// RARES
+			for (map<TString,TH1F*>::iterator it = h_pred_rare_samples[var].begin(); it != h_pred_rare_samples[var].end(); it++) {
+				S = fSampleMap[it->first];
+				float rare_scale = fLumiNorm / S->getLumi();
+				float rare_nPass = it->second->GetBinContent(b+1);
+				float rare_syst2 = RareESyst2 * rare_nPass*rare_nPass * rare_scale*rare_scale;
+				float rare_stat2 = rare_scale*rare_scale * S->getError2(rare_nPass);
+				prev2 = prev2 + rare_syst2 + rare_stat2;
+			}
+			
+			h_bg_tot[var]->SetBinError(b+1, sqrt(prev2));
+		}
+		// TOT
+		
+		double max(0.);
+	//	max = 1.2*h_obs->GetBinContent(2);
+	//	if (diffVarName == "NbJmed" || diffVarName == "NJ" || diffVarName == "pT2") max = 1.2*h_obs->GetBinContent(1);
+		max = 1.2 * std::max(h_obs[var]->GetBinContent(h_obs[var]->GetMaximumBin()),hs_pred[var]->GetMaximum());
+		
+		h_obs         [var]->SetMaximum(max);
+		h_pred_fake   [var]->SetMaximum(max);
+		h_pred_chmid  [var]->SetMaximum(max);
+		h_pred_rare   [var]->SetMaximum(max);
+		h_pred_wz     [var]->SetMaximum(max);
+		h_pred_ttz    [var]->SetMaximum(max);
+		h_pred_ttw    [var]->SetMaximum(max);
+		h_bg_tot      [var]->SetMaximum(max);
+		hs_pred       [var]->SetMaximum(max);
+			
+		hs_pred[var]->Draw("goff");
+		hs_pred[var]->GetXaxis()->SetTitle(xAxisTitle[var].Data());
+		hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
+		hs_pred[var]->GetYaxis()->SetTitle(yAxisTitle[var].Data());
+		hs_pred[var]->GetYaxis()->SetTitleSize(0.045);
+		hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
+		hs_pred[var]->GetYaxis()->SetLabelSize(0.045);
+		hs_pred[var]->GetXaxis()->SetLabelSize(0.045);
+		hs_pred[var]->GetYaxis()->SetTitleOffset(1.25);
+		hs_pred[var]->GetXaxis()->SetTitleOffset(1.065);
+		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
+			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", i-1));
+			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
+			hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
+			hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
+		}
+		if (diffVarName[var] == "Int") {
+			for(size_t i = 1; i <= nbins[var]; ++i) {
+				TString binlabel = "?";
+				if (i == 1) binlabel = "e"  + chargeSignString + "e"  + chargeSignString;
+				if (i == 2) binlabel = "#mu"+ chargeSignString + "#mu"+ chargeSignString;
+				if (i == 3) binlabel = "e"  + chargeSignString + "#mu"+ chargeSignString;
+				hs_pred[var]->GetXaxis()->SetBinLabel(i, binlabel);
+			}
+		}
+		
+		TLegend *leg = new TLegend(0.55,0.62,0.90,0.88);
+		leg->AddEntry(h_obs       [var], "Data","p");
+		leg->AddEntry(h_pred_fake [var], "Non-prompt / MisID","f");
+		leg->AddEntry(h_pred_chmid[var], "Charge MisID","f");
+		leg->AddEntry(h_pred_rare [var], "Rare SM","f");
+		leg->AddEntry(h_pred_wz   [var], "WZ","f");
+		leg->AddEntry(h_pred_ttz  [var], "t#bar{t} + Z","f");
+		leg->AddEntry(h_pred_ttw  [var], "t#bar{t} + W","f");
+		leg->SetFillStyle(0);
+		leg->SetTextFont(42);
+		leg->SetBorderSize(0);
+		
+		TCanvas *c_temp = new TCanvas("C_ObsPred", "Observed vs Predicted", 0, 0, 600, 600);
+		c_temp->SetLeftMargin(0.12);
+		c_temp->SetRightMargin(0.04);
+		c_temp->cd();
+		
+		hs_pred[var]->Draw("hist");
+		leg->Draw();
+		h_bg_tot[var]->DrawCopy("0 E2 same");
+		h_bg_tot[var]->SetFillStyle(0);
+		h_bg_tot[var]->DrawCopy("hist same");
+		gr_obs->Draw("P same");
+		
+		lat->SetTextSize(0.03);
+		
+		drawTopLine(0.56, 0.8);
+		
+		gPad->RedrawAxis();
+		// Util::PrintNoEPS(c_temp, "ObsPred_" + Region::sname[reg], fOutputDir + fOutputSubDir, NULL);
+//		Util::PrintPDF (c_temp,   "ObsPred_"+diffVarName[var]+flavorString+sysString+chargeString+"_lin" , fOutputDir + fOutputSubDir);
+		Util::PrintPDF (c_temp,   "ObsPred_"+diffVarName[var]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir);
+	//	Util::PrintROOT(c_temp,   "ObsPred_"+diffVarName+sysString+chargeString+"_lin" , fOutputDir + fOutputSubDir);
+		delete c_temp;
+
+		delete h_pred_fake[var], h_pred_fake_mm[var], h_pred_fake_em[var], h_pred_fake_ee[var], h_pred_chmid[var], h_pred_chmid_npass[var], h_pred_rare[var], h_pred_rare_npass[var], h_pred_wz[var], h_pred_wz_npass[var], h_pred_ttz[var], h_pred_ttz_npass[var], h_pred_ttw[var], h_pred_ttw_npass[var], h_bg_tot[var], h_bg_tot_npass[var];
+		delete hs_pred[var];
+		for (map<TString,TH1F*>::iterator it = h_pred_rare_samples[var].begin(); it != h_pred_rare_samples[var].end(); it++) delete it->second;
+		delete h_obs[var], h_obs_t11_mm[var], h_obs_t10_mm[var], h_obs_t00_mm[var], h_obs_t11_em[var], h_obs_t10_em[var], h_obs_t01_em[var], h_obs_t00_em[var], h_obs_t11_ee[var], h_obs_t10_ee[var], h_obs_t00_ee[var], h_obs_t11_ee_BB_os[var], h_obs_t11_ee_EB_os[var], h_obs_t11_ee_EE_os[var], h_obs_t11_em_BB_os[var], h_obs_t11_em_EE_os[var];
+	} // end loop over variables
+	delete FR;
+}
 void SSDLPlotter::makeKinematicPlotsPaper(){
 	fOutputSubDir = "KinPlotsPaper/";
 
@@ -12882,14 +14530,15 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
 	float eta1, eta2, mll;
-	int   event, run;
+	int   event, run, ls;
 	int charge;
 	int passZVeto, passes3rdSFLepVeto;
 
 	sigtree->SetBranchAddress("SystFlag", &flag);
 	sigtree->SetBranchAddress("Event",    &event);
+	sigtree->SetBranchAddress("LS",       &ls);
 	sigtree->SetBranchAddress("Run",      &run);
 	sigtree->SetBranchAddress("SName",    &sname);
 	sigtree->SetBranchAddress("SType",    &SType);
@@ -12911,6 +14560,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	sigtree->SetBranchAddress("Mll",      &mll);
 	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
 	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
 
 	FakeRatios *FR = new FakeRatios();
 
@@ -13013,6 +14663,9 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 				 	if (TLCat == 1 || TLCat == 2) nt10_ee++;
 				 	if (TLCat == 3)               nt0_ee++;
 				}
+//				if (TLCat == 0) {
+//					cout << setw(7) << run << setw(5) << ls << setw(12) << event << endl;
+//				}
 			}
 
 			if(Flavor == 4) {       // E-MU OS
@@ -13035,7 +14688,8 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 			// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
 			Sample *S = fSampleMap[*sname];
 			float scale = fLumiNorm / S->getLumi();
-			float tmp_nt2_rare_mc    = puweight*trigScale[Flavor]*scale;
+//			float tmp_nt2_rare_mc    = puweight*trigScale[Flavor]*scale;
+			float tmp_nt2_rare_mc    = puweight*HLTSF*scale;
 			// float tmp_nt2_rare_mc_e2 = tmp_nt2_rare_mc*tmp_nt2_rare_mc;
 			if (Flavor == 0) {
 				rareMapMM[*sname] += tmp_nt2_rare_mc;
@@ -13701,7 +15355,899 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	return pred;
 
 }
+void SSDLPlotter::makeTTWKinPlotsSigEvent() {
+	vector<TString> diffVarName, xAxisTitle, yAxisTitle;
+	vector<int> nbins;
+	vector<double> xmin, xmax;
 
+	diffVarName.push_back("HT"    );   nbins.push_back(KinPlots::nbins[ 0]);   xmin.push_back(KinPlots::xmin[ 0]);   xmax.push_back(KinPlots::xmax[ 0]);   xAxisTitle.push_back("H_{T} [GeV]"                     );   yAxisTitle.push_back("Events / 100 GeV");
+    diffVarName.push_back("MET"   );   nbins.push_back(KinPlots::nbins[ 1]);   xmin.push_back(KinPlots::xmin[ 1]);   xmax.push_back(KinPlots::xmax[ 1]);   xAxisTitle.push_back("Particle Flow E_{T}^{miss} [GeV]");   yAxisTitle.push_back("Events / 20 GeV" );
+    diffVarName.push_back("NJ"    );   nbins.push_back(KinPlots::nbins[ 2]);   xmin.push_back(KinPlots::xmin[ 2]);   xmax.push_back(KinPlots::xmax[ 2]);   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("NbJmed");   nbins.push_back(KinPlots::nbins[11]);   xmin.push_back(KinPlots::xmin[11]);   xmax.push_back(KinPlots::xmax[11]);   xAxisTitle.push_back("b-Jet Multiplicity (medium)"     );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("pT1"   );   nbins.push_back(KinPlots::nbins[ 3]);   xmin.push_back(KinPlots::xmin[ 3]);   xmax.push_back(KinPlots::xmax[ 3]);   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
+    diffVarName.push_back("pT2"   );   nbins.push_back(KinPlots::nbins[ 4]);   xmin.push_back(KinPlots::xmin[ 4]);   xmax.push_back(KinPlots::xmax[ 4]);   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
+    diffVarName.push_back("Mll"   );   nbins.push_back(KinPlots::nbins[ 5]);   xmin.push_back(KinPlots::xmin[ 5]);   xmax.push_back(KinPlots::xmax[ 5]);   xAxisTitle.push_back("m_{ll} [GeV]"                    );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("NVrtx" );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("N_{Vertices}"                    );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("PFIso1");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Leading Lepton PF Iso"           );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("PFIso2");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Subleading Lepton PF Iso"        );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("Rho"   );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("rho"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("BetaStar1"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("BetaStar2"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("2nd hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("BetaStar3"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("3rd hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("BetaStar4"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("4th hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("BetaStar5"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("5th hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("MTLep1"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("Leading Lepton M_{T}"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("MTLep2"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("Subleading Lepton M_{T}"                             );   yAxisTitle.push_back("Events"          );
+    diffVarName.push_back("minMT"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("M_{T}"                             );   yAxisTitle.push_back("Events"          );
+
+
+
+
+
+
+	for (int i = -1; i < 6; i++) { // flavor loop
+//		if (i == -1) continue;
+		if (i > -1) continue;
+//		if (i ==  0) continue; // no same-sign MM events
+//		if (i ==  1) continue; // no same-sign EM events
+//		if (i ==  2) continue; // no same-sign EE events
+		if (i ==  3) continue; // no opposite-sign MM events
+		if (i ==  4) continue; // no opposite-sign EM events
+		if (i ==  5) continue; // no opposite-sign EE events
+		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, -1);
+	}
+	return;
+	
+	// ttbar enriched
+	for (int i = -1; i < 6; i++) { // flavor loop
+//		if (i == -1) continue;
+//		if (i > -1) continue;  // no splitting by flavor
+		if (i ==  0) continue; // no same-sign MM events
+		if (i ==  1) continue; // no same-sign EM events
+		if (i ==  2) continue; // no same-sign EE events
+//		if (i ==  3) continue; // no opposite-sign MM events
+//		if (i ==  4) continue; // no opposite-sign EM events
+//		if (i ==  5) continue; // no opposite-sign EE events
+		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, 1);
+	}
+//	return;
+	
+	// wz enriched
+	for (int i = -1; i < 6; i++) { // flavor loop
+//		if (i == -1) continue;
+//		if (i > -1) continue;  // no splitting by flavor
+		if (i ==  0) continue; // no same-sign MM events
+		if (i ==  1) continue; // no same-sign EM events
+		if (i ==  2) continue; // no same-sign EE events
+//		if (i ==  3) continue; // no opposite-sign MM events
+		if (i ==  4) continue; // no opposite-sign EM events
+//		if (i ==  5) continue; // no opposite-sign EE events
+		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, 2);
+	}
+//	return;
+	
+	// loose sel
+	for (int i = -1; i < 6; i++) { // flavor loop
+		//		if (i == -1) continue;
+		if (i > -1) continue;  // no splitting by flavor
+//		if (i ==  0) continue; // no same-sign MM events
+//		if (i ==  1) continue; // no same-sign EM events
+//		if (i ==  2) continue; // no same-sign EE events
+//		if (i ==  3) continue; // no opposite-sign MM events
+//		if (i ==  4) continue; // no opposite-sign EM events
+//		if (i ==  5) continue; // no opposite-sign EE events
+		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, 3);
+	}
+}
+//void SSDLPlotter::makeTTWKinPlotSigEvent(TString diffVarName, int nbins, double xmin, double xmax, TString xAxisTitle, TString yAxisTitle, int flavor_sel, int region_sel){
+//	double bins[nbins+1];
+//	cout << diffVarName << " bins: ";
+//	for (int i = 0; i < nbins+1; i++) {
+//		bins[i] = xmin + i * (xmax-xmin)/nbins;
+//		cout << setw(5) << bins[i];
+//	}
+//	cout << endl;
+//	makeTTWKinPlotSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, flavor_sel, region_sel);
+//}
+void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int> nbins, vector<double> xmin, vector<double> xmax, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel){
+	if (diffVarName.size() != nbins     .size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != xmin      .size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != xmax      .size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != xAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
+	if (diffVarName.size() != yAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
+	
+	fOutputSubDir = "KinPlotsSigEventTree/";
+	
+	bool verbose = false;
+//	if (diffVarName == "NJ") verbose = true;
+	
+	TLatex *lat = new TLatex();
+	lat->SetNDC(kTRUE);
+	lat->SetTextColor(kBlack);
+	lat->SetTextSize(0.04);
+	
+	const float RareESyst  = 0.5;
+	const float RareESyst2 = RareESyst*RareESyst;
+	
+	const float FakeESyst  = 0.5;
+	const float FakeESyst2 = FakeESyst*FakeESyst;
+	
+	const float WZESyst  = 0.15;
+	const float WZESyst2 = WZESyst*WZESyst;
+	
+	const float TTZESyst  = 0.5;
+	const float TTZESyst2 = TTZESyst*TTZESyst;
+	
+	const float TTWESyst  = 0.5;
+	const float TTWESyst2 = TTWESyst*TTWESyst;
+	
+	// only take half the events for ++/--
+	int chVeto(0);
+	float chargeFactor = chVeto ? 0.5:1.;
+	int systflag  (  0 );
+	float minHT   (  0.), maxHT     ( 8000.);
+	float minMET  (  0.), maxMET    ( 8000.);
+	int minNjets  (  3 ), maxNjets  (   99 );
+	int minNbjetsL(  0 ), maxNbjetsL(   99 );
+	int minNbjetsM(  0 ), maxNbjetsM(   99 );
+	float minPt1  ( 20.), maxPt1    ( 8000.);
+	float minPt2  ( 20.), maxPt2    ( 8000.);
+	float minMll  (  8.); // 8.
+	bool samesign = true;
+	bool loglin = true;
+	bool ttbarEnr = false;
+	bool wzEnr = false;
+	bool looseSel = false;
+	TString sysString = "";
+	TString chargeString = "";
+	TString flavorString = "";
+	
+	if (region_sel == 1) ttbarEnr = true;
+	if (region_sel == 2) wzEnr    = true;
+	if (region_sel == 3) looseSel = true;
+	
+	if (ttbarEnr) {
+		fOutputSubDir = "KinPlotsSigEventTreeTTEnr/";
+		samesign = false;
+		wzEnr = false;
+		gApplyZVeto = true;
+		minHT      =  0.; maxHT     = 8000.;
+		minMET     = 40.; maxMET    = 8000.;
+		minMET     = 40.; maxMET    = 8000.;
+		minNjets   =  2 ; maxNjets  =   99 ;
+		minNbjetsL =  1 ; maxNbjetsL=   99 ;
+		minNbjetsM =  1 ; maxNbjetsM=   99 ;
+		minPt1     = 20.; maxPt1    = 8000.;
+		minPt2     = 20.; maxPt2    = 8000.;
+		minMll     = 20.; // 8.
+	}
+	
+	if (wzEnr) {
+		fOutputSubDir = "KinPlotsSigEventTreeWZEnr/";
+		samesign = false;
+		ttbarEnr = false;
+		gApplyZVeto = false;
+		minHT      =  0.; maxHT     = 8000.;
+//		minMET     = 40.; maxMET    = 8000.;
+		minMET     = 60.; maxMET    = 8000.;
+		minNjets   =  0 ; maxNjets  =   99 ;
+		minNbjetsL =  0 ; maxNbjetsL=    0 ;
+		minNbjetsM =  0 ; maxNbjetsM=    0 ;
+		minPt1     = 20.; maxPt1    = 8000.;
+		minPt2     = 20.; maxPt2    = 8000.;
+		minMll     =  8.; // 8.
+	}
+	
+	if (looseSel) {
+		fOutputSubDir = "KinPlotsSigEventTreeLooseSel/";
+		samesign = false;
+		ttbarEnr = false;
+		wzEnr = false;
+		gApplyZVeto = false;
+		minHT      =  0.; maxHT     = 8000.;
+		minMET     =  0.; maxMET    = 8000.;
+		minNjets   =  0 ; maxNjets  =   99 ;
+		minNbjetsL =  0 ; maxNbjetsL=   99 ;
+		minNbjetsM =  0 ; maxNbjetsM=   99 ;
+		minPt1     = 20.; maxPt1    = 8000.;
+		minPt2     = 20.; maxPt2    = 8000.;
+		minMll     =  8.; // 8.
+	}
+	
+	if (flavor_sel ==  0) flavorString = "_MM";	// MU-MU || E-MU || E-E
+	if (flavor_sel ==  1) flavorString = "_EM";
+	if (flavor_sel ==  2) flavorString = "_EE";
+	
+	if (flavor_sel ==  3) flavorString = "_MM_OS";	// MU-MU || E-MU || E-E
+	if (flavor_sel ==  4) flavorString = "_EM_OS";
+	if (flavor_sel ==  5) flavorString = "_EE_OS";
+	
+	//	if (!ttbarEnr && !wzEnr && false) {
+	//		if (diffVarName == "HT"                         ) minHT      = 0.;
+	//		if (diffVarName == "MET"                        ) minMET     = 0.;
+	//		if (diffVarName == "NJ"                         ) {
+	//			minNjets   = 0;
+	//			minNbjetsM = 0;
+	//		}
+	//		if (diffVarName == "NbJmed"                     ) minNbjetsM = 0;
+	//		if (diffVarName == "pT1"                        ) minPt1     = 20.;
+	//		if (diffVarName == "pT2"                        ) minPt2     = 20.;
+	//	}
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	// RATIOS /////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	
+	FakeRatios *FR = new FakeRatios();
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	// THE FINAL HISTOGRAMS ///////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	
+	//	if (diffVarName == "NJ"    ) njmin = 0;
+	
+    vector<TH1F*> h_top, h_ttbar, h_zjets, h_gjets, h_wjets, h_mc, h_rare, h_wz, h_ttz, h_ttw, h_tot;
+	vector<THStack*> hs_tot;
+	vector<TH1D*> h_obs, h_ratio;
+    TString histoname;
+    
+    for (int i = 0; i < diffVarName.size(); i++) {
+        // TOP
+        histoname = "h_top_"        + diffVarName[i];   h_top  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_top[i]  ->Sumw2();
+        histoname = "h_ttbar_"      + diffVarName[i];   h_ttbar.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttbar[i]->Sumw2();
+        // Z+JETS
+        histoname = "h_zjets_"      + diffVarName[i];   h_zjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_zjets[i]->Sumw2();
+        // G+JETS
+        histoname = "h_gjets_"      + diffVarName[i];   h_gjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_gjets[i]->Sumw2();
+        // W+JETS
+        histoname = "h_wjets_"      + diffVarName[i];   h_wjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_wjets[i]->Sumw2();
+        // MC
+        histoname = "h_mc_"         + diffVarName[i];   h_mc   .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_mc[i]   ->Sumw2();
+        // RARES
+        histoname = "h_rare_"       + diffVarName[i];   h_rare .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_rare[i] ->Sumw2();
+        // WZ
+        histoname = "h_wz_"         + diffVarName[i];   h_wz   .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_wz  [i] ->Sumw2();
+        // TTZ
+        histoname = "h_ttz_"        + diffVarName[i];   h_ttz  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttz [i] ->Sumw2();
+        // TTW
+        histoname = "h_ttw_"        + diffVarName[i];   h_ttw  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttw [i] ->Sumw2();
+        // TOT
+        histoname = "h_tot_"        + diffVarName[i];   h_tot  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_tot [i] ->Sumw2();
+        histoname = "hs_predicted_" + diffVarName[i];   hs_tot .push_back(new THStack(histoname, "Predicted number of events"));
+        // OBSERVED
+        histoname = "h_obs_"        + diffVarName[i];   h_obs  .push_back(new TH1D(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_obs[i]  ->Sumw2();
+        // RATIO
+        histoname = "h_ratio_"      + diffVarName[i];   h_ratio.push_back(new TH1D(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ratio[i]->Sumw2();
+    }
+	
+	///////////////////////////////////////////////////////////////////////////////////
+	// SIGEVENT TREE //////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	
+	TFile *pFile = TFile::Open(fOutputFileName);
+	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
+	
+	string *sname = 0;
+	int flag(0);
+	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed, NVrtx;
+	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
+	float eta1, eta2, mll;
+	int   event, run;
+	int charge;
+	int passZVeto, passes3rdSFLepVeto, passes3rdVeto;
+	float diffVar(-9999.);
+	
+	string samplename, tmp_samplename = "init";
+	
+	sigtree->SetBranchAddress("SystFlag", &flag);
+	sigtree->SetBranchAddress("Event",    &event);
+	sigtree->SetBranchAddress("Run",      &run);
+	sigtree->SetBranchAddress("SName",    &sname);
+	sigtree->SetBranchAddress("SType",    &SType);
+	sigtree->SetBranchAddress("PUWeight", &puweight);
+	sigtree->SetBranchAddress("SLumi",    &SLumi);
+	sigtree->SetBranchAddress("Flavor",   &Flavor);
+	sigtree->SetBranchAddress("Charge",   &charge);
+	sigtree->SetBranchAddress("pT1",      &pT1);
+	sigtree->SetBranchAddress("pT2",      &pT2);
+	sigtree->SetBranchAddress("eta1",     &eta1);
+	sigtree->SetBranchAddress("eta2",     &eta2);
+	sigtree->SetBranchAddress("TLCat",    &TLCat);
+	sigtree->SetBranchAddress("HT",       &HT);
+	sigtree->SetBranchAddress("MET",      &MET);
+	sigtree->SetBranchAddress("MT2",      &MT2);
+	sigtree->SetBranchAddress("NJ",       &NJ);
+	sigtree->SetBranchAddress("NbJ",      &NbJ);
+	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
+	sigtree->SetBranchAddress("Mll",      &mll);
+	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
+	sigtree->SetBranchAddress("Pass3rdVeto", &passes3rdVeto);
+	sigtree->SetBranchAddress("NVrtx", &NVrtx);
+	sigtree->SetBranchAddress("PFIso1", &PFIso1);
+	sigtree->SetBranchAddress("PFIso2", &PFIso2);
+	sigtree->SetBranchAddress("D01", &D01);
+	sigtree->SetBranchAddress("D02", &D02);
+	sigtree->SetBranchAddress("Rho", &Rho);
+	sigtree->SetBranchAddress("Rho", &Rho);
+	sigtree->SetBranchAddress("BetaStar1", &BetaStar1);
+	sigtree->SetBranchAddress("BetaStar2", &BetaStar2);
+	sigtree->SetBranchAddress("BetaStar3", &BetaStar3);
+	sigtree->SetBranchAddress("BetaStar4", &BetaStar4);
+	sigtree->SetBranchAddress("BetaStar5", &BetaStar5);
+	sigtree->SetBranchAddress("MTLep1", &MTLep1);
+	sigtree->SetBranchAddress("MTLep2", &MTLep2);
+	
+	float trigScale[3] = {gMMTrigScale, gEMTrigScale, gEETrigScale};
+	
+	for( int i = 0; i < sigtree->GetEntries(); i++ ){
+		if (!verbose) showStatusBar(i, sigtree->GetEntries(), 10000);
+		sigtree->GetEntry(i);
+		
+        //		if (tmp_samplename == "init") tmp_samplename = *sname;
+		if (verbose && tmp_samplename != *sname) {
+			if (tmp_samplename == samplename || tmp_samplename == "init") {
+				tmp_samplename = *sname;
+			}
+			else {
+				cout << setw(15) << tmp_samplename << " (not added to histogram)" << endl;
+				tmp_samplename = *sname;
+			}
+		}
+		
+		// select same-sign or opposite-sign
+		if (flavor_sel != -1 && flavor_sel != Flavor) continue;	// MU-MU || E-MU || E-E
+		if ( samesign && Flavor > 2 && !looseSel) continue; // selects same-sign events
+        //		if ( samesign && Flavor > 3) continue; // selects same-sign events EM/EE
+		if (!samesign && Flavor < 3 && !looseSel) continue; // selects opposite-sign events
+		if (wzEnr) {
+			if (!samesign && passZVeto != 0) continue;
+			if (!samesign && passes3rdVeto != 0) continue;
+			if (!samesign && Flavor == 4) continue;
+		}
+		
+		
+		if (!samesign) TLCat = 0;
+		
+		if( flag != systflag ) continue;
+		
+		if ( mll < minMll) continue;
+		if ( HT  < minHT  || HT  > maxHT)  continue;
+		if ( MET < minMET || MET > maxMET) continue;
+		if ( NbJ < minNbjetsL || NbJ > maxNbjetsL)    continue;
+		if ( NbJmed < minNbjetsM || NbJmed > maxNbjetsM) continue;
+		
+		gChannel chan = gChannel(Flavor);
+		if(chan == ElMu || Flavor == 4){
+			if(pT1 > pT2){
+				if(pT1 < minPt1 || pT1 > maxPt1) continue;
+				if(pT2 < minPt2 || pT2 > maxPt2) continue;
+			}
+			if(pT1 < pT2){
+				if(pT1 < minPt2 || pT1 > maxPt2) continue;
+				if(pT2 < minPt1 || pT2 > maxPt1) continue;
+			}
+		}
+		else{
+			if(pT1 < minPt1 || pT1 > maxPt1) continue;
+			if(pT2 < minPt2 || pT2 > maxPt2) continue;
+		}
+		
+		if (gApplyZVeto && passZVeto == 0)  continue;
+		if (chVeto && charge != chVeto ) continue;
+		
+        //		if (PFIso1 == 0. || PFIso2 == 0.) continue;
+        //		if (PFIso1 != 0. && PFIso2 != 0.) continue;
+        
+        for (int j = 0; j < diffVarName.size(); j++) {
+            if      (diffVarName[j] == "HT"    ) diffVar = HT;
+            else if (diffVarName[j] == "MET"   ) diffVar = MET;
+            else if (diffVarName[j] == "NJ"    ) diffVar = NJ+0.5;
+            else if (diffVarName[j] == "NbJmed") diffVar = NbJmed+0.5;
+            else if (diffVarName[j] == "pT1"   ) {
+                if (pT1 > pT2)                   diffVar = pT1;
+                else                             diffVar = pT2;
+            }
+            else if (diffVarName[j] == "pT2"   ) {
+                if (pT1 > pT2)                   diffVar = pT2;
+                else                             diffVar = pT1;
+            }
+            else if (diffVarName[j] == "Mll"   ) diffVar = mll;
+            else if (diffVarName[j] == "NVrtx" ) diffVar = NVrtx;
+            else if (diffVarName[j] == "PFIso1") {
+                if (pT1 > pT2)                   diffVar = PFIso1;
+                else                             diffVar = PFIso2;
+                //			TLCat = 0;
+            }
+            else if (diffVarName[j] == "PFIso2") {
+                if (pT1 > pT2)                   diffVar = PFIso2;
+                else                             diffVar = PFIso1;
+                //			TLCat = 0;
+            }
+			else if (diffVarName[j] == "D01") {
+				if (pT1 > pT2)                diffVar = D01;
+				else                          diffVar = D02;
+			}
+			else if (diffVarName[j] == "D02") {
+				if (pT1 > pT2)                diffVar = D02;
+				else                          diffVar = D01;
+			}
+			else if (diffVarName[j] == "Rho")    diffVar = Rho;
+			else if (diffVarName[j] == "BetaStar1") diffVar = BetaStar1;
+			else if (diffVarName[j] == "BetaStar2") diffVar = BetaStar2;
+			else if (diffVarName[j] == "BetaStar3") diffVar = BetaStar3;
+			else if (diffVarName[j] == "BetaStar4") diffVar = BetaStar4;
+			else if (diffVarName[j] == "BetaStar5") diffVar = BetaStar5;
+			else if (diffVarName[j] == "MTLep1") {
+				if (pT1 > pT2)                diffVar = MTLep1;
+				else                          diffVar = MTLep2;
+			}
+			else if (diffVarName[j] == "MTLep2") {
+				if (pT1 > pT2)                diffVar = MTLep2;
+				else                          diffVar = MTLep1;
+			}
+			else if (diffVarName[j] == "minMT") {
+				if (MTLep1 > MTLep2)                diffVar = MTLep2;
+				else                          diffVar = MTLep1;
+			}
+            else                                 diffVar = -9999.;
+
+			if ( (NJ  < minNjets || NJ > maxNjets) && diffVarName[j] != "NJ" )      continue;
+            
+            // GET ALL DATA EVENTS
+            if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
+                //			if (Flavor < 3) {
+                if (gApplyZVeto && passZVeto == 0)  continue;
+                if (chVeto && charge != chVeto ) continue;
+                Sample *S = fSampleMap[TString(*sname)];
+                if (TLCat == 0) {
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Data)" << endl; samplename = *sname;}
+                    h_obs  [j]->Fill(diffVar    , 1);
+                }
+            } // end data events
+            
+            //		if (verbose && samplename != *sname) {
+            //			cout << setw(15) << *sname << "\t";
+            //			samplename = *sname;
+            //			cout << "puweight: " << setw(8) << puweight << "\ttrigScale: " << trigScale[Flavor] << "\tscale: " << setw(14) << fLumiNorm / fSampleMap[*sname]->getLumi() << "\tweight: " << setw(14) << puweight*trigScale[Flavor]*fLumiNorm / fSampleMap[*sname]->getLumi() << "\tchVeto: " << chVeto << "\t";
+            //			cout << "fLumiNorm / fSampleMap[*sname]->getLumi() = " << fLumiNorm << " / " << setw(12) << fSampleMap[*sname]->getLumi() << " = " << setw(14) << fLumiNorm / fSampleMap[*sname]->getLumi() << endl;
+            //		}
+            
+            if (SType == 10 && TLCat == 0) {
+                if (*sname == "WWTo2L2Nu") continue;
+                if (*sname == "TTbarWNLO") continue;
+                //			if (Flavor > 2) continue;
+                if (chVeto && charge != chVeto ) continue;
+                // make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+                Sample *S = fSampleMap[*sname];
+                float scale = fLumiNorm / S->getLumi();
+                //			float weight = puweight*trigScale[Flavor]*scale;
+                float weight = puweight*HLTSF*scale;
+                //			float weight = HLTSF*scale;
+                //			float weight = puweight*scale;
+                //			float weight = scale;
+                //			if (verbose && samplename != *sname) {
+                //				cout << *sname << endl;
+                //				samplename = *sname;
+                //				cout << "puweight: " << puweight << "\ttrigScale: " << trigScale[Flavor] << "\tscale: " << scale << "\tweight: " << weight << "\tchVeto: " << chVeto << endl;
+                //				cout << "fLumiNorm / S->getLumi() = " << fLumiNorm << " / " << S->getLumi() << " = " << fLumiNorm / S->getLumi() << endl;
+                //			}
+                if (*sname == "TTJets") {
+                    h_top[j]->Fill(diffVar, weight);
+                    h_ttbar[j]->Fill(diffVar, weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Top)" << endl; samplename = *sname;}
+                }
+                //			else if (((TString)(*sname)).Contains("QCD") || *sname == "MuEnr15") {
+                //				h_qcd[j]->Fill(diffVar, weight);
+                //			}
+                else if (((TString)(*sname)).Contains("SingleT")) {
+                    h_top[j]->Fill(diffVar, weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Top)" << endl; samplename = *sname;}
+                }
+                else if (*sname == "DYJets") {
+                    h_zjets[j]->Fill(diffVar, weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Z + Jets)" << endl; samplename = *sname;}
+                }
+                else if (*sname == "WJets") {
+                    h_wjets[j]->Fill(diffVar, weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (W + Jets)" << endl; samplename = *sname;}
+                }
+                //			else if (*sname == "GYJets") {
+                //				h_gjets[j]->Fill(diffVar, weight);
+                //				if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (G + Jets)" << endl; samplename = *sname;}
+                //			}
+                else if (*sname == "TTbarWW") {
+                    h_rare  [j]->Fill(diffVar    , weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
+                }
+                else {
+                    //				if (verbose && samplename != *sname) {
+                    //					cout << *sname << endl;
+                    //					samplename = *sname;
+                    //				}
+                    h_mc[j]->Fill(diffVar, weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (remaining SM MC)" << endl; samplename = *sname;}
+                }
+            }
+            
+            // GET RARE MC EVENTS
+            if (SType == 15 && TLCat == 0) { // tight-tight rare MC events
+                //			if (*sname == "WWTo2L2Nu") continue;
+                //			if (Flavor > 2) continue;
+                if (chVeto && charge != chVeto ) continue;
+                // make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+                Sample *S = fSampleMap[*sname];
+                float scale = fLumiNorm / S->getLumi();
+                //			float weight = puweight*trigScale[Flavor]*scale;
+                float weight = puweight*HLTSF*scale;
+                //			float weight = HLTSF*scale;
+                //			float weight = puweight*scale;
+                //			float weight = scale;
+                //			if (verbose && samplename != *sname) {
+                //				cout << *sname << endl;
+                //				samplename = *sname;
+                //				cout << "puweight: " << puweight << "\ttrigScale: " << trigScale[Flavor] << "\tscale: " << scale << "\tweight: " << weight << "\tchVeto: " << chVeto << endl;
+                //				cout << "fLumiNorm / S->getLumi() = " << fLumiNorm << " / " << S->getLumi() << " = " << fLumiNorm / S->getLumi() << endl;
+                //			}
+                // float tmp_nt2_rare_mc_e2 = tmp_nt2_rare_mc*tmp_nt2_rare_mc;
+                //			if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
+                if (*sname == "WZTo3LNu") {
+                    h_wz  [j]->Fill(diffVar    , weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (WZ)" << endl; samplename = *sname;}
+                }
+                else if (*sname == "TTbarW") {
+                    h_ttw  [j]->Fill(diffVar    , weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (tt + W)" << endl; samplename = *sname;}
+                }
+                else if (*sname == "TTbarZ") {
+                    h_ttz  [j]->Fill(diffVar    , weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (tt + Z)" << endl; samplename = *sname;}
+                }
+                else {
+                    h_rare  [j]->Fill(diffVar    , weight);
+                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
+                }
+                //			}
+            } // end rare mc events
+        } // end loop over kin variables
+		
+	} // end sigevent tree
+	
+    for (int i = 0; i < diffVarName.size(); i++) {
+        h_obs  [i]->SetMarkerColor(kBlack);
+        h_obs  [i]->SetMarkerStyle(8);
+        h_obs  [i]->SetMarkerSize(1.2);
+        h_obs  [i]->SetLineWidth(2);
+        h_obs  [i]->SetLineColor(kBlack);
+        h_obs  [i]->SetFillColor(kBlack);
+        
+        h_top  [i]->SetLineWidth(1);
+        h_zjets[i]->SetLineWidth(1);
+        h_wjets[i]->SetLineWidth(1);
+        h_gjets[i]->SetLineWidth(1);
+        h_mc   [i]->SetLineWidth(1);
+        h_rare [i]->SetLineWidth(1);
+        h_wz   [i]->SetLineWidth(1);
+        h_ttz  [i]->SetLineWidth(1);
+        h_ttw  [i]->SetLineWidth(1);
+        
+        h_top  [i]->SetFillColor(46);
+        h_zjets[i]->SetFillColor(49);
+        h_wjets[i]->SetFillColor(kOrange);
+        h_gjets[i]->SetFillColor(kGreen);
+        h_mc   [i]->SetFillColor(40);
+        h_rare [i]->SetFillColor(38);
+        h_wz   [i]->SetFillColor(39);
+        h_ttz  [i]->SetFillColor(42);
+        h_ttw  [i]->SetFillColor(44);
+        
+        h_tot  [i]->SetLineWidth(3);
+        h_tot  [i]->SetFillColor(12);
+        h_tot  [i]->SetFillStyle(3005);
+        
+        TGraphAsymmErrors* gr_obs  = FR->getGraphPoissonErrors( h_obs[i]  );
+        gr_obs    ->SetMarkerColor(kBlack);
+        gr_obs    ->SetMarkerStyle(8);
+        gr_obs    ->SetMarkerSize(1.2);
+        gr_obs    ->SetLineWidth(2);
+        gr_obs    ->SetLineColor(kBlack);
+        gr_obs    ->SetFillColor(kBlack);
+        
+        h_tot  [i]->Add(h_top    [i]);
+        h_tot  [i]->Add(h_zjets  [i]);
+        h_tot  [i]->Add(h_wjets  [i]);
+//		h_tot  [i]->Add(h_gjets  [i]);
+//		h_tot  [i]->Add(h_singleT[i]);
+        h_tot  [i]->Add(h_mc	 [i]);
+        h_tot  [i]->Add(h_rare   [i]);
+        h_tot  [i]->Add(h_wz     [i]);
+        h_tot  [i]->Add(h_ttz    [i]);
+        h_tot  [i]->Add(h_ttw    [i]);
+        
+        if (ttbarEnr) {
+            hs_tot  [i]->Add(h_zjets  [i]);
+            hs_tot  [i]->Add(h_wjets  [i]);
+//			hs_tot  [i]->Add(h_gjets  [i]);
+//			hs_tot  [i]->Add(h_singleT[i]);
+            hs_tot  [i]->Add(h_mc     [i]);
+            hs_tot  [i]->Add(h_rare   [i]);
+            hs_tot  [i]->Add(h_wz     [i]);
+            hs_tot  [i]->Add(h_ttz    [i]);
+            hs_tot  [i]->Add(h_ttw    [i]);
+            hs_tot  [i]->Add(h_top    [i]);
+        }
+        else {
+            hs_tot  [i]->Add(h_top    [i]);
+            hs_tot  [i]->Add(h_zjets  [i]);
+			hs_tot  [i]->Add(h_wjets  [i]);
+//			hs_tot  [i]->Add(h_gjets  [i]);
+//			hs_tot  [i]->Add(h_singleT[i]);
+            hs_tot  [i]->Add(h_mc     [i]);
+            hs_tot  [i]->Add(h_rare   [i]);
+            hs_tot  [i]->Add(h_wz     [i]);
+            hs_tot  [i]->Add(h_ttz    [i]);
+            hs_tot  [i]->Add(h_ttw    [i]);
+        }
+        
+        double max(0.);
+        //	max = 1.2*h_obs->GetBinContent(2);
+        //	if (diffVarName == "NbJmed" || diffVarName == "NJ" || diffVarName == "pT2") max = 1.2*h_obs->GetBinContent(1);
+        
+        max = 1.2 * h_obs[i]->GetBinContent(h_obs[i]->GetMaximumBin());
+        
+        h_obs      [i]->SetMaximum(max);
+        h_top      [i]->SetMaximum(max);
+        h_zjets    [i]->SetMaximum(max);
+        h_wjets    [i]->SetMaximum(max);
+        h_gjets    [i]->SetMaximum(max);
+//		h_singleT  [i]->SetMaximum(max);
+        h_mc       [i]->SetMaximum(max);
+        h_rare     [i]->SetMaximum(max);
+        h_wz       [i]->SetMaximum(max);
+        h_ttz      [i]->SetMaximum(max);
+        h_ttw      [i]->SetMaximum(max);
+        h_tot      [i]->SetMaximum(max);
+        hs_tot     [i]->SetMaximum(max);
+        
+        //	h_obs      ->SetMinimum(0.);
+        //	h_top      ->SetMinimum(0.);
+        //	h_zjets    ->SetMinimum(0.);
+        //	h_wjets    ->SetMinimum(0.);
+        //	h_gjets    ->SetMinimum(0.);
+        ////	h_singleT  ->SetMinimum(0.);
+        //	h_mc       ->SetMinimum(0.);
+        //	h_rare     ->SetMinimum(0.);
+        //	h_wz       ->SetMinimum(0.);
+        //	h_ttz      ->SetMinimum(0.);
+        //	h_ttw      ->SetMinimum(0.);
+        //	h_tot      ->SetMinimum(0.);
+        //	hs_tot     ->SetMinimum(0.);
+        
+        for (size_t j = 1; j <= h_tot[i]->GetXaxis()->GetNbins(); ++j) h_tot[i]->SetBinError(j, sqrt(0.1*h_tot[i]->GetBinContent(j)*0.1*h_tot[i]->GetBinContent(j) + h_tot[i]->GetBinError(j)*h_tot[i]->GetBinError(j)));
+        
+        // ratio plots
+        float border = 0.3;
+        float scale = (1-border)/border;
+        
+        h_ratio[i]->SetXTitle(xAxisTitle[i].Data());
+        h_ratio[i]->SetYTitle("");
+        h_ratio[i]->GetXaxis()->SetTitleSize(scale * 0.04);
+        h_ratio[i]->GetXaxis()->SetLabelSize(scale * 0.04);
+        h_ratio[i]->GetYaxis()->SetLabelSize(scale * 0.04);
+//		h_ratio[i]->GetXaxis()->SetLabelSize(scale *  h_obs[i]->GetXaxis()->GetLabelSize());
+//		h_ratio[i]->GetYaxis()->SetLabelSize(scale *  h_obs[i]->GetYaxis()->GetLabelSize());
+        h_ratio[i]->GetXaxis()->SetTickLength(scale * h_obs[i]->GetXaxis()->GetTickLength());
+        h_ratio[i]->GetYaxis()->SetTickLength(h_obs[i]->GetYaxis()->GetTickLength());
+        
+        h_ratio[i]->SetFillStyle(1001);
+        h_ratio[i]->SetLineWidth(1);
+        h_ratio[i]->SetFillColor(  kGray+1);
+        h_ratio[i]->SetLineColor(  kGray+1);
+        h_ratio[i]->SetMarkerColor(kGray+1);
+        
+        h_ratio[i]->Divide(h_obs[i], h_tot[i]);
+        
+        hs_tot[i]->Draw("goff");
+        
+        hs_tot[i]->GetYaxis()->SetTitleSize(0.04);
+        hs_tot[i]->GetYaxis()->SetLabelSize(0.04);
+        
+//		hs_tot[i]->GetXaxis()->SetTitle(xAxisTitle.Data());
+//		hs_tot[i]->GetXaxis()->SetTitleOffset(1.07);
+        hs_tot[i]->GetYaxis()->SetTitle(yAxisTitle[i].Data());
+//		hs_tot[i]->GetYaxis()->SetTitleSize(0.045);
+//		hs_tot[i]->GetXaxis()->SetTitleSize(0.045);
+//		hs_tot[i]->GetYaxis()->SetLabelSize(0.045);
+//		hs_tot[i]->GetXaxis()->SetLabelSize(0.045);
+        hs_tot[i]->GetYaxis()->SetTitleOffset(1.25);
+//		hs_tot[i]->GetXaxis()->SetTitleOffset(1.065);
+        if (diffVarName[i] == "NJ" || diffVarName[i] == "NbJmed"){
+            for(size_t k = 1; k <= nbins[i]; ++k) {
+                hs_tot [i]->GetXaxis()->SetBinLabel(k, Form("%d", k-1));
+                h_ratio[i]->GetXaxis()->SetBinLabel(k, Form("%d", k-1));
+            }
+//			hs_tot[i]->GetXaxis()->SetLabelSize(0.07);
+//			hs_tot[i]->GetXaxis()->SetTitleSize(0.045);
+//			hs_tot[i]->GetXaxis()->SetTitleOffset(1.07);
+        }
+        
+        // removing x axis labels
+        for(size_t j = 1; j <= hs_tot[i]->GetXaxis()->GetNbins(); ++j) hs_tot[i]->GetXaxis()->SetBinLabel(j, "");
+        
+        TLegend *leg = new TLegend(0.70,0.62,0.90,0.88);
+        leg->AddEntry(h_obs    [i], "Data","p");
+        leg->AddEntry(h_top    [i], "Top","f");
+        leg->AddEntry(h_zjets  [i], "Z + jets","f");
+        leg->AddEntry(h_wjets  [i], "W + jets","f");
+//		leg->AddEntry(h_gjets  [i], "gamma + jets","f");
+//		leg->AddEntry(h_singleT[i], "t","f");
+        leg->AddEntry(h_mc     [i], "remaining SM MC","f");
+        leg->AddEntry(h_rare   [i], "Rare SM","f");
+        leg->AddEntry(h_wz     [i], "WZ","f");
+        leg->AddEntry(h_ttz    [i], "t#bar{t} + Z","f");
+        leg->AddEntry(h_ttw    [i], "t#bar{t} + W","f");
+        leg->SetFillStyle(0);
+        leg->SetTextFont(42);
+        leg->SetBorderSize(0);
+        
+        TCanvas *c_temp = new TCanvas("C_ObsMC", "Observed vs Monte Carlo", 0, 0, 600, 600);
+        //	c_temp->SetLeftMargin(0.12);
+        //	c_temp->SetRightMargin(0.04);
+        c_temp->cd();
+        
+        TPad *p_plot  = new TPad("plotpad",  "Pad containing the plot", 0.00, border, 1.00, 1.00, 0, 0);
+        p_plot->SetBottomMargin(0.015);
+        p_plot->Draw();
+        TPad *p_ratio = new TPad("ratiopad", "Pad containing the ratio", 0.00, 0.00, 1.00, border, 0, 0);
+        p_ratio->SetTopMargin(0.025);
+        p_ratio->SetBottomMargin(0.35);
+        p_ratio->Draw();
+        
+        p_ratio->cd();
+        h_ratio[i]->GetYaxis()->SetNdivisions(505);
+        // setPlottingRange(h_ratio, 0.3);
+        h_ratio[i]->SetMaximum(1.99);
+        h_ratio[i]->SetMinimum(0.0);
+        h_ratio[i]->DrawCopy("E2 ");
+        TLine *l3 = new TLine(h_obs[i]->GetXaxis()->GetXmin(), 1.00, h_obs[i]->GetXaxis()->GetXmax(), 1.00);
+        l3->SetLineWidth(2);
+        l3->SetLineStyle(7);
+        l3->Draw();
+        gPad->RedrawAxis();
+        p_ratio->Draw();
+        
+        p_plot->cd();
+        
+        //	gPad->SetLogy();
+        
+        hs_tot[i]->Draw("hist");
+        leg->Draw();
+        h_tot[i]->DrawCopy("0 E2 same");
+        //	h_tot[i]->SetFillStyle(0);
+        //	h_tot[i]->DrawCopy("hist same");
+        gr_obs->Draw("P same");
+        
+        lat->SetTextSize(0.03);
+        
+        drawTopLineSim(0.56, 0.8);
+        
+        if (flavor_sel == -1 && wzEnr) lat->DrawLatex(0.14,0.85, "ee/#mu#mu");	// MU-MU || E-MU || E-E
+        if (flavor_sel == -1 && !wzEnr) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-MU || E-E
+        if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
+        if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
+        if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
+        if (flavor_sel ==  3) lat->DrawLatex(0.14,0.85, "#mu#mu (OS)");
+        if (flavor_sel ==  4) lat->DrawLatex(0.14,0.85, "e#mu (OS)");
+        if (flavor_sel ==  5) lat->DrawLatex(0.14,0.85, "ee (OS)");
+        
+        
+        
+        //	gPad->RedrawAxis();
+        // Util::PrintNoEPS(c_temp, "ObsPred_" + Region::sname[reg], fOutputDir + fOutputSubDir, NULL);
+        Util::PrintPDF (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir);
+        Util::PrintPNG (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir);
+        //	Util::PrintROOT(c_temp,   diffVarName+sysString+chargeString , fOutputDir + fOutputSubDir);
+        
+        p_plot->SetLogy();
+        Util::PrintPDF (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir + "log/");
+        Util::PrintPNG (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir + "log/");
+        
+        //	delete c_temp, leg;
+        
+        delete p_plot, p_ratio;
+        
+        // =========== //
+        // shape plots //
+        // =========== //
+        
+        TLegend *leg2 = new TLegend(0.70,0.75,0.90,0.88);
+        leg2->AddEntry(h_ttbar[i], "t#bar{t}","f");
+        leg2->AddEntry(h_rare [i], "Rare SM","f");
+		//		leg2->AddEntry(h_ttz  [i], "t#bar{t} + Z","f");
+        leg2->AddEntry(h_ttw  [i], "t#bar{t} + W","f");
+        leg2->SetFillStyle(0);
+        leg2->SetTextFont(42);
+        leg2->SetBorderSize(0);
+        
+        TCanvas *c_temp2 = new TCanvas("C_MCShapes", "Monte Carlo Shapes", 0, 0, 600, 600);
+        c_temp2->SetLeftMargin(0.12);
+        c_temp2->SetRightMargin(0.04);
+        c_temp2->cd();
+        
+        h_ttbar[i]->Scale(1./h_ttbar[i]->Integral());
+        h_rare [i]->Scale(1./h_rare [i]->Integral());
+        h_ttz  [i]->Scale(1./h_ttz  [i]->Integral());
+        h_ttw  [i]->Scale(1./h_ttw  [i]->Integral());
+        
+//        max = 1.2*h_ttbar[i]->GetBinContent(2);
+//        if (diffVarName[i] == "MET" || diffVarName[i] == "NJ") max = 1.25*h_ttbar[i]->GetBinContent(4);
+//        if (diffVarName[i] == "NbJmed") max = 1.2*h_rare[i]->GetBinContent(1);
+//        if (diffVarName[i] == "pT2") max = 1.2*h_ttbar[i]->GetBinContent(1);
+		max = 1.2 * std::max(h_ttbar[i]->GetBinContent(h_ttbar[i]->GetMaximumBin()),std::max(h_rare[i]->GetBinContent(h_rare[i]->GetMaximumBin()),std::max(h_ttz[i]->GetBinContent(h_ttz[i]->GetMaximumBin()),h_ttw[i]->GetBinContent(h_ttw[i]->GetMaximumBin()))));
+        h_ttbar[i]->SetMaximum(max);
+        h_rare [i]->SetMaximum(max);
+        h_ttz  [i]->SetMaximum(max);
+        h_ttw  [i]->SetMaximum(max);
+        
+		h_ttbar[i]->SetFillStyle(3004);
+        h_rare [i]->SetFillStyle(3005);
+        h_ttz  [i]->SetFillStyle(3003);
+        h_ttw  [i]->SetFillStyle(0);
+        
+        h_ttbar[i]->SetLineWidth(1);
+        h_rare [i]->SetLineWidth(1);
+        h_ttz  [i]->SetLineWidth(1);
+        h_ttw  [i]->SetLineWidth(2);
+        
+        h_ttbar[i]->SetLineColor(46);
+        h_rare [i]->SetLineColor(38);
+        h_ttz  [i]->SetLineColor(42);
+        h_ttw  [i]->SetLineColor(44);
+        
+        h_ttbar[i]->SetFillColor(46);
+        h_rare [i]->SetFillColor(38);
+        h_ttz  [i]->SetFillColor(42);
+        h_ttw  [i]->SetFillColor(44);
+        
+        h_ttbar[i]->Draw("goff");
+        h_ttbar[i]->GetXaxis()->SetTitle(xAxisTitle[i].Data());
+        h_ttbar[i]->GetYaxis()->SetTitle("Normalized to Unity");
+        h_ttbar[i]->GetYaxis()->SetTitleSize(0.045);
+        h_ttbar[i]->GetXaxis()->SetTitleSize(0.045);
+        h_ttbar[i]->GetYaxis()->SetLabelSize(0.045);
+        h_ttbar[i]->GetXaxis()->SetLabelSize(0.045);
+        h_ttbar[i]->GetYaxis()->SetTitleOffset(1.25);
+        h_ttbar[i]->GetXaxis()->SetTitleOffset(1.065);
+        
+        h_ttbar[i]->Draw("hist");
+        leg2->Draw();
+        h_rare[i] ->Draw("hist same");
+        //	h_ttz[i]  ->Draw("hist same");
+        h_ttw[i]  ->Draw("hist same");
+        
+        lat->SetTextSize(0.03);
+        
+        drawTopLineSim(0.56, 0.8);
+        
+        if (flavor_sel == -1) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-MU || E-E
+        if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
+        if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
+        if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
+        
+        gPad->RedrawAxis();
+        Util::PrintPDF (c_temp2,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir + "MCShapes/");
+        
+        delete c_temp;
+        delete c_temp2;
+        delete leg;
+        delete leg2;
+        delete h_obs[i] , gr_obs[i] , h_top[i] , h_zjets[i]/* , /*h_wjets[i] , h_gjets[i] , /*h_singleT[i]*/ , h_rare[i] , h_tot[i] , h_ttz[i] , h_ttw[i] , h_wz[i] , hs_tot[i], h_ttbar[i] ;
+    }
+	delete FR;
+}
 void SSDLPlotter::makeDiffPrediction(){
 	fOutputSubDir = "DiffPredictionPlots/";
 	TLatex *lat = new TLatex();
@@ -18472,8 +21018,10 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 	// if(chan == Muon) return 0.0672; // flat ratios
 	// if(chan == Elec) return 0.224;
 
-	const float mu_flatout = 40.;
-	const float el_flatout = 40.;
+	float mu_flatout = 40.;
+	float el_flatout = 40.;
+	if (gTTWZ)  mu_flatout = 30.;
+	if (gTTWZ)  el_flatout = 30.;
 	
 	if(chan == Muon){
 		TH1D *histo          = fH1D_MufRatio;
@@ -18507,8 +21055,10 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 float SSDLPlotter::getFRatio(gChannel chan, float pt, float eta, int datamc){
 	// if(chan == Muon) return 0.0672; // flat ratios
 	// if(chan == Elec) return 0.224;
-	const float mu_flatout = 40.;
-	const float el_flatout = 40.;
+	float mu_flatout = 40.;
+	float el_flatout = 40.;
+	if (gTTWZ)  mu_flatout = 30.;
+	if (gTTWZ)  el_flatout = 30.;
 	
 	eta = fabs(eta); // make sure we take the absolute value
 
@@ -20355,7 +22905,7 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	systs[7] = "METdown";
 	
 	int nbins, min, max;
-	// all scans:
+	// other scans:
 	nbins =  300;
 	min   =    0;
 	max   = 1500;

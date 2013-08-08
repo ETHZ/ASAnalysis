@@ -67,6 +67,8 @@ TString tmp_gBaseRegion  ;
 TString gJSONfile        ;
 bool  tmp_gDoWZValidation;
 bool  gMETType1          ;
+bool  gDoPileUpID = false;
+float gBetaStarMax = 0.3;
 
 // std::vector< SSDLDumper::Region* > gRegions;
 // std::vector< SSDLDumper::Region* >::iterator regIt;
@@ -99,9 +101,11 @@ double SSDLDumper::gNVrtxBins[gNNVrtxBins+1]  = {5, 7, 9, 11, 13, 15, 17, 19, 21
 //////////////////////////////////////////////////////////////////////////////////
 TString SSDLDumper::gKinSelNames[gNKinSels] = {"LL", "TT", "Sig"};
 TString SSDLDumper::KinPlots::var_name[SSDLDumper::gNKinVars]   = {"HT", "MET", "NJets", "Pt1", "Pt2", "InvMassSF", "InvMassMM", "InvMassEE", "InvMassEM", "MT2", "NbJets", "NbJetsMed"};
-int     SSDLDumper::KinPlots::nbins[SSDLDumper::gNKinVars]      = {  20 ,  15 ,      8 ,   14 ,   14 ,        14  ,        14  ,        14  ,        14  ,   20 ,       5 ,          5 };
-float   SSDLDumper::KinPlots::xmin[SSDLDumper::gNKinVars]       = {   0.,  50.,      0.,   20.,   20.,        20. ,        20. ,        20. ,        20. ,    0.,       0.,          0.};
-float   SSDLDumper::KinPlots::xmax[SSDLDumper::gNKinVars]       = {1000., 350.,      8.,  300.,  160.,       300. ,       300. ,       300. ,       300. ,  100.,       5.,          5.};
+int     SSDLDumper::KinPlots::nbins[SSDLDumper::gNKinVars]      = {  20 ,  17 ,      8 ,   14 ,   14 ,        14  ,        14  ,        14  ,        14  ,   20 ,       5 ,          5 };
+//float   SSDLDumper::KinPlots::xmin[SSDLDumper::gNKinVars]       = {   0.,  50.,      0.,   20.,   20.,        20. ,        20. ,        20. ,        20. ,    0.,       0.,          0.};
+//float   SSDLDumper::KinPlots::xmax[SSDLDumper::gNKinVars]       = {1000., 350.,      8.,  300.,  160.,       300. ,       300. ,       300. ,       300. ,  100.,       5.,          5.};
+float   SSDLDumper::KinPlots::xmin[SSDLDumper::gNKinVars]       = {   0.,   0.,      0.,   20.,   20.,        20. ,        20. ,        20. ,        20. ,    0.,       0.,          0.};
+float   SSDLDumper::KinPlots::xmax[SSDLDumper::gNKinVars]       = {1000., 340.,      8.,  300.,  160.,       300. ,       300. ,       300. ,       300. ,  100.,       5.,          5.};
 TString SSDLDumper::KinPlots::axis_label[SSDLDumper::gNKinVars] = {"H_{T} [GeV]",
                                                                    "E_{T}^{miss} [GeV]",
                                                                    "Jet Multiplicity",
@@ -116,8 +120,8 @@ TString SSDLDumper::KinPlots::axis_label[SSDLDumper::gNKinVars] = {"H_{T} [GeV]"
                                                                    "b-Jet Multiplicity (medium)"};
 
 //////////////////////////////////////////////////////////////////////////////////
-double SSDLDumper::gDiffHTBins  [gNDiffHTBins+1]   = { 80., 120., 200., 320., 400., 500., 600.};
-double SSDLDumper::gDiffMETBins [gNDiffMETBins+1]  = { 0.,   30.,  50.,  70.,  80., 100., 120.};
+double SSDLDumper::gDiffHTBins  [gNDiffHTBins+1]   = { 0., 100., 200., 320., 400., 500., 600.};
+double SSDLDumper::gDiffMETBins [gNDiffMETBins+1]  = { 0.,   20.,  40.,  60.,  80., 100., 120.};
 double SSDLDumper::gDiffNJBins  [gNDiffNJBins+1]   = { 0.,    1.,   2.,   3.,   4.,   5.,   6.}; // fill NJets + 0.5 to hit the right bin
 double SSDLDumper::gDiffMT2Bins [gNDiffMT2Bins+1]  = { 0.,   25.,  50., 100.                  };
 double SSDLDumper::gDiffPT1Bins [gNDiffPT1Bins+1]  = { 20., 40., 60., 80., 100., 120., 140., 160., 180., 200.};
@@ -177,6 +181,7 @@ void setVariables(char buffer[1000]){
 		else if (type == "float"   && name =="gElMaxIso"      ) gElMaxIso           = value.Atof();
 		else if (type == "float"   && name =="gMaxJetEta"     ) gMaxJetEta          = value.Atof();
 		else if (type == "float"   && name =="gMinJetPt"      ) gMinJetPt           = value.Atof();
+		else if (type == "bool"    && name =="gDoPileUpID"    ) gDoPileUpID         = ((value == "1" || value == "true") ? true:false);
 		else if (type == "bool"    && name =="gDoWZValidation") tmp_gDoWZValidation = ((value == "1" || value == "true") ? true:false);
 		else if (type == "bool"    && name =="gMETType1"      ) gMETType1           = ((value == "1" || value == "true") ? true:false);
 		else {cout << name <<" ERROR in reading variables!!" << endl; exit(1); }
@@ -266,7 +271,7 @@ SSDLDumper::SSDLDumper(TString configfile){
 	IN.close();
 
 	cout << "================  GLOBAL PARAMETERS  ===================" << endl;
-	cout << Form("gTTWZ = %d\ngApplyZVeto = %d\ngInvertZVeto = %d\ngMuMaxIso = %3.2f\ngElMaxIso = %3.2f\ngMinJetPt = %3.2f\ngMaxJetEta = %3.2f\ngBaseRegion = %s",
+	cout << Form("gTTWZ = %d\ngApplyZVeto = %d\ngInvertZVeto = %d\ngMuMaxIso = %3.2f\ngElMaxIso = %3.2f\ngMinJetPt = %3.2f\ngMaxJetEta = %3.2f\ngDoPileUpID = %d\ngBaseRegion = %s",
 		     gTTWZ       ,
 		     tmp_gApplyZVeto ,
 		     gInvertZVeto,
@@ -274,11 +279,15 @@ SSDLDumper::SSDLDumper(TString configfile){
 		     gElMaxIso   ,
 		     gMinJetPt ,
 		     gMaxJetEta   ,
+			 gDoPileUpID  ,
 		     tmp_gBaseRegion.Data()  ) << endl;
 	cout << "========================================================" << endl;
 	SSDLDumper::gBaseRegion = tmp_gBaseRegion;
 	SSDLDumper::gApplyZVeto = tmp_gApplyZVeto;
 	SSDLDumper::gDoWZValidation = tmp_gDoWZValidation;
+	SSDLDumper::tmp_gMinJetPt = gMinJetPt;
+	SSDLDumper::tmp_gMuMaxIso = gMuMaxIso;
+	SSDLDumper::tmp_gElMaxIso = gElMaxIso;
 
 	// initializing all the systematics here out of a lack of other places
 	gSystematics["Normal"]   = 0;
@@ -287,8 +296,10 @@ SSDLDumper::SSDLDumper(TString configfile){
 	gSystematics["JetSmear"] = 3;
 	gSystematics["BUp"]      = 4;
 	gSystematics["BDown"]    = 5;
-	gSystematics["METUp"]    = 6;
-	gSystematics["METDown"]  = 7;
+	gSystematics["LepUp"]    = 6;
+	gSystematics["LepDown"]  = 7;
+	gSystematics["METUp"]    = 8;
+	gSystematics["METDown"]  = 9;
 
 }
 
@@ -617,6 +628,20 @@ void SSDLDumper::loopEvents(Sample *S){
 		fChain->GetEntry(jentry); // reset tree vars
 		scaleBTags(S, 2);
 		fillSigEventTree(S, gSystematics["BDown"]);
+
+		// Lepton pts scaled up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		scaleLeptons(S, 1);
+ 		// fillYields(S, gRegion["TTbarWSelLU"]);
+		fillSigEventTree(S, gSystematics["LepUp"]);
+
+		// Lepton pts scaled down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		scaleLeptons(S, 2);
+ 		// fillYields(S, gRegion["TTbarWSelLD"]);
+		fillSigEventTree(S, gSystematics["LepDown"]);
 
 		// scale the unclustered MET up
 		fChain->GetEntry(jentry); // reset tree vars
@@ -1672,9 +1697,10 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	fC_minNjets  = 0;
 	fC_minHT     = 0.;
 	fC_minMet    = 0.;
-	// fC_app3rdVet  = 0;
-	// fC_chargeVeto = 0;
-	gApplyZVeto   = true;
+	fC_app3rdVet  = 0;
+	fC_chargeVeto = 0;
+//	gApplyZVeto   = true;
+	gApplyZVeto   = false;
 
 	fSETree_SystFlag = flag;
 	fSETree_PUWeight = PUWeight;
@@ -1688,6 +1714,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	fSETree_LS       = LumiSec;
 	fSETree_Event    = Event;
 	fSETree_MET      = getMET();
+	fSETree_NVrtx    = NVrtx;
 
 	fSETree_NM = getNTightMuons();
 	fSETree_NE = getNTightElectrons();
@@ -1732,15 +1759,25 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_pT2     = MuPt[ind2];
 		fSETree_eta1    = MuEta[ind1];
 		fSETree_eta2    = MuEta[ind2];
-		//		gApplyZVeto     = true;
+		gApplyZVeto     = true;
 		fSETree_ZVeto   = passesZVeto()?1:0;
-		//		gApplyZVeto     = false;
+		gApplyZVeto     = false;
 		fSETree_3rdVeto = passes3rdLepVeto()?1:0;
 //		fSETree_3rdVeto = passes3rdLepVeto(mu3, el3)?1:0;
 		fSETree_3rdSFLepVeto = passes3rdSFLepVeto(Muon)?1:0;
 		fSETree_ttZSel  = passesTTZSel()?1:0;
 		fSETree_PFIso1  = MuPFIso[ind1];
 		fSETree_PFIso2  = MuPFIso[ind2];
+		fSETree_D01     = MuD0[ind1];
+		fSETree_D02     = MuD0[ind2];
+		fSETree_Rho     = Rho;
+		fSETree_MTLep1  = getMT(ind1, Muon);
+		fSETree_MTLep2  = getMT(ind2, Muon);
+		fSETree_BetaStar1 = getBetaStar(1);
+		fSETree_BetaStar2 = getBetaStar(2);
+		fSETree_BetaStar3 = getBetaStar(3);
+		fSETree_BetaStar4 = getBetaStar(4);
+		fSETree_BetaStar5 = getBetaStar(5);
 		if( isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightMuon(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 2;
@@ -1825,14 +1862,24 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_pT2    = ElPt[ind2];
 		fSETree_eta1   = MuEta[ind1];
 		fSETree_eta2   = ElEta[ind2];
-		//		gApplyZVeto     = true;
+		gApplyZVeto     = true;
 		fSETree_ZVeto   = passesZVeto()?1:0;
-		//		gApplyZVeto     = false;
+		gApplyZVeto     = false;
 		fSETree_3rdVeto = passes3rdLepVeto()?1:0;
 		fSETree_3rdSFLepVeto = passes3rdSFLepVeto(ElMu)?1:0;
 		fSETree_ttZSel  = passesTTZSel()?1:0;
 		fSETree_PFIso1  = MuPFIso[ind1];
 		fSETree_PFIso2  = ElPFIso[ind2];
+		fSETree_D01     = MuD0[ind1];
+		fSETree_D02     = ElD0[ind2];
+		fSETree_Rho     = Rho;
+		fSETree_MTLep1  = getMT(ind1, Muon);
+		fSETree_MTLep2  = getMT(ind2, Elec);
+		fSETree_BetaStar1 = getBetaStar(1);
+		fSETree_BetaStar2 = getBetaStar(2);
+		fSETree_BetaStar3 = getBetaStar(3);
+		fSETree_BetaStar4 = getBetaStar(4);
+		fSETree_BetaStar5 = getBetaStar(5);
 		// fSETree_MVAID1  = ElMVAIDTrig[ind1];
 		fSETree_MVAID2  = ElMVAIDTrig[ind2];
 		// fSETree_medWP1  = ElIsGoodElId_MediumWP[ind1];
@@ -1910,14 +1957,24 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_pT2    = ElPt[ind2];
 		fSETree_eta1   = ElEta[ind1];
 		fSETree_eta2   = ElEta[ind2];
-		//		gApplyZVeto     = true;
+		gApplyZVeto     = true;
 		fSETree_ZVeto   = passesZVeto()?1:0;
-		//		gApplyZVeto     = false;
+		gApplyZVeto     = false;
 		fSETree_3rdVeto = passes3rdLepVeto()?1:0;
 		fSETree_3rdSFLepVeto = passes3rdSFLepVeto(Elec)?1:0;
 		fSETree_ttZSel  = passesTTZSel()?1:0;
 		fSETree_PFIso1  = ElPFIso[ind1];
 		fSETree_PFIso2  = ElPFIso[ind2];
+		fSETree_D01     = ElD0[ind1];
+		fSETree_D02     = ElD0[ind2];
+		fSETree_Rho     = Rho;
+		fSETree_MTLep1  = getMT(ind1, Elec);
+		fSETree_MTLep2  = getMT(ind2, Elec);
+		fSETree_BetaStar1 = getBetaStar(1);
+		fSETree_BetaStar2 = getBetaStar(2);
+		fSETree_BetaStar3 = getBetaStar(3);
+		fSETree_BetaStar4 = getBetaStar(4);
+		fSETree_BetaStar5 = getBetaStar(5);
 		fSETree_MVAID1  = ElMVAIDTrig[ind1];
 		fSETree_MVAID2  = ElMVAIDTrig[ind2];
 		fSETree_medWP1  = ElIsGoodElId_MediumWP[ind1];
@@ -1977,6 +2034,48 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	/// OS YIELDS only for data:
 	if (S->datamc == 0) {
 		fChargeSwitch = 1;
+		
+//		////////////////////////////////////////////////////////////////////////////////////////////////////////
+//		// MM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
+//		if (mumuSignalTrigger() && isSSLLMuEvent(ind1, ind2)){ // trigger && select loose mu/mu pair
+//			if ( isTightMuon(ind1) && isTightMuon(ind2)) {
+//				fSETree_M3      = getM3();
+//				fSETree_MT2     = getMT2(ind1, ind2, Muon);
+//				fSETree_Mll     = getMll(ind1, ind2, Muon);
+//				fSETree_HT      = getHT();
+//				fSETree_NJ      = getNJets();
+//				fSETree_NbJ     = getNBTags();
+//				fSETree_NbJmed  = getNBTagsMed();
+//				fSETree_Flavor  = 3;
+//				fSETree_Charge  = MuCharge[ind1];
+//				fSETree_pT1     = MuPt[ind1];
+//				fSETree_pT2     = MuPt[ind2];
+//				fSETree_eta1    = MuEta[ind1];
+//				fSETree_eta2    = MuEta[ind2];
+//				fSETree_ZVeto   = passesZVeto()?1:0;
+//				//fSETree_ZVeto   = passesZVetoNew(ind1, ind2, 1)?1:0;
+//				fSETree_3rdVeto = passes3rdLepVeto()?1:0;
+//				fSETree_3rdSFLepVeto = passes3rdSFLepVeto(Muon)?1:0;
+//				fSETree_ttZSel  = passesTTZSel()?1:0;
+//				fSETree_PFIso1  = MuPFIso[ind1];
+//				fSETree_PFIso2  = MuPFIso[ind2];
+//                fSETree_D01     = MuD0[ind1];
+//                fSETree_D02     = MuD0[ind2];
+//                fSETree_Rho     = Rho;
+//				fSETree_MTLep1  = getMT(ind1, Muon);
+//				fSETree_MTLep2  = getMT(ind2, Muon);
+//				fSETree_BetaStar1 = getBetaStar(1);
+//				fSETree_BetaStar2 = getBetaStar(2);
+//				fSETree_BetaStar3 = getBetaStar(3);
+//				fSETree_BetaStar4 = getBetaStar(4);
+//				fSETree_BetaStar5 = getBetaStar(5);
+////				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
+////				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
+//				fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
+//				fSigEv_Tree->Fill();
+//			}
+//			resetHypLeptons();
+//		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// EM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
@@ -2007,6 +2106,16 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_ttZSel  = passesTTZSel()?1:0;
 				fSETree_PFIso1  = MuPFIso[ind1];
 				fSETree_PFIso2  = ElPFIso[ind2];
+                fSETree_D01     = MuD0[ind1];
+                fSETree_D02     = ElD0[ind2];
+                fSETree_Rho     = Rho;
+				fSETree_MTLep1  = getMT(ind1, Muon);
+				fSETree_MTLep2  = getMT(ind2, Elec);
+				fSETree_BetaStar1 = getBetaStar(1);
+				fSETree_BetaStar2 = getBetaStar(2);
+				fSETree_BetaStar3 = getBetaStar(3);
+				fSETree_BetaStar4 = getBetaStar(4);
+				fSETree_BetaStar5 = getBetaStar(5);
 				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
@@ -2044,6 +2153,16 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_ttZSel  = passesTTZSel()?1:0;
 				fSETree_PFIso1  = ElPFIso[ind1];
 				fSETree_PFIso2  = ElPFIso[ind2];
+                fSETree_D01     = ElD0[ind1];
+                fSETree_D02     = ElD0[ind2];
+                fSETree_Rho     = Rho;
+				fSETree_MTLep1  = getMT(ind1, Elec);
+				fSETree_MTLep2  = getMT(ind2, Elec);
+				fSETree_BetaStar1 = getBetaStar(1);
+				fSETree_BetaStar2 = getBetaStar(2);
+				fSETree_BetaStar3 = getBetaStar(3);
+				fSETree_BetaStar4 = getBetaStar(4);
+				fSETree_BetaStar5 = getBetaStar(5);
 				if( isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel/Barrel
 				if( isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Barrel/Endcap
 				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 2; // TLCat == 2 if Endcap/Barrel
@@ -2970,10 +3089,21 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("eta2",        &fSETree_eta2    , "eta2/F");
 	fSigEv_Tree->Branch("PFIso1",      &fSETree_PFIso1  , "PFIso1/F");
 	fSigEv_Tree->Branch("PFIso2",      &fSETree_PFIso2  , "PFIso2/F");
+	fSigEv_Tree->Branch("D01",         &fSETree_D01     , "D01/F");
+	fSigEv_Tree->Branch("D02",         &fSETree_D02     , "D02/F");
+	fSigEv_Tree->Branch("Rho",         &fSETree_Rho     , "Rho/F");
+	fSigEv_Tree->Branch("MTLep1",         &fSETree_MTLep1     , "MTLep1/F");
+	fSigEv_Tree->Branch("MTLep2",         &fSETree_MTLep2     , "MTLep1/F");
+	fSigEv_Tree->Branch("BetaStar1",   &fSETree_BetaStar1, "BetaStar1/F");
+	fSigEv_Tree->Branch("BetaStar2",   &fSETree_BetaStar2, "BetaStar2/F");
+	fSigEv_Tree->Branch("BetaStar3",   &fSETree_BetaStar3, "BetaStar3/F");
+	fSigEv_Tree->Branch("BetaStar4",   &fSETree_BetaStar4, "BetaStar4/F");
+	fSigEv_Tree->Branch("BetaStar5",   &fSETree_BetaStar5, "BetaStar5/F");
 	fSigEv_Tree->Branch("MVAID1",      &fSETree_MVAID1  , "MVAID1/F");
 	fSigEv_Tree->Branch("MVAID2",      &fSETree_MVAID2  , "MVAID2/F");
 	fSigEv_Tree->Branch("medWP1",      &fSETree_medWP1  , "medWP1/F");
 	fSigEv_Tree->Branch("medWP2",      &fSETree_medWP2  , "medWP2/F");
+	fSigEv_Tree->Branch("NVrtx",       &fSETree_NVrtx   , "NVrtx/I");
 //	fSigEv_Tree->Branch("Ml1l3",             &fSETree_Ml1l3         , "Ml1l3/F");
 //	fSigEv_Tree->Branch("Ml2l3",             &fSETree_Ml2l3         , "Ml2l3/F");
 //	fSigEv_Tree->Branch("Charge3rdLep",      &fSETree_Charge3rdLep  , "Charge3rdLep/I");
@@ -3024,10 +3154,21 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_eta2     = -1.;
 	fSETree_PFIso1   = -1.;
 	fSETree_PFIso2   = -1.;
+    fSETree_D01      = -1.;
+    fSETree_D02      = -1.;
+    fSETree_Rho      = -1.;
+	fSETree_MTLep1   = -999.;
+	fSETree_MTLep2   = -999.;
+	fSETree_BetaStar1= -999.;
+	fSETree_BetaStar2= -999.;
+	fSETree_BetaStar3= -999.;
+	fSETree_BetaStar4= -999.;
+	fSETree_BetaStar5= -999.;
 	fSETree_MVAID1   = -999.;
 	fSETree_MVAID2   = -999.;
 	fSETree_medWP1   = -1.;
 	fSETree_medWP2   = -1.;
+	fSETree_NVrtx    = -1.;
 //	fSETree_Ml1l3	 = -1.;
 //	fSETree_Ml2l3	 = -1.;
 //	fSETree_Charge3rdLep = -99;
@@ -4454,33 +4595,35 @@ bool SSDLDumper::elmuSignalTrigger(){
 bool SSDLDumper::singleMuTrigger(){
 	// Pretend MC samples always fire trigger
 	if(fSample->datamc > 0) return true;
-	//	return ( HLT_MU17 > 0  );
-	return ( (HLT_MU8 > 0 || HLT_MU17 > 0 ) );
+	if (gTTWZ) return ( HLT_MU17 > 0  );
+	// marc return ( (HLT_MU8 > 0 || HLT_MU17 > 0 ) );
+	if (!gTTWZ) return ( (HLT_MU8 > 0 || HLT_MU17 > 0 ) );
 }
 float SSDLDumper::singleMuPrescale(){
 	// Pretend MC samples have prescale 1.
 	if(fSample->datamc > 0) return 1.;
 	// Get the prescale factor for whichever of these triggers fired
 	// Only correct if they are mutually exclusive!
-	if(HLT_MU8_PS > 0) return HLT_MU8_PS;
+	if(!gTTWZ && HLT_MU8_PS > 0) return HLT_MU8_PS;
 	if(HLT_MU17_PS > 0) return HLT_MU17_PS;
 	return 1;
 }
 bool SSDLDumper::singleElTrigger(){
   // Pretend MC samples always fire trigger
 	if(fSample->datamc > 0) return true;
-	//	return (HLT_ELE17_JET30_TIGHT > 0);
-	return ((HLT_ELE8_TIGHT > 0) || (HLT_ELE8_JET30_TIGHT > 0) || (HLT_ELE17_JET30_TIGHT > 0) || (HLT_ELE17_TIGHT > 0));
+	if (gTTWZ) return (HLT_ELE17_JET30_TIGHT > 0);
+	if (!gTTWZ) return ((HLT_ELE8_TIGHT > 0) || (HLT_ELE8_JET30_TIGHT > 0) || (HLT_ELE17_JET30_TIGHT > 0) || (HLT_ELE17_TIGHT > 0));
 }
 float SSDLDumper::singleElPrescale(){
 	// Pretend MC samples have prescale 1.
-        if(fSample->datamc > 0) return 1.;
+  if(fSample->datamc > 0) return 1.;
 	// Get the prescale factor for whichever of these triggers fired
 	// Only correct if they are mutually exclusive!
-	if( HLT_ELE8_TIGHT_PS > 0 )        return HLT_ELE8_TIGHT_PS;
-	if( HLT_ELE8_JET30_TIGHT_PS > 0 )  return HLT_ELE8_JET30_TIGHT_PS;
-	if( HLT_ELE17_TIGHT_PS > 0 )       return HLT_ELE17_TIGHT_PS;
-	if( HLT_ELE17_JET30_TIGHT_PS > 0 ) return HLT_ELE17_JET30_TIGHT_PS;
+	if( gTTWZ && HLT_ELE17_JET30_TIGHT_PS > 0 ) return HLT_ELE17_JET30_TIGHT_PS;
+	if( !gTTWZ && HLT_ELE8_TIGHT_PS > 0 )        return HLT_ELE8_TIGHT_PS;
+	if( !gTTWZ && HLT_ELE8_JET30_TIGHT_PS > 0 )  return HLT_ELE8_JET30_TIGHT_PS;
+	if( !gTTWZ && HLT_ELE17_TIGHT_PS > 0 )       return HLT_ELE17_TIGHT_PS;
+	if( !gTTWZ && HLT_ELE17_JET30_TIGHT_PS > 0 ) return HLT_ELE17_JET30_TIGHT_PS;
 	return 1.;
 }
 
@@ -4837,6 +4980,16 @@ std::vector< int > SSDLDumper::getNBTagsMedIndices(){
 		}
 	}
 	return tagIndices;
+}
+float SSDLDumper::getBetaStar(int njet){
+	// get BetaStar of nth jet
+	if (getNJets() < njet) return -1;
+	int njets(0);
+	for(size_t i = 0; i < NJets; ++i) {
+		if(isGoodJet(i)) njets++;
+		if(njets == njet) return JetBetaStar[i]; 
+	}
+	return -1;
 }
 float SSDLDumper::getHT(){
 	float ht(0.);
@@ -6686,6 +6839,17 @@ bool SSDLDumper::isGoodJet(int jet, float pt){
 	if(getJetPt(jet) < pt) return false;
 	
 	if(fabs(JetEta[jet]) > gMaxJetEta) return false; // btagging only up to 2.4
+	
+//	if (gDoPileUpID && JetBetaStar[jet] > gBetaStarMax) return false;
+	if (gDoPileUpID) {
+		if (fabs(JetEta[jet]) > 4.7) return false;
+		if (fabs(JetEta[jet]) < 2.5) {
+			if (JetBetaStar[jet] > 0.2*TMath::Log(NVrtx-0.67)) return false;
+		}
+		if (fabs(JetEta[jet]) < 2.7) {
+			if (JetBetaStar[jet] > 0.3*TMath::Log(NVrtx-0.67)) return false;
+		}
+	}
 	
 	// Remove jets close to hypothesis leptons
 	if(fHypLepton1.index > -1) if(Util::GetDeltaR(fHypLepton1.p.Eta(), JetEta[jet], fHypLepton1.p.Phi(), JetPhi[jet]) < minDR) return false;

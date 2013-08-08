@@ -155,6 +155,9 @@ private:
 	float fTJetGenpt [fMaxNjets];
 	float fTJetGeneta[fMaxNjets];
 	float fTJetGenphi[fMaxNjets];
+	float fTJetBetaStar[fMaxNjets];
+	float fTJetBeta[fMaxNjets];
+	float fTJetBetaSq[fMaxNjets];
 
 	float fTpfMET;
 	float fTpfMETphi;
