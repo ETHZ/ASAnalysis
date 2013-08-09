@@ -4,6 +4,8 @@
 
 #include "JetCorrectionUncertainty.h"
 
+#include "LHAPDF/LHAPDF.h"
+
 
 using namespace std;
 
@@ -12,6 +14,9 @@ const int SSDLAnalysis::fMaxNmus;
 const int SSDLAnalysis::fMaxNeles;
 const int SSDLAnalysis::nx;
 const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
+
+
+const bool gDoPDFs = false;
 
 
 TString SSDLAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/";
@@ -57,6 +62,13 @@ void SSDLAnalysis::Begin(const char* filename){
 		fTChiSlepSlepCountAll       = new TH2D("TChiSlepSlepCountAll"    , "TChiSlepSlepCountAll"    , 300 , 0 , 1500 , 300 , 0 , 1500);
 		fTChiSlepSnuCountAll        = new TH2D("TChiSlepSnuCountAll"     , "TChiSlepSnuCountAll"     , 300 , 0 , 1500 , 300 , 0 , 1500);
 		fModelCountAll              = new TH2D("ModelCountAll"           , "ModelCountAll"           , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_ISRweight    = new TH2D("ModelCountAll_ISRweight" , "ModelCountAll_ISRweight" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_ISRweightUp    = new TH2D("ModelCountAll_ISRweightUp" , "ModelCountAll_ISRweightUp" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_ISRweightDn    = new TH2D("ModelCountAll_ISRweightDn" , "ModelCountAll_ISRweightDn" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2                = new TH2D("ModelCountAll_nChi2"             , "ModelCountAll_nChi2"             , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2_ISRweight      = new TH2D("ModelCountAll_nChi2_ISRweight"   , "ModelCountAll_nChi2_ISRweight"   , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2_ISRweightUp    = new TH2D("ModelCountAll_nChi2_ISRweightUp" , "ModelCountAll_nChi2_ISRweightUp" , 300 , 0 , 1500 , 300 , 0 , 1500);
+		fModelCountAll_nChi2_ISRweightDn    = new TH2D("ModelCountAll_nChi2_ISRweightDn" , "ModelCountAll_nChi2_ISRweightDn" , 300 , 0 , 1500 , 300 , 0 , 1500);
 		for (int i = 0; i < nx; ++i) {
 			fRightHandedSlepCount[i] = new TH2D(Form("RightHandedSlepCount%.0f" , 100*x_values[i]) , Form("RightHandedSlepCount%.0f" , 100*x_values[i]) , 300 , 0 , 1500 , 300 , 0 , 1500);
 			fRightHandedCount[i]     = new TH2D(Form("RightHandedCount%.0f"     , 100*x_values[i]) , Form("RightHandedCount%.0f"     , 100*x_values[i]) , 300 , 0 , 1500 , 300 , 0 , 1500);
@@ -67,7 +79,6 @@ void SSDLAnalysis::Begin(const char* filename){
 	}
 	BookTree();
 	fHEvCount = new TH1F("EventCount", "Event Counter", 1, 0., 1.); // count number of generated events
-	if(!fIsData && fDoFillEffTree) BookEffTree();
 }
 
 //____________________________________________________________________________
@@ -82,6 +93,13 @@ void SSDLAnalysis::End(){
 		fTChiSlepSlepCountAll    -> Write();
 		fTChiSlepSnuCountAll     -> Write();
 		fModelCountAll           -> Write();
+		fModelCountAll_ISRweight -> Write();
+		fModelCountAll_ISRweightUp -> Write();
+		fModelCountAll_ISRweightDn -> Write();
+		fModelCountAll_nChi2           -> Write();
+		fModelCountAll_nChi2_ISRweight -> Write();
+		fModelCountAll_nChi2_ISRweightUp -> Write();
+		fModelCountAll_nChi2_ISRweightDn -> Write();
 		for (int i = 0; i < nx; ++i) {
 			fRightHandedSlepCount [i] -> Write();
 			fRightHandedCount     [i] -> Write();
@@ -93,7 +111,6 @@ void SSDLAnalysis::End(){
 	fOutputFile->cd();
 	fHEvCount->Write();
 	fAnalysisTree->Write();
-	if(fDoFillEffTree && !fIsData) fLepEffTree->Write();
 	fOutputFile->Close();
 	fCounter.print();
 }
@@ -206,6 +223,8 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("mGlu",          &fTmGlu,       "mGlu/F");
 	fAnalysisTree->Branch("mChi",          &fTmChi,       "mChi/F");
 	fAnalysisTree->Branch("mLSP",          &fTmLSP,       "mLSP/F");
+	fAnalysisTree->Branch("susyPt",        &fTsusyPt,     "susyPt/F");
+	fAnalysisTree->Branch("nChi",          &fTnChi,       "nChi/I");
 	fAnalysisTree->Branch("isTChiSlepSnu", &fTisTChiSlepSnu,       "isTChiSlepSnu/I");
 	fAnalysisTree->Branch("isRightHanded", &fTisRightHanded,       "isRightHanded/I");
 
@@ -216,6 +235,8 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("Rho",           &fTrho,       "Rho/F");
 	fAnalysisTree->Branch("NVrtx",         &fTnvrtx,     "NVrtx/I");
 	fAnalysisTree->Branch("PUWeight",      &fTpuweight,  "PUWeight/F");
+	fAnalysisTree->Branch("PUWeightUp",      &fTpuweightUp,  "PUWeightUp/F");
+	fAnalysisTree->Branch("PUWeightDn",      &fTpuweightDn,  "PUWeightDn/F");
 
 	// single-muon properties
 	fAnalysisTree->Branch("NMus"          ,&fTnqmus,          "NMus/I");
@@ -314,35 +335,23 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("JetGenPt",      &fTJetGenpt ,     "JetGenPt[NJets]/F");
 	fAnalysisTree->Branch("JetGenEta",     &fTJetGeneta,     "JetGenEta[NJets]/F");
 	fAnalysisTree->Branch("JetGenPhi",     &fTJetGenphi,     "JetGenPhi[NJets]/F");
-}
+	fAnalysisTree->Branch("JetBetaStar",   &fTJetBetaStar,   "JetBetaStar[NJets]/F");
+	fAnalysisTree->Branch("JetBeta",       &fTJetBeta,       "JetBeta[NJets]/F");
+	fAnalysisTree->Branch("JetBetaSq",     &fTJetBetaSq,     "JetBetaSq[NJets]/F");
 
-void SSDLAnalysis::BookEffTree(){
-	fOutputFile->cd();
-	fLepEffTree = new TTree("LeptonEfficiency", "LeptonEfficiencyTree");
+	fAnalysisTree->Branch("NPdfCTEQ", &fTNPdfCTEQ , "NPdfCTEQ/I");
+	fAnalysisTree->Branch("WPdfCTEQ", &fTWPdfCTEQ , "WPdfCTEQ[NPdfCTEQ]/F");
+	fAnalysisTree->Branch("NPdfCT10", &fTNPdfCT10 , "NPdfCT10/I");
+	fAnalysisTree->Branch("WPdfCT10", &fTWPdfCT10 , "WPdfCT10[NPdfCT10]/F");
+	fAnalysisTree->Branch("NPdfMRST", &fTNPdfMRST , "NPdfMRST/I");
+	fAnalysisTree->Branch("WPdfMRST", &fTWPdfMRST , "WPdfMRST[NPdfMRST]/F");
 
-    // run/sample properties
-	fLepEffTree->Branch("Run",              &fLETrun      ,       "Run/I");
-	fLepEffTree->Branch("Event",            &fLETevent    ,       "Event/I");
-	fLepEffTree->Branch("LumiSec",          &fLETlumi     ,       "LumiSec/I");
-	fLepEffTree->Branch("Rho",              &fLETrho      ,       "Rho/F");
-	fLepEffTree->Branch("NVrtx",            &fLETnvrtx    ,       "NVrtx/I");
-	fLepEffTree->Branch("PUWeight",         &fLETpuweight ,       "PUWeight/F");
-	fLepEffTree->Branch("Type",             &fLETtype     ,       "Type/I");
-	fLepEffTree->Branch("Pt",               &fLETpt       ,       "Pt/F");
-	fLepEffTree->Branch("Eta",              &fLETeta      ,       "Eta/F");
-	fLepEffTree->Branch("Phi",              &fLETphi      ,       "Phi/F");
-	fLepEffTree->Branch("Iso",              &fLETiso      ,       "Iso/F");
-	fLepEffTree->Branch("Pass1",            &fLETpassed1  ,       "Pass1/I");
-	fLepEffTree->Branch("Pass2",            &fLETpassed2  ,       "Pass2/I");
-	fLepEffTree->Branch("Pass3",            &fLETpassed3  ,       "Pass3/I");
-	fLepEffTree->Branch("Pass4",            &fLETpassed4  ,       "Pass4/I");
 }
 
 //____________________________________________________________________________
 void SSDLAnalysis::Analyze(){
 	fHEvCount->Fill(0.);
 	FillAnalysisTree();
-	if(fDoFillEffTree && !fIsData) FillEffTree();
 }
 void SSDLAnalysis::FillAnalysisTree(){
 	fCounter.fill(fCutnames[0]);
@@ -371,9 +380,21 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 		// now finally filling the histograms
 		// sbottom = 1000005 , stop = 1000006, neutralino = 1000022, chi1 = 1000024, gluino = 1000021
-		int var1 = fTR->MassGlu; //getSusyMass(1000005, 25);
-		int var2 = fTR->MassChi; //getSusyMass(1000022, 25);
-		                                   fModelCountAll           -> Fill(var1, var2);
+		int var1 = fTR->MassGlu; // getSusyMass(1000021, 25);
+		int var2 = fTR->MassChi; // getSusyMass(1000021, 25);
+		float isrpt = getSusySystemPt(1000021);
+		float isrweight   = getISRWeight(isrpt, 0);
+		float isrweightup = getISRWeight(isrpt, 1);
+		float isrweightdn = getISRWeight(isrpt, 2);
+		int nchi = getNParticle(1000024);
+		                                   fModelCountAll             -> Fill(var1, var2);
+		                                   fModelCountAll_ISRweight   -> Fill(var1, var2, isrweight);
+		                                   fModelCountAll_ISRweightUp -> Fill(var1, var2, isrweightup);
+		                                   fModelCountAll_ISRweightDn -> Fill(var1, var2, isrweightdn);
+		if (nchi ==2)                      fModelCountAll_nChi2             -> Fill(var1, var2);
+		if (nchi ==2)                      fModelCountAll_nChi2_ISRweight   -> Fill(var1, var2, isrweight);
+		if (nchi ==2)                      fModelCountAll_nChi2_ISRweightUp -> Fill(var1, var2, isrweightup);
+		if (nchi ==2)                      fModelCountAll_nChi2_ISRweightDn -> Fill(var1, var2, isrweightdn);
 		if (!TChiSlepSnu && isRightHanded) fRightHandedSlepCountAll -> Fill(var1, var2);
 		if (isRightHanded)                 fRightHandedCountAll     -> Fill(var1, var2);
 		TChiSlepSnu ?                      fTChiSlepSnuCountAll     -> Fill(var1, var2) : fTChiSlepSlepCountAll->Fill(var1, var2);
@@ -385,6 +406,15 @@ void SSDLAnalysis::FillAnalysisTree(){
 			if (!TChiSlepSnu  &&                  x == x_values[i]) fTChiSlepSlepCount[i]    -> Fill( var1, var2);
 			if (                                  x == x_values[i]) fModelCount[i]           -> Fill( var1, var2);
 		}
+
+		// // ======================================== VERIFICATION FOR EWINO
+		// if (isRightHanded && !TChiSlepSnu){
+		// 	cout << " =====================================" << endl;
+		// 	cout << "this event is righthanded and tchislepsnu!" << endl;
+		// 	for (int i = 0; i < fTR->NGenLeptons; i++) {
+		// 		cout << Form("I have an ID: %d here. \n \t\t the mother: %d", abs(fTR->GenLeptonID[i]), abs(fTR->GenLeptonMID[i])) << endl;
+		// 	}
+		// }
 
 	}
 	// initial event selection: good event trigger, good primary vertex...
@@ -411,7 +441,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	// Require at least one loose lepton
 	// if( (fTnqmus + fTnqels) < 1 ) return;
-	// ONLY FOR THE SUSY WORKSHOP!!!!! if( (nLooseMus + fTnqels) < 1 ) return;
+	if( (nLooseMus + fTnqels) < 1 ) return;
 	fCounter.fill(fCutnames[3]);
 
 	// Event and run info
@@ -424,12 +454,104 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTm12  = fTR->M12;
 		fTprocess = fTR->process;
 		// sbottom = 1000005 , stop = 1000006, neutralino = 1000022, chi1 = 1000024, gluino = 1000021
-		fTmGlu = fTR->MassGlu; //getSusyMass(1000005, 25);
-		fTmChi = fTR->MassChi; //getSusyMass(1000024, 25);
-		fTmLSP = fTR->MassLSP; //getSusyMass(1000022, 25);
+		fTmGlu = fTR->MassGlu; //getSusyMass(1000021, 25);
+		fTmChi = 0.2*fTR->MassGlu + 0.8*fTR->MassLSP; // getSusyMass(1000022, 25);
+		fTmLSP = fTR->MassChi; // getSusyMass(1000022, 25);
+		fTsusyPt = getSusySystemPt(1000021); // gives the pt of the system of the two particles with given id
+		fTnChi = getNParticle(1000024);
 		TChiSlepSnu   ? fTisTChiSlepSnu = 1 : fTisTChiSlepSnu = 0;
 		isRightHanded ? fTisRightHanded = 1 : fTisRightHanded = 0;
-	}
+
+
+		if (gDoPDFs) {
+
+			// ===========================================================================
+	
+			// pdfstuff /swshare/cms/slc5_amd64_gcc462/external/lhapdf/5.8.5-cms2/share/lhapdf/PDFsets/
+			// "MRST2006nnlo.LHgrid"
+			// "NNPDF10_100.LHgrid"
+			// "cteq66.LHgrid"
+			float x1 = fTR->PDFx1;
+			float x2 = fTR->PDFx2;
+			float Q  = fTR->PDFScalePDF;
+			int id1  = fTR->PDFID1;
+			int id2  = fTR->PDFID2;
+			double pdf_xpdf1, pdf_xpdf2;
+			double newxfx1, newxfx2;
+
+			// SAVE WEIGHTS FOR CTEQ
+			// ==========================
+			// std::cout << LHAPDF::numberPDF() << std::endl;
+			//LHAPDF::initPDFSet(1,"CT10.LHgrid");
+			LHAPDF::initPDFSet(1,"cteq61.LHgrid");
+			
+			LHAPDF::initPDF(1,0);
+			LHAPDF::usePDFMember(1,0);
+			fTNPdfCTEQ = (int)LHAPDF::numberPDF(1);
+			pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
+				
+			// std::vector<float> pdfweight;
+			// float pdfWsum=0;
+			for(int pdf=0; pdf < fTNPdfCTEQ; pdf++){
+				// LHAPDF::initPDF(pdf);
+				LHAPDF::usePDFMember(1, pdf);
+				newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
+				newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
+				fTWPdfCTEQ[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+				// pdfWsum += pdfweight.back();
+			}
+
+			
+			//LHAPDF::initPDFSet(2,"cteq61.LHgrid");
+			LHAPDF::initPDFSet(2, "CT10.LHgrid");
+			LHAPDF::initPDF(2, 0);
+			LHAPDF::usePDFMember(2, 0);
+			fTNPdfCT10 = (int)LHAPDF::numberPDF(2);
+			pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
+				
+			// std::vector<float> pdfweight;
+			// float pdfWsum=0;
+			for(int pdf=0; pdf < fTNPdfCT10; pdf++){
+				// LHAPDF::initPDF(pdf);
+				LHAPDF::usePDFMember(2, pdf);
+				newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
+				newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
+				fTWPdfCT10[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+				// pdfWsum += pdfweight.back();
+			}
+
+
+			
+			//LHAPDF::initPDFSet(3, "MRST2006nnlo.LHgrid");
+			LHAPDF::initPDFSet(3, "MSTW2008nnlo90cl.LHgrid");
+			LHAPDF::initPDF(3, 0);
+			LHAPDF::usePDFMember(3, 0);
+			fTNPdfMRST = (int)LHAPDF::numberPDF(3);
+			pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
+				
+			// std::vector<float> pdfweight;
+			// float pdfWsum=0;
+			for(int pdf=0; pdf < fTNPdfMRST; pdf++){
+				// LHAPDF::initPDF(pdf);
+				LHAPDF::usePDFMember(3, pdf);
+				newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
+				newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
+				fTWPdfMRST[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
+				// pdfWsum += pdfweight.back();
+			}
+
+			// ===========================================================================
+
+		} // end if gDoPDFs
+
+	}// end if fIsData
+
 	else {
 		fTm0      = -1;
 		fTm12     = -1;
@@ -437,6 +559,8 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTmGlu    = -1;
 		fTmChi    = -1;
 		fTmLSP    = -1;
+		fTsusyPt  = -1;
+		fTnChi    = -1;
 		fTisTChiSlepSnu  = -1;
 		fTisRightHanded  = -1;
 	}
@@ -458,6 +582,9 @@ void SSDLAnalysis::FillAnalysisTree(){
 		// fTJetJEC     [ind] = GetJECUncert(fTR->JPt[jetindex], fTR->JEta[jetindex])/fTR->JEcorr[jetindex];
 		fTJetPartonID[ind] = JetPartonMatch(jetindex);
 		fTJetPartonFlav[ind] = fTR->JPartonFlavour[jetindex];
+		fTJetBetaStar[ind] = fTR->JBetaStar[jetindex];
+		fTJetBeta[ind]     = fTR->JBeta[jetindex];
+		fTJetBetaSq[ind]   = fTR->JBetaSq[jetindex];
 		int genjetind = GenJetMatch(jetindex);
 		if(genjetind > -1){
 			fTJetGenpt [ind] = fTR->GenJetPt [genjetind];
@@ -487,8 +614,27 @@ void SSDLAnalysis::FillAnalysisTree(){
 	// PU correction
 	fTrho   = fTR->Rho;
 	fTnvrtx = fTR->NVrtx;
-	if(!fIsData) fTpuweight = GetPUWeight(fTR->PUnumInteractions);
-	else fTpuweight = 1.;
+	if(!fIsData) {
+		// this is the nominal!! fTpuweight   = GetPUWeight  (fTR->PUnumInteractions);
+		// fTpuweight   = GetPUWeight    (fTR->NVrtx * 1.38); // the factor of 1.38 is derived from 20000 ttW events
+		// fTpuweightUp = GetPUWeightUp  (fTR->NVrtx * 1.38);
+		// fTpuweightDn = GetPUWeightDown(fTR->NVrtx * 1.38);
+		// =============================================================
+		fTpuweight   = GetPUWeight    (fTR->PUnumInteractions); // the factor of 1.38 is derived from 20000 ttW events
+		fTpuweightUp = GetPUWeightUp  (fTR->PUnumInteractions);
+		fTpuweightDn = GetPUWeightDown(fTR->PUnumInteractions);
+	}
+	else {
+		fTpuweight   = 1.;
+		fTpuweightUp = 1.;
+		fTpuweightDn = 1.;
+	}
+
+	// cout << "---------------------------------------------------------------------------" << endl;
+	// cout << Form("Event: %12d    puweight  : %.3f", fTEventNumber, fTpuweight  ) << endl;
+	// cout << Form("               puweightUP: %.3f",                fTpuweightUp) << endl;
+	// cout << Form("               puweightDN: %.3f",                fTpuweightDn) << endl;
+	// cout << Form("            SUSY-PT      : %.3f",                fTsusyPt    ) << endl;
 
 	// Dump muon properties
 	for(int i = 0; i < fTnqmus; ++i){
@@ -619,56 +765,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	fAnalysisTree->Fill();
 }
-void SSDLAnalysis::FillEffTree(){
-	if(fIsData){
-		if(fVerbose > 0) cout << "Trying to fill MC lepton efficiencies on data, Stupid..." << endl;
-		return;
-	}
-	ResetEffTree();
-
-	fLETevent    = fTR->Run;
-	fLETrun      = fTR->Event;
-	fLETlumi     = fTR->LumiSection;
-	fLETrho      = fTR->Rho;
-	fLETnvrtx    = fTR->NVrtx;
-	fLETpuweight = GetPUWeight(fTR->PUnumInteractions);
-
-	// Muon loop
-	for(int i = 0; i < fTR->NMus; ++i){
-		if(IsSignalMuon(i) == false) continue; // match to signal mu
-		if(fTR->MuPt[i] < 5.) continue; // pt cut
-		fLETtype   = 0; // mu
-		fLETpt     = fTR->MuPt      [i];
-		fLETeta    = fTR->MuEta     [i];
-		fLETphi    = fTR->MuPhi     [i];
-		// fLETiso    = fTR->MuRelIso03[i];
-		fLETiso    = MuPFIso(i);
-		
-		fLETpassed1 = IsTightMuon(1,i)?1:0;
-		fLETpassed2 = IsTightMuon(2,i)?1:0;
-		fLETpassed3 = IsTightMuon(3,i)?1:0;
-		fLETpassed4 = IsTightMuon(4,i)?1:0;
-		fLepEffTree->Fill();
-	}
-
-	// Electron loop
-	for(int i = 0; i < fTR->NEles; ++i){
-		if(IsSignalElectron(i) == false) continue; // match to signal el
-		if(fTR->ElPt[i] < 5.) continue; // pt cut
-		fLETtype   = 1; // mu
-		fLETpt     = fTR->ElPt      [i];
-		fLETeta    = fTR->ElEta     [i];
-		fLETphi    = fTR->ElPhi     [i];
-		// fLETiso    = relElIso(i);
-		fLETiso    = ElPFIso(i);
-		
-		fLETpassed1 = IsTightEle(1,i)?1:0;
-		fLETpassed2 = IsTightEle(2,i)?1:0;
-		fLETpassed3 = IsTightEle(3,i)?1:0;
-		fLETpassed4 = IsTightEle(4,i)?1:0;
-		fLepEffTree->Fill();
-	}
-}
 
 //____________________________________________________________________________
 void SSDLAnalysis::ResetTree(){
@@ -683,8 +779,23 @@ void SSDLAnalysis::ResetTree(){
 	fTmGlu    = -999.99;
 	fTmChi    = -999.99;
 	fTmLSP    = -999.99;
+	fTsusyPt  = -999.99;
+	fTnChi    = -999;
 	fTisTChiSlepSnu   = -999.99;
 	fTisRightHanded   = -999.99;
+
+	fTNPdfCTEQ = 0;
+	for( int i=0; i<fNCTEQ; ++i){
+		fTWPdfCTEQ[i] = -1.;
+	}
+	fTNPdfCT10 = 0;
+	for( int i=0; i<fNCT10; ++i){
+		fTWPdfCT10[i] = -1.;
+	}
+	fTNPdfMRST = 0;
+	for( int i=0; i<fNMRST; ++i){
+		fTWPdfMRST[i] = -1.;
+	}
 
 	for(size_t i = 0; i < fHLTPathSets.size(); ++i){
 		fHLTResults[i]   -2;
@@ -694,6 +805,8 @@ void SSDLAnalysis::ResetTree(){
 	fTrho      = -999.99;
 	fTnvrtx    = -999;
 	fTpuweight = -999.99;
+	fTpuweightUp = -999.99;
+	fTpuweightDn = -999.99;
 	
 	// muon properties
 	fTnqmus = 0;
@@ -797,28 +910,14 @@ void SSDLAnalysis::ResetTree(){
 		fTJetGenpt [i]    = -999.99;
 		fTJetGeneta[i]    = -999.99;
 		fTJetGenphi[i]    = -999.99;
+		fTJetBetaStar[i]  = -999.99;
+		fTJetBeta[i]      = -999.99;
+		fTJetBetaSq[i]    = -999.99;
 	}
 	fTpfMET      = -999.99;
 	fTpfMETphi   = -999.99;
 	fTpfMETType1      = -999.99;
 	fTpfMETType1phi   = -999.99;
-}
-void SSDLAnalysis::ResetEffTree(){
-	fLETevent      = -999;
-	fLETrun        = -999;
-	fLETlumi       = -999;
-	fLETrho        = -999.99;
-	fLETnvrtx      = -999;
-	fLETpuweight   = -999.99;
-	fLETtype       = -999;
-	fLETpt         = -999.99;
-	fLETeta        = -999.99;
-	fLETphi        = -999.99;
-	fLETiso        = -999.99;
-	fLETpassed1    = -999;
-	fLETpassed2    = -999;
-	fLETpassed3    = -999;
-	fLETpassed4    = -999;
 }
 
 //____________________________________________________________________________
@@ -991,70 +1090,6 @@ bool SSDLAnalysis::IsSignalElectron(int index, int &elid, int &elmoid, int &elgm
 	elmoid = 0;
 	elgmoid= 0;
 	return false;	
-}
-bool SSDLAnalysis::IsTightMuon(int toggle, int index){
-	if(toggle == 1){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(MuPFIso(index) > 0.09) return false;
-		return true;
-	}
-	if(toggle == 2){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(corrMuIso(index) > 0.15) return false;
-		return true;
-	}
-	if(toggle == 3){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(MuPFIso(index) > 0.09) return false;
-		return true;
-	}
-	if(toggle == 4){
-		if(IsGoodBasicMu(index) == false) return false;
-		// MARC if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
-		if(corrMuIso(index) > 0.1) return false;
-		return true;
-	}
-	cout << "Choose your toggle!" << endl;
-	return false;
-}
-bool SSDLAnalysis::IsTightEle(int toggle, int index){
-	if(toggle == 1){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(ElPFIso(index) > 0.15) return false;
-		return true;		
-	}
-	if(toggle == 2){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(corrElIso(index) > 0.15) return false;
-		return true;
-	}
-	if(toggle == 3){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(ElPFIso(index) > 0.1) return false;
-		return true;		
-	}
-	if(toggle == 4){
-		if(IsLooseEl(index) == false) return false;
-		// MARC if(fTR->ElDR03EcalRecHitSumEt[index]/fTR->ElPt[index] > 0.2) return false;
-		if(fTR->ElCInfoIsGsfCtfScPixCons[index] != 1) return false;
-		if(IsGoodElId_MediumWP(index) == false) return false;
-		if(corrElIso(index) > 0.1) return false;
-		return true;
-	}
-	cout << "Choose your toggle!" << endl;
-	return false;
 }
 
 //____________________________________________________________________________

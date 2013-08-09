@@ -3,19 +3,9 @@
 
 using namespace std;
 
-// test mar 14 SSDLAnalyzer::SSDLAnalyzer(std::vector<std::string>& fileList) : TreeAnalyzerBase(fileList) {
-// test mar 14 	fSSDLAnalysis = new SSDLAnalysis(fTR);
-// test mar 14 	fDoFillEffTree = false;
-// test mar 14 }
 SSDLAnalyzer::SSDLAnalyzer(std::vector<std::string>& fileList, bool isdata, string globaltag) : TreeAnalyzerBase(fileList) {
 	fSSDLAnalysis = new SSDLAnalysis(fTR, isdata, globaltag);
-	fDoFillEffTree = false;
 }
-
-// MARC SSDLAnalyzer::SSDLAnalyzer(TTree *tree) : TreeAnalyzerBase(tree) {
-// MARC 	fSSDLAnalysis = new SSDLAnalysis(fTR);
-// MARC 	fDoFillEffTree = false;
-// MARC }
 
 SSDLAnalyzer::~SSDLAnalyzer(){
 	delete fSSDLAnalysis;
@@ -79,7 +69,6 @@ void SSDLAnalyzer::BeginJob(){
 	fSSDLAnalysis->SetOutputFile(fOutputFile);
 	fSSDLAnalysis->SetVerbose(fVerbose);
 	fSSDLAnalysis->SetData(fIsData);
-	fSSDLAnalysis->DoFillEffTree(fDoFillEffTree);
 	fSSDLAnalysis->Begin();
 }
 
@@ -89,7 +78,6 @@ void SSDLAnalyzer::BeginJob(std::string dataPuFile, std::string mcPuFile){
 	fSSDLAnalysis->SetOutputFile(fOutputFile);
 	fSSDLAnalysis->SetVerbose(fVerbose);
 	fSSDLAnalysis->SetData(fIsData);
-	fSSDLAnalysis->DoFillEffTree(fDoFillEffTree);
 	fSSDLAnalysis->Begin();
 }
 

@@ -37,7 +37,6 @@ public:
 	void Analyze();
 	void End();
 	
-	inline void DoFillEffTree(bool fill){fDoFillEffTree = fill;};
 	
 	void ReadTriggers(const char* = "HLTPaths_SSDL.dat");
 	void AddTriggerBranches();
@@ -45,17 +44,11 @@ public:
 	void FillAnalysisTree();
 	void BookTree();
 	void ResetTree();
-	
-	void FillEffTree();
-	void BookEffTree();
-	void ResetEffTree();
 
 	bool IsSignalMuon(int);
         bool IsSignalMuon(int, int&, int&, int&);
 	bool IsSignalElectron(int);
         bool IsSignalElectron(int, int&, int&, int&);
-	bool IsTightMuon(int, int);
-	bool IsTightEle(int, int);
 	
 	int JetPartonMatch(int);
 	int GenJetMatch(int);
@@ -73,7 +66,6 @@ public:
 private:
 	TH1F *fHEvCount;
 	
-	bool fDoFillEffTree;
 	
 	Monitor fCounter;
 	string fCutnames[4];
@@ -82,6 +74,9 @@ private:
 	static const int fMaxNmus  = 5;
 	static const int fMaxNeles = 5;
 	static const int fMaxNtaus = 5;
+	static const int fNCTEQ = 100;
+	static const int fNCT10 = 100;
+	static const int fNMRST = 100;
 	
 	static const int nx = 3;
 	static const float x_values[nx]; // = {0.05, 0.5, 0.95};
@@ -98,6 +93,13 @@ private:
 	TH2D* fTChiSlepSlepCountAll;
 	TH2D* fTChiSlepSnuCountAll;
 	TH2D* fModelCountAll;
+	TH2D* fModelCountAll_ISRweight;
+	TH2D* fModelCountAll_ISRweightUp;
+	TH2D* fModelCountAll_ISRweightDn;
+	TH2D* fModelCountAll_nChi2;
+	TH2D* fModelCountAll_nChi2_ISRweight;
+	TH2D* fModelCountAll_nChi2_ISRweightUp;
+	TH2D* fModelCountAll_nChi2_ISRweightDn;
 	TH2D* fRightHandedSlepCount[nx];
 	TH2D* fRightHandedCount[nx];
 	TH2D* fTChiSlepSlepCount[nx];
@@ -117,6 +119,8 @@ private:
 	float  fTmGlu;
 	float  fTmChi;
 	float  fTmLSP;
+	float  fTsusyPt;
+	int    fTnChi;
 	int    fTisTChiSlepSnu;
 	int    fTisRightHanded;
 
@@ -124,6 +128,8 @@ private:
 	float fTrho;
 	int   fTnvrtx;
 	float fTpuweight;
+	float fTpuweightUp;
+	float fTpuweightDn;
 	
 	// Triggers
 	vector<HLTPathSet> fHLTPathSets;
@@ -149,6 +155,9 @@ private:
 	float fTJetGenpt [fMaxNjets];
 	float fTJetGeneta[fMaxNjets];
 	float fTJetGenphi[fMaxNjets];
+	float fTJetBetaStar[fMaxNjets];
+	float fTJetBeta[fMaxNjets];
+	float fTJetBetaSq[fMaxNjets];
 
 	float fTpfMET;
 	float fTpfMETphi;
@@ -234,22 +243,13 @@ private:
 	float fTTauTightMuRej  [fMaxNtaus];
 	float fTTauLCombIsoDB  [fMaxNtaus];
 
-	TTree *fLepEffTree; // lepton efficiency tree, filled once per lepton
-	int   fLETrun;
-	int   fLETevent;
-	int   fLETlumi;
-	float fLETrho;
-	int   fLETnvrtx;
-	float fLETpuweight;
-	int   fLETtype; // mu(0), el(1)
-	float fLETpt;
-	float fLETeta;
-	float fLETphi;
-	float fLETiso;
-	int   fLETpassed1;
-	int   fLETpassed2;
-	int   fLETpassed3;
-	int   fLETpassed4;
-	
+	// PDF stuff
+	int   fTNPdfCTEQ;
+	float fTWPdfCTEQ[fNCTEQ];
+	int   fTNPdfCT10;
+	float fTWPdfCT10[fNCT10];
+	int   fTNPdfMRST;
+	float fTWPdfMRST[fNMRST];
+
 };
 #endif

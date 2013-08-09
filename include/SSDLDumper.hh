@@ -15,6 +15,13 @@
 #include "TRandom3.h"
 #include "TLorentzVector.h"
 
+// BDT THINGS ---------------
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+#include "TMVA/MethodCuts.h"
+// --------------------------
+
+
 using namespace std;
 
 class SSDLDumper : public AnaClass{
@@ -84,28 +91,39 @@ public:
 	enum gSample {
 		sample_begin,
 		// data samples
-		DoubleMu1 = sample_begin, DoubleMu1a , DoubleMu2 , DoubleMu3 , DoubleMu4 , DoubleMu5 ,
-		DoubleEle1              , DoubleEle1a, DoubleEle2, DoubleEle3, DoubleEle4, DoubleEle5,
-		MuEG1                   , MuEG1a     , MuEG2     , MuEG3     , MuEG4     , MuEG5     ,
+		DoubleMu1 = sample_begin, DoubleMu1a , DoubleMu2 ,              DoubleMu3 , DoubleMu4 ,              DoubleMu5 , DoubleMu6 ,
+		DoubleEle1              , DoubleEle1a, DoubleEle2, DoubleEle2a, DoubleEle3, DoubleEle4, DoubleEle4a, DoubleEle5, DoubleEle6, DoubleEle6a,
+//		DoubleEle1              , DoubleEle1a, DoubleEle2,              DoubleEle3, DoubleEle4,              DoubleEle5,
+		MuEG1                   , MuEG1a     , MuEG2     ,              MuEG3     , MuEG4     ,              MuEG5     , MuEG6     ,
+//		DoubleMu1 = sample_begin, DoubleMu1a , DoubleMu2 ,  DoubleMu3 , DoubleMu4 , DoubleMu5 , 
+//		DoubleEle1              , DoubleEle1a, DoubleEle2,  DoubleEle3, DoubleEle4, DoubleEle5, 
+//		MuEG1                   , MuEG1a     , MuEG2     ,  MuEG3     , MuEG4     , MuEG5     , 
 		// fake samples
-		TTJets, SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
+		TTJets,
+		SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
 		WJets,
 		DYJets,
 		// no longer needed GVJets,
-		// not here yet GJets200, GJets400, 
-		WGstarMu, WGstarTau, WW,
+		// not here yet GJets200, GJets400,
+		GJets200, GJets400,
+		WGstarMu, WGstarTau,
+		WW,
 		// start of the rares
 		WZ,ZZ,
-		HWW, HZZ, HTauTau, 
-		TTbarW, TTbarWNLO, TTbarZ, TTbarG, TbZ, DPSWW,
+		HWW,
+		HZZ, HTauTau,
+		TTbarW,
+		TTbarWNLO,
+		TTbarZ, TTbarG, TbZ, DPSWW,
 		WWZ, WZZ, 
-		WWG, ZZZ, WWW,
+		WWG, ZZZ,
+		WWW,
 		TTbarWW,
 		WpWp, WmWm,
 		// QCD samples
 		QCDMuEnr15,
 		QCD50, QCD80, QCD120, QCD170, QCD300, QCD470, QCD600, QCD800,
-		QCDEM30, QCDEM80, //QCDEM170, 
+		QCDEM30, QCDEM80, //QCDEM170,
 		QCDEM250, QCDEM350,
 		QCDbEnr50, QCDbEnr150,
 		gNSAMPLES
@@ -147,6 +165,15 @@ public:
 	struct ValueAndError {
 		float val;
 		float err;
+	};
+	struct ValueAndIndex {
+		float val;
+		int ind;
+	};
+	struct by_val { 
+		bool operator()(ValueAndIndex const &a, ValueAndIndex const &b) { 
+			return a.val > b.val;
+		}
 	};
 	struct lepton{
 		lepton(){};
@@ -428,6 +455,9 @@ public:
 	std::map<TString , int>::const_iterator gsystIt;
 	bool gApplyZVeto;
         bool gDoWZValidation;
+	float tmp_gMinJetPt     ;
+	float tmp_gMuMaxIso;
+	float tmp_gElMaxIso;
 
 	class Sample{
 	public:
@@ -532,7 +562,8 @@ public:
 			    (sname) == "ZZZ"       ||
 			    (sname) == "WWW"       ||
 			    (sname) == "W+W+"      ||
-			    (sname) == "W-W-")     return 4;
+			    (sname) == "W-W-"      ||
+			    (sname) == "TTbarWW")     return 4;
 			if( (sname.Contains("GVJets"))    || 
 			    (sname.Contains("WGstarMu"))  || 
 			    (sname.Contains("WGstarTau")) ||
@@ -576,10 +607,11 @@ public:
 			   sname == "EMEnr20"    ||
 			   sname == "EMEnr30")                          return 17;
 			if(sname == "TbZ")                              return 18;
-			if(sname == "TTJets_matchingdown")				return 19;
-			if(sname == "TTJets_matchingup")				return 20;
-			if(sname == "TTJets_scaledown")					return 21;
-			if(sname == "TTJets_scaleup")					return 22;
+			if(sname == "TTbarWW")                          return 19;
+			if(sname == "TTJets_matchingdown")				return 20;
+			if(sname == "TTJets_matchingup")				return 21;
+			if(sname == "TTJets_scaledown")					return 22;
+			if(sname == "TTJets_scaleup")					return 23;
 			else {
 				cout << "SSDLDumper::Sample::getProc() ==> ERROR: "<< sname << " has no defined process!" << endl;
 				return -1;
@@ -740,12 +772,15 @@ public:
 	virtual float getMET();
 	virtual float getMETPhi();
 	virtual int getNJets(float = 0.);
+	virtual float getNthJetPt(int = 0);
 	virtual int getNBTags();
 	virtual int getNBTagsMed();
+	virtual float getBetaStar(int);
 	virtual std::vector< int > getNBTagsMedIndices();
 	virtual float getHT();
 	virtual float getWeightedHT();
 	virtual float getMT(int, gChannel);
+	virtual float getDPhiMLs(int, int, gChannel);
 	virtual float getMT2(int, int, gChannel);
 	virtual float getMll(int, int, gChannel);
 	virtual int   getClosestJet(int, gChannel, float = 20.);
@@ -866,6 +901,8 @@ public:
         float getTriggerSFMuMu(float);
         float getTriggerSFElEl(float);
         float getTriggerSFMuEl();
+        float getLeptonSystematic(float, float, gChannel);
+        float getISRSystematic(float, int);
 	float diMuonHLTSF2012();
 	float muEleHLTSF2012();
 	float diEleHLTSF2012();
@@ -914,6 +951,7 @@ public:
 	
 	// old void setRegionCuts(gRegion reg = Baseline);
 	void setRegionCuts(int reg);
+	void printRegionCuts(int reg);
 	void setLowPtCuts();
 	
 	const int     getNFPtBins(gChannel); // fake ratios
@@ -968,11 +1006,19 @@ public:
 	float       fSETree_MET;
 	int         fSETree_NM; // number of tight muons
 	int         fSETree_NE; // number of tight electrons
+	int         fSETree_NMus; // number of muons
+	int         fSETree_NEls; // number of electrons
 	int         fSETree_NJ;
+	float       fSETree_Jet0Pt;
+	float       fSETree_Jet1Pt;
 	int         fSETree_NbJ;
 	int         fSETree_NbJmed;
 	float       fSETree_M3;
 	float       fSETree_MT2;
+	float       fSETree_MT1;
+	float       fSETree_dPhiML1;
+	float       fSETree_dPhiMLs;
+	float       fSETree_BDTVal;
 	float       fSETree_Mll;
 	float       fSETree_pT1;
 	float       fSETree_pT2;
@@ -980,6 +1026,16 @@ public:
 	float       fSETree_eta2;
 	float		fSETree_PFIso1;
 	float		fSETree_PFIso2;
+    float       fSETree_D01;
+    float       fSETree_D02;
+    float       fSETree_Rho;
+	float		fSETree_MTLep1;
+	float		fSETree_MTLep2;
+	float       fSETree_BetaStar1;
+	float       fSETree_BetaStar2;
+	float       fSETree_BetaStar3;
+	float       fSETree_BetaStar4;
+	float       fSETree_BetaStar5;
 	float		fSETree_MVAID1;
 	float		fSETree_MVAID2;
 	float		fSETree_medWP1;
@@ -1009,6 +1065,29 @@ public:
         GoodRunList *fGoodRunList;
 	TRandom3 *fRand3;
 	TRandom3 *fRand3Normal;
+
+	// FOR THE BDT
+	// ---------------------------------------
+	TMVA::Reader *fReader;
+	float fHT_bdt     ;
+	float fpT1_bdt    ;
+	float fpT2_bdt    ;
+	float fNJ_bdt     ;
+	float fMll_bdt    ;
+	float fMT1_bdt    ;
+	float fMET_bdt    ;
+	float fJet0Pt_bdt ;
+	float feta1_bdt   ;
+	float fNbJ_bdt    ;
+	float fNbJmed_bdt ;
+	float fMT2_bdt    ;
+	float fdPhiMLs_bdt;
+	float fNMus_bdt   ;
+	float fPFIso1_bdt ;
+	float fPFIso2_bdt ;
+	float fCharge_bdt ;
+	// ---------------------------------------
+
 
         Int_t fCurRun;
         Int_t fCurLumi;
