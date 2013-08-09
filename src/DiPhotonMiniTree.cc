@@ -1049,69 +1049,89 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	  pfcandidates_struct pfcands;
 	  bool skip_EBEE = false;
 
-	  if (InputTree[m1]->GetEntry(n1)<=0) continue;
-	  for (int k=0; k<input_allphotonpfcand_count; k++){
-	    pfcands.PfCandPt.push_back(input_allphotonpfcand_pt[k]);
-	    pfcands.PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]);
-	    pfcands.PfCandPhi.push_back(DeltaPhiSigned(input_allphotonpfcand_phi[k],input_pholead_SCphi)+fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]);
-	    pfcands.PfCandVx.push_back(input_allphotonpfcand_vx[k]);
-	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
-	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
-	  }
-	  std::vector<std::pair<float,float> > obj0;
-	  for (int k=0; k<input_vetoobjects_count; k++) obj0.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
-	  if (FindCloseJetsAndPhotons(obj0,fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
-	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
-	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
+	  pfcandidates_struct *pfcands1=&pfcands;
+	  pfcandidates_struct *pfcands2=&pfcands;
 
-	  if (skip_EBEE) {
-	    cout << "EB/EE migration, skipping1 " << m1 << " " << m2 << " " << l << endl; 
-	    cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
-	    cout << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << input_pholead_SCeta << endl;
-	    continue;
+	  pfcandidates_struct pfcands_1;
+	  pfcandidates_struct pfcands_2;
+	  if (mode==kBkgBkg) {
+	    pfcands1=&pfcands_1;
+	    pfcands2=&pfcands_2;
 	  }
 
+	  if (n1>=0){
+	    if (InputTree[m1]->GetEntry(n1)<=0) continue;
+	    for (int k=0; k<input_allphotonpfcand_count; k++){
+	      pfcands1->PfCandPt.push_back(input_allphotonpfcand_pt[k]);
+	      pfcands1->PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]);
+	      pfcands1->PfCandPhi.push_back(DeltaPhiSigned(input_allphotonpfcand_phi[k],input_pholead_SCphi)+fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]);
+	      pfcands1->PfCandVx.push_back(input_allphotonpfcand_vx[k]);
+	      pfcands1->PfCandVy.push_back(input_allphotonpfcand_vy[k]);
+	      pfcands1->PfCandVz.push_back(input_allphotonpfcand_vz[k]);
+	    }
+	    std::vector<std::pair<float,float> > obj0;
+	    for (int k=0; k<input_vetoobjects_count; k++) obj0.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
+	    if (FindCloseJetsAndPhotons(obj0,fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
+	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
+	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
+	    
+	    if (skip_EBEE) {
+	      cout << "EB/EE migration, skipping1 " << m1 << " " << m2 << " " << l << endl; 
+	      cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
+	      cout << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << input_pholead_SCeta << endl;
+	      continue;
+	    }
+	  }
+	  
 	  skip_EBEE = false;
 
-	  if (InputTree[m2]->GetEntry(n2)<=0) continue;
-	  for (int k=0; k<input_allphotonpfcand_count; k++){
-	    pfcands.PfCandPt.push_back(input_allphotonpfcand_pt[k]);
-	    pfcands.PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]);
-	    pfcands.PfCandPhi.push_back(DeltaPhiSigned(input_allphotonpfcand_phi[k],input_pholead_SCphi)+fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]);
-	    pfcands.PfCandVx.push_back(input_allphotonpfcand_vx[k]);
-	    pfcands.PfCandVy.push_back(input_allphotonpfcand_vy[k]);
-	    pfcands.PfCandVz.push_back(input_allphotonpfcand_vz[k]);
+	  if (n2>=0){
+	    if (InputTree[m2]->GetEntry(n2)<=0) continue;
+	    for (int k=0; k<input_allphotonpfcand_count; k++){
+	      pfcands2->PfCandPt.push_back(input_allphotonpfcand_pt[k]);
+	      pfcands2->PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]);
+	      pfcands2->PfCandPhi.push_back(DeltaPhiSigned(input_allphotonpfcand_phi[k],input_pholead_SCphi)+fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]);
+	      pfcands2->PfCandVx.push_back(input_allphotonpfcand_vx[k]);
+	      pfcands2->PfCandVy.push_back(input_allphotonpfcand_vy[k]);
+	      pfcands2->PfCandVz.push_back(input_allphotonpfcand_vz[k]);
+	    }
+	    std::vector<std::pair<float,float> > obj1;
+	    for (int k=0; k<input_vetoobjects_count; k++) obj1.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
+	    if (FindCloseJetsAndPhotons(obj1,fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
+	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
+	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
+	    
+	    if (skip_EBEE) {
+	      cout << "EB/EE migration, skipping2 " << m1 << " " << m2 << " " << l << endl; 
+	      cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
+	      cout << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << input_pholead_SCeta << endl;
+	      continue;
+	    }
 	  }
-	  std::vector<std::pair<float,float> > obj1;
-	  for (int k=0; k<input_vetoobjects_count; k++) obj1.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
-	  if (FindCloseJetsAndPhotons(obj1,fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
-	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
-	  if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 
-	  if (skip_EBEE) {
-	    cout << "EB/EE migration, skipping2 " << m1 << " " << m2 << " " << l << endl; 
-	    cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
-	    cout << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << input_pholead_SCeta << endl;
-	    continue;
+	  if (mode!=kBkgBkg){	
+	    std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
+	    //	  cout << isos.first << " " << isos.second << endl;
+	    if (mode==kSigSig){
+	      phoiso_template_sigsig_1[l] = isos.first;
+	      phoiso_template_sigsig_2[l] = isos.second;
+	    }
+	    else if (mode==kSigBkg){
+	      phoiso_template_sigbkg_1[l] = isos.first;
+	      phoiso_template_sigbkg_2[l] = isos.second;
+	    }
+	    else if (mode==kBkgSig){
+	      phoiso_template_bkgsig_1[l] = isos.first;
+	      phoiso_template_bkgsig_2[l] = isos.second;
+	    }
+	    else if (mode==kBkgBkg){
+	      phoiso_template_bkgbkg_1[l] = isos.first;
+	      phoiso_template_bkgbkg_2[l] = isos.second;
+	    }
 	  }
-
-	  std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
-	  //	  cout << isos.first << " " << isos.second << endl;
-	  if (mode==kSigSig){
-	    phoiso_template_sigsig_1[l] = isos.first;
-	    phoiso_template_sigsig_2[l] = isos.second;
-	  }
-	  else if (mode==kSigBkg){
-	    phoiso_template_sigbkg_1[l] = isos.first;
-	    phoiso_template_sigbkg_2[l] = isos.second;
-	  }
-	  else if (mode==kBkgSig){
-	    phoiso_template_bkgsig_1[l] = isos.first;
-	    phoiso_template_bkgsig_2[l] = isos.second;
-	  }
-	  else if (mode==kBkgBkg){
-	    phoiso_template_bkgbkg_1[l] = isos.first;
-	    phoiso_template_bkgbkg_2[l] = isos.second;
+	  else {
+	    phoiso_template_bkgbkg_1[l] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands1).first;
+	    phoiso_template_bkgbkg_2[l] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands2).second;
 	  }
 	}
 
