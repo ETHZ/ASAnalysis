@@ -1,4 +1,4 @@
-// @(#)root/tmva $Id: TMVAClassification.C,v 1.5 2012/11/20 10:43:31 pandolf Exp $
+// @(#)root/tmva $Id: TMVAClassification.C,v 1.6 2013/02/22 10:01:10 pandolf Exp $
 /**********************************************************************************
  * Project   : TMVA - a Root-integrated toolkit for multivariate data analysis    *
  * Package   : TMVA                                                               *
@@ -173,6 +173,7 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
    //factory->AddVariable( "MET"      , "ME_{T}", "GeV", 'F');
    //factory->AddVariable( "TMath::Max(pT1,pT2)"      , "Lead Lepton p_{T}", "GeV", 'F');
    factory->AddVariable( "HT"       , "H_{T}", "GeV", 'F');
+//   factory->AddVariable( "TMath::Min(MTLep1, MTLep2)"       , "M_{T}", "GeV", 'F');
    //factory->AddVariable( "M3"       , "M_{3}", "GeV", 'F');
    factory->AddVariable( "TMath::Min(pT1,pT2)"      , "Sublead Lepton p_{T}", "GeV", 'F');
    //factory->AddVariable( "NbJ"      , "N B Jets", "", 'I');
@@ -221,12 +222,32 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       
       TTree* opt_tree = (TTree*)input->Get("tree_opt");
 
-      TFile* signalFile = TFile::Open("/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Nov26_muPFIso0p05_elPFIso0p05_jet20_withZveto/TTbarW_Yields.root");      
+//		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
+		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt30-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
+//		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt30-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar/";
+//		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt20-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
+
+//      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
+//      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
+//      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul27-OSYields-JetPt20-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
+//      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/TTbarW_Yields.root");      
+      TFile* signalFile = TFile::Open(tree_dir+"TTbarW_Yields.root");      
+//      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jun12-woSyst/TTbarW_Yields.root");      
       TTree *signal     = (TTree*)signalFile->Get("SigEvents");
 
       TChain* background = new TChain("SigEvents");
-      background->Add("/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Nov26_muPFIso0p05_elPFIso0p05_jet20_withZveto/TTJets_Yields.root");
-      background->Add("/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Nov26_muPFIso0p05_elPFIso0p05_jet20_withZveto/WZTo3LNu_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTJets_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/WZTo3LNu_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/TTJets_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/WZTo3LNu_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul27-OSYields-JetPt20-Iso9-10-newTTbarXsec/TTJets_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul27-OSYields-JetPt20-Iso9-10-newTTbarXsec/WZTo3LNu_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/TTJets_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/WZTo3LNu_Yields.root");
+      background->Add(tree_dir+"TTJets_Yields.root");
+      background->Add(tree_dir+"WZTo3LNu_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jun12-woSyst/TTJets_Yields.root");
+//      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jun12-woSyst/WZTo3LNu_Yields.root");
 
       //TTree *background = (TTree*)opt_tree->CopyTree("SName==\"TTJets\" || SName==\"DYJets\" || SName==\"WZTo3LNu\"");
       //TTree *background = (TTree*)opt_tree->CopyTree("SName==\"DYJets\"");
@@ -292,8 +313,8 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
    TCut mycutb;
 
    if( charge == "plus" ) {
-     mycuts = "Charge==1 && SystFlag==0 && NJ>=3 && pT1>20. && pT2>20. && NbJmed>0 && TLCat==0 && Flavor<3 && PassZVeto==1"; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
-     mycutb = "Charge==1 && SystFlag==0 && NJ>=3 && pT1>20. && pT2>20. && NbJmed>0 && TLCat==0 && Flavor<3 && PassZVeto==1"; // for example: TCut mycutb = "abs(var1)<0.5";
+     mycuts = "Charge==1  && SystFlag==0 && NJ>=3 && pT1>20. && pT2>20. && NbJmed>0 && TLCat==0 && Flavor<3 && PassZVeto==1"; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
+     mycutb = "Charge==1  && SystFlag==0 && NJ>=3 && pT1>20. && pT2>20. && NbJmed>0 && TLCat==0 && Flavor<3 && PassZVeto==1"; // for example: TCut mycutb = "abs(var1)<0.5";
    } else if( charge == "minus" ) {
      mycuts = "Charge==-1 && SystFlag==0 && NJ>=3 && pT1>20. && pT2>20. && NbJmed>0 && TLCat==0 && Flavor<3 && PassZVeto==1"; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
      mycutb = "Charge==-1 && SystFlag==0 && NJ>=3 && pT1>20. && pT2>20. && NbJmed>0 && TLCat==0 && Flavor<3 && PassZVeto==1"; // for example: TCut mycutb = "abs(var1)<0.5";
@@ -335,10 +356,11 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       std::string bookConditions;
       bookConditions = "H:!V:FitMethod=MC";
       bookConditions += ":VarProp[0]=FMax"; //HT
+//      bookConditions += ":VarProp[0]=FMax"; //MT
       bookConditions += ":VarProp[1]=FMax"; //pt2
 
       bookConditions += ":EffSel:SampleSize=500000000";
-      //bookConditions += ":EffSel:SampleSize=50000";
+//      bookConditions += ":EffSel:SampleSize=50000";
 
       factory->BookMethod( TMVA::Types::kCuts, "Cuts", bookConditions.c_str() );
       //factory->BookMethod( TMVA::Types::kCuts, "Cuts", 

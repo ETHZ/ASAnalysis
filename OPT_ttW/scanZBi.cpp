@@ -21,14 +21,32 @@ std::pair<TH1F*,TH1F*> getHistoPassingCuts( TTree* tree, std::vector<std::string
 
 int main( int argc, char* argv[] ) {
 
+  if( argc <= 2 ) {
+    std::cout << "USAGE: ./scanZBi [selectionType] [charge (\"plus\" or \"minus\" or \"all\")]" << std::endl;
+    exit(999);
+  }
+
+
+
   std::string selectionType = "Nov23";
   if( argc>1 ) {
     std::string selectionType_str(argv[1]);
     selectionType = selectionType_str;
   }
 
+  std::string charge = "all";
+  if( argc>2 ) {
+    std::string charge_str(argv[2]);
+    charge = charge_str;
+  }
 
-  float lumi = 30000.;
+  if(charge!="plus" && charge!="minus" && charge!="all" ) {
+    std::cout << "only \"plus\" and \"minus\" and \"all\"  are allowed values for charge." << std::endl;
+    exit(777);
+  }
+
+
+  float lumi = 20000.;
 
 
   // this sets the style:
@@ -39,16 +57,17 @@ int main( int argc, char* argv[] ) {
   TPaveText* label_sqrt = db->get_labelSqrt();
     
 
-  std::string dir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Nov22_muDetIso0p05_elDetIso0p05_jet20_withZveto_optimization/";
+  //std::string dir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Dec20_muPFIso0p05_elPFIso0p05_jet20_withZveto";
+  std::string dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Feb22/";
   std::string config = dir + "/dumperconfig.cfg";
 
   SSDLPlotter* plotter = new SSDLPlotter(config);
   //std::string outputdir = "/shome/pandolf/CMSSW_4_2_8/src/DiLeptonAnalysis/NTupleProducer/macros/" + selectionType;
-  std::string outputdir = "/shome/pandolf/CMSSW_5_3_6_optTTW/src/DiLeptonAnalysis/NTupleProducer/macros/OPT_ttW";
+  std::string outputdir = "/shome/pandolf/CMSSW_5_3_7_patch5_OPTttW_2/src/DiLeptonAnalysis/NTupleProducer/macros/OPT_ttW";
   plotter->setVerbose(1);
   plotter->fDO_OPT = false;
   plotter->setOutputDir(outputdir);
-  plotter->init("/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/DataCard_SSDL.dat");
+  plotter->init("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/DataCard_SSDL.dat");
   plotter->readHistos(plotter->fOutputFileName);
   plotter->fillRatios(plotter->fMuData,    plotter->fEGData, 0);
   plotter->fillRatios(plotter->fMCBGMuEnr, plotter->fMCBG, 1);
@@ -57,11 +76,11 @@ int main( int argc, char* argv[] ) {
 
 
 
-  std::string optcutsdir = "optcuts_" + selectionType;
+  std::string optcutsdir = "optcuts_" + selectionType + "_" + charge;
   std::string ZBiFileName = optcutsdir + "/ZBiScan.txt";
 
   ofstream ofs_ZBi(ZBiFileName.c_str());
-  ofs_ZBi << "Expected for 30 fb-1:" << std::endl;
+  ofs_ZBi << "Expected for 20 fb-1:" << std::endl;
   ofs_ZBi << "Seff   \tS     \tB +- s(B)\tZBi" << std::endl;
 
   TGraphErrors* gr_ZBi = new TGraphErrors(0);
@@ -69,7 +88,6 @@ int main( int argc, char* argv[] ) {
   float effS_ZBi_max = 0.;
   float effMax = 0.;
 
-  float nTotal_s = 195845.; //hardwired!!! HORRIBLE!!
 
   for( unsigned iEff=1; iEff<=10; ++iEff ) {
 
@@ -124,21 +142,25 @@ int main( int argc, char* argv[] ) {
     }
 
 
-    SSDLPrediction ssdlpred =  plotter->makePredictionSignalEvents(min_ht, 10000., min_met, 10000., min_NJets, min_NBJets, min_NBJets_med, min_ptLept1, min_ptLept2, true);
+    int charge_int = 0;
+    if( charge=="plus")  charge_int = 1;
+    if( charge=="minus") charge_int = -1;
+
+    TTWZPrediction ttwzpred =  plotter->makePredictionSignalEvents(min_ht, 10000., min_met, 10000., min_NJets, min_NBJets, min_NBJets_med, min_ptLept1, min_ptLept2, charge_int, true);
 
     float lumi_SF = lumi/plotter->fLumiNorm;
 
-    float b_pred_mm = ssdlpred.bg_mm*lumi_SF;
-    float b_pred_em = ssdlpred.bg_em*lumi_SF;
-    float b_pred_ee = ssdlpred.bg_ee*lumi_SF;
+    float b_pred_mm = (ttwzpred.rare_mm+ttwzpred.fake_mm+                 ttwzpred.wz_mm+ttwzpred.ttz_mm)*lumi_SF;
+    float b_pred_em = (ttwzpred.rare_em+ttwzpred.fake_em+ttwzpred.cmid_em+ttwzpred.wz_em+ttwzpred.ttz_em)*lumi_SF;
+    float b_pred_ee = (ttwzpred.rare_ee+ttwzpred.fake_ee+ttwzpred.cmid_ee+ttwzpred.wz_ee+ttwzpred.ttz_ee)*lumi_SF;
 
-    float b_pred_mm_err = ssdlpred.bg_mm_err*lumi_SF;
-    float b_pred_em_err = ssdlpred.bg_em_err*lumi_SF;
-    float b_pred_ee_err = ssdlpred.bg_ee_err*lumi_SF;
+    float b_pred_mm_err = (ttwzpred.rare_err_mm+ttwzpred.fake_err_mm                     +ttwzpred.wz_err_mm)*lumi_SF;
+    float b_pred_em_err = (ttwzpred.rare_err_em+ttwzpred.fake_err_em+ttwzpred.cmid_err_em+ttwzpred.wz_err_em)*lumi_SF;
+    float b_pred_ee_err = (ttwzpred.rare_err_ee+ttwzpred.fake_err_ee+ttwzpred.cmid_err_ee+ttwzpred.wz_err_ee)*lumi_SF;
 
-    float s_mm = ssdlpred.s_mm*lumi_SF;
-    float s_em = ssdlpred.s_em*lumi_SF;
-    float s_ee = ssdlpred.s_ee*lumi_SF;
+    float s_mm = ttwzpred.ttw_mm*lumi_SF;
+    float s_em = ttwzpred.ttw_em*lumi_SF;
+    float s_ee = ttwzpred.ttw_ee*lumi_SF;
 
     float b_pred = b_pred_mm + b_pred_em + b_pred_ee;
     float b_pred_err = sqrt( b_pred_mm_err*b_pred_mm_err + b_pred_em_err*b_pred_em_err + b_pred_ee_err*b_pred_ee_err );
@@ -273,7 +295,7 @@ std::cout << "### " << iEff << "   ZBi: " << ZBi << std::endl;
 
   TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1.1*effMax*100., 10, 0., 1.6*ZBi_max ); 
   //TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1., 10, 0., 5.);
-  h2_axes_gr->SetYTitle("Expected ZBi (30 fb^{-1})");
+  h2_axes_gr->SetYTitle("Expected ZBi (20 fb^{-1})");
   h2_axes_gr->SetXTitle("Signal Efficiency [%]");
 
 
@@ -304,8 +326,8 @@ std::pair<TH1F*,TH1F*> getHistoPassingCuts( TTree* tree, std::vector<std::string
     base_selection += additionalCut_str;
   }
 
-  std::string signal_selection = base_selection + "  ( SName==\"TTbarW\" || SName==\"TTbarZ\" ) )";
-  std::string bg_selection     = base_selection + " !( SName==\"TTbarW\" || SName==\"TTbarZ\" ) )";
+  std::string signal_selection = base_selection + " ( SName==\"TTbarW\" ) )";
+  std::string bg_selection     = base_selection + " ( SName!=\"TTbarW\" ) )";
 
   TH1F* h1_signal = new TH1F("signal", "", 3, -0.5, 2.5);
   h1_signal->Sumw2();
