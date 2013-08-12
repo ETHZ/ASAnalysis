@@ -6,7 +6,7 @@
 
 #include "TRandom3.h"
 #include "TLorentzVector.h"
-#include "../../MyRooFitCrap/interface/RooDoubleCB.hh"
+#include "../RooDoubleCB/interface/RooDoubleCB.hh"
 
 
 using namespace std;
