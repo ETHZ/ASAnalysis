@@ -6,7 +6,7 @@
 
 #include "TRandom3.h"
 #include "TLorentzVector.h"
-
+#include "helper/RooDoubleCB.hh"
 
 using namespace std;
 
@@ -22,7 +22,11 @@ public:
 	TString fInputFile;
 	TString fOutputFileName;
 
+	bool fIsMu;
+	int  fnBins;
+
 	// functions
+	virtual void checkFlavor();
 	virtual void doFitting();
 
 	virtual void fillHistos();
@@ -32,35 +36,31 @@ public:
 	virtual void deleteHistos();
 	virtual int  readHistos(TString filename);
 
-	TH1D* fMass2LPass;
-	TH1D* fMass2LFail;
+	TH1F* fMass2LPass;
+	TH1F* fMass2LFail;
 
 
-	virtual void simFitPassFail(TH1D* passHisto , TH1D* failHisto);
+	virtual void simFitPassFail(TH1F* passHisto , TH1F* failHisto, int flag, int bin);
 
 
-	// muon stuff
-	float fMuIso;	
-	float fMuD0;
-	virtual bool passesAllMu(float iso, float d0, float dz, int passid);
-	virtual bool passesIDMu(int passid);
-	virtual bool passesIPMu(float d0, float dz);
-	virtual bool passesIsoMu(float iso);
+	float fIsoCut;	
+	float fD0Cut;
 
-	virtual int getPtEtaIndexMu(float pt, float eta);
+	virtual bool passesAll(float iso, float d0, float dz, int passid);
+	virtual bool passesID(int passid);
+	virtual bool passesIP(float d0, float dz);
+	virtual bool passesIso(float iso);
 
-	// histograms to be filled
-	// 6 bins in pt and 2 bins in eta. the last one is inclusive in pt and eta
-	const static int fnBinsMu = 13;
-	TH1D* fMuPassIDoverAll   [fnBinsMu];
-	TH1D* fMuPassIPoverID    [fnBinsMu];
-	TH1D* fMuPassISOoverIDIP [fnBinsMu];
 
-	TH1D* fMuFailIDoverAll   [fnBinsMu];
-	TH1D* fMuFailIPoverID    [fnBinsMu];
-	TH1D* fMuFailISOoverIDIP [fnBinsMu];
+	TH1F** fPassIDoverAll  ;
+	TH1F** fPassIPoverID   ;
+	TH1F** fPassISOoverIDIP;
 
-	struct muEff{
+	TH1F** fFailIDoverAll  ;
+	TH1F** fFailIPoverID   ;
+	TH1F** fFailISOoverIDIP;
+
+	struct eff{
 		int bin;
 		float idEff;
 		float idEffErr;
@@ -70,10 +70,21 @@ public:
 		float isoEffErr;
 	};
 
-	muEff muEffs[fnBinsMu];
+	eff* effs;
 
-	// electron stuff
+	// flavor specific things
+	// muons
+	virtual void printMuTable();
+	TString getPtEtaFromIndexMu(int);
+	virtual int getPtEtaIndexMu(float pt, float eta);
 
+	// electrons
+	virtual void printElTable();
+	TString getPtEtaFromIndexEl(int);
+	virtual int getPtEtaIndexEl(float pt, float eta);
+	virtual bool checkElEta(float);
+
+	virtual void setHistoStyle(TH1F*);
 	
 private:
 	

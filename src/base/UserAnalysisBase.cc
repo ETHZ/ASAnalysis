@@ -515,13 +515,13 @@ bool UserAnalysisBase::ElPassesPOGLooseWP(int index){
 
 bool UserAnalysisBase::ElPassesPOGMediumWP(int index){
   // Electrons with WP80 ID and conv. rej. cuts
-  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+  if( fabs(fTR->ElSCEta[index]) < 1.479 ){ // Barrel
     if(fTR->ElSigmaIetaIeta            [index]       > 0.01 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.06 ) return false;
     if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.004) return false;
     if(fTR->ElHcalOverEcal             [index]       > 0.10 ) return false;
   }
-  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+  if( fabs(fTR->ElSCEta[index]) > 1.479 ){ // Endcap
     if(fTR->ElSigmaIetaIeta            [index]       > 0.03 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.03 ) return false;
     if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
