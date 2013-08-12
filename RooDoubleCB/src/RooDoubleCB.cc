@@ -1,5 +1,5 @@
 //#include "RooDoubleCB.hh"
-#include "samesignCode/RooDoubleCB/interface/RooDoubleCB.hh"
+#include "ASAnalysis/RooDoubleCB/interface/RooDoubleCB.hh"
 
 using namespace RooFit;
 using namespace std; 
