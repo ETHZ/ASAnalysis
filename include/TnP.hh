@@ -7,9 +7,10 @@
 #include "TRandom3.h"
 #include "TLorentzVector.h"
 #include "../RooDoubleCB/interface/RooDoubleCB.hh"
-
+#include "helper/LumiReweightingStandAlone.h"
 
 using namespace std;
+
 
 class TnP : public AnaClass{
 
@@ -88,6 +89,9 @@ public:
 	virtual bool checkElEta(float);
 
 	virtual void setHistoStyle(TH1F*);
+
+	// PU weight
+	reweight::LumiReWeighting   *fPUWeight;
 	
 private:
 	

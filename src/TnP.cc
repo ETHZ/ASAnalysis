@@ -28,7 +28,6 @@
 #include "RooExponential.h"
 #include "RooChebychev.h"
 #include "RooPolynomial.h"
-// #include "../../MyRooFitCrap/interface/RooDoubleCB.hh"
 #include "RooAddPdf.h"
 #include "RooBreitWigner.h"
 #include "RooLandau.h"
@@ -63,6 +62,8 @@ TnP::TnP(TString inputfile, bool createHistos){
 	fOutputFileName = "tnp_output.root";
 
 	checkFlavor();
+	if (!fIsData) 
+		fPUWeight = new reweight::LumiReWeighting( "/shome/mdunser/puhistos/may21/DataPUTrue_may21_upDown.root", "/shome/mdunser/puhistos/MC2012PU.root", "pileup", "pileup");
 
 	if(fIsMu){
 		fIsoCut = 0.10;
@@ -474,6 +475,7 @@ void TnP::fillHistos(){
 	float probePt, probeEta, probePhi, probeIsoRel, probeD0, probeDz;
 	float probePassID;
 	float mll, deltaR, nvtx, pfmet;// , rho, ht, nTrueInt;
+	int ntrue;
 	// tag variables
 	tree->SetBranchAddress("tagPt"       , &tagPt       );
 	tree->SetBranchAddress("tagEta"      , &tagEta      );
@@ -495,38 +497,42 @@ void TnP::fillHistos(){
 	tree->SetBranchAddress("deltaR"      , &deltaR      );
 	tree->SetBranchAddress("nvtx"        , &nvtx        );
 	tree->SetBranchAddress("pfmet"       , &pfmet       );
+	tree->SetBranchAddress("nTrueInt"    , &ntrue       );
 
 	long nentries = tree->GetEntries();
 	cout << "looping over " << nentries << " events" << endl;
 
 	int index = -1;	
+	
+	float puWeight(1.);
 
 	for( int i = 0; i < nentries; i++ ){
 		tree->GetEntry(i);
+		if(!fIsData) puWeight = fPUWeight->weight(ntrue); // PU weight only for MC
 		if(!passesAll(tagIsoRel, tagD0, tagDz, tagPassID)) continue; // make sure the tag passes everything
 		index = fIsMu ? getPtEtaIndexMu(probePt, probeEta) : getPtEtaIndexEl(probePt, probeEta);
 		if(!fIsMu and !checkElEta(probeEta)) continue;
 		if(probePassID == 0){                               // probe fails ID
-			fFailIDoverAll[index]   ->Fill(mll);            // fill the histo
-			fFailIDoverAll[fnBins-1]->Fill(mll);            // fill the inclusive histo
+			fFailIDoverAll[index]   ->Fill(mll, puWeight);            // fill the histo
+			fFailIDoverAll[fnBins-1]->Fill(mll, puWeight);            // fill the inclusive histo
 		}
 		else {                                              // probe passes ID
-			fPassIDoverAll[index]   ->Fill(mll);            // fill the histo
-			fPassIDoverAll[fnBins-1]->Fill(mll);            // fill the inclusive histo
+			fPassIDoverAll[index]   ->Fill(mll, puWeight);            // fill the histo
+			fPassIDoverAll[fnBins-1]->Fill(mll, puWeight);            // fill the inclusive histo
 			if(!passesIP(probeD0, probeDz)){                // probe fails IP but passes ID
-				fFailIPoverID[index]   ->Fill(mll);         // fill the histo
-				fFailIPoverID[fnBins-1]->Fill(mll);         // fill the inclusive histo
+				fFailIPoverID[index]   ->Fill(mll, puWeight);         // fill the histo
+				fFailIPoverID[fnBins-1]->Fill(mll, puWeight);         // fill the inclusive histo
 			}
 			else {                                          // probe passes ID+IP
-				fPassIPoverID[index]   ->Fill(mll);         // fill the histo
-				fPassIPoverID[fnBins-1]->Fill(mll);         // fill the inclusive histo
+				fPassIPoverID[index]   ->Fill(mll, puWeight);         // fill the histo
+				fPassIPoverID[fnBins-1]->Fill(mll, puWeight);         // fill the inclusive histo
 				if(!passesIso(probeIsoRel)){                // probe fails ISO but passes ID+IP
-					fFailISOoverIDIP[index]   ->Fill(mll);  // fill the histo
-					fFailISOoverIDIP[fnBins-1]->Fill(mll);  // fill the inclusive histo
+					fFailISOoverIDIP[index]   ->Fill(mll, puWeight);  // fill the histo
+					fFailISOoverIDIP[fnBins-1]->Fill(mll, puWeight);  // fill the inclusive histo
 				}
 				else{                                       // probe passes ID+IP+ISO
-					fPassISOoverIDIP[index]   ->Fill(mll);  // fill the histo
-					fPassISOoverIDIP[fnBins-1]->Fill(mll);  // fill the inclusive histo
+					fPassISOoverIDIP[index]   ->Fill(mll, puWeight);  // fill the histo
+					fPassISOoverIDIP[fnBins-1]->Fill(mll, puWeight);  // fill the inclusive histo
 				}
 			}
 		}
@@ -701,15 +707,15 @@ void TnP::printMuTable(){
 
 
   };
-  hEta1ID->SetMaximum(1.05); hEta1ID->SetMinimum(0.20); hEta1ID->Write(hEta1ID->GetName(),TObject::kOverwrite);
-  hEta1IP->SetMaximum(1.05); hEta1IP->SetMinimum(0.20); hEta1IP->Write(hEta1IP->GetName(),TObject::kOverwrite);
-  hEta1ISO->SetMaximum(1.05); hEta1ISO->SetMinimum(0.20); hEta1ISO->Write(hEta1ISO->GetName(),TObject::kOverwrite);
-  hEta1ALL->SetMaximum(1.05); hEta1ALL->SetMinimum(0.20); hEta1ALL->Write(hEta1ALL->GetName(),TObject::kOverwrite);
+  hEta1ID  -> SetMaximum(1.05) ; hEta1ID  -> SetMinimum(0.20) ; hEta1ID  -> Write(hEta1ID  -> GetName(),TObject::kOverwrite)   ;
+  hEta1IP  -> SetMaximum(1.05) ; hEta1IP  -> SetMinimum(0.20) ; hEta1IP  -> Write(hEta1IP  -> GetName(),TObject::kOverwrite)   ;
+  hEta1ISO -> SetMaximum(1.05) ; hEta1ISO -> SetMinimum(0.20) ; hEta1ISO -> Write(hEta1ISO -> GetName(),TObject::kOverwrite) ;
+  hEta1ALL -> SetMaximum(1.05) ; hEta1ALL -> SetMinimum(0.20) ; hEta1ALL -> Write(hEta1ALL -> GetName(),TObject::kOverwrite) ;
 
-  hEta2ID->SetMaximum(1.05); hEta2ID->SetMinimum(0.20); hEta2ID->Write(hEta2ID->GetName(),TObject::kOverwrite);
-  hEta2IP->SetMaximum(1.05); hEta2IP->SetMinimum(0.20); hEta2IP->Write(hEta2IP->GetName(),TObject::kOverwrite);
-  hEta2ISO->SetMaximum(1.05); hEta2ISO->SetMinimum(0.20); hEta2ISO->Write(hEta2ISO->GetName(),TObject::kOverwrite);
-  hEta2ALL->SetMaximum(1.05); hEta2ALL->SetMinimum(0.20); hEta2ALL->Write(hEta2ALL->GetName(),TObject::kOverwrite);
+  hEta2ID  -> SetMaximum(1.05) ; hEta2ID  -> SetMinimum(0.20) ; hEta2ID  -> Write(hEta2ID  -> GetName(),TObject::kOverwrite)   ;
+  hEta2IP  -> SetMaximum(1.05) ; hEta2IP  -> SetMinimum(0.20) ; hEta2IP  -> Write(hEta2IP  -> GetName(),TObject::kOverwrite)   ;
+  hEta2ISO -> SetMaximum(1.05) ; hEta2ISO -> SetMinimum(0.20) ; hEta2ISO -> Write(hEta2ISO -> GetName(),TObject::kOverwrite) ;
+  hEta2ALL -> SetMaximum(1.05) ; hEta2ALL -> SetMinimum(0.20) ; hEta2ALL -> Write(hEta2ALL -> GetName(),TObject::kOverwrite) ;
 
   oFile->Close();
 
@@ -966,4 +972,9 @@ void TnP::setHistoStyle(TH1F* histo){
 	gStyle->SetStatW(0.2);
 	gStyle->SetStatH(0.2);
 }
+
+// ------------------------------------------
+// --  PU WEIGHT STUFF  ---------------------
+// ------------------------------------------
+
 
