@@ -6,7 +6,8 @@
 
 #include "TRandom3.h"
 #include "TLorentzVector.h"
-#include "helper/RooDoubleCB.hh"
+#include "../../MyRooFitCrap/interface/RooDoubleCB.hh"
+
 
 using namespace std;
 
@@ -23,9 +24,11 @@ public:
 	TString fOutputFileName;
 
 	bool fIsMu;
+	bool fIsData;
 	int  fnBins;
 
 	// functions
+        int Wait();
 	virtual void checkFlavor();
 	virtual void doFitting();
 

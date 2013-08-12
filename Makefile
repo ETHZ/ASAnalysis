@@ -34,7 +34,7 @@ CMSSW_BASE_VERSION = $(filter CMSSW%, $(subst _patch, , $(CMSSW_VERSION) ))
 NGLIBS         = $(ROOTGLIBS) -L$(ROOFIT_LIBDIR)/ -lMinuit -lMinuit2 -lTreePlayer -lRooFitCore -lRooFit -lTMVA
 GLIBS          = $(filter-out -lNew, $(NGLIBS)) 
 GLIBS         += -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH) -L/swshare/cms/slc5_amd64_gcc462/cms/cmssw/$(CMSSW_BASE_VERSION)/lib/$(SCRAM_ARCH) -lFWCoreFWLite -lFWCoreUtilities -lDataFormatsCommon -lDataFormatsFWLite -lCondFormatsJetMETObjects
-LOCALLIBS += -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH) -lsamesignCodeRooDoubleCB
+LOCALLIBS += -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH) -lASAnalysisRooDoubleCB
 
 
 
