@@ -1042,7 +1042,10 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
   int m1 = (mode==kSigSig || mode==kSigBkg) ? 0 : 1;
   int m2 = (mode==kSigSig || mode==kBkgSig) ? 0 : 1;
   
-	for (int l=0; l<nclosest; l++){
+  int found = 0;
+
+	for (int l=0; l<nclosest_inputmatching; l++){
+	  if (found==nclosest) break;
 	  int n1 = n1_arr[l];
 	  int n2 = n2_arr[l];
 	  if (m1==m2 && n1==n2) {cout << "Same event for axis 1 and 2, skipping" << endl; continue;}
@@ -1113,27 +1116,31 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
 	    //	  cout << isos.first << " " << isos.second << endl;
 	    if (mode==kSigSig){
-	      phoiso_template_sigsig_1[l] = isos.first;
-	      phoiso_template_sigsig_2[l] = isos.second;
+	      phoiso_template_sigsig_1[found] = isos.first;
+	      phoiso_template_sigsig_2[found] = isos.second;
 	    }
 	    else if (mode==kSigBkg){
-	      phoiso_template_sigbkg_1[l] = isos.first;
-	      phoiso_template_sigbkg_2[l] = isos.second;
+	      phoiso_template_sigbkg_1[found] = isos.first;
+	      phoiso_template_sigbkg_2[found] = isos.second;
 	    }
 	    else if (mode==kBkgSig){
-	      phoiso_template_bkgsig_1[l] = isos.first;
-	      phoiso_template_bkgsig_2[l] = isos.second;
+	      phoiso_template_bkgsig_1[found] = isos.first;
+	      phoiso_template_bkgsig_2[found] = isos.second;
 	    }
 	    else if (mode==kBkgBkg){
-	      phoiso_template_bkgbkg_1[l] = isos.first;
-	      phoiso_template_bkgbkg_2[l] = isos.second;
+	      phoiso_template_bkgbkg_1[found] = isos.first;
+	      phoiso_template_bkgbkg_2[found] = isos.second;
 	    }
 	  }
 	  else {
-	    phoiso_template_bkgbkg_1[l] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands1).first;
-	    phoiso_template_bkgbkg_2[l] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands2).second;
+	    phoiso_template_bkgbkg_1[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands1).first;
+	    phoiso_template_bkgbkg_2[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands2).second;
 	  }
+
+	  found++;
 	}
+
+	if (found<nclosest) std::cout << "Found only " << found << " matches in mode " << mode << std::endl;
 
 };
 

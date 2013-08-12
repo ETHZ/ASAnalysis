@@ -44,6 +44,7 @@ const int global_size_pfcandarrays = 30;
 const float global_dR_cut_acceptance = 0.45;
 
 const int nclosest = 10;
+const int nclosest_inputmatching = 20;
 
 typedef struct {
   float photon;
@@ -478,14 +479,14 @@ private:
   Int_t matchingtree_event_run;
   Int_t matchingtree_event_lumi;
   Int_t matchingtree_event_number;
-  Int_t matchingtree_index_sigsig_1[nclosest];
-  Int_t matchingtree_index_sigsig_2[nclosest];
-  Int_t matchingtree_index_sigbkg_1[nclosest];
-  Int_t matchingtree_index_sigbkg_2[nclosest];
-  Int_t matchingtree_index_bkgsig_1[nclosest];
-  Int_t matchingtree_index_bkgsig_2[nclosest];
-  Int_t matchingtree_index_bkgbkg_1[nclosest];
-  Int_t matchingtree_index_bkgbkg_2[nclosest];
+  Int_t matchingtree_index_sigsig_1[nclosest_inputmatching];
+  Int_t matchingtree_index_sigsig_2[nclosest_inputmatching];
+  Int_t matchingtree_index_sigbkg_1[nclosest_inputmatching];
+  Int_t matchingtree_index_sigbkg_2[nclosest_inputmatching];
+  Int_t matchingtree_index_bkgsig_1[nclosest_inputmatching];
+  Int_t matchingtree_index_bkgsig_2[nclosest_inputmatching];
+  Int_t matchingtree_index_bkgbkg_1[nclosest_inputmatching];
+  Int_t matchingtree_index_bkgbkg_2[nclosest_inputmatching];
 
 
 
