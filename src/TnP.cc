@@ -25,13 +25,15 @@
 #include "RooDataSet.h"
 #include "RooDataHist.h"
 #include "RooGaussian.h"
-//#include "RooDoubleCB.h"
+#include "RooExponential.h"
+#include "RooChebychev.h"
+#include "RooPolynomial.h"
+#include "../../MyRooFitCrap/interface/RooDoubleCB.hh"
+#include "RooAddPdf.h"
 #include "RooBreitWigner.h"
 #include "RooLandau.h"
 #include "RooFFTConvPdf.h"
 #include "RooPlot.h"
-
-#include "Linkdef.h"
 
 
 #include <iostream>
@@ -43,6 +45,15 @@
 
 using namespace std;
 using namespace RooFit;
+
+int TnP::Wait() {
+  cout << " Continue [<RET>|q]?  "; 
+  char x;
+  x = getchar();
+  if ((x == 'q') || (x == 'Q')) return 1;
+  return 0; 
+}
+
 
 //____________________________________________________________________________
 TnP::TnP(TString inputfile, bool createHistos){
@@ -133,6 +144,17 @@ void TnP::checkFlavor(){
 	TString flav = fIsMu ? "muons" : "electrons";
 	cout << "We're dealing with "+flav+" here!!" << endl;
 
+
+	//checking also if it is data
+	int run;
+	tree->SetBranchAddress("Run", &run);
+	tree->GetEntry(1);
+	if(run==1){
+	  fIsData = false;
+	}else{
+	  fIsData = true;
+	}
+
 	pFile->Close();
 	delete pFile, tree;
 
@@ -151,86 +173,216 @@ void TnP::doFitting(){
 	}
 
 	for(int i=0; i<fnBins; ++i){
-		if(i>0) continue;
-		simFitPassFail(fPassIDoverAll  [i], fFailIDoverAll  [i], 0, i); // ID
-		simFitPassFail(fPassIPoverID   [i], fFailIPoverID   [i], 1, i); // IP
-		simFitPassFail(fPassISOoverIDIP[i], fFailISOoverIDIP[i], 2, i); // ISO
+	  //if(i>0) continue;
+	  //if(i!=11) continue;
+	  simFitPassFail(fPassIDoverAll  [i], fFailIDoverAll  [i], 0, i); // ID
+	  simFitPassFail(fPassIPoverID   [i], fFailIPoverID   [i], 1, i); // IP
+	  simFitPassFail(fPassISOoverIDIP[i], fFailISOoverIDIP[i], 2, i); // ISO
 	}
 
-	// if (fIsMu) printMuTable();
-	// else       printElTable();
+	if (fIsMu) printMuTable();
+	else       printElTable();
 
 }
 void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
 
-	if(passHisto == NULL) cout << "histogram doesn't exist!!!!!" << endl;
+  if(passHisto == NULL) cout << "histogram doesn't exist!!!!!" << endl;
 
-	// passing probes
-	RooRealVar px("px", "px", 0, 120) ;
-	RooRealVar pmean ("pmean" , "pass mean of gaussian" , 90, 85 , 95);
-	RooRealVar psigma("psigma", "pass width of gaussian",  1, 0. ,  5);
-
-	RooRealVar a("a","a",3.,2.,10.);
-    RooRealVar aDx("aDx","aDx",3.,2.,10.);
-    RooRealVar n("n","n",5.,0.,10.);   
-    RooRealVar nDx("nDx","nDx",5.,0.,10.);   
-
-    RooDoubleCB func1("cb","cb PDF", px, pmean, psigma, a, n, aDx, nDx) ;
-	// RooGaussian fgauss("pgauss", "pgaussian PDF", px, pmean, psigma) ;
-
-	RooDataHist passData("passData", "passData", px, Import(*passHisto) );
-	RooPlot* passFrame = px.frame(Title("pass TH1 with Poisson error bars"));
-	passData.plotOn(passFrame);
-	RooGaussian pgauss("pgauss", "pgaussian PDF", px, pmean, psigma) ;
-
-	func1.fitTo (passData );
-	func1.plotOn(passFrame);
+  // passing probes
+  //RooRealVar px("px", "px", 70, 120) ;
+  //RooRealVar px("px", "px", 40, 65) ;
+  RooRealVar px("px", "px", 50, 120) ;
+  if(!fIsMu) px.setRange(60.,120.);
+    
 
 
-//	// failing probes
-//	RooRealVar fx("fx", "fx", 0, 120) ;
-//	RooRealVar fmean ("fmean" , "fail mean of gaussian" , 90, 85 , 95);
-//	RooRealVar fsigma("fsigma", "fail width of gaussian",  1, 0. ,  5);
-//
-//	RooDataHist failData("failData", "failData", px, Import(*failHisto) );
-//	RooPlot* failFrame = fx.frame(Title("fail TH1 with Poisson error bars"));
-//	failData.plotOn(failFrame);
-//	RooGaussian fgauss("fgauss", "fgaussian PDF", fx, fmean, fsigma) ;
-//
-//	fgauss.fitTo (failData );
-//	fgauss.plotOn(failFrame);
+  //Defining Double CB
+  RooRealVar pmean ("pmean" , "pass mean of gaussian" , 90, 85 , 95);
+  RooRealVar psigma("psigma", "pass width of gaussian",  2, 0. ,  5);
+  
+  //RooRealVar a("a","a",1.,0.5,2.5);
+  RooRealVar a("a","a",2.,1.0,10);
+  RooRealVar n("n","n",2.,0.5,10.);   
+  RooRealVar aDx("aDx","aDx",1.,0.3,10.);
+  RooRealVar nDx("nDx","nDx",5.,0.,10.);   
+
+  RooDoubleCB func1("cb","cb PDF", px, pmean, psigma, a, n, aDx, nDx) ;
 
 
-	// drawing things
- 	TLatex *lat = new TLatex();
- 	lat->SetNDC(kTRUE);
- 	lat->SetTextColor(kBlack);
- 	lat->SetTextSize(0.05);
-
- 	TString indText;
- 	if     (flag==0) indText = "ID over all";
- 	else if(flag==1) indText = "IP over ID";
- 	else if(flag==2) indText = "ISO over ID+IP";
- 
- 	TCanvas* c = new TCanvas("foo", "bar", 800, 675);
- 	c->Divide(1,2);
- 	c->cd(1);
-	passFrame->Draw();
- 	lat->DrawLatex(0.10,0.92, indText+" passing");
- 	lat->DrawLatex(0.40,0.92, fIsMu ? getPtEtaFromIndexMu(bin) : getPtEtaFromIndexEl(bin));
-
-// 	c->cd(2);
-//	failFrame->Draw();
-// 	lat->DrawLatex(0.10,0.92, indText+" failing");
-// 	lat->DrawLatex(0.40,0.92, fIsMu ? getPtEtaFromIndexMu(bin) : getPtEtaFromIndexEl(bin));
+  //Defining polynomial
+  //RooRealVar a0("a0", "", 0., -1., 1.);
+  //RooRealVar a1("a1", "", 0., -1., 1.);
+  //RooRealVar a2("a2", "",  0., -1., 1.);
+  //RooChebychev pol("pol","pol",px,RooArgList(a1,a2));
+  RooRealVar a1("a1", "", 60.,-100,100);
+  RooRealVar a2("a2", "", -1., -10., 0.);
+  RooPolynomial pol("pol","pol",px,RooArgList(a1,a2));
 
 
- 	// save as root and pdf
- 	c->Print(Form("passAndFail_bin%d.pdf" ,bin));
- 	c->Print(Form("passAndFail_bin%d.root",bin));
+  //Defining exponential function
+  RooRealVar lambda("lambda", "slope", -0.1, -5., 0.);
+  RooExponential func3("expo", "exponential PDF", px, lambda);
 
-	delete passFrame, c, lat;
-	//delete failFrame;
+
+  //Defining gauss function  
+  //RooRealVar gmean("gmean","gmean",60.,50.,80.);
+  RooRealVar gmean("gmean","gmean",60.,50.,180.);
+  RooRealVar gsigma("gsigma","gsigma",10.,5.,50.);   
+
+  RooGaussian pgauss("pgauss", "pgaussian PDF", px, gmean, gsigma) ;
+
+  //Defining sum of signal+bkg pdf functions
+  double initialSigValue = passHisto->Integral();
+  RooRealVar s("s", "signal yield", initialSigValue, initialSigValue/10.,initialSigValue*10.);
+  RooRealVar b("b", "background yield", initialSigValue/10.,initialSigValue/10000.,initialSigValue/2.);
+  
+  RooAddPdf sum("sum", "DoubleCB plus Bkg",
+		RooArgList(func1, func3), RooArgList(s, b));
+
+
+  RooDataHist passData("passData", "passData", px, Import(*passHisto) );
+  RooDataHist failData("failData", "failData", px, Import(*failHisto) );
+  RooPlot* passFrame = px.frame(Title("pass TH1 with Poisson error bars"));
+  RooPlot* failFrame = px.frame(Title("fail TH1 with Poisson error bars"));
+  passData.plotOn(passFrame);
+  failData.plotOn(failFrame);
+
+
+  //func3.fitTo (passData );
+  //func3.plotOn(passFrame);
+
+  sum.fitTo (passData );
+  sum.plotOn(passFrame);
+  sum.plotOn(passFrame,RooFit::Components(func3),RooFit::LineStyle(kDashed));
+  sum.plotOn(passFrame,RooFit::Components(func1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed));
+
+
+  float npass    = s.getVal();
+  float npassErr = s.getError();
+  
+
+
+  // drawing things
+  TLatex *lat = new TLatex();
+  lat->SetNDC(kTRUE);
+  lat->SetTextColor(kBlack);
+  lat->SetTextSize(0.05);
+
+  TString indText;
+  if     (flag==0) indText = "ID over all";
+  else if(flag==1) indText = "IP over ID";
+  else if(flag==2) indText = "ISO over ID+IP";
+  
+  //TCanvas* c = new TCanvas("foo", "bar", 800, 675);
+  //c->Divide(1,2);
+  //c->cd(1);
+  TCanvas* c = new TCanvas("foo", "bar", 800, 800);
+  c->Divide(1,2);
+  c->cd(1);
+  
+  //------------ Fitting failing-probe dilepton pairs
+  bool fixSignalParameters=true;
+  if(fixSignalParameters){
+    a.setRange(a.getVal(),a.getVal());
+    n.setRange(n.getVal(),n.getVal());
+    aDx.setRange(aDx.getVal(),aDx.getVal());
+    nDx.setRange(nDx.getVal(),nDx.getVal());
+    pmean.setRange(pmean.getVal(),pmean.getVal());
+    psigma.setRange(psigma.getVal(),psigma.getVal());
+  }
+
+  //px.setRange(50.,80.);
+  initialSigValue = failHisto->Integral();
+  RooRealVar b1("b1", "background1 yield", initialSigValue*0.25,initialSigValue/10000.,initialSigValue*1.);
+  RooRealVar b2("b2", "background2 yield", initialSigValue*0.7,initialSigValue/10000.,initialSigValue*1.);
+  s.setVal(initialSigValue/2.);  
+  s.setRange(initialSigValue/100.,initialSigValue*1.);
+  //b1.setRange(initialSigValue/10000.,initialSigValue/2.);
+  //b2.setRange(initialSigValue/10000.,initialSigValue/2.);
+
+  //RooAddPdf failPdf("sum", "DoubleCB plus Poly plus Exp",
+  //		    RooArgList(pol, func3), RooArgList(b1, b2));
+
+
+  if(fIsMu && (bin==5 || bin==11)) {
+    //gmean.setVal(120.); gmean.setRange(100.,150.);
+    //gsigma.setVal(30.); gsigma.setRange(20.,50.);
+    b1.setVal(initialSigValue*0.5);
+  }
+
+  RooAddPdf failPdf("sum", "DoubleCB plus Bkg1 plus Bkg2",
+  		    RooArgList(func1, pgauss, func3), RooArgList(s, b1, b2));
+
+
+  passFrame->Draw();
+  lat->DrawLatex(0.10,0.92, indText+" passing");
+  lat->DrawLatex(0.40,0.92, fIsMu ? getPtEtaFromIndexMu(bin) : getPtEtaFromIndexEl(bin));
+
+  //cout << "Here I am " << endl;
+  //gPad->Update(); Wait();
+  
+  c->cd(2);
+  failPdf.fitTo (failData );
+  failPdf.plotOn(failFrame);
+  failPdf.plotOn(failFrame,RooFit::Components(func3),RooFit::LineStyle(kDashed));
+  failPdf.plotOn(failFrame,RooFit::Components(pgauss),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen));
+  failPdf.plotOn(failFrame,RooFit::Components(func1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed));
+
+  float nfail    = s.getVal();
+  float nfailErr = s.getError();
+
+  float eff = (npass+nfail) > 0 ? npass/(npass+nfail) : 0.;
+  //float effErr = (npass+nfail) > 0 ? npass/(npass+nfail)*TMath::Sqrt( (npassErr/npass)*(npassErr/npass) + (nfailErr/nfail)*(nfailErr/nfail) ) : 0.;
+
+  //binomial uncertainty:
+  float effErr = sqrt( npass/(npass+nfail)*(1- npass/(npass+nfail)) / (npass+nfail) );
+
+  /*
+  cout << "cb mean,sigma, a,n aD, nD: "
+       << pmean.getVal() << " , " 
+       << psigma.getVal() << " , " 
+       << a.getVal() << " , " 
+       << n.getVal() << " , "
+       << aDx.getVal() << " , " 
+       << nDx.getVal() << endl;
+
+
+  cout << "sig, bkg: "
+       << s.getVal() << " , "
+       << b.getVal() << endl;
+
+  Wait();
+  */
+
+  failFrame->Draw();
+  lat->DrawLatex(0.10,0.92, indText+" failing");
+  lat->DrawLatex(0.40,0.92, fIsMu ? getPtEtaFromIndexMu(bin) : getPtEtaFromIndexEl(bin));
+
+
+  // save as root and pdf
+  c->Print(Form("tnp/passAndFail_bin%d_flag%d.pdf" ,bin,flag));
+  c->Print(Form("tnp/passAndFail_bin%d_flag%d.png" ,bin,flag));
+  //c->Print(Form("passAndFail_bin%d_flag%d.root",bin,flag));
+  
+  delete passFrame, c, lat;
+  delete failFrame;
+
+
+  // store the efficiencies:
+  effs[bin].bin = bin;
+  if(flag == 0) {
+    effs[bin].idEff = eff;
+    effs[bin].idEffErr = effErr;
+  }
+  if(flag == 1) {
+    effs[bin].ipEff = eff;
+    effs[bin].ipEffErr = effErr;
+  }
+  if(flag == 2) {
+    effs[bin].isoEff = eff;
+    effs[bin].isoEffErr = effErr;
+  };
+  
 
 }
 
@@ -260,7 +412,7 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
 // 	float nfailErr = fP->GetParError(2);
 // 
 // 	float eff = (npass+nfail) > 0 ? npass/(npass+nfail) : 0.;
-// 	float effErr = (npass+nfail) > 0 ? npass/(npass+nfail)*TMath::Sqrt( (npassErr/npass)*(npassErr/npass) + (nfailErr/nfail)*(nfailErr/nfail) ) : 0.;
+// 	float effErr = (npass+nfail) > 0 ? fabs(npass/(npass+nfail)*(npassErr/npass - nfailErr/nfail)) : 0.;
 // 
 // 	TLatex *lat = new TLatex();
 // 	lat->SetNDC(kTRUE);
@@ -489,16 +641,88 @@ TString TnP::getPtEtaFromIndexMu(int i){
 	return str;
 }
 void TnP::printMuTable(){
-	cout << Form("========================================================") << endl;
-	cout << Form("========================================================") << endl;
-	for(int i=0; i<fnBins; ++i){
-		cout << Form("At bin %2d: "+getPtEtaFromIndexMu(i), i+1) << endl;
-		cout << Form("========================") << endl;
-		cout << Form("ID-eff : %.3f +- %.3f", effs[i].idEff , effs[i].idEffErr ) << endl;
-		cout << Form("IP-eff : %.3f +- %.3f", effs[i].ipEff , effs[i].ipEffErr ) << endl;
-		cout << Form("ISO-eff: %.3f +- %.3f", effs[i].isoEff, effs[i].isoEffErr) << endl;
-		cout << Form("=============================================") << endl;
-	}
+  TFile *oFile = TFile::Open(fOutputFileName, "UPDATE");
+  oFile->cd();
+  
+  float xbins[7]={10,15,20,30,40,50,80};
+  
+  string dataString;
+  if(fIsData) dataString="Data"; else dataString="Sim";
+  
+  string flvString;
+  if(fIsMu) flvString="Mu"; else flvString="El";
+  
+
+  string nameID  = flvString+dataString+"EffID";
+  string nameIP  = flvString+dataString+"EffIP";
+  string nameISO = flvString+dataString+"EffISO";
+  string nameALL = flvString+dataString+"EffAll";
+  
+  TH1F* hEta1ID  = new TH1F(("eta1"+nameID).c_str(), nameID.c_str() ,6,xbins);
+  TH1F* hEta1IP  = new TH1F(("eta1"+nameIP).c_str(), nameIP.c_str() ,6,xbins);
+  TH1F* hEta1ISO = new TH1F(("eta1"+nameISO).c_str(), nameISO.c_str() ,6,xbins);
+  TH1F* hEta1ALL = new TH1F(("eta1"+nameALL).c_str(), nameALL.c_str() ,6,xbins);
+
+  TH1F* hEta2ID  = new TH1F(("eta2"+nameID).c_str(), nameID.c_str() ,6,xbins);
+  TH1F* hEta2IP  = new TH1F(("eta2"+nameIP).c_str(), nameIP.c_str() ,6,xbins);
+  TH1F* hEta2ISO = new TH1F(("eta2"+nameISO).c_str(), nameISO.c_str() ,6,xbins);
+  TH1F* hEta2ALL = new TH1F(("eta2"+nameALL).c_str(), nameALL.c_str() ,6,xbins);
+
+    
+  for(int i=0; i<fnBins; ++i){
+    if( i  <= 6){ 
+      hEta1ID->SetBinContent(i%6 +1,effs[i].idEff);
+      hEta1ID->SetBinError(i%6 +1,effs[i].idEffErr);
+      
+      hEta1IP->SetBinContent(i%6 +1,effs[i].ipEff);
+      hEta1IP->SetBinError(i%6 +1,effs[i].ipEffErr);
+    
+      hEta1ISO->SetBinContent(i%6 +1,effs[i].isoEff);
+      hEta1ISO->SetBinError(i%6 +1,effs[i].isoEffErr);
+    
+      hEta1ALL->SetBinContent(i%6 +1,effs[i].idEff*effs[i].ipEff*effs[i].isoEff);
+      hEta1ALL->SetBinError(i%6 +1,effs[i].idEffErr+effs[i].ipEffErr+effs[i].isoEffErr);
+    }    
+
+
+    if( i > 6 && i <= 11){ 
+      hEta2ID->SetBinContent(i%6 +1,effs[i].idEff);
+      hEta2ID->SetBinError(i%6 +1,effs[i].idEffErr);
+      
+      hEta2IP->SetBinContent(i%6 +1,effs[i].ipEff);
+      hEta2IP->SetBinError(i%6 +1,effs[i].ipEffErr);
+    
+      hEta2ISO->SetBinContent(i%6 +1,effs[i].isoEff);
+      hEta2ISO->SetBinError(i%6 +1,effs[i].isoEffErr);
+    
+      hEta2ALL->SetBinContent(i%6 +1,effs[i].idEff*effs[i].ipEff*effs[i].isoEff);
+      hEta2ALL->SetBinError(i%6 +1,effs[i].idEffErr+effs[i].ipEffErr+effs[i].isoEffErr);
+    }    
+
+
+  };
+  hEta1ID->SetMaximum(1.05); hEta1ID->SetMinimum(0.20); hEta1ID->Write(hEta1ID->GetName(),TObject::kOverwrite);
+  hEta1IP->SetMaximum(1.05); hEta1IP->SetMinimum(0.20); hEta1IP->Write(hEta1IP->GetName(),TObject::kOverwrite);
+  hEta1ISO->SetMaximum(1.05); hEta1ISO->SetMinimum(0.20); hEta1ISO->Write(hEta1ISO->GetName(),TObject::kOverwrite);
+  hEta1ALL->SetMaximum(1.05); hEta1ALL->SetMinimum(0.20); hEta1ALL->Write(hEta1ALL->GetName(),TObject::kOverwrite);
+
+  hEta2ID->SetMaximum(1.05); hEta2ID->SetMinimum(0.20); hEta2ID->Write(hEta2ID->GetName(),TObject::kOverwrite);
+  hEta2IP->SetMaximum(1.05); hEta2IP->SetMinimum(0.20); hEta2IP->Write(hEta2IP->GetName(),TObject::kOverwrite);
+  hEta2ISO->SetMaximum(1.05); hEta2ISO->SetMinimum(0.20); hEta2ISO->Write(hEta2ISO->GetName(),TObject::kOverwrite);
+  hEta2ALL->SetMaximum(1.05); hEta2ALL->SetMinimum(0.20); hEta2ALL->Write(hEta2ALL->GetName(),TObject::kOverwrite);
+
+  oFile->Close();
+
+  cout << Form("========================================================") << endl;
+  cout << Form("========================================================") << endl;
+  for(int i=0; i<fnBins; ++i){
+    cout << Form("At bin %2d: "+getPtEtaFromIndexMu(i), i+1) << endl;
+    cout << Form("========================") << endl;
+    cout << Form("ID-eff : %.3f +- %.3f", effs[i].idEff , effs[i].idEffErr ) << endl;
+    cout << Form("IP-eff : %.3f +- %.3f", effs[i].ipEff , effs[i].ipEffErr ) << endl;
+    cout << Form("ISO-eff: %.3f +- %.3f", effs[i].isoEff, effs[i].isoEffErr) << endl;
+    cout << Form("=============================================") << endl;
+  }
 }
 
 // =====================================================
@@ -596,16 +820,136 @@ TString TnP::getPtEtaFromIndexEl(int i){
 	return str;
 }
 void TnP::printElTable(){
-	cout << Form("========================================================") << endl;
-	cout << Form("========================================================") << endl;
-	for(int i=0; i<fnBins; ++i){
-		cout << Form("At bin %2d: "+getPtEtaFromIndexEl(i), i+1) << endl;
-		cout << Form("========================") << endl;
-		cout << Form("ID-eff : %.3f +- %.3f", effs[i].idEff , effs[i].idEffErr ) << endl;
-		cout << Form("IP-eff : %.3f +- %.3f", effs[i].ipEff , effs[i].ipEffErr ) << endl;
-		cout << Form("ISO-eff: %.3f +- %.3f", effs[i].isoEff, effs[i].isoEffErr) << endl;
-		cout << Form("=============================================") << endl;
-	}
+  TFile *oFile = TFile::Open(fOutputFileName, "UPDATE");
+  oFile->cd();
+  
+  float xbins[7]={10,15,20,30,40,50,80};
+  
+  string dataString;
+  if(fIsData) dataString="Data"; else dataString="Sim";
+  
+  string flvString;
+  if(fIsMu) flvString="Mu"; else flvString="El";
+  
+
+  string nameID  = flvString+dataString+"EffID";
+  string nameIP  = flvString+dataString+"EffIP";
+  string nameISO = flvString+dataString+"EffISO";
+  string nameALL = flvString+dataString+"EffAll";
+  
+  TH1F* hEta1ID  = new TH1F(("eta1"+nameID).c_str(), nameID.c_str() ,6,xbins);
+  TH1F* hEta1IP  = new TH1F(("eta1"+nameIP).c_str(), nameIP.c_str() ,6,xbins);
+  TH1F* hEta1ISO = new TH1F(("eta1"+nameISO).c_str(), nameISO.c_str() ,6,xbins);
+  TH1F* hEta1ALL = new TH1F(("eta1"+nameALL).c_str(), nameALL.c_str() ,6,xbins);
+
+  TH1F* hEta2ID  = new TH1F(("eta2"+nameID).c_str(), nameID.c_str() ,6,xbins);
+  TH1F* hEta2IP  = new TH1F(("eta2"+nameIP).c_str(), nameIP.c_str() ,6,xbins);
+  TH1F* hEta2ISO = new TH1F(("eta2"+nameISO).c_str(), nameISO.c_str() ,6,xbins);
+  TH1F* hEta2ALL = new TH1F(("eta2"+nameALL).c_str(), nameALL.c_str() ,6,xbins);
+
+  TH1F* hEta3ID  = new TH1F(("eta3"+nameID).c_str(), nameID.c_str() ,6,xbins);
+  TH1F* hEta3IP  = new TH1F(("eta3"+nameIP).c_str(), nameIP.c_str() ,6,xbins);
+  TH1F* hEta3ISO = new TH1F(("eta3"+nameISO).c_str(), nameISO.c_str() ,6,xbins);
+  TH1F* hEta3ALL = new TH1F(("eta3"+nameALL).c_str(), nameALL.c_str() ,6,xbins);
+
+  TH1F* hEta4ID  = new TH1F(("eta4"+nameID).c_str(), nameID.c_str() ,6,xbins);
+  TH1F* hEta4IP  = new TH1F(("eta4"+nameIP).c_str(), nameIP.c_str() ,6,xbins);
+  TH1F* hEta4ISO = new TH1F(("eta4"+nameISO).c_str(), nameISO.c_str() ,6,xbins);
+  TH1F* hEta4ALL = new TH1F(("eta4"+nameALL).c_str(), nameALL.c_str() ,6,xbins);
+
+    
+  for(int i=0; i<fnBins; ++i){
+    if( i  <= 6){ 
+      hEta1ID->SetBinContent(i%6 +1,effs[i].idEff);
+      hEta1ID->SetBinError(i%6 +1,effs[i].idEffErr);
+      
+      hEta1IP->SetBinContent(i%6 +1,effs[i].ipEff);
+      hEta1IP->SetBinError(i%6 +1,effs[i].ipEffErr);
+    
+      hEta1ISO->SetBinContent(i%6 +1,effs[i].isoEff);
+      hEta1ISO->SetBinError(i%6 +1,effs[i].isoEffErr);
+    
+      hEta1ALL->SetBinContent(i%6 +1,effs[i].idEff*effs[i].ipEff*effs[i].isoEff);
+      hEta1ALL->SetBinError(i%6 +1,effs[i].idEffErr+effs[i].ipEffErr+effs[i].isoEffErr);
+    }    
+
+
+    if( i > 6 && i <= 11){ 
+      hEta2ID->SetBinContent(i%6 +1,effs[i].idEff);
+      hEta2ID->SetBinError(i%6 +1,effs[i].idEffErr);
+      
+      hEta2IP->SetBinContent(i%6 +1,effs[i].ipEff);
+      hEta2IP->SetBinError(i%6 +1,effs[i].ipEffErr);
+    
+      hEta2ISO->SetBinContent(i%6 +1,effs[i].isoEff);
+      hEta2ISO->SetBinError(i%6 +1,effs[i].isoEffErr);
+    
+      hEta2ALL->SetBinContent(i%6 +1,effs[i].idEff*effs[i].ipEff*effs[i].isoEff);
+      hEta2ALL->SetBinError(i%6 +1,effs[i].idEffErr+effs[i].ipEffErr+effs[i].isoEffErr);
+    }    
+
+    if( i > 11 && i <= 17){ 
+      hEta3ID->SetBinContent(i%6 +1,effs[i].idEff);
+      hEta3ID->SetBinError(i%6 +1,effs[i].idEffErr);
+      
+      hEta3IP->SetBinContent(i%6 +1,effs[i].ipEff);
+      hEta3IP->SetBinError(i%6 +1,effs[i].ipEffErr);
+    
+      hEta3ISO->SetBinContent(i%6 +1,effs[i].isoEff);
+      hEta3ISO->SetBinError(i%6 +1,effs[i].isoEffErr);
+    
+      hEta3ALL->SetBinContent(i%6 +1,effs[i].idEff*effs[i].ipEff*effs[i].isoEff);
+      hEta3ALL->SetBinError(i%6 +1,effs[i].idEffErr+effs[i].ipEffErr+effs[i].isoEffErr);
+    }    
+
+    if( i > 17 && i <= 23){ 
+      hEta4ID->SetBinContent(i%6 +1,effs[i].idEff);
+      hEta4ID->SetBinError(i%6 +1,effs[i].idEffErr);
+      
+      hEta4IP->SetBinContent(i%6 +1,effs[i].ipEff);
+      hEta4IP->SetBinError(i%6 +1,effs[i].ipEffErr);
+    
+      hEta4ISO->SetBinContent(i%6 +1,effs[i].isoEff);
+      hEta4ISO->SetBinError(i%6 +1,effs[i].isoEffErr);
+    
+      hEta4ALL->SetBinContent(i%6 +1,effs[i].idEff*effs[i].ipEff*effs[i].isoEff);
+      hEta4ALL->SetBinError(i%6 +1,effs[i].idEffErr+effs[i].ipEffErr+effs[i].isoEffErr);
+    }    
+
+
+  };
+  hEta1ID->SetMaximum(1.05); hEta1ID->SetMinimum(0.20); hEta1ID->Write(hEta1ID->GetName(),TObject::kOverwrite);
+  hEta1IP->SetMaximum(1.05); hEta1IP->SetMinimum(0.20); hEta1IP->Write(hEta1IP->GetName(),TObject::kOverwrite);
+  hEta1ISO->SetMaximum(1.05); hEta1ISO->SetMinimum(0.20); hEta1ISO->Write(hEta1ISO->GetName(),TObject::kOverwrite);
+  hEta1ALL->SetMaximum(1.05); hEta1ALL->SetMinimum(0.20); hEta1ALL->Write(hEta1ALL->GetName(),TObject::kOverwrite);
+
+  hEta2ID->SetMaximum(1.05); hEta2ID->SetMinimum(0.20); hEta2ID->Write(hEta2ID->GetName(),TObject::kOverwrite);
+  hEta2IP->SetMaximum(1.05); hEta2IP->SetMinimum(0.20); hEta2IP->Write(hEta2IP->GetName(),TObject::kOverwrite);
+  hEta2ISO->SetMaximum(1.05); hEta2ISO->SetMinimum(0.20); hEta2ISO->Write(hEta2ISO->GetName(),TObject::kOverwrite);
+  hEta2ALL->SetMaximum(1.05); hEta2ALL->SetMinimum(0.20); hEta2ALL->Write(hEta2ALL->GetName(),TObject::kOverwrite);
+
+  hEta3ID->SetMaximum(1.05); hEta3ID->SetMinimum(0.20); hEta3ID->Write(hEta3ID->GetName(),TObject::kOverwrite);
+  hEta3IP->SetMaximum(1.05); hEta3IP->SetMinimum(0.20); hEta3IP->Write(hEta3IP->GetName(),TObject::kOverwrite);
+  hEta3ISO->SetMaximum(1.05); hEta3ISO->SetMinimum(0.20); hEta3ISO->Write(hEta3ISO->GetName(),TObject::kOverwrite);
+  hEta3ALL->SetMaximum(1.05); hEta3ALL->SetMinimum(0.20); hEta3ALL->Write(hEta3ALL->GetName(),TObject::kOverwrite);
+
+  hEta4ID->SetMaximum(1.05); hEta4ID->SetMinimum(0.20); hEta4ID->Write(hEta4ID->GetName(),TObject::kOverwrite);
+  hEta4IP->SetMaximum(1.05); hEta4IP->SetMinimum(0.20); hEta4IP->Write(hEta4IP->GetName(),TObject::kOverwrite);
+  hEta4ISO->SetMaximum(1.05); hEta4ISO->SetMinimum(0.20); hEta4ISO->Write(hEta4ISO->GetName(),TObject::kOverwrite);
+  hEta4ALL->SetMaximum(1.05); hEta4ALL->SetMinimum(0.20); hEta4ALL->Write(hEta4ALL->GetName(),TObject::kOverwrite);
+
+  oFile->Close();
+  
+  cout << Form("========================================================") << endl;
+  cout << Form("========================================================") << endl;
+  for(int i=0; i<fnBins; ++i){
+    cout << Form("At bin %2d: "+getPtEtaFromIndexEl(i), i+1) << endl;
+    cout << Form("========================") << endl;
+    cout << Form("ID-eff : %.3f +- %.3f", effs[i].idEff , effs[i].idEffErr ) << endl;
+    cout << Form("IP-eff : %.3f +- %.3f", effs[i].ipEff , effs[i].ipEffErr ) << endl;
+    cout << Form("ISO-eff: %.3f +- %.3f", effs[i].isoEff, effs[i].isoEffErr) << endl;
+    cout << Form("=============================================") << endl;
+  }
 }
 
 // ------------------------------------------
