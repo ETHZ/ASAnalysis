@@ -8,6 +8,7 @@
 
 #include "SSDLDumper.hh"
 #include "helper/Monitor.hh"
+#include "helper/ValidationPlots.hh"
 
 #include "TLorentzVector.h"
 
@@ -488,39 +489,8 @@ public:
 	TH2D *fH2D_ElpRatio_MC;
         
         // VALIDATION PLOTS 
-        struct ValidationPlots{
-	  //	  std::vector<TH1F*>  histo;
-	  //	  std::vector<TString> name;
-	  
-	  TH1D *hHT      ;
-	  TH1D *hMET     ;
-	  TH1D *hNJ      ;
-	  TH1D *hNbJ     ;
-	  TH1D *hNbJmed  ;
-	  TH1D *hHLTSF   ;
-	  TH1D *hPUWeight;
-	  TH1D *hCharge  ;
-	  		 
-	  TH1D *hNM      ; 	 
-	  TH1D *hNE      ;	 
-	  TH1D *hNMus    ; 	 
-	  TH1D *hNEls    ;	 
-	  TH1D *hNLep    ; 	 
-	  		 
-	  TH1D *hTLCat   ;
-	  TH1D *hNpfW    ;
-	  TH1D *hNffW    ;
-	  TH1D *hFakeSum ;
-	  TH1D *hpT1     ;
-	  TH1D *hpT2     ;
-	  TH1D *heta1    ;
-	  TH1D *heta2    ;
-	  
-	};
         ValidationPlots validation;
-  
-	private:
-	
+private:
 };
 
 #endif

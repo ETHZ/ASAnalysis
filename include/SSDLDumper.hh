@@ -654,7 +654,7 @@ public:
 				return "";
 			}
 		}
-		inline int getNProcs(){return 17;} // make sure this number corresponds to the number of
+		inline int getNProcs(){return 23;} // make sure this number corresponds to the number of
 		                                   // processes define in the previous method
 		TTree* getTree(){
 			if (!file || !file->IsOpen()) file = TFile::Open(location);

@@ -389,31 +389,67 @@ void SSDLPlotter::init(TString filename){
 	
 }
 void SSDLPlotter::InitialiseValidationPlots(){
-        // Validation plots for checking consistency...
+  // Validation plots for checking consistency...
   //        for(size_t i=0; i<gNCHANNELS+1; i++){
-        validation.hHT       = new TH1D("Val_HT"      , "Val_HT"             ,  50,  0.,  500.);
-	validation.hMET      = new TH1D("Val_MET"     , "Val_MET"            ,  30,  0. , 300.);
-	validation.hNJ       = new TH1D("Val_NJ"      , "Val_NJ"             ,  10, -0.5,  9.5);
-	validation.hNbJ      = new TH1D("Val_NbJ"     , "Val_NbJ"            ,   5, -0.5,  4.5);
-	validation.hNbJmed   = new TH1D("Val_NbJmed"  , "Val_NbJmed"         ,   5, -0.5,  4.5);
-	validation.hHLTSF    = new TH1D("Val_HLTSF"   , "Val_HLTSF"          , 100,  0. ,  1.0);
-	validation.hCharge   = new TH1D("Val_Charge"  , "Val_Charge"         ,   3, -1.5,  1.5);
-	validation.hPUWeight = new TH1D("Val_PUWeight", "Val_PUWeight"       , 100,  0. ,  5.0);
-			    			       		             
-	validation.hTLCat    = new TH1D("Val_TLCat"   , "Val_TLCat"          ,   4, -0.5,  3.5);
-	validation.hNpfW     = new TH1D("Val_NpfW"    , "Val_NpfW"           ,  30,  0. , 300.);
-	validation.hNffW     = new TH1D("Val_NffW"    , "Val_NffW"           ,  30,  0. , 300.);
-	validation.hFakeSum  = new TH1D("Val_FakeSum" , "Val_FakeSum"        ,  10,  0.5,  9.5);
-	validation.hpT1      = new TH1D("Val_pT1"     , "Val_Pt1"            ,  50, 10. ,  200);
-	validation.hpT2      = new TH1D("Val_pT2"     , "Val_Pt2"            ,  50, 10. ,  150);
-	validation.heta1     = new TH1D("Val_eta1"    , "Val_Eta1"           ,  50,  0. ,  2.5);
-	validation.heta2     = new TH1D("Val_eta2"    , "Val_Eta2"           ,  50,  0. ,  2.5);
+        validation.cleanUp();
+  
+        validation.addhisto("Data_HT"      ,  50,  0. , 500.); 
+        validation.addhisto("Data_MET"     ,  30,  0. , 300.); 
+	validation.addhisto("Data_NJ"      ,  10, -0.5,  9.5);
+	validation.addhisto("Data_NbJ"     ,   5, -0.5,  4.5);
+	validation.addhisto("Data_NbJmed"  ,   5, -0.5,  4.5);
+	validation.addhisto("Data_HLTSF"   , 100,  0. ,  1.0);
+	validation.addhisto("Data_Charge"  ,   3, -1.5,  1.5);
+	validation.addhisto("Data_PUWeight", 100,  0. ,  5.0);
 
-	validation.hNM       = new TH1D("Val_NM"      , "Val_NTightMuons"    ,  10, -0.5,  9.5);
-	validation.hNE       = new TH1D("Val_NE"      , "Val_NTightElectrons",  10, -0.5,  9.5);
-	validation.hNMus     = new TH1D("Val_NMus"    , "Val_NMuons"         ,  10, -0.5,  9.5);
-	validation.hNEls     = new TH1D("Val_NEls"    , "Val_NElectrons"     ,  10, -0.5,  9.5);
-	validation.hNLep     = new TH1D("Val_NLep"    , "Val_NLeptons"       ,  10, -0.5,  9.5);
+	validation.addhisto("Data_TLCat"   ,   4, -0.5,  3.5);
+	validation.addhisto("Data_NpfW"    ,  20,  0. ,  2.);
+	validation.addhisto("Data_NffW"    ,  20,  0. ,  2.);
+	validation.addhisto("Data_FakeSum" ,  30, -0.5,  2.5);
+	validation.addhisto("Data_pT1"     ,  50, 10. ,  200);
+	validation.addhisto("Data_pT2"     ,  50, 10. ,  150);
+	validation.addhisto("Data_eta1"    ,  50,  0. ,  2.5);
+	validation.addhisto("Data_eta2"    ,  50,  0. ,  2.5);
+
+	validation.addhisto("Data_NM"      ,  10, -0.5,  9.5);
+	validation.addhisto("Data_NE"      ,  10, -0.5,  9.5);
+	validation.addhisto("Data_NMus"    ,  10, -0.5,  9.5);
+	validation.addhisto("Data_NEls"    ,  10, -0.5,  9.5);
+	validation.addhisto("Data_NLep"    ,  10, -0.5,  9.5);
+
+        validation.addhisto("MC_HT"      ,  50,  0. , 500.); 
+        validation.addhisto("MC_MET"     ,  30,  0. , 300.); 
+	validation.addhisto("MC_NJ"      ,  10, -0.5,  9.5);
+	validation.addhisto("MC_NbJ"     ,   5, -0.5,  4.5);
+	validation.addhisto("MC_NbJmed"  ,   5, -0.5,  4.5);
+	validation.addhisto("MC_HLTSF"   , 100,  0. ,  1.0);
+	validation.addhisto("MC_Charge"  ,   3, -1.5,  1.5);
+	validation.addhisto("MC_PUWeight", 100,  0. ,  5.0);
+
+	validation.addhisto("MC_TLCat"   ,   4, -0.5,  3.5);
+	validation.addhisto("MC_NpfW"    ,  20,  0. ,  2.);
+	validation.addhisto("MC_NffW"    ,  20,  0. ,  2.);
+	validation.addhisto("MC_FakeSum" ,  30, -0.5,  2.5);
+	validation.addhisto("MC_pT1"     ,  50, 10. ,  200);
+	validation.addhisto("MC_pT2"     ,  50, 10. ,  150);
+	validation.addhisto("MC_eta1"    ,  50,  0. ,  2.5);
+	validation.addhisto("MC_eta2"    ,  50,  0. ,  2.5);
+
+	validation.addhisto("MC_NM"      ,  10, -0.5,  9.5);
+	validation.addhisto("MC_NE"      ,  10, -0.5,  9.5);
+	validation.addhisto("MC_NMus"    ,  10, -0.5,  9.5);
+	validation.addhisto("MC_NEls"    ,  10, -0.5,  9.5);
+	validation.addhisto("MC_NLep"    ,  10, -0.5,  9.5);
+
+	// PARTICULAR VALIDATION PLOTS
+	validation.addhisto("Data_NLep_3rdLepVeto",  5, -0.5,  4.5);
+	validation.addhisto("Data_NTEl_3rdLepVeto",  5, -0.5,  4.5);
+	validation.addhisto("Data_NTMu_3rdLepVeto",  5, -0.5,  4.5);
+
+	validation.addhisto("MC_NLep_3rdLepVeto",  5, -0.5,  4.5);
+	validation.addhisto("MC_NTEl_3rdLepVeto",  5, -0.5,  4.5);
+	validation.addhisto("MC_NTMu_3rdLepVeto",  5, -0.5,  4.5);
+
 }
 void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
         // This macro runs over the the SMS scans 
@@ -16607,34 +16643,19 @@ void SSDLPlotter::makeIntMCClosure(vector<int> samples, TString filename, int re
 void SSDLPlotter::makeValidationPlots(){
        fOutputSubDir = "Validation/";
        TString outputdir = Util::MakeOutputDir(fOutputDir + fOutputSubDir);       
+       char cmd[100];
+       sprintf(cmd, "cp /shome/folguera/scripts/index.php %s/%s",fOutputDir.Data(),fOutputSubDir.Data());
+       system(cmd);
        
        TCanvas *c_temp = new TCanvas("Validation", "Validation plots", 0, 0, 600, 600);
        c_temp->cd();
        
-       validation.hHT       ->Draw("hist");   Util::PrintPNG(c_temp, validation.hHT      ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hMET      ->Draw("hist");   Util::PrintPNG(c_temp, validation.hMET     ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNJ       ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNJ      ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNbJ      ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNbJ     ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNbJmed   ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNbJmed  ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hHLTSF    ->Draw("hist");   Util::PrintPNG(c_temp, validation.hHLTSF   ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hCharge   ->Draw("hist");   Util::PrintPNG(c_temp, validation.hCharge  ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hPUWeight ->Draw("hist");   Util::PrintPNG(c_temp, validation.hPUWeight->GetName(), fOutputDir + fOutputSubDir);
+       for (unsigned int i=0; i<validation.histo.size(); i++){
+	      validation.histo[i]->Draw();
+	      gPad->Update();
+	      Util::PrintPNG(c_temp, validation.name[i], fOutputDir + fOutputSubDir);	      
+       }
 
-       validation.hTLCat    ->Draw("hist");   Util::PrintPNG(c_temp, validation.hTLCat   ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNpfW     ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNpfW    ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNffW     ->Draw("hist");   Util::PrintPNG(c_temp, validatoion.hNffW    ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hFakeSum  ->Draw("hist");   Util::PrintPNG(c_temp, validation.hFakeSum ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hpT1      ->Draw("hist");   Util::PrintPNG(c_temp, validation.hpT1     ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hpT2      ->Draw("hist");   Util::PrintPNG(c_temp, validation.hpT2     ->GetName(), fOutputDir + fOutputSubDir);
-       validation.heta1     ->Draw("hist");   Util::PrintPNG(c_temp, validation.heta1    ->GetName(), fOutputDir + fOutputSubDir);
-       validation.heta2     ->Draw("hist");   Util::PrintPNG(c_temp, validation.heta2    ->GetName(), fOutputDir + fOutputSubDir);
-
-       validation.hNM       ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNM      ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNE       ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNE      ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNMus     ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNMus    ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNEls     ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNEls    ->GetName(), fOutputDir + fOutputSubDir);
-       validation.hNLep     ->Draw("hist");   Util::PrintPNG(c_temp, validation.hNLep    ->GetName(), fOutputDir + fOutputSubDir);
-       
        delete c_temp;
 }
 void SSDLPlotter::makeWZValidation(SSPrediction pred, TString label){
@@ -18298,7 +18319,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 	float eta1, eta2, hltsf;
 	int event, run;
 	signed int charge;
-	
+	int nmus,nels,ne,nm;
 	sigtree->SetBranchAddress("SystFlag",    &flag);
 	sigtree->SetBranchAddress("Event",       &event);
 	sigtree->SetBranchAddress("Run",         &run);
@@ -18321,7 +18342,11 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 	sigtree->SetBranchAddress("Charge",      &charge);
 	sigtree->SetBranchAddress("Pass3rdVeto", &pass3rdVeto);
 	sigtree->SetBranchAddress("HLTSF",       &hltsf);
-
+	sigtree->SetBranchAddress("NMus",        &nmus);
+	sigtree->SetBranchAddress("NEls",        &nels);
+	sigtree->SetBranchAddress("NM",          &nm);
+	sigtree->SetBranchAddress("NE",          &ne);
+	
 	FakeRatios *FR = new FakeRatios();
 	
 	float npp(0.), npf(0.), nfp(0.), nff(0.);
@@ -18382,15 +18407,36 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 		if (datamc == 0) {
 			debugOUTSTREAM << Form("Event: %12d tlcat: %d pT1: %5.1f f1: %.3f pT2: %5.1f f2: %.3f npp: %.4f npf: %.4f nfp: %.4f nff: %.4f", event, cat, pT1, f2, pT2, f2, npp, npf, nfp, nff) << endl;
 		}
-
-		if (gDoValidation) validation.hHT      ->Fill(HT );
-		if (gDoValidation) validation.hMET     ->Fill(MET);
-		if (gDoValidation) validation.hNJ      ->Fill(njets);
-		if (gDoValidation) validation.hNbJ     ->Fill(nbjets);
-		if (gDoValidation) validation.hNbJmed  ->Fill(nbjetsmed);
-		if (gDoValidation) validation.hHLTSF   ->Fill(hltsf);
-		if (gDoValidation) validation.hPUWeight->Fill(puweight);
 		
+		if (datamc == 0 && gDoValidation){
+		        validation.fillhisto("Data_HT"      , HT );
+			validation.fillhisto("Data_MET"     , MET);
+			validation.fillhisto("Data_NJ"      , njets);
+			validation.fillhisto("Data_NbJ"     , nbjets);
+			validation.fillhisto("Data_NbJmed"  , nbjetsmed);
+			validation.fillhisto("Data_HLTSF"   , hltsf);
+			validation.fillhisto("Data_PUWeight", puweight);
+			validation.fillhisto("Data_NM"      , nm);
+			validation.fillhisto("Data_NE"      , ne);
+			validation.fillhisto("Data_NLep"    , ne+nm);
+			validation.fillhisto("Data_NMus"    , nmus);
+			validation.fillhisto("Data_NEls"    , nels);
+		}
+
+		if (datamc == 1 && gDoValidation){
+		        validation.fillhisto("MC_HT"      , HT );
+			validation.fillhisto("MC_MET"     , MET);
+			validation.fillhisto("MC_NJ"      , njets);
+			validation.fillhisto("MC_NbJ"     , nbjets);
+			validation.fillhisto("MC_NbJmed"  , nbjetsmed);
+			validation.fillhisto("MC_HLTSF"   , hltsf);
+			validation.fillhisto("MC_PUWeight", puweight);
+			validation.fillhisto("MC_NM"      , nm);
+			validation.fillhisto("MC_NE"      , ne);
+			validation.fillhisto("MC_NLep"    , ne+nm);
+			validation.fillhisto("MC_NMus"    , nmus);
+			validation.fillhisto("MC_NEls"    , nels);
+		}
 		// Store them in the right places for the different purposes
 		// Integrated predictions
 		for(int r = 0; r < gNREGIONS; r++){
@@ -18420,17 +18466,43 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 			S->numbers[r][chan].nfp += puweight * nfp;
 			S->numbers[r][chan].nff += puweight * nff;
 			
-			if (r == gRegion[gBaseRegion]) {
-			      if (gDoValidation) validation.hTLCat  ->Fill(cat);
-			      if (gDoValidation) validation.hNpfW   ->Fill(npf+nfp);
-			      if (gDoValidation) validation.hNffW   ->Fill(nff);
-			      if (gDoValidation) validation.hFakeSum->Fill(npp+npf+nfp+nff);
-			      if (gDoValidation) validation.hpT1    ->Fill(pT1);
-			      if (gDoValidation) validation.hpT2    ->Fill(pT2);
-			      if (gDoValidation) validation.heta1   ->Fill(eta1);
-			      if (gDoValidation) validation.heta2   ->Fill(eta2);
-			      if (gDoValidation) validation.hCharge ->Fill(charge);
+			if (r == gRegion[gBaseRegion] && gDoValidation) {
+			      if (datamc == 0) {
+			            validation.fillhisto("Data_TLCat"  , cat);
+				    validation.fillhisto("Data_NpfW"   , npf+nfp);
+				    validation.fillhisto("Data_NffW"   , nff);
+				    validation.fillhisto("Data_FakeSum", npp+npf+nfp+nff);
+				    validation.fillhisto("Data_pT1"    , pT1);
+				    validation.fillhisto("Data_pT2"    , pT2);
+				    validation.fillhisto("Data_eta1"   , fabs(eta1));
+				    validation.fillhisto("Data_eta2"   , fabs(eta2));
+				    validation.fillhisto("Data_Charge" , charge);
+			      }
+			      else {
+			            validation.fillhisto("MC_TLCat"  , cat);
+				    validation.fillhisto("MC_NpfW"   , npf+nfp);
+				    validation.fillhisto("MC_NffW"   , nff);
+				    validation.fillhisto("MC_FakeSum", npp+npf+nfp+nff);
+				    validation.fillhisto("MC_pT1"    , pT1);
+				    validation.fillhisto("MC_pT2"    , pT2);
+				    validation.fillhisto("MC_eta1"   , fabs(eta1));
+				    validation.fillhisto("MC_eta2"   , fabs(eta2));
+				    validation.fillhisto("MC_Charge" , charge);
+			      }
 			}
+			if (gRegions[r]->app3rdVet  != 0 && gDoValidation){
+			      if (datamc == 0) {
+			            validation.fillhisto("Data_NLep_3rdLepVeto",ne+nm);
+				    validation.fillhisto("Data_NTEl_3rdLepVeto",ne);
+				    validation.fillhisto("Data_NTMu_3rdLepVeto",nm);
+			      }
+			      else {
+			            validation.fillhisto("MC_NLep_3rdLepVeto",ne+nm);
+				    validation.fillhisto("MC_NTEl_3rdLepVeto",ne);
+				    validation.fillhisto("MC_NTMu_3rdLepVeto",nm);
+			      }
+			}
+			
 			//			if (S->sname.Contains("DoubleEl")){
 //			  cout << "[DEGUG]: npp-> " << S->numbers[r][chan].npp << endl;
 //			  cout << "[DEBUG]: npf-> " << S->numbers[r][chan].npf + S->numbers[r][chan].nfp << endl;
