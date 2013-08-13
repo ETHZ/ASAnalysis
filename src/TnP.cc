@@ -676,7 +676,7 @@ void TnP::printMuTable(){
 
     
   for(int i=0; i<fnBins; ++i){
-    if( i  <= 6){ 
+    if( i  <= 5){ 
       hEta1ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta1ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
@@ -691,7 +691,7 @@ void TnP::printMuTable(){
     }    
 
 
-    if( i > 6 && i <= 11){ 
+    if( i > 5 && i <= 11){ 
       hEta2ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta2ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
@@ -865,7 +865,7 @@ void TnP::printElTable(){
 
     
   for(int i=0; i<fnBins; ++i){
-    if( i  <= 6){ 
+    if( i  <= 5){ 
       hEta1ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta1ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
@@ -880,7 +880,7 @@ void TnP::printElTable(){
     }    
 
 
-    if( i > 6 && i <= 11){ 
+    if( i > 5 && i <= 11){ 
       hEta2ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta2ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
