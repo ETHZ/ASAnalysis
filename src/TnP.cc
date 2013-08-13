@@ -86,13 +86,13 @@ TnP::TnP(TString inputfile, bool createHistos){
 
 	if(fCreateHistos){
 		for(int i=0; i<fnBins; ++i){
-			fPassIDoverAll   [i] = new TH1F(Form("PassIDoverAll_%d"  ,i), Form("PassIDoverAll_%d"  ,i), 140, 0., 140.);
-			fPassIPoverID    [i] = new TH1F(Form("PassIPoverID_%d"   ,i), Form("PassIPoverID_%d"   ,i), 140, 0., 140.);
-			fPassISOoverIDIP [i] = new TH1F(Form("PassISOoverIDIP_%d",i), Form("PassISOoverIDIP_%d",i), 140, 0., 140.);
+			fPassIDoverAll   [i] = new TH1F(Form("PassIDoverAll_%d"  ,i), Form("PassIDoverAll_%d"  ,i), 150, 0., 150.);
+			fPassIPoverID    [i] = new TH1F(Form("PassIPoverID_%d"   ,i), Form("PassIPoverID_%d"   ,i), 150, 0., 150.);
+			fPassISOoverIDIP [i] = new TH1F(Form("PassISOoverIDIP_%d",i), Form("PassISOoverIDIP_%d",i), 150, 0., 150.);
                                                                                                   
-			fFailIDoverAll   [i] = new TH1F(Form("FailIDoverAll_%d"  ,i), Form("FailIDoverAll_%d"  ,i), 140, 0., 140.);
-			fFailIPoverID    [i] = new TH1F(Form("FailIPoverID_%d"   ,i), Form("FailIPoverID_%d"   ,i), 140, 0., 140.);
-			fFailISOoverIDIP [i] = new TH1F(Form("FailISOoverIDIP_%d",i), Form("FailISOoverIDIP_%d",i), 140, 0., 140.);
+			fFailIDoverAll   [i] = new TH1F(Form("FailIDoverAll_%d"  ,i), Form("FailIDoverAll_%d"  ,i), 150, 0., 150.);
+			fFailIPoverID    [i] = new TH1F(Form("FailIPoverID_%d"   ,i), Form("FailIPoverID_%d"   ,i), 150, 0., 150.);
+			fFailISOoverIDIP [i] = new TH1F(Form("FailISOoverIDIP_%d",i), Form("FailISOoverIDIP_%d",i), 150, 0., 150.);
 
 			fPassIDoverAll   [i] ->Sumw2();
 			fPassIPoverID    [i] ->Sumw2();
@@ -175,7 +175,7 @@ void TnP::doFitting(){
 
 	for(int i=0; i<fnBins; ++i){
 	  //if(i>0) continue;
-	  //if(i!=18) continue;
+	  //if(i!=3) continue;
 	  simFitPassFail(fPassIDoverAll  [i], fFailIDoverAll  [i], 0, i); // ID
 	  simFitPassFail(fPassIPoverID   [i], fFailIPoverID   [i], 1, i); // IP
 	  simFitPassFail(fPassISOoverIDIP[i], fFailISOoverIDIP[i], 2, i); // ISO
@@ -190,9 +190,17 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
   if(passHisto == NULL) cout << "histogram doesn't exist!!!!!" << endl;
 
   double rangeFitMin(50.), rangeFitMax(140.);
-  if(bin%6 == 0 || bin%6 == 1) rangeFitMin = 40.;
+  if(bin%6 == 0 ) rangeFitMin = 40.;
   if(bin%6 == 1 ) rangeFitMin = 45.;
-
+  if(!fIsMu && bin == 19 ) rangeFitMin = 50.;
+  if(!fIsMu && bin == 14 ) rangeFitMin = 40.;
+  if(!fIsMu && bin == 18 ) rangeFitMin = 35.;
+  if(!fIsMu && fIsData && bin == 7)    rangeFitMin = 40.;
+  if(fIsMu && fIsData && bin == 0)    rangeFitMin = 35.;
+  if(fIsMu && fIsData && bin == 0 && flag ==0 )    rangeFitMin = 40.;
+  if(fIsMu && fIsData && bin == 1 )    rangeFitMin = 55.;
+  if(fIsMu && fIsData && bin == 6 )    rangeFitMin = 30.;
+  if(fIsMu && fIsData && bin == 3 )    {rangeFitMin = 55.;rangeFitMax = 120.;}
   RooRealVar px("px", "px", rangeFitMin,rangeFitMax) ;
 
     
@@ -209,8 +217,8 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
 
 
   //Defining Double CB for BACKGROUND
-  RooRealVar mean_b ("mean_b" , "pass mean of gaussian" , 60, rangeFitMin*0.80 , rangeFitMax*1.5);
-  RooRealVar sigma_b("sigma_b", "pass width of gaussian",  10, 5. ,  50); 
+  RooRealVar mean_b ("mean_b" , "pass mean of gaussian" , 60, rangeFitMin*0.90 , rangeFitMax*1.5);
+  RooRealVar sigma_b("sigma_b", "pass width of gaussian",  10, 2. ,  50); 
   RooRealVar a_b("a_b","a_b",4.,4.0,10);
   RooRealVar n_b("n_b","n_b",2.,0.5,10.);   
   RooRealVar aDx_b("aDx_b","aDx_b",2.,0.3,10.);
@@ -314,12 +322,15 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
   //------------ Fitting failing-probe dilepton pairs
   bool fixSignalParameters=true;
   if(fixSignalParameters){
-    a.setRange(a.getVal()*0.75,a.getVal()*1.5);
+    if(fIsMu && fIsData && (bin == 8 || bin == 3) && flag == 0 )
+      a.setRange(a.getVal()*0.60,a.getVal()*1.5);
+    else
+      a.setRange(a.getVal()*0.75,a.getVal()*1.5);
     n.setRange(n.getVal()*0.75,n.getVal()*1.5);
     aDx.setRange(aDx.getVal()*0.97,aDx.getVal()*1.03);
     nDx.setRange(nDx.getVal()*0.97,nDx.getVal()*1.03);
     pmean.setRange(pmean.getVal()*0.97,pmean.getVal()*1.03);
-    psigma.setRange(psigma.getVal()*0.97,psigma.getVal()*1.03);
+    psigma.setRange(psigma.getVal()*0.97,psigma.getVal()*1.3);
   }
 
   //px.setRange(50.,80.);
@@ -343,6 +354,8 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
     b1.setVal(initialSigValue*0.5);
     b.setVal(initialSigValue*0.5);
     s.setRange(initialSigValue/200.,initialSigValue*1.);
+    pmean.setRange(pmean.getVal()*1.01,pmean.getVal()*0.99);
+
   }
 
   //
@@ -355,7 +368,13 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
   }
   
   if(!fIsMu && bin == 24)  mean_b.setVal(55.);
-  
+  if(fIsMu && fIsData && bin == 11 && flag == 0 )    {
+    mean_b.setRange(90.,110.);
+    sigma_b.setRange(0.,15.);
+  }
+  if(fIsMu && fIsData && bin == 3 && flag == 0 )    {
+    sigma_b.setRange(0.,8.);
+  }
 
 
   //RooAddPdf failPdf("sum", "DoubleCB plus Bkg1 plus Bkg2",
@@ -484,7 +503,7 @@ void TnP::fillHistos(){
 
 	for( int i = 0; i < nentries; i++ ){
 		tree->GetEntry(i);
-		//if(!fIsData) puWeight = fPUWeight->weight(ntrue); // PU weight only for MC
+		if(!fIsData) puWeight = fPUWeight->weight(ntrue); // PU weight only for MC
 		if(!passesAll(tagIsoRel, tagD0, tagDz, tagPassID)) continue; // make sure the tag passes everything
 		index = fIsMu ? getPtEtaIndexMu(probePt, probeEta) : getPtEtaIndexEl(probePt, probeEta);
 		if(!fIsMu and !checkElEta(probeEta)) continue;
