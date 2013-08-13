@@ -86,13 +86,13 @@ TnP::TnP(TString inputfile, bool createHistos){
 
 	if(fCreateHistos){
 		for(int i=0; i<fnBins; ++i){
-			fPassIDoverAll   [i] = new TH1F(Form("PassIDoverAll_%d"  ,i), Form("PassIDoverAll_%d"  ,i), 120, 0., 120.);
-			fPassIPoverID    [i] = new TH1F(Form("PassIPoverID_%d"   ,i), Form("PassIPoverID_%d"   ,i), 120, 0., 120.);
-			fPassISOoverIDIP [i] = new TH1F(Form("PassISOoverIDIP_%d",i), Form("PassISOoverIDIP_%d",i), 120, 0., 120.);
+			fPassIDoverAll   [i] = new TH1F(Form("PassIDoverAll_%d"  ,i), Form("PassIDoverAll_%d"  ,i), 140, 0., 140.);
+			fPassIPoverID    [i] = new TH1F(Form("PassIPoverID_%d"   ,i), Form("PassIPoverID_%d"   ,i), 140, 0., 140.);
+			fPassISOoverIDIP [i] = new TH1F(Form("PassISOoverIDIP_%d",i), Form("PassISOoverIDIP_%d",i), 140, 0., 140.);
                                                                                                   
-			fFailIDoverAll   [i] = new TH1F(Form("FailIDoverAll_%d"  ,i), Form("FailIDoverAll_%d"  ,i), 120, 0., 120.);
-			fFailIPoverID    [i] = new TH1F(Form("FailIPoverID_%d"   ,i), Form("FailIPoverID_%d"   ,i), 120, 0., 120.);
-			fFailISOoverIDIP [i] = new TH1F(Form("FailISOoverIDIP_%d",i), Form("FailISOoverIDIP_%d",i), 120, 0., 120.);
+			fFailIDoverAll   [i] = new TH1F(Form("FailIDoverAll_%d"  ,i), Form("FailIDoverAll_%d"  ,i), 140, 0., 140.);
+			fFailIPoverID    [i] = new TH1F(Form("FailIPoverID_%d"   ,i), Form("FailIPoverID_%d"   ,i), 140, 0., 140.);
+			fFailISOoverIDIP [i] = new TH1F(Form("FailISOoverIDIP_%d",i), Form("FailISOoverIDIP_%d",i), 140, 0., 140.);
 
 			fPassIDoverAll   [i] ->Sumw2();
 			fPassIPoverID    [i] ->Sumw2();
@@ -175,7 +175,7 @@ void TnP::doFitting(){
 
 	for(int i=0; i<fnBins; ++i){
 	  //if(i>0) continue;
-	  //if(i!=11) continue;
+	  //if(i!=18) continue;
 	  simFitPassFail(fPassIDoverAll  [i], fFailIDoverAll  [i], 0, i); // ID
 	  simFitPassFail(fPassIPoverID   [i], fFailIPoverID   [i], 1, i); // IP
 	  simFitPassFail(fPassISOoverIDIP[i], fFailISOoverIDIP[i], 2, i); // ISO
@@ -189,25 +189,43 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
 
   if(passHisto == NULL) cout << "histogram doesn't exist!!!!!" << endl;
 
-  // passing probes
-  //RooRealVar px("px", "px", 70, 120) ;
-  //RooRealVar px("px", "px", 40, 65) ;
-  RooRealVar px("px", "px", 50, 120) ;
-  if(!fIsMu) px.setRange(60.,120.);
+  double rangeFitMin(50.), rangeFitMax(140.);
+  if(bin%6 == 0 || bin%6 == 1) rangeFitMin = 40.;
+  if(bin%6 == 1 ) rangeFitMin = 45.;
+
+  RooRealVar px("px", "px", rangeFitMin,rangeFitMax) ;
+
     
 
 
-  //Defining Double CB
+  //Defining Double CB for SIGNAL
   RooRealVar pmean ("pmean" , "pass mean of gaussian" , 90, 85 , 95);
-  RooRealVar psigma("psigma", "pass width of gaussian",  2, 0. ,  5);
-  
-  //RooRealVar a("a","a",1.,0.5,2.5);
+  RooRealVar psigma("psigma", "pass width of gaussian",  2, 0. ,  5); 
   RooRealVar a("a","a",2.,1.0,10);
   RooRealVar n("n","n",2.,0.5,10.);   
-  RooRealVar aDx("aDx","aDx",1.,0.3,10.);
+  RooRealVar aDx("aDx","aDx",3.,3,10.);
   RooRealVar nDx("nDx","nDx",5.,0.,10.);   
-
   RooDoubleCB func1("cb","cb PDF", px, pmean, psigma, a, n, aDx, nDx) ;
+
+
+  //Defining Double CB for BACKGROUND
+  RooRealVar mean_b ("mean_b" , "pass mean of gaussian" , 60, rangeFitMin*0.80 , rangeFitMax*1.5);
+  RooRealVar sigma_b("sigma_b", "pass width of gaussian",  10, 5. ,  50); 
+  RooRealVar a_b("a_b","a_b",4.,4.0,10);
+  RooRealVar n_b("n_b","n_b",2.,0.5,10.);   
+  RooRealVar aDx_b("aDx_b","aDx_b",2.,0.3,10.);
+  RooRealVar nDx_b("nDx_b","nDx_b",5.,0.,20.);   
+  RooDoubleCB cbBkg("cbBkg","cbBkg", px, mean_b, sigma_b, a_b, n_b, aDx_b, nDx_b) ;
+
+
+  // --- this depend on the pT binning/cut on the probe
+  if(bin%6 == 0) mean_b.setVal(45.);
+  if(bin%6 == 1) mean_b.setVal(55.);
+  if(bin%6 == 2) mean_b.setVal(70.);
+  if(bin%6 == 3) mean_b.setVal(85.);
+  if(bin%6 == 4) mean_b.setVal(90.);
+  if(bin%6 == 5) mean_b.setVal(95.);
+  // ---
 
 
   //Defining polynomial
@@ -233,12 +251,22 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
   RooGaussian pgauss("pgauss", "pgaussian PDF", px, gmean, gsigma) ;
 
   //Defining sum of signal+bkg pdf functions
-  double initialSigValue = passHisto->Integral();
+  //double initialSigValue = passHisto->Integral(rangeFitMin,rangeFitMax);
+  double initialSigValue = passHisto->Integral(passHisto->FindBin(rangeFitMin),passHisto->FindBin(rangeFitMax));
   RooRealVar s("s", "signal yield", initialSigValue, initialSigValue/10.,initialSigValue*10.);
-  RooRealVar b("b", "background yield", initialSigValue/10.,initialSigValue/10000.,initialSigValue/2.);
-  
+  RooRealVar b("b", "background yield", initialSigValue/10.,initialSigValue/10000.,initialSigValue*1.);  
+  RooRealVar b1("b1", "background1 yield", initialSigValue*0.5,initialSigValue/10000.,initialSigValue*1.);
+  RooRealVar b2("b2", "background2 yield", initialSigValue*0.25,initialSigValue/10000.,initialSigValue*1.);
+
+
+  //RooAddPdf sum("sum", "DoubleCB plus Bkg",
+  //		RooArgList(func1, func3), RooArgList(s, b));
+
+  //RooAddPdf sum("sum", "as for failing probes",
+  //		RooArgList(func1, pgauss, func3), RooArgList(s, b1,b2));
+
   RooAddPdf sum("sum", "DoubleCB plus Bkg",
-		RooArgList(func1, func3), RooArgList(s, b));
+  		RooArgList(func1, cbBkg), RooArgList(s, b));
 
 
   RooDataHist passData("passData", "passData", px, Import(*passHisto) );
@@ -254,7 +282,9 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
 
   sum.fitTo (passData );
   sum.plotOn(passFrame);
-  sum.plotOn(passFrame,RooFit::Components(func3),RooFit::LineStyle(kDashed));
+  sum.plotOn(passFrame,RooFit::Components(cbBkg),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen));
+  //sum.plotOn(passFrame,RooFit::Components(func3),RooFit::LineStyle(kDashed));
+  //sum.plotOn(passFrame,RooFit::Components(pgauss),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen));
   sum.plotOn(passFrame,RooFit::Components(func1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed));
 
 
@@ -284,20 +314,22 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
   //------------ Fitting failing-probe dilepton pairs
   bool fixSignalParameters=true;
   if(fixSignalParameters){
-    a.setRange(a.getVal(),a.getVal());
-    n.setRange(n.getVal(),n.getVal());
-    aDx.setRange(aDx.getVal(),aDx.getVal());
-    nDx.setRange(nDx.getVal(),nDx.getVal());
-    pmean.setRange(pmean.getVal(),pmean.getVal());
-    psigma.setRange(psigma.getVal(),psigma.getVal());
+    a.setRange(a.getVal()*0.75,a.getVal()*1.5);
+    n.setRange(n.getVal()*0.75,n.getVal()*1.5);
+    aDx.setRange(aDx.getVal()*0.97,aDx.getVal()*1.03);
+    nDx.setRange(nDx.getVal()*0.97,nDx.getVal()*1.03);
+    pmean.setRange(pmean.getVal()*0.97,pmean.getVal()*1.03);
+    psigma.setRange(psigma.getVal()*0.97,psigma.getVal()*1.03);
   }
 
   //px.setRange(50.,80.);
-  initialSigValue = failHisto->Integral();
-  RooRealVar b1("b1", "background1 yield", initialSigValue*0.25,initialSigValue/10000.,initialSigValue*1.);
-  RooRealVar b2("b2", "background2 yield", initialSigValue*0.7,initialSigValue/10000.,initialSigValue*1.);
-  s.setVal(initialSigValue/2.);  
-  s.setRange(initialSigValue/100.,initialSigValue*1.);
+  initialSigValue = failHisto->Integral(failHisto->FindBin(rangeFitMin),failHisto->FindBin(rangeFitMax));
+  //RooRealVar b1("b1", "background1 yield", initialSigValue*0.25,initialSigValue/10000.,initialSigValue*1.);
+  //RooRealVar b2("b2", "background2 yield", initialSigValue*0.7,initialSigValue/10000.,initialSigValue*1.);
+  b1.setVal(initialSigValue*0.25); b1.setRange(initialSigValue/10000.,initialSigValue*1.);
+  b2.setVal(initialSigValue*0.7); b2.setRange(initialSigValue/10000.,initialSigValue*1.);
+  b.setVal(initialSigValue*0.10); b.setRange(initialSigValue/10000.,initialSigValue*1.);
+  s.setVal(initialSigValue/2.); s.setRange(initialSigValue/100.,initialSigValue*1.);
   //b1.setRange(initialSigValue/10000.,initialSigValue/2.);
   //b2.setRange(initialSigValue/10000.,initialSigValue/2.);
 
@@ -309,10 +341,29 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
     //gmean.setVal(120.); gmean.setRange(100.,150.);
     //gsigma.setVal(30.); gsigma.setRange(20.,50.);
     b1.setVal(initialSigValue*0.5);
+    b.setVal(initialSigValue*0.5);
+    s.setRange(initialSigValue/200.,initialSigValue*1.);
   }
 
-  RooAddPdf failPdf("sum", "DoubleCB plus Bkg1 plus Bkg2",
-  		    RooArgList(func1, pgauss, func3), RooArgList(s, b1, b2));
+  //
+  if((!fIsMu) && (bin==0 || bin==1 || bin==6 || bin==7 ||  bin==12 || bin==13 || bin==18 || bin==19) ){
+    b.setVal(initialSigValue*0.8);    
+    s.setVal(initialSigValue*0.05);    
+    s.setRange(initialSigValue*0.01,initialSigValue*0.70);    
+    //cout << "initialSigValue, s, b: " << initialSigValue << " , " << s.getVal() << " , " << b.getVal() << endl;
+    //Wait();
+  }
+  
+  if(!fIsMu && bin == 24)  mean_b.setVal(55.);
+  
+
+
+  //RooAddPdf failPdf("sum", "DoubleCB plus Bkg1 plus Bkg2",
+  // 		    RooArgList(func1, pgauss, func3), RooArgList(s, b1, b2));
+
+  RooAddPdf failPdf("sum", "DoubleCB plus Bkg",
+  		    RooArgList(func1, cbBkg), RooArgList(s, b));
+
 
 
   passFrame->Draw();
@@ -325,8 +376,9 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
   c->cd(2);
   failPdf.fitTo (failData );
   failPdf.plotOn(failFrame);
-  failPdf.plotOn(failFrame,RooFit::Components(func3),RooFit::LineStyle(kDashed));
-  failPdf.plotOn(failFrame,RooFit::Components(pgauss),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen));
+  failPdf.plotOn(failFrame,RooFit::Components(cbBkg),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen));
+  //failPdf.plotOn(failFrame,RooFit::Components(func3),RooFit::LineStyle(kDashed));
+  //failPdf.plotOn(failFrame,RooFit::Components(pgauss),RooFit::LineStyle(kDashed),RooFit::LineColor(kGreen));
   failPdf.plotOn(failFrame,RooFit::Components(func1),RooFit::LineStyle(kDashed),RooFit::LineColor(kRed));
 
   float nfail    = s.getVal();
@@ -387,82 +439,6 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
 
 }
 
-// void TnP::simFitPassFail(TH1F* passHisto , TH1F* failHisto, int flag, int bin){
-// 
-// 	// linear + gauss
-// 	TF1 * fP = new TF1("fP","[0] + [1]*x + [2] * 1/(sqrt(2*TMath::Pi())*[4]) * exp(-0.5*((x-[3])/[4])**2)", 60, 120);
-// 	// exponential + gauss
-// 	// TF1 * fP = new TF1("fP","[0]*exp([5] + [1]*x) + [2] * 1/(sqrt(2*TMath::Pi())*[4]) * exp(-0.5*((x-[3])/[4])**2)", 60, 120);
-// 	fP->SetNpx(1000);
-// 	fP->SetParameter(3,90);
-// 	fP->SetParameter(4, 5);
-// 
-// 	fP->SetLineColor(4);
-// 	passHisto->Fit("fP", "eq");
-// 	float npass    = fP->GetParameter(2);
-// 	float npassErr = fP->GetParError(2);
-// 
-// 	// fix the mean and the sigma of the gaussian
-// 	fP->FixParameter(3, fP->GetParameter(3));
-// 	fP->FixParameter(4, fP->GetParameter(4));
-// 	
-// 
-// 	fP->SetLineColor(2);
-// 	failHisto->Fit("fP", "q");
-// 	float nfail    = fP->GetParameter(2);
-// 	float nfailErr = fP->GetParError(2);
-// 
-// 	float eff = (npass+nfail) > 0 ? npass/(npass+nfail) : 0.;
-// 	float effErr = (npass+nfail) > 0 ? fabs(npass/(npass+nfail)*(npassErr/npass - nfailErr/nfail)) : 0.;
-// 
-// 	TLatex *lat = new TLatex();
-// 	lat->SetNDC(kTRUE);
-// 	lat->SetTextColor(kBlack);
-// 	lat->SetTextSize(0.05);
-// 
-// 	TString indText;
-// 	if     (flag==0) indText = "ID over all";
-// 	else if(flag==1) indText = "IP over ID";
-// 	else if(flag==2) indText = "ISO over ID+IP";
-// 
-// 	TCanvas* c = new TCanvas("foo", "bar", 800, 675);
-// 	c->Divide(1,2);
-// 	c->cd(1);
-// 	passHisto->Draw("pe");
-// 	setHistoStyle(passHisto);
-// 	passHisto->GetXaxis()->SetRangeUser(60., 120.);
-// 	lat->DrawLatex(0.10,0.92, indText+" passing");
-// 	lat->DrawLatex(0.40,0.92, fIsMu ? getPtEtaFromIndexMu(bin) : getPtEtaFromIndexEl(bin));
-// 
-// 	c->cd(2);
-// 	failHisto->Draw("pe");
-// 	setHistoStyle(failHisto);
-// 	failHisto->GetXaxis()->SetRangeUser(60., 120.);
-// 	lat->DrawLatex(0.10,0.92, indText+" failing");
-// 	lat->DrawLatex(0.40,0.92, fIsMu ? getPtEtaFromIndexMu(bin) : getPtEtaFromIndexEl(bin));
-// 
-// 	// save as root and pdf
-// 	c->Print(Form("passAndFail_bin%d.pdf" ,bin));
-// 	c->Print(Form("passAndFail_bin%d.root",bin));
-// 
-// 	delete c;
-// 
-// 	// store the efficiencies:
-// 	effs[bin].bin = bin;
-// 	if(flag == 0) {
-// 		effs[bin].idEff = eff;
-// 		effs[bin].idEffErr = effErr;
-// 	}
-// 	if(flag == 1) {
-// 		effs[bin].ipEff = eff;
-// 		effs[bin].ipEffErr = effErr;
-// 	}
-// 	if(flag == 2) {
-// 		effs[bin].isoEff = eff;
-// 		effs[bin].isoEffErr = effErr;
-// 	}
-// 
-// }
 
 void TnP::fillHistos(){
 
@@ -508,7 +484,7 @@ void TnP::fillHistos(){
 
 	for( int i = 0; i < nentries; i++ ){
 		tree->GetEntry(i);
-		if(!fIsData) puWeight = fPUWeight->weight(ntrue); // PU weight only for MC
+		//if(!fIsData) puWeight = fPUWeight->weight(ntrue); // PU weight only for MC
 		if(!passesAll(tagIsoRel, tagD0, tagDz, tagPassID)) continue; // make sure the tag passes everything
 		index = fIsMu ? getPtEtaIndexMu(probePt, probeEta) : getPtEtaIndexEl(probePt, probeEta);
 		if(!fIsMu and !checkElEta(probeEta)) continue;
@@ -676,7 +652,7 @@ void TnP::printMuTable(){
 
     
   for(int i=0; i<fnBins; ++i){
-    if( i  <= 6){ 
+    if( i  <= 5){ 
       hEta1ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta1ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
@@ -691,7 +667,7 @@ void TnP::printMuTable(){
     }    
 
 
-    if( i > 6 && i <= 11){ 
+    if( i > 5 && i <= 11){ 
       hEta2ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta2ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
@@ -865,7 +841,7 @@ void TnP::printElTable(){
 
     
   for(int i=0; i<fnBins; ++i){
-    if( i  <= 6){ 
+    if( i  <= 5){ 
       hEta1ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta1ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
@@ -880,7 +856,7 @@ void TnP::printElTable(){
     }    
 
 
-    if( i > 6 && i <= 11){ 
+    if( i > 5 && i <= 11){ 
       hEta2ID->SetBinContent(i%6 +1,effs[i].idEff);
       hEta2ID->SetBinError(i%6 +1,effs[i].idEffErr);
       
