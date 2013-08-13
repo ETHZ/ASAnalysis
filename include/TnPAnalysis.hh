@@ -44,6 +44,10 @@ public:
 
 	float QuickHT();
 
+	bool IsSignalElectron(int, float&, float&, float&);
+	bool IsSignalMuon(int, float&, float&, float&);
+	float getGenZMass();
+
 	// class lepton{
 	// 	float pt;
 	// 	float eta;
@@ -94,17 +98,23 @@ public:
 	float fTagIsoRel;
 	float fTagD0;
 	float fTagDz;
+	float fTag3DIP;
 	float fTagPassID;
 	// probe variables
 	float fProbePt;
 	float fProbeEta;
 	float fProbePhi;
+	float fProbePtErr;
 	float fProbeIsoRel;
 	float fProbeD0;
 	float fProbeDz;
-	float fProbePassID;;
+	float fProbe3DIP;
+	float fProbePassID;
+	int   fProbeIsGlobal;
 	// other variables
 	float fMass2L;
+	float fMass2LMatchedLeptons;
+	float fMass2LFromZ;
 	float fDeltaR;
 	float fNvtx ;
 	float fRho;
