@@ -1889,8 +1889,8 @@ std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi
   float result1=0;
   float result2=0;
   
-  std::vector<int> footprint = GetPFCandInsideFootprint(fTR,pfcands,phoqi1,0,"photon");
-  std::vector<int> footprint2 = GetPFCandInsideFootprint(fTR,pfcands,phoqi2,0,"photon"); // add phoqi<0 ritorna vuoto
+  std::vector<int> footprint = GetPFCandInsideFootprint(fTR,pfcands,phoqi1,0,"photon");  // phoqi<0 ritorna vuoto
+  std::vector<int> footprint2 = GetPFCandInsideFootprint(fTR,pfcands,phoqi2,0,"photon"); // phoqi<0 ritorna vuoto
   footprint.insert(footprint.end(),footprint2.begin(),footprint2.end());
 
   for (int i=0; i<pfcands->PfCandPt.size(); i++){
@@ -1901,8 +1901,8 @@ std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi
     }
     if (removed) continue;
 
-    if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi1,i).dR<0.4) result1+=pfcands->PfCandPt[i];
-    if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi2,i).dR<0.4) result2+=pfcands->PfCandPt[i];
+    if (phoqi1>=0) if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi1,i).dR<0.4) result1+=pfcands->PfCandPt[i];
+    if (phoqi2>=0) if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi2,i).dR<0.4) result2+=pfcands->PfCandPt[i];
     
 
   } // end pf cand loop
@@ -1930,6 +1930,8 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
   
   TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
 
+  bool isbarrel = (fabs(photon_position.Eta())<1.4442);
+
   if (rotation_phi!=0) {
     TRotation r; r.RotateZ(rotation_phi);
     photon_position *= r;
@@ -1944,6 +1946,12 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
   }
 
   for (int i=0; i<fTR->NPfCand; i++){
+
+    float pfeta = fTR->PfCandEta[i];
+    if (pfeta>1.4442 && pfeta<1.56) continue;
+    if (pfeta>2.5) continue;
+    if (isbarrel && fabs(pfeta)>1.4442) continue;
+    if (!isbarrel && fabs(pfeta)<1.56) continue;
 
     if (fTR->Pho_isPFPhoton[phoqi] && fTR->pho_matchedPFPhotonCand[phoqi]==i) continue;
  
@@ -2060,7 +2068,6 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
 
   } // end pf cand loop
 
-
   return result*scaleresult-GetPUEnergy(fTR,component,fTR->PhoisEB[phoqi]);
 
 };
@@ -2143,6 +2150,14 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
 
   TVector3 ecalpfhit = PropagatePFCandToEcal(fTR,i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel);
 
+  if ((isbarrel && fabs(fTR->PfCandEta[i])>1.4442) || (!isbarrel && fabs(fTR->PfCandEta[i])<1.56) || (fabs(fTR->PfCandEta[i])>1.4442 && fabs(fTR->PfCandEta[i])<1.56) || (fabs(fTR->PfCandEta[i])>2.5)) {
+    angular_distances_struct out;
+    out.dR = 999;
+    out.dEta = 999;
+    out.dPhi = 999;
+    return out;
+  }
+
   angular_distances_struct out;
   out.dR = Util::GetDeltaR(sc_position.Eta(),ecalpfhit.Eta(),sc_position.Phi(),ecalpfhit.Phi());
   out.dEta = ecalpfhit.Eta()-sc_position.Eta();
@@ -2175,6 +2190,14 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
   pfmomentum = pfmomentum.Unit();
 
   TVector3 ecalpfhit = PropagatePFCandToEcal(pfcands,i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel);
+
+  if ((isbarrel && fabs(pfcands->PfCandEta[i])>1.4442) || (!isbarrel && fabs(pfcands->PfCandEta[i])<1.56) || (fabs(pfcands->PfCandEta[i])>1.4442 && fabs(pfcands->PfCandEta[i])<1.56) || (fabs(pfcands->PfCandEta[i])>2.5)) {
+    angular_distances_struct out;
+    out.dR = 999;
+    out.dEta = 999;
+    out.dPhi = 999;
+    return out;
+  }
 
   angular_distances_struct out;
   out.dR = Util::GetDeltaR(sc_position.Eta(),ecalpfhit.Eta(),sc_position.Phi(),ecalpfhit.Phi());
@@ -2228,7 +2251,7 @@ void DiPhotonMiniTree::FillLead(int index){
   //pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx[index];
   isolations_struct isos = PFConeIsolation(fTR,index);
   pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx=isos.photon;
-  //  std::cout << "debug PFPhotonIso " << PFIsolation(index,-999,"photon") << " " << pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx << std::endl;
+  //  std::cout << "debug lead PFPhotonIso " << isos.photon << " " << std::endl;
   pholead_pho_Cone01NeutralHadronIso_mvVtx=fTR->pho_Cone01NeutralHadronIso_mvVtx[index];
   pholead_pho_Cone02NeutralHadronIso_mvVtx=fTR->pho_Cone02NeutralHadronIso_mvVtx[index];
   pholead_pho_Cone03NeutralHadronIso_mvVtx=fTR->pho_Cone03NeutralHadronIso_mvVtx[index];
