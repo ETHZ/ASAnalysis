@@ -36,6 +36,11 @@ enum SigBkgMode {
   kBkg = 5
 };
 
+enum ChoiceMixingTemplates {
+  k1Event = 0,
+  k2Events = 1
+};
+
 const int global_maxN_photonpfcandidates = 2000;
 const int global_maxN_vetoobjects = 200;
 
@@ -134,7 +139,7 @@ private:
   bool FindCloseJetsAndPhotons(std::vector<std::pair<float,float> > obj, float eta, float phi);
   std::vector<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
 
-  void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode);
+  void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing);
   void FillVetoObjects(TreeReader *fTR, int phoqi, TString mod);
   void InitInputTree();
 
@@ -416,14 +421,22 @@ private:
   Float_t allphotonpfcand_vy[global_maxN_photonpfcandidates];
   Float_t allphotonpfcand_vz[global_maxN_photonpfcandidates];
 
-  Float_t phoiso_template_sigsig_1[nclosest];
-  Float_t phoiso_template_sigsig_2[nclosest];
-  Float_t phoiso_template_sigbkg_1[nclosest];
-  Float_t phoiso_template_sigbkg_2[nclosest];
-  Float_t phoiso_template_bkgsig_1[nclosest];
-  Float_t phoiso_template_bkgsig_2[nclosest];
-  Float_t phoiso_template_bkgbkg_1[nclosest];
-  Float_t phoiso_template_bkgbkg_2[nclosest];
+  Float_t phoiso_template_1event_sigsig_1[nclosest];
+  Float_t phoiso_template_1event_sigsig_2[nclosest];
+  Float_t phoiso_template_1event_sigbkg_1[nclosest];
+  Float_t phoiso_template_1event_sigbkg_2[nclosest];
+  Float_t phoiso_template_1event_bkgsig_1[nclosest];
+  Float_t phoiso_template_1event_bkgsig_2[nclosest];
+  Float_t phoiso_template_1event_bkgbkg_1[nclosest];
+  Float_t phoiso_template_1event_bkgbkg_2[nclosest];
+  Float_t phoiso_template_2events_sigsig_1[nclosest];
+  Float_t phoiso_template_2events_sigsig_2[nclosest];
+  Float_t phoiso_template_2events_sigbkg_1[nclosest];
+  Float_t phoiso_template_2events_sigbkg_2[nclosest];
+  Float_t phoiso_template_2events_bkgsig_1[nclosest];
+  Float_t phoiso_template_2events_bkgsig_2[nclosest];
+  Float_t phoiso_template_2events_bkgbkg_1[nclosest];
+  Float_t phoiso_template_2events_bkgbkg_2[nclosest];
 
   Int_t   vetoobjects_count;
   Float_t vetoobjects_eta[global_maxN_vetoobjects];
@@ -460,14 +473,22 @@ private:
   TBranch *b_matchingtree_event_run;
   TBranch *b_matchingtree_event_lumi;
   TBranch *b_matchingtree_event_number;
-  TBranch *b_matchingtree_index_sigsig_1;
-  TBranch *b_matchingtree_index_sigsig_2;
-  TBranch *b_matchingtree_index_sigbkg_1;
-  TBranch *b_matchingtree_index_sigbkg_2;
-  TBranch *b_matchingtree_index_bkgsig_1;
-  TBranch *b_matchingtree_index_bkgsig_2;
-  TBranch *b_matchingtree_index_bkgbkg_1;
-  TBranch *b_matchingtree_index_bkgbkg_2;
+  TBranch *b_matchingtree_index_1event_sigsig_1;
+  TBranch *b_matchingtree_index_1event_sigsig_2;
+  TBranch *b_matchingtree_index_1event_sigbkg_1;
+  TBranch *b_matchingtree_index_1event_sigbkg_2;
+  TBranch *b_matchingtree_index_1event_bkgsig_1;
+  TBranch *b_matchingtree_index_1event_bkgsig_2;
+  TBranch *b_matchingtree_index_1event_bkgbkg_1;
+  TBranch *b_matchingtree_index_1event_bkgbkg_2;
+  TBranch *b_matchingtree_index_2events_sigsig_1;
+  TBranch *b_matchingtree_index_2events_sigsig_2;
+  TBranch *b_matchingtree_index_2events_sigbkg_1;
+  TBranch *b_matchingtree_index_2events_sigbkg_2;
+  TBranch *b_matchingtree_index_2events_bkgsig_1;
+  TBranch *b_matchingtree_index_2events_bkgsig_2;
+  TBranch *b_matchingtree_index_2events_bkgbkg_1;
+  TBranch *b_matchingtree_index_2events_bkgbkg_2;
 
 
   bool isstep2;
@@ -479,14 +500,22 @@ private:
   Int_t matchingtree_event_run;
   Int_t matchingtree_event_lumi;
   Int_t matchingtree_event_number;
-  Int_t matchingtree_index_sigsig_1[nclosest_inputmatching];
-  Int_t matchingtree_index_sigsig_2[nclosest_inputmatching];
-  Int_t matchingtree_index_sigbkg_1[nclosest_inputmatching];
-  Int_t matchingtree_index_sigbkg_2[nclosest_inputmatching];
-  Int_t matchingtree_index_bkgsig_1[nclosest_inputmatching];
-  Int_t matchingtree_index_bkgsig_2[nclosest_inputmatching];
-  Int_t matchingtree_index_bkgbkg_1[nclosest_inputmatching];
-  Int_t matchingtree_index_bkgbkg_2[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_sigsig_1[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_sigsig_2[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_sigbkg_1[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_sigbkg_2[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_bkgsig_1[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_bkgsig_2[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_bkgbkg_1[nclosest_inputmatching];
+  Int_t matchingtree_index_1event_bkgbkg_2[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_sigsig_1[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_sigsig_2[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_sigbkg_1[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_sigbkg_2[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_bkgsig_1[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_bkgsig_2[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_bkgbkg_1[nclosest_inputmatching];
+  Int_t matchingtree_index_2events_bkgbkg_2[nclosest_inputmatching];
 
 
 
