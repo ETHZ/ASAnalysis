@@ -55,7 +55,7 @@ public:
 	virtual bool passesIP(float d0, float dz);
 	virtual bool passesIso(float iso);
 
-
+        TH1F* fNVertexH;
 	TH1F** fPassIDoverAll  ;
 	TH1F** fPassIPoverID   ;
 	TH1F** fPassISOoverIDIP;
