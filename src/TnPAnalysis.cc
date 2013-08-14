@@ -33,6 +33,7 @@ void TnPAnalysis::Begin(){
 	fHMass2LPass  = new TH1D("mass2LPass", "mass2LPass", 120,    0.,  120.);
 	fHMass2LFail  = new TH1D("mass2LFail", "mass2LFail", 120,    0.,  120.);
 
+	ReadPDGTable("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/pdgtable.txt");
 	BookTree();
 }
 
@@ -190,17 +191,23 @@ void TnPAnalysis::BookTree(){
 	fAnalysisTree->Branch("tagIsoRel",        &fTagIsoRel,     "tagIsoRel/F");
 	fAnalysisTree->Branch("tagD0",            &fTagD0,         "tagD0/F");
 	fAnalysisTree->Branch("tagDz",            &fTagDz,         "tagDz/F");
+	fAnalysisTree->Branch("tag3DIP",            &fTag3DIP,         "tag3DIP/F");
 	fAnalysisTree->Branch("tagPassID",        &fTagPassID,     "tagPassID/F");
 	//
 	fAnalysisTree->Branch("probePt",            &fProbePt,         "probePt/F");
 	fAnalysisTree->Branch("probeEta",           &fProbeEta,        "probeEta/F");
 	fAnalysisTree->Branch("probePhi",           &fProbePhi,        "probePhi/F");
+	fAnalysisTree->Branch("probePtErr",         &fProbePtErr,      "probePtErr/F");
 	fAnalysisTree->Branch("probeIsoRel",        &fProbeIsoRel,     "probeIsoRel/F");
 	fAnalysisTree->Branch("probeD0",            &fProbeD0,         "probeD0/F");
 	fAnalysisTree->Branch("probeDz",            &fProbeDz,         "probeDz/F");
+	fAnalysisTree->Branch("probe3DIP",            &fProbe3DIP,         "probe3DIP/F");
 	fAnalysisTree->Branch("probePassID",        &fProbePassID,     "probePassID/F");
+	fAnalysisTree->Branch("probeIsGlobal",      &fProbeIsGlobal,   "probeIsGlobal/I");
 	
 	fAnalysisTree->Branch("mass2L",        &fMass2L,     "mass2L/F");
+	fAnalysisTree->Branch("mllMatchedLep", &fMass2LMatchedLeptons,  "mllMatchedLep/F");
+	fAnalysisTree->Branch("mGenZ",         &fMass2LFromZ,     "mGenZ/F");
 	fAnalysisTree->Branch("deltaR",        &fDeltaR,     "deltaR/F");
 	fAnalysisTree->Branch("nvtx",          &fNvtx,       "nvtx/F");
 	fAnalysisTree->Branch("rho",           &fRho,        "rho/F");
@@ -218,6 +225,7 @@ void TnPAnalysis::FillAnalysisTree(int indexLepTag, int indexLepProbe, float mas
 	fTLumiSection = fTR->LumiSection;
 	
 	fTisData = fIsData ? 1 : 0;
+	fTisMuEvent = fIsMu;
 	
 	
 	TLorentzVector lepTag;
@@ -235,26 +243,56 @@ void TnPAnalysis::FillAnalysisTree(int indexLepTag, int indexLepProbe, float mas
 	  		              massLep);
 	
 	
+	// TAG VARIABLES
 	fTagPt     = lepTag.Pt();
 	fTagEta    = lepTag.Eta();
 	fTagPhi    = lepTag.Phi();
-	fTagIsoRel = fIsMu ? MuPFIso     (indexLepTag) : ElPFIso     (indexLepTag);
-	fTagD0     = fIsMu ? fTR->MuD0PV [indexLepTag] : fTR->ElD0PV [indexLepTag];
-	fTagDz     = fIsMu ? fTR->MuDzPV [indexLepTag] : fTR->ElDzPV [indexLepTag];
-	fTagPassID = fIsMu ? PassOnlyIDMu(indexLepTag) : PassOnlyIDEl(indexLepTag);
+	fTagIsoRel = fIsMu ? MuPFIso       (indexLepTag) : ElPFIso       (indexLepTag);
+	fTagD0     = fIsMu ? fTR->MuD0PV   [indexLepTag] : fTR->ElD0PV   [indexLepTag];
+	fTagDz     = fIsMu ? fTR->MuDzPV   [indexLepTag] : fTR->ElDzPV   [indexLepTag];
+	fTag3DIP   = fIsMu ? fTR->MuD03DPV [indexLepTag] : fTR->ElD03DPV [indexLepTag];
+	fTagPassID = fIsMu ? PassOnlyIDMu  (indexLepTag) : PassOnlyIDEl  (indexLepTag);
 
-	fTisMuEvent = fIsMu;
 	
+	// PROBE VARIABLES
 	fProbePt     = lepProbe.Pt();
 	fProbeEta    = lepProbe.Eta();
 	fProbePhi    = lepProbe.Phi();
-	fProbeIsoRel = fIsMu ? MuPFIso     (indexLepProbe) : ElPFIso     (indexLepProbe);
-	fProbeD0     = fIsMu ? fTR->MuD0PV [indexLepProbe] : fTR->ElD0PV [indexLepProbe];
-	fProbeDz     = fIsMu ? fTR->MuDzPV [indexLepProbe] : fTR->ElDzPV [indexLepProbe];
-	fProbePassID = fIsMu ? PassOnlyIDMu(indexLepProbe) : PassOnlyIDEl(indexLepProbe);
+	fProbePtErr  = fIsMu ? fTR->MuPtE    [indexLepProbe] : fTR->ElPtE    [indexLepProbe];
+	fProbeIsoRel = fIsMu ? MuPFIso       (indexLepProbe) : ElPFIso       (indexLepProbe);
+	fProbeD0     = fIsMu ? fTR->MuD0PV   [indexLepProbe] : fTR->ElD0PV   [indexLepProbe];
+	fProbeDz     = fIsMu ? fTR->MuDzPV   [indexLepProbe] : fTR->ElDzPV   [indexLepProbe];
+	fProbe3DIP   = fIsMu ? fTR->MuD03DPV [indexLepProbe] : fTR->ElD03DPV [indexLepProbe];
+	fProbePassID = fIsMu ? PassOnlyIDMu  (indexLepProbe) : PassOnlyIDEl  (indexLepProbe);
+	fProbeIsGlobal = fIsMu ? fTR->MuIsGlobalMuon[indexLepProbe] : -1;
 	
 	
 	fMass2L  =  (lepTag+lepProbe).M();
+	// get the generator mass if the leptons are matched to a signal lepton
+	if (!fIsData) {
+		float tPt, tEta, tPhi;
+		float pPt, pEta, pPhi;
+		bool tagMatch   = fIsMu ? IsSignalMuon(indexLepTag, tPt, tEta, tPhi)   : IsSignalElectron(indexLepTag, tPt, tEta, tPhi) ;
+		bool probeMatch = fIsMu ? IsSignalMuon(indexLepProbe, pPt, pEta, pPhi) : IsSignalElectron(indexLepProbe, pPt, pEta, pPhi) ;
+		TLorentzVector lep1, lep2;
+		
+		if (tagMatch && probeMatch){
+			lep1.SetPtEtaPhiM(tPt, tEta, tPhi, massLep );
+			lep2.SetPtEtaPhiM(pPt, pEta, pPhi, massLep );
+			fMass2LMatchedLeptons = (lep1+lep2).M();
+		// cout << " mass: " << (lep1+lep2).M() << endl;
+		}
+		else fMass2LMatchedLeptons = -1.;
+
+		// get the mass from the status 3 Z:
+		fMass2LFromZ = getGenZMass();
+	}
+	else{
+		fMass2LMatchedLeptons = -99.;
+		fMass2LFromZ          = -99.;
+	}
+
+
 	fDeltaR  =  lepTag.DeltaR(lepProbe);
 	fNvtx    =  fTR->NVrtx;
 	fRho     =  fTR->Rho;
@@ -324,4 +362,182 @@ float TnPAnalysis::QuickHT(){
 	}
 
 	return ht;
+}
+
+
+// ----------------------------
+// --  MATCHING STUFF  --------
+// ----------------------------
+
+bool TnPAnalysis::IsSignalElectron(int index, float &elpt, float &eleta, float &elphi){
+
+	int matched = -1;
+	// Match to a gen electron
+	float mindr(100.);
+	for(size_t i = 0; i < fTR->NGenLeptons; ++i){
+		if(abs(fTR->GenLeptonID[i]) != 11) continue; // electrons
+		float eta = fTR->GenLeptonEta[i];
+		float phi = fTR->GenLeptonPhi[i];
+		float DR = Util::GetDeltaR(eta, fTR->ElEta[index], phi, fTR->ElPhi[index]);
+		if(DR > mindr) continue; // minimize DR
+		mindr = DR;
+		matched = i;
+	}
+
+	bool isGenElectron = true;
+        bool isSignalGenElectron = false;	
+	if(mindr > 0.2) isGenElectron = false; // max distance
+	if(matched < 0) isGenElectron = false; // match unsuccessful
+
+	pdgparticle mo, gmo;
+	if (isGenElectron){
+	  GetPDGParticle(mo,  abs(fTR->GenLeptonMID [matched]));
+	  GetPDGParticle(gmo, abs(fTR->GenLeptonGMID[matched]));
+	  if(mo.get_type() > 10  || gmo.get_type() > 10)  isSignalGenElectron = false; // mother is SM hadron
+	  if(mo.get_type() == 9  || gmo.get_type() == 9)  isSignalGenElectron = true; // matched to susy
+	  if(mo.get_type() == 4 && abs(mo.get_pdgid()) != 21 && abs(mo.get_pdgid()) != 22) isSignalGenElectron = true; // mother is gauge or higgs, but not gamma or gluon
+	  if(abs(mo.get_pdgid()) == 15 && (abs(gmo.get_pdgid()) == 6 ||abs(gmo.get_pdgid()) == 23 ||abs(gmo.get_pdgid()) == 24 ) ) isSignalGenElectron = true; // mother is a tau and grandma is a top/W/Z
+	  if(abs(mo.get_pdgid()) == 6) isSignalGenElectron = true; // mother is a top
+	  // If we've matched to a gen electron, then we'll set the ids now and exit
+	  elpt  = fTR->GenLeptonPt [matched];
+	  eleta = fTR->GenLeptonEta[matched];
+	  elphi = fTR->GenLeptonPhi[matched];
+	  return isSignalGenElectron;
+	}
+
+	// Otherwise, we'll look for a gen particle in a larger(?) cone
+	// and match to whatever is closest
+	int matchedPart = -1;
+	// Match to a gen particle
+	float mindrPart(100.);
+	for(size_t i = 0; i < fTR->nGenParticles; ++i){
+	  if(fTR->genInfoStatus[i] != 1  && fTR->genInfoStatus[i] != 3 ) continue; 
+	  float eta = fTR->genInfoEta[i];
+	  float phi = fTR->genInfoPhi[i];
+	  float DR = Util::GetDeltaR(eta, fTR->ElEta[index], phi, fTR->ElPhi[index]);
+	  if(DR > mindrPart) continue; // minimize DR
+	  mindrPart = DR;
+	  matchedPart = i;
+	}
+
+        bool isGenPart = true;
+        bool isSignalGenPart = false;
+	if(mindrPart > 0.3) isGenPart = false; // max distance
+	if(matchedPart < 0) isGenPart = false; // match unsuccessful
+
+	if (isGenPart){
+	  //keep going back until we get a mother with a different id
+	  int moIndex = fTR->genInfoMo1[matchedPart];
+	  while (fTR->genInfoId[matchedPart] == fTR->genInfoId[moIndex]){
+	    moIndex  = fTR->genInfoMo1[moIndex];
+	  }
+	  //keep going back until we get a grandmother with a different id
+	  int gmoIndex = fTR->genInfoMo1[moIndex];
+	  while (fTR->genInfoId[moIndex] == fTR->genInfoId[gmoIndex]){
+	    gmoIndex  = fTR->genInfoMo1[gmoIndex];
+	  }
+	  GetPDGParticle(mo ,  abs(fTR->genInfoId[moIndex] ));
+	  GetPDGParticle(gmo,  abs(fTR->genInfoId[gmoIndex]));	
+	  elpt  = fTR->genInfoPt [matchedPart];
+	  eleta = fTR->genInfoEta[matchedPart];
+	  elphi = fTR->genInfoPhi[matchedPart];
+	  return false;
+	}
+
+	//If we really didn't find a match to a lepton or any other particle, set everything to zero
+	elpt  = 0.;
+	eleta = 0.;
+	elphi = 0.;
+	return false;	
+}
+
+bool TnPAnalysis::IsSignalMuon(int index, float &mupt, float &mueta, float &muphi){
+
+	int matched = -1;
+	// Match to a gen muon
+	float mindr(100.);
+	for(size_t i = 0; i < fTR->NGenLeptons; ++i){
+		if(abs(fTR->GenLeptonID[i]) != 13) continue; // muons
+		float eta = fTR->GenLeptonEta[i];
+		float phi = fTR->GenLeptonPhi[i];
+		float DR = Util::GetDeltaR(eta, fTR->MuEta[index], phi, fTR->MuPhi[index]);
+		if(DR > mindr) continue; // minimize DR
+		mindr = DR;
+		matched = i;
+	}
+
+	bool isGenMuon = true;
+	bool isSignalGenMuon = false;	
+	if(mindr > 0.2) isGenMuon = false; // max distance
+	if(matched < 0) isGenMuon = false; // match unsuccessful
+
+	pdgparticle mo, gmo;
+	if (isGenMuon){
+	  GetPDGParticle(mo,  abs(fTR->GenLeptonMID [matched]));
+	  GetPDGParticle(gmo, abs(fTR->GenLeptonGMID[matched]));
+	  if(mo.get_type() > 10  || gmo.get_type() > 10)  isSignalGenMuon = false; // mother is SM hadron
+	  if(mo.get_type() == 9  || gmo.get_type() == 9)  isSignalGenMuon = true; // matched to susy
+	  if(mo.get_type() == 4 && abs(mo.get_pdgid()) != 21 && abs(mo.get_pdgid()) != 22) isSignalGenMuon = true; // mother is gauge or higgs, but not gamma or gluon
+	  if(abs(mo.get_pdgid()) == 15 && (abs(gmo.get_pdgid()) == 6 ||abs(gmo.get_pdgid()) == 23 ||abs(gmo.get_pdgid()) == 24 ) ) isSignalGenMuon = true; // mother is a tau and grandma is a top/W/Z
+	  if(abs(mo.get_pdgid()) == 6) isSignalGenMuon = true; // mother is a top
+	  // If we've matched to a gen muon, then we'll set the ids now and exit
+	  mupt  = fTR->GenLeptonPt [matched];
+	  mueta = fTR->GenLeptonEta[matched];
+	  muphi = fTR->GenLeptonPhi[matched];
+	  return isSignalGenMuon;
+	}
+
+	// Otherwise, we'll look for a gen particle in a larger cone and match to whatever is closest
+	int matchedPart = -1;
+	// Match to a gen particle
+	float mindrPart(100.);
+	for(size_t i = 0; i < fTR->nGenParticles; ++i){
+	  if(fTR->genInfoStatus[i] != 1  && fTR->genInfoStatus[i] != 3 ) continue; 
+	  float eta = fTR->genInfoEta[i];
+	  float phi = fTR->genInfoPhi[i];
+	  float DR = Util::GetDeltaR(eta, fTR->MuEta[index], phi, fTR->MuPhi[index]);
+	  if(DR > mindrPart) continue; // minimize DR
+	  mindrPart = DR;
+	  matchedPart = i;
+	}
+
+	bool isGenPart = true;
+	bool isSignalGenPart = false;
+	if(mindrPart > 0.3) isGenPart = false; // max distance
+	if(matchedPart < 0) isGenPart = false; // match unsuccessful
+
+	if (isGenPart){
+	  //keep going back until we get a mother with a different id
+	  int moIndex = fTR->genInfoMo1[matchedPart];
+	  while (fTR->genInfoId[matchedPart] == fTR->genInfoId[moIndex]){
+	    moIndex  = fTR->genInfoMo1[moIndex];
+	  }
+	  //keep going back until we get a grandmother with a different id
+	  int gmoIndex = fTR->genInfoMo1[moIndex];
+	  while (fTR->genInfoId[moIndex] == fTR->genInfoId[gmoIndex]){
+	    gmoIndex  = fTR->genInfoMo1[gmoIndex];
+	  }
+	  GetPDGParticle(mo ,  abs(fTR->genInfoId[moIndex] ));
+	  GetPDGParticle(gmo,  abs(fTR->genInfoId[gmoIndex]));
+	  mupt  = fTR->genInfoPt [matchedPart];
+	  mueta = fTR->genInfoEta[matchedPart];
+	  muphi = fTR->genInfoPhi[matchedPart];
+	  return false;
+	}
+
+	//If we really didn't find a match to a lepton or any other particle, set everything to zero
+	mupt  = 0.;
+	mueta = 0.;
+	muphi = 0.;
+	return false;
+}
+
+float TnPAnalysis::getGenZMass(){
+	float mass = -1.;
+	for(int i=0; i < fTR->nGenParticles; ++i){
+		if(abs(fTR->genInfoId[i]) == 23 && fTR->genInfoStatus[i]  == 3){
+			mass = fTR->genInfoM[i];
+		}
+	}
+	return mass;
 }
