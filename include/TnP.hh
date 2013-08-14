@@ -76,6 +76,7 @@ public:
 
 	eff* effs;
 
+	void printText();
 	// flavor specific things
 	// muons
 	virtual void printMuTable();

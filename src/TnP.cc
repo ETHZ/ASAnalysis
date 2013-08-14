@@ -63,7 +63,7 @@ TnP::TnP(TString inputfile, bool createHistos){
 
 	checkFlavor();
 	if (!fIsData) 
-		fPUWeight = new reweight::LumiReWeighting( "/shome/mdunser/puhistos/may21/DataPUTrue_may21_upDown.root", "/shome/mdunser/puhistos/MC2012PU.root", "pileup", "pileup");
+		fPUWeight = new reweight::LumiReWeighting("/shome/mdunser/puhistos/MC2012PU.root", "/shome/mdunser/puhistos/may21/DataPUTrue_may21_upDown.root", "pileup", "pileup");
 
 	if(fIsMu){
 		fIsoCut = 0.10;
@@ -408,6 +408,7 @@ void TnP::simFitPassFail(TH1F* passHisto, TH1F* failHisto, int flag, int bin){
 
   //binomial uncertainty:
   float effErr = sqrt( npass/(npass+nfail)*(1- npass/(npass+nfail)) / (npass+nfail) );
+  // float effErr = (npass+nfail) > 0 ? npass/(npass+nfail)*TMath::Sqrt( (npassErr/npass)*(npassErr/npass) + (nfailErr/nfail)*(nfailErr/nfail) ) : 0.;
 
   /*
   cout << "cb mean,sigma, a,n aD, nD: "
@@ -714,18 +715,34 @@ void TnP::printMuTable(){
 
   oFile->Close();
 
-  cout << Form("========================================================") << endl;
-  cout << Form("========================================================") << endl;
-  for(int i=0; i<fnBins; ++i){
-    cout << Form("At bin %2d: "+getPtEtaFromIndexMu(i), i+1) << endl;
-    cout << Form("========================") << endl;
-    cout << Form("ID-eff : %.3f +- %.3f", effs[i].idEff , effs[i].idEffErr ) << endl;
-    cout << Form("IP-eff : %.3f +- %.3f", effs[i].ipEff , effs[i].ipEffErr ) << endl;
-    cout << Form("ISO-eff: %.3f +- %.3f", effs[i].isoEff, effs[i].isoEffErr) << endl;
-    cout << Form("=============================================") << endl;
-  }
-}
+  printText();
 
+}
+void TnP::printText(){
+  ofstream OUT(fIsMu ? "muEfficiencies.txt" : "elEfficiencies.txt", ios::trunc);
+  OUT << Form("========================================================") << endl;
+  OUT << Form("========================================================") << endl;
+  for(int i=0; i<fnBins; ++i){
+    OUT << Form("At bin %2d: "+getPtEtaFromIndexMu(i), i+1) << endl;
+    OUT << Form("========================") << endl;
+    OUT << Form("ID-eff : %.3f +- %.3f", effs[i].idEff , effs[i].idEffErr ) << endl;
+    OUT << Form("IP-eff : %.3f +- %.3f", effs[i].ipEff , effs[i].ipEffErr ) << endl;
+    OUT << Form("ISO-eff: %.3f +- %.3f", effs[i].isoEff, effs[i].isoEffErr) << endl;
+    OUT << Form("=============================================") << endl;
+  }
+  OUT.close();
+
+  ofstream OUTTEX(fIsMu ? "muEfficiencies.tex" : "elEfficiencies.tex", ios::trunc);
+  OUTTEX << Form("========================================================") << endl;
+  OUTTEX << Form("                     10 < pT < 15   | 15 < pT < 20   & 20 < pT < 30     &    30 < pT 40  &   40 < pT < 50     & 50 < pT ") << endl;
+  OUTTEX << Form("-------------------------------------------------------------------------------------------------------------------------") << endl;
+  //OUT << Form("    |eta| < 1.2 : %.2f +- %.2f    |   %.2f +- %.2f   |%.2f +- %.2f    |%.2f +- %.2f    |%.2f +- %.2f    |%.2f +- %.2f    |")
+  //OUT << Form("    |eta| > 1.2 : %.2f +- %.2f    |   %.2f +- %.2f   |%.2f +- %.2f    |%.2f +- %.2f    |%.2f +- %.2f    |%.2f +- %.2f    |")
+
+  OUTTEX << Form("========================================================") << endl;
+
+ 
+}
 // =====================================================
 // ELECTRON FUNCTIONS
 // =====================================================
@@ -941,16 +958,7 @@ void TnP::printElTable(){
 
   oFile->Close();
   
-  cout << Form("========================================================") << endl;
-  cout << Form("========================================================") << endl;
-  for(int i=0; i<fnBins; ++i){
-    cout << Form("At bin %2d: "+getPtEtaFromIndexEl(i), i+1) << endl;
-    cout << Form("========================") << endl;
-    cout << Form("ID-eff : %.3f +- %.3f", effs[i].idEff , effs[i].idEffErr ) << endl;
-    cout << Form("IP-eff : %.3f +- %.3f", effs[i].ipEff , effs[i].ipEffErr ) << endl;
-    cout << Form("ISO-eff: %.3f +- %.3f", effs[i].isoEff, effs[i].isoEffErr) << endl;
-    cout << Form("=============================================") << endl;
-  }
+  printText();
 }
 
 // ------------------------------------------
