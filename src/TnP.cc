@@ -63,7 +63,7 @@ TnP::TnP(TString inputfile, bool createHistos){
 
 	checkFlavor();
 	if (!fIsData) 
-		fPUWeight = new reweight::LumiReWeighting("/shome/mdunser/puhistos/MC2012PU.root", "/shome/mdunser/puhistos/may21/DataPUTrue_may21_upDown.root", "pileup", "pileup");
+		fPUWeight = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/mdunser/puhistos/may21/DataPUTrue_may21_upDown.root", "pileup", "pileup");
 
 	if(fIsMu){
 		fIsoCut = 0.10;
