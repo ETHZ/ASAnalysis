@@ -130,6 +130,7 @@ private:
 	float fTpuweight;
 	float fTpuweightUp;
 	float fTpuweightDn;
+	int   fTPUnumTrueInteractions;
 	
 	// Triggers
 	vector<HLTPathSet> fHLTPathSets;
@@ -158,6 +159,7 @@ private:
 	float fTJetBetaStar[fMaxNjets];
 	float fTJetBeta[fMaxNjets];
 	float fTJetBetaSq[fMaxNjets];
+	float fTJetRMSCand[fMaxNjets];
 
 	float fTpfMET;
 	float fTpfMETphi;

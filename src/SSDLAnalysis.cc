@@ -237,6 +237,7 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("PUWeight",      &fTpuweight,  "PUWeight/F");
 	fAnalysisTree->Branch("PUWeightUp",      &fTpuweightUp,  "PUWeightUp/F");
 	fAnalysisTree->Branch("PUWeightDn",      &fTpuweightDn,  "PUWeightDn/F");
+	fAnalysisTree->Branch("PUnumTrueInteractions", &fTPUnumTrueInteractions, "PUnumTrueInteractions/I");
 
 	// single-muon properties
 	fAnalysisTree->Branch("NMus"          ,&fTnqmus,          "NMus/I");
@@ -338,6 +339,7 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("JetBetaStar",   &fTJetBetaStar,   "JetBetaStar[NJets]/F");
 	fAnalysisTree->Branch("JetBeta",       &fTJetBeta,       "JetBeta[NJets]/F");
 	fAnalysisTree->Branch("JetBetaSq",     &fTJetBetaSq,     "JetBetaSq[NJets]/F");
+	fAnalysisTree->Branch("JetRMSCand",    &fTJetRMSCand,    "JetRMSCand[NJets]/F");
 
 	fAnalysisTree->Branch("NPdfCTEQ", &fTNPdfCTEQ , "NPdfCTEQ/I");
 	fAnalysisTree->Branch("WPdfCTEQ", &fTWPdfCTEQ , "WPdfCTEQ[NPdfCTEQ]/F");
@@ -585,6 +587,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTJetBetaStar[ind] = fTR->JBetaStar[jetindex];
 		fTJetBeta[ind]     = fTR->JBeta[jetindex];
 		fTJetBetaSq[ind]   = fTR->JBetaSq[jetindex];
+		fTJetRMSCand[ind]   = fTR->JRMSCand[jetindex];
 		int genjetind = GenJetMatch(jetindex);
 		if(genjetind > -1){
 			fTJetGenpt [ind] = fTR->GenJetPt [genjetind];
@@ -620,9 +623,10 @@ void SSDLAnalysis::FillAnalysisTree(){
 		// fTpuweightUp = GetPUWeightUp  (fTR->NVrtx * 1.38);
 		// fTpuweightDn = GetPUWeightDown(fTR->NVrtx * 1.38);
 		// =============================================================
-		fTpuweight   = GetPUWeight    (fTR->PUnumInteractions); // the factor of 1.38 is derived from 20000 ttW events
-		fTpuweightUp = GetPUWeightUp  (fTR->PUnumInteractions);
-		fTpuweightDn = GetPUWeightDown(fTR->PUnumInteractions);
+		fTpuweight   = GetPUWeight    (fTR->PUnumTrueInteractions); // the factor of 1.38 is derived from 20000 ttW events
+		fTpuweightUp = GetPUWeightUp  (fTR->PUnumTrueInteractions);
+		fTpuweightDn = GetPUWeightDown(fTR->PUnumTrueInteractions);
+		fTPUnumTrueInteractions = fTR->PUnumTrueInteractions;
 	}
 	else {
 		fTpuweight   = 1.;
@@ -807,6 +811,7 @@ void SSDLAnalysis::ResetTree(){
 	fTpuweight = -999.99;
 	fTpuweightUp = -999.99;
 	fTpuweightDn = -999.99;
+	fTPUnumTrueInteractions = -999;
 	
 	// muon properties
 	fTnqmus = 0;
@@ -913,6 +918,7 @@ void SSDLAnalysis::ResetTree(){
 		fTJetBetaStar[i]  = -999.99;
 		fTJetBeta[i]      = -999.99;
 		fTJetBetaSq[i]    = -999.99;
+		fTJetRMSCand[i]   = -999.99;
 	}
 	fTpfMET      = -999.99;
 	fTpfMETphi   = -999.99;

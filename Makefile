@@ -78,6 +78,9 @@ RunSSDLAnalyzer: src/exe/RunSSDLAnalyzer.C $(OBJS) src/SSDLAnalyzer.o src/SSDLAn
 	mv -f $@ /scratch/$(USER)
 	mv /scratch/$(USER)/$@ $@
 
+ScanZBi_TTWOpt: src/exe/ScanZBi_TTWOpt.C $(OBJS) src/SSDLPlotter.o src/SSDLDumper.o
+	$(CXX) $(CXXFLAGS) -ldl $(GLIBS) $(LDFLAGS) DrawBase.o fitTools.o StatTools.o -o $@ $^
+
 clean:
 	find src -name '*.o' -exec $(RM) -v {} ';' 
 	$(RM) RunUserAnalyzer
@@ -4469,12 +4472,8 @@ src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TMatrix
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TMatrixFUtils.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TMatrixFUtilsfwd.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TRotation.h
-src/TnP.o: ./include/helper/Utilities.hh
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TWbox.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TMultiGraph.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TGaxis.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooRealVar.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsRealLValue.h
+src/TnP.o: ./RooDoubleCB/interface/RooDoubleCB.hh
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsPdf.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsReal.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsArg.h
 src/TnP.o: /usr/include/assert.h
@@ -4501,34 +4500,46 @@ src/TnP.o: /usr/include/bits/sigcontext.h /usr/include/bits/sigstack.h
 src/TnP.o: /usr/include/bits/sigthread.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooArgList.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooGlobalFunc.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooNameSet.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooObjCacheManager.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooNormSetCache.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooSetPair.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsCacheElement.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooCacheManager.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/Riostream.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooMsgService.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooRealProxy.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooArgProxy.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsProxy.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsRealLValue.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooNumber.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsLValue.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsBinning.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooRealVar.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooUniformBinning.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooSharedPropertiesList.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooSharedProperties.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TUUID.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooRealVarSharedProperties.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooRealConstant.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooConstVar.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooListProxy.h
+src/TnP.o: ./include/helper/LumiReweightingStandAlone.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TH1F.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TRandom1.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TRandom2.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TStopwatch.h
+src/TnP.o: ./include/helper/Utilities.hh
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TWbox.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TMultiGraph.h
+src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/TGaxis.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooDataSet.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsData.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooFormulaVar.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooFormula.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooListProxy.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsProxy.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooDirItem.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooDataHist.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooNameSet.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooCacheManager.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/root/5.32.00-cms21/include/Riostream.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooMsgService.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooNormSetCache.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooSetPair.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsCacheElement.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooGaussian.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooAbsPdf.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooObjCacheManager.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooRealProxy.h
-src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooArgProxy.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooExponential.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooChebychev.h
 src/TnP.o: /swshare/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include/RooPolynomial.h

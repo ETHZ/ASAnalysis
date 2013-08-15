@@ -62,6 +62,7 @@ public :
    Float_t         PUWeight;
    Float_t         PUWeightUp;
    Float_t         PUWeightDn;
+   Int_t           PUnumTrueInteractions;
    Int_t           NMus;
    Int_t           IsSignalMuon[5];   //[NMus]
    Float_t         MuPt[5];   //[NMus]
@@ -161,6 +162,7 @@ public :
 	Float_t         JetBetaStar[20];   //[NJets]
 	Float_t         JetBeta[20];   //[NJets]
 	Float_t         JetBetaSq[20];   //[NJets]
+	Float_t         JetRMSCand[20];   //[NJets]
 
    // List of branches
    TBranch        *b_Run;   //!
@@ -203,6 +205,7 @@ public :
    TBranch        *b_PUWeight;   //!
    TBranch        *b_PUWeightUp;   //!
    TBranch        *b_PUWeightDn;   //!
+   TBranch        *b_PUnumTrueInteractions;   //!
    TBranch        *b_NMus;   //!
    TBranch        *b_IsSignalMuon;   //!
    TBranch        *b_MuPt;   //!
@@ -302,6 +305,7 @@ public :
    TBranch        *b_JetBetaStar;   //!
    TBranch        *b_JetBeta;   //!
    TBranch        *b_JetBetaSq;   //!
+   TBranch        *b_JetRMSCand;   //!
 
    MetaTreeClassBase(TTree *tree=0);
    virtual ~MetaTreeClassBase();
@@ -413,6 +417,7 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("PUWeight", &PUWeight, &b_PUWeight);
    fChain->SetBranchAddress("PUWeightUp", &PUWeightUp, &b_PUWeightUp);
    fChain->SetBranchAddress("PUWeightDn", &PUWeightDn, &b_PUWeightDn);
+   fChain->SetBranchAddress("PUnumTrueInteractions", &PUnumTrueInteractions, &b_PUnumTrueInteractions);
    fChain->SetBranchAddress("NMus", &NMus, &b_NMus);
    fChain->SetBranchAddress("IsSignalMuon", IsSignalMuon, &b_IsSignalMuon);
    fChain->SetBranchAddress("MuPt", MuPt, &b_MuPt);
@@ -512,6 +517,7 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("JetBetaStar", JetBetaStar, &b_JetBetaStar);
    fChain->SetBranchAddress("JetBeta", JetBeta, &b_JetBeta);
    fChain->SetBranchAddress("JetBetaSq", JetBetaSq, &b_JetBetaSq);
+   fChain->SetBranchAddress("JetRMSCand", JetRMSCand, &b_JetRMSCand);
    Notify();
 }
 
