@@ -371,39 +371,44 @@ bool UserAnalysisBase::IsGoodPFJetTight(int index, double ptcut, double absetacu
 
 // MUONS
 bool UserAnalysisBase::IsMostBasicMu(int index){
-  if(MuPFIso(index) > 1.0) return false;                     // ignore all with iso > 1.0
-  if(fTR->MuIsPFMuon[index] == 0) return false;              // must be PF muon
-  if((fTR->MuIsGlobalMuon[index]  == 0 && 
-      fTR->MuIsTrackerMuon[index] == 0    ))  return false;  // either global or tracker muon
-  if(fTR->MuPt[index] < 5.) return false;                    // this shouldn't have an effect, but leave it there for fun
-  if(fabs(fTR->MuEta[index]) > 2.4) return false;            // ignore muons outside of tracker
+  // Most basic muons for Z-veto in 2012
+  if(MuPFIso(index) > 1.0) return false;
+  if((fTR->MuIsGlobalMuon[index] == 0 && fTR->MuIsTrackerMuon[index] == 0 ))  return false;
+  if(fTR->MuIsPFMuon[index] == 0) return false;
+  if(fTR->MuPt[index] < 5.) return false;
+  if(fabs(fTR->MuEta[index]) > 2.4) return false;
   return true;
 }
 
-bool UserAnalysisBase::MuPassesPOGTightID(int index){
-  if(fTR->MuPt[index] < 5)             return false; // already applied before
-  if(fabs(fTR->MuEta[index]) > 2.4)    return false; // already applied before
-  if(fTR->MuIsPFMuon[index] == 0)      return false; // already applied before
-  if(MuPFIso(index) > 1.0)             return false; // already applied before
-  
-  // Basic muon cleaning and ID
-  if(fTR->MuIsGlobalMuon[index] == 0)  return false;
-  if(fTR->MuNChi2[index] > 10)         return false;
-  if(fTR->MuNSiLayers[index] < 6)      return false;
-  if(fTR->MuNPxHits[index] < 1)        return false;
-  if(fTR->MuNGlMuHits [index] < 1)     return false;
-  // ONLY TEMPORARY   if(fTR->MuNMuHits [index] < 1) return false;
-  if(fTR->MuNMatchedStations.size() > 0) { 	 
-  	if(fTR->MuNMatchedStations[index] < 2)   return false;
-  }
+bool UserAnalysisBase::IsGoodBasicMu(int index){
+    // Basic muon cleaning and ID
+    if(fTR->MuIsGlobalMuon[index] == 0)  return false;
+    if(fTR->MuIsPFMuon[index] == 0) return false;
+
+    if(fTR->MuPt[index] < 5)          return false;
+    if(fabs(fTR->MuEta[index]) > 2.4) return false;
+
+    if(fTR->MuNChi2[index] > 10)    return false;
+    if(fTR->MuNSiLayers[index] < 6) return false;
+    if(fTR->MuNPxHits[index] < 1)   return false;
+    // if(fTR->MuNMuHits [index] < 2)   return false;
+    // if(fTR->MuNGlHits [index] < 1)   return false; // muon.globalTrack()->hitPattern().numberOfValidHits()
+	if(fTR->MuNGlMuHits [index] < 1) return false;
+	// ONLY TEMPORARY   if(fTR->MuNMuHits [index] < 1) return false;
+	// if(fTR->MuNMatches[index] < 2)   return false; // muon.numberOfMatches()
+	if(fTR->MuNMatchedStations.size() > 0) { 	 
+		if(fTR->MuNMatchedStations[index] < 2)   return false; // muon.numberOfMatchedStations() 	 
+	}
 
   if(fabs(fTR->MuD0PV[index]) > 0.02)    return false;
   if(fabs(fTR->MuDzPV[index]) > 0.10)    return false;
 
   // in the dumper now if(fTR->MuIso03EMVetoEt[index] > 4.0)  return false;
   // in the dumper now if(fTR->MuIso03HadVetoEt[index] > 6.0) return false;
+
   // if(fTR->MuPtE[index]/fTR->MuPt[index] > 0.1) return false;
 
+  if(MuPFIso(index) > 1.0) return false;
   return true;
 }
 
@@ -423,30 +428,42 @@ float UserAnalysisBase::MuRadIso(int index){
   return (fTR->MumuonRadPFIsoChHad03[index] + fTR->MumuonRadPFIsoNHad03[index] + fTR->MumuonRadPFIsoPhoton03[index]) / fTR->MuPt[index] ;
 }
 
+bool UserAnalysisBase::IsTightMu(int index){
+  if(!IsGoodBasicMu(index)) return false;
+  if(MuPFIso(index) > 0.15) return false;
+  return true;
+}
+
+bool UserAnalysisBase::IsLooseMu(int index){
+  if(!IsGoodBasicMu(index)) return false;
+  if(MuPFIso(index) > 1.0) return false;
+  return true;
+}
+
+bool UserAnalysisBase::IsLooseNoTightMu(int index){
+  if(IsLooseMu(index) && !IsTightMu(index)) return true;
+  else return false;
+}
+
 // ELECTRONS
-bool UserAnalysisBase::ElPassesPOGVetoID(int index){
-
-  if(fTR->ElPt[index] < 5.)         return false; // already in the ntuple
-  if(fabs(fTR->ElEta[index]) > 2.4) return false; // electrons in tracker region
-  if(ElPFIso(index) > 1.0)          return false; // loosest iso requirement
-
-  // Electrons with ID Veto WP: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification
-
-  if(fabs(fTR->ElSCEta[index]) < 1.479 ){ // Barrel
-    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
+bool UserAnalysisBase::IsGoodBasicEl(int index){
+  // Electrons with Veto WP (corresponds to WP 95 from 2011)
+  // if(fTR->ElIDsimpleWP95relIso[index] != 5 && fTR->ElIDsimpleWP95relIso[index] != 7) return false;		
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.80 ) return false;
-    if(fTR->ElSigmaIetaIeta                 [index]  > 0.01 ) return false;
-    if(fTR->ElHcalOverEcal                  [index]  > 0.15 ) return false;	
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.15 ) return false;	
   }
-  if(fabs(fTR->ElSCEta[index]) > 1.479 ){ // Endcap
-    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01 ) return false;
+  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+    if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.70 ) return false;
-    if(fTR->ElSigmaIetaIeta                 [index]  > 0.03 ) return false;
-    // not applied for veto WP if(fTR->ElHcalOverEcal             [index] > 0.07 ) return false;	
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01) return false;
+    // if(fTR->ElHcalOverEcal             [index] > 0.07 ) return false;	
   }
 	
-  // ECAL gap veto, now applied in the dumper
-  // if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;
+  // ECAL gap veto
+  // do in dumper if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;
 
   if(fabs(fTR->ElD0PV[index]) > 0.04) return false;
   if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
@@ -454,28 +471,24 @@ bool UserAnalysisBase::ElPassesPOGVetoID(int index){
   return true;
 }
 
-float UserAnalysisBase::ElEPThing(int index){
-  float epthing = fabs(1/fTR->ElCaloEnergy[index] - fTR->ElESuperClusterOverP[index]/fTR->ElCaloEnergy[index]);
-  return epthing;
-}
-
 bool UserAnalysisBase::IsGoodTriggerEl(int index){
-  if( fabs(fTR->ElSCEta[index]) < 1.479 ){ // Barrel
-    if(fTR->ElSigmaIetaIeta                 [index]  > 0.011) return false;
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    if(fTR->ElSigmaIetaIeta            [index] > 0.011 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.15 ) return false;
-    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01 ) return false;
-    if(fTR->ElHcalOverEcal                  [index]  > 0.10 ) return false;	
+    if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;	
   }
-  if( fabs(fTR->ElSCEta[index]) > 1.479 ){ // Endcap
-    if(fTR->ElSigmaIetaIeta                 [index]  > 0.031) return false;
+  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+    if(fTR->ElSigmaIetaIeta            [index] > 0.031 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.10 ) return false;
     if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.01 ) return false;
-    if(fTR->ElHcalOverEcal                  [index]  > 0.075) return false;	
+    if(fTR->ElHcalOverEcal             [index] > 0.075 ) return false;	
   }
 	
   // ECAL gap veto
   // do in dumper if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;
 
+  // the following two cuts are applied in the basicEle function
   // if(fabs(fTR->ElD0PV[index]) > 0.04) return false;
   // if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
 
@@ -483,26 +496,31 @@ bool UserAnalysisBase::IsGoodTriggerEl(int index){
 }
 
 bool UserAnalysisBase::ElPassesConvRej(int index){
+  // if(fTR->ElNumberOfMissingInnerHits[index] > 0   ) return false;
+  // if(fabs(fTR->ElConvPartnerTrkDist[index]) < 0.02 && fabs(fTR->ElConvPartnerTrkDCot[index]) < 0.02) return false;
+  // if(fTR->ElIDsimpleWP80relIso[index] < 4) return false;
+  // return true;
   if (fTR->ElNumberOfMissingInnerHits[index] > 0 ) return false;
   if (!fTR->ElPassConversionVeto[index] ) return false;
   return true;
 }
 
-bool UserAnalysisBase::ElPassesPOGLooseWP(int index){
+bool UserAnalysisBase::IsGoodElId_LooseWP(int index){
+  // Electrons with WP90 ID and WP80 conv. rej.
   if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
-    if(fTR->ElSigmaIetaIeta                 [index]  > 0.01 ) return false;
+    if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.15 ) return false;
     if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
-    if(fTR->ElHcalOverEcal                  [index]  > 0.12 ) return false;	
+    if(fTR->ElHcalOverEcal             [index] > 0.12 ) return false;	
   }
   if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
-    if(fTR->ElSigmaIetaIeta                 [index]  > 0.03 ) return false;
+    if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.10 ) return false;
     if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.009) return false;
-    if(fTR->ElHcalOverEcal                  [index]  > 0.10 ) return false;	
+    if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;	
   }
 
-  if(ElEPThing(index) > 0.05 ) return false;
+  if(fabs(1/fTR->ElCaloEnergy[index] - fTR->ElESuperClusterOverP[index]/fTR->ElCaloEnergy[index]) > 0.05 ) return false;
     
   if(fabs(fTR->ElD0PV[index]) > 0.02) return false;
   if(fabs(fTR->ElDzPV[index]) > 0.20) return false;
@@ -513,28 +531,32 @@ bool UserAnalysisBase::ElPassesPOGLooseWP(int index){
   return true;
 }
 
-bool UserAnalysisBase::ElPassesPOGMediumWP(int index){
+bool UserAnalysisBase::IsGoodElId_MediumWP(int index){
   // Electrons with WP80 ID and conv. rej. cuts
-  if( fabs(fTR->ElSCEta[index]) < 1.479 ){ // Barrel
-    if(fTR->ElSigmaIetaIeta            [index]       > 0.01 ) return false;
+  if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
+    if(fTR->ElSigmaIetaIeta            [index] > 0.01 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.06 ) return false;
     if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.004) return false;
-    if(fTR->ElHcalOverEcal             [index]       > 0.10 ) return false;
+    if(fTR->ElHcalOverEcal             [index] > 0.10 ) return false;
   }
-  if( fabs(fTR->ElSCEta[index]) > 1.479 ){ // Endcap
-    if(fTR->ElSigmaIetaIeta            [index]       > 0.03 ) return false;
+  if( fabs(fTR->ElEta[index]) > 1.479 ){ // Endcap
+    if(fTR->ElSigmaIetaIeta            [index] > 0.03 ) return false;
     if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index]) > 0.03 ) return false;
     if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index]) > 0.007) return false;
-    if(fTR->ElHcalOverEcal             [index]       > 0.075 ) return false;	
+    if(fTR->ElHcalOverEcal             [index] > 0.075 ) return false;	
   }
-
-  if(ElEPThing(index) > 0.05 ) return false;
+  // not applied if(fTR->ElPt[index] < 20.){
+  // not applied     if(fTR->Elfbrem[index] > 0.15) return true;
+  // not applied     if(fabs(fTR->ElSCEta[index]) < 1.0 && fTR->ElESuperClusterOverP[index] > 0.95 ) return true;
+  // not applied     return false;
+  // not applied }
+  if(fabs(1/fTR->ElCaloEnergy[index] - fTR->ElESuperClusterOverP[index]/fTR->ElCaloEnergy[index]) > 0.05 ) return false;
 
   if(fabs(fTR->ElD0PV[index]) > 0.02) return false;
   if(fabs(fTR->ElDzPV[index]) > 0.10) return false;
 
+  // WP80 conv. rejection
   if(ElPassesConvRej(index) == false) return false;
-
   return true;
 }
 
@@ -562,7 +584,7 @@ float UserAnalysisBase::ElRadIso(int index){
   return iso;
 }
 
-float UserAnalysisBase::ElRelDetIso(int index){
+float UserAnalysisBase::relElIso(int index){
   // Apply 1 GeV subtraction in ECAL Barrel isolation
   if( fabs(fTR->ElEta[index]) < 1.479 ){ // Barrel
     double iso = ( fTR->ElDR03TkSumPt[index] + TMath::Max(0., fTR->ElDR03EcalRecHitSumEt[index] - 1.) + fTR->ElDR03HcalTowerSumEt[index] ) / fTR->ElPt[index];
@@ -580,6 +602,26 @@ bool UserAnalysisBase::IsLooseTau(int index){
   // applied in dumper if( fTR->TauElectronMVARejection[index] < 0.5 ) return false;
   // applied in dumper if( fTR->TauTightMuonRejection[index]   < 0.5 ) return false;
   // applied in dumper if( fTR->TauLooseCombinedIsoDBSumPtCorr[index] < 0.5 ) return false;
+  return true;
+}
+
+bool UserAnalysisBase::IsLooseEl(int index){
+  if(!IsGoodBasicEl(index))         return false;
+  if(fTR->ElPt[index] < 5.)        return false;
+  if(fabs(fTR->ElEta[index]) > 2.4) return false;
+
+  // MARC: what is this? if(!fTR->ElEcalDriven[index]) return false;
+	
+  // Loose identification criteria: WP90
+  // if(!IsGoodElId_LooseWP(index)) return false;
+
+  // Requiring VETO WP: no further requirements need to be applied.
+
+  // Loose isolation criteria
+  if(ElPFIso(index) > 1.0) return false;
+  // if( fabs(fTR->ElEta[index]) <= 1.479 && relElIso(index) > 1.0 ) return false;
+  // if( fabs(fTR->ElEta[index]) >  1.479 && relElIso(index) > 0.6 ) return false;
+
   return true;
 }
 
@@ -813,7 +855,7 @@ bool UserAnalysisBase::IsGoodHadronicEvent(){
 vector<int> UserAnalysisBase::ElectronSelection(bool(UserAnalysisBase::*eleSelector)(int)){
   // Returns the vector of indices of
   // good electrons sorted by Pt
-  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::ElPassesPOGVetoID;
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
   vector<int>    selectedObjInd;
   vector<double> selectedObjPt;
   // form the vector of indices
@@ -914,7 +956,7 @@ vector<int> UserAnalysisBase::PhotonSelection(bool(UserAnalysisBase::*phoSelecto
 vector<int> UserAnalysisBase::MuonSelection(bool(UserAnalysisBase::*muonSelector)(int)){
   // Returns the vector of indices of
   // good muons sorted by Pt
-  if(muonSelector == NULL) muonSelector = &UserAnalysisBase::MuPassesPOGTightID;
+  if(muonSelector == NULL) muonSelector = &UserAnalysisBase::IsGoodBasicMu;
   vector<int>	selectedObjInd;
   vector<double>	selectedObjPt;
   // form the vector of indices
@@ -930,7 +972,7 @@ vector<int> UserAnalysisBase::MuonSelection(bool(UserAnalysisBase::*muonSelector
 bool UserAnalysisBase::SingleElectronSelection(int &index, bool(UserAnalysisBase::*eleSelector)(int)){
   // Selects events with (at least) one good electron and gives the index
   // of the hardest one in the argument
-  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::ElPassesPOGVetoID;
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
   if( fTR->NEles < 1 ) return false;
   vector<int> ElInd = ElectronSelection(eleSelector);
   if(ElInd.size() < 1) return false;
@@ -942,7 +984,7 @@ bool UserAnalysisBase::DiElectronSelection(int &ind1, int &ind2, int charge, boo
   // Selects events with (at least) two good electrons and gives the indices
   // of the hardest two in the argument (if selected)
   // charge is the relative charge, 0 = no cut on charge (default), 1 = SS, -1 = OS
-  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::ElPassesPOGVetoID;
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
   if( fTR->NEles < 2 ) return false;
   vector<int> ElInd = ElectronSelection(eleSelector);
   if(ElInd.size() < 2) return false;
@@ -954,12 +996,12 @@ bool UserAnalysisBase::DiElectronSelection(int &ind1, int &ind2, int charge, boo
 }
 
 bool UserAnalysisBase::SSDiElectronSelection(int &prim, int &sec, bool(UserAnalysisBase::*eleSelector)(int)){
-  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::ElPassesPOGVetoID;
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
   return DiElectronSelection(prim, sec, 1, eleSelector);
 }
 
 bool UserAnalysisBase::OSDiElectronSelection(int &prim, int &sec, bool(UserAnalysisBase::*eleSelector)(int)){
-  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::ElPassesPOGVetoID;
+  if(eleSelector == NULL) eleSelector = &UserAnalysisBase::IsGoodBasicEl;
   return DiElectronSelection(prim, sec, -1, eleSelector);
 }
 
@@ -970,7 +1012,7 @@ bool UserAnalysisBase::SingleMuonSelection(int &index){
   if( fTR->NMus < 1 ) return false;
   vector<int> MuInd;
   for(int imu = 0; imu < fTR->NMus; ++imu){
-    if(!MuPassesPOGTightID(imu)) continue;
+    if(!IsGoodBasicMu(imu)) continue;
     MuInd.push_back(imu);
   }
   if(MuInd.size() < 1) return false;
@@ -992,7 +1034,7 @@ bool UserAnalysisBase::DiMuonSelection(int &ind1, int &ind2, int charge){
   vector<int> MuInd;
   for(int imu = 0; imu < fTR->NMus; ++imu){
     if(fTR->MuPt[imu] < 10.) continue;
-    if(!MuPassesPOGTightID(imu)) continue;
+    if(!IsGoodBasicMu(imu)) continue;
     MuInd.push_back(imu);
   }
   if(MuInd.size() < 2) return false;

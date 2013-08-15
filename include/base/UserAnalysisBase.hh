@@ -81,22 +81,25 @@ public:
 
     // Muon Selectors
     virtual bool IsMostBasicMu(int);
-    virtual bool MuPassesPOGTightID(int);
+    virtual bool IsGoodBasicMu(int);
+    virtual bool IsTightMu(int);
+    virtual bool IsLooseMu(int);
+    virtual bool IsLooseNoTightMu(int);
 	virtual float MuPFIso(int);
 	virtual float MuPFIso04(int);
 	virtual float MuRadIso(int);
 
     // Electron Selectors
-    virtual bool ElPassesPOGVetoID(int);
+    virtual bool IsGoodBasicEl(int);
     virtual bool IsGoodTriggerEl(int);
-    virtual bool ElPassesPOGMediumWP(int);
-    virtual bool ElPassesPOGLooseWP(int);
+    virtual bool IsGoodElId_MediumWP(int);
+    virtual bool IsGoodElId_LooseWP(int);
     virtual bool ElPassesConvRej(int);
-    virtual float ElRelDetIso(int);
+    virtual bool IsLooseEl(int);
+    virtual float relElIso(int);
     virtual float ElPFIso(int);
     virtual float ElRadIso(int);
 	virtual float Aeff(float);
-	virtual float ElEPThing(int);
 
 	// Tau selector
 	virtual bool IsLooseTau(int);
