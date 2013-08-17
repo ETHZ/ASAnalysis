@@ -3132,7 +3132,7 @@ void DiPhotonMiniTree::InitInputTree(){
   if (isstep2){
     TString title = Form("%s/matchingtree_%u.root",input_filename.Data(),uuid);
     cout << "opening " << title.Data() << endl;
-    f_input = new TFile(title.Data(),"read");
+    f_input = TFile::Open(title.Data(),"read");
     f_input->GetObject("Tree_1Drandomcone_template",InputTree[0]);
     f_input->GetObject("Tree_1Dsideband_template",InputTree[1]);
     for (int m=0; m<2; m++){
