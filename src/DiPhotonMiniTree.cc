@@ -1122,9 +1122,19 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    pfcands2=&pfcands_2;
 	  }
 
+	  // {eta,pt,rho,sigma}
+	  float rewinfo_1[6]; 
+	  float rewinfo_2[6];
+
 	  if (n1>=0){
 	    if (InputTree[m1]->GetEntry(n1)<=0) continue;
-	    if (m1==1 && input_event_pass12whoissiglike==1) {input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi;}
+	    if (m1==1 && input_event_pass12whoissiglike==1) {
+	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
+	      input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi; input_pholead_pt = input_photrail_pt;
+	      input_photrail_SCeta = input_photemp_SCeta; input_photrail_SCphi = input_photemp_SCphi; input_photrail_pt = input_photemp_pt;
+	    }
+	    float myrewinfo_1[6]={input_pholead_SCeta,input_photrail_SCeta,input_pholead_pt,input_photrail_pt,input_event_rho,input_event_sigma};
+	    memcpy(rewinfo_1,myrewinfo_1,sizeof(myrewinfo_1));
 	    for (int k=0; k<input_allphotonpfcand_count; k++){
 	      pfcands1->PfCandPt.push_back(input_allphotonpfcand_pt[k]);
 	      pfcands1->PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]);
@@ -1157,7 +1167,13 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 
 	  if (n2>=0){
 	    if (InputTree[m2]->GetEntry(n2)<=0) continue;
-	    if (m2==1 && input_event_pass12whoissiglike==1) {input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi;}
+	    if (m2==1 && input_event_pass12whoissiglike==1) {
+	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
+	      input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi; input_pholead_pt = input_photrail_pt;
+	      input_photrail_SCeta = input_photemp_SCeta; input_photrail_SCphi = input_photemp_SCphi; input_photrail_pt = input_photemp_pt;
+	    }
+	    float myrewinfo_2[6]={input_pholead_SCeta,input_photrail_SCeta,input_pholead_pt,input_photrail_pt,input_event_rho,input_event_sigma};
+	    memcpy(rewinfo_2,myrewinfo_2,sizeof(myrewinfo_2));
 	    for (int k=0; k<input_allphotonpfcand_count; k++){
 	      pfcands2->PfCandPt.push_back(input_allphotonpfcand_pt[k]);
 	      pfcands2->PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]);
@@ -1186,19 +1202,27 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	      if (mode==kSigSig){
 		phoiso_template_1event_sigsig_1[found] = isos.first;
 		phoiso_template_1event_sigsig_2[found] = isos.second;
+		memcpy(rewinfo_template_1event_sigsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+		memcpy(rewinfo_template_1event_sigsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	      }
 	      else if (mode==kSigBkg){
 		phoiso_template_1event_sigbkg_1[found] = isos.first;
 		phoiso_template_1event_sigbkg_2[found] = isos.second;
+		memcpy(rewinfo_template_1event_sigbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+		memcpy(rewinfo_template_1event_sigbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	      }
 	      else if (mode==kBkgSig){
 		phoiso_template_1event_bkgsig_1[found] = isos.first;
 		phoiso_template_1event_bkgsig_2[found] = isos.second;
+		memcpy(rewinfo_template_1event_bkgsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+		memcpy(rewinfo_template_1event_bkgsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	      }
 	    }
 	    else {
 	      phoiso_template_1event_bkgbkg_1[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands1).first;
 	      phoiso_template_1event_bkgbkg_2[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands2).second;
+	      memcpy(rewinfo_template_1event_bkgbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+	      memcpy(rewinfo_template_1event_bkgbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	  }
 
@@ -1207,18 +1231,26 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    if (mode==kSigSig){
 	      phoiso_template_2events_sigsig_1[found] = isos.first;
 	      phoiso_template_2events_sigsig_2[found] = isos.second;
+	      memcpy(rewinfo_template_2events_sigsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+	      memcpy(rewinfo_template_2events_sigsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	    else if (mode==kSigBkg){
 	      phoiso_template_2events_sigbkg_1[found] = isos.first;
 	      phoiso_template_2events_sigbkg_2[found] = isos.second;
+	      memcpy(rewinfo_template_2events_sigbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+	      memcpy(rewinfo_template_2events_sigbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	    else if (mode==kBkgSig){
 	      phoiso_template_2events_bkgsig_1[found] = isos.first;
 	      phoiso_template_2events_bkgsig_2[found] = isos.second;
+	      memcpy(rewinfo_template_2events_bkgsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+	      memcpy(rewinfo_template_2events_bkgsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	    else if (mode==kBkgBkg){
 	      phoiso_template_2events_bkgbkg_1[found] = isos.first;
 	      phoiso_template_2events_bkgbkg_2[found] = isos.second;
+	      memcpy(rewinfo_template_2events_bkgbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
+	      memcpy(rewinfo_template_2events_bkgbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	  }
 	  
@@ -2768,7 +2800,7 @@ void DiPhotonMiniTree::ResetVars(){
     phoiso_template_2events_bkgsig_2[i]=-999;
     phoiso_template_2events_bkgbkg_1[i]=-999;
     phoiso_template_2events_bkgbkg_2[i]=-999;
-    for (int k=0; k<6; k++){
+    for (int k=0; k<4; k++){
       rewinfo_template_1event_sigsig_1[i*6+k]=-999;
       rewinfo_template_1event_sigsig_2[i*6+k]=-999;
       rewinfo_template_1event_sigbkg_1[i*6+k]=-999;
