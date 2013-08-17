@@ -364,6 +364,24 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("phoiso_template_2events_bkgbkg_1",&phoiso_template_2events_bkgbkg_1,Form("phoiso_template_2events_bkgbkg_1[%d]/F",nclosest));
   OutputTree[i]->Branch("phoiso_template_2events_bkgbkg_2",&phoiso_template_2events_bkgbkg_2,Form("phoiso_template_2events_bkgbkg_2[%d]/F",nclosest));
 
+  // rewinfo = {eta1, eta2, pt1, pt2, rho, sigma}
+  OutputTree[i]->Branch("rewinfo_template_1event_sigsig_1",&rewinfo_template_1event_sigsig_1,Form("rewinfo_template_1event_sigsig_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_1event_sigsig_2",&rewinfo_template_1event_sigsig_2,Form("rewinfo_template_1event_sigsig_2[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_1event_sigbkg_1",&rewinfo_template_1event_sigbkg_1,Form("rewinfo_template_1event_sigbkg_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_1event_sigbkg_2",&rewinfo_template_1event_sigbkg_2,Form("rewinfo_template_1event_sigbkg_2[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_1event_bkgsig_1",&rewinfo_template_1event_bkgsig_1,Form("rewinfo_template_1event_bkgsig_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_1event_bkgsig_2",&rewinfo_template_1event_bkgsig_2,Form("rewinfo_template_1event_bkgsig_2[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_1event_bkgbkg_1",&rewinfo_template_1event_bkgbkg_1,Form("rewinfo_template_1event_bkgbkg_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_1event_bkgbkg_2",&rewinfo_template_1event_bkgbkg_2,Form("rewinfo_template_1event_bkgbkg_2[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_sigsig_1",&rewinfo_template_2events_sigsig_1,Form("rewinfo_template_2events_sigsig_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_sigsig_2",&rewinfo_template_2events_sigsig_2,Form("rewinfo_template_2events_sigsig_2[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_sigbkg_1",&rewinfo_template_2events_sigbkg_1,Form("rewinfo_template_2events_sigbkg_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_sigbkg_2",&rewinfo_template_2events_sigbkg_2,Form("rewinfo_template_2events_sigbkg_2[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_bkgsig_1",&rewinfo_template_2events_bkgsig_1,Form("rewinfo_template_2events_bkgsig_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_bkgsig_2",&rewinfo_template_2events_bkgsig_2,Form("rewinfo_template_2events_bkgsig_2[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_bkgbkg_1",&rewinfo_template_2events_bkgbkg_1,Form("rewinfo_template_2events_bkgbkg_1[%d]/F",nclosest*6));
+  OutputTree[i]->Branch("rewinfo_template_2events_bkgbkg_2",&rewinfo_template_2events_bkgbkg_2,Form("rewinfo_template_2events_bkgbkg_2[%d]/F",nclosest*6));
+
   OutputTree[i]->Branch("vetoobjects_count",&vetoobjects_count,"vetoobjects_count/I");
   OutputTree[i]->Branch("vetoobjects_eta",&vetoobjects_eta,"vetoobjects_eta[vetoobjects_count]/F");
   OutputTree[i]->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
@@ -2748,6 +2766,24 @@ void DiPhotonMiniTree::ResetVars(){
     phoiso_template_2events_bkgsig_2[i]=-999;
     phoiso_template_2events_bkgbkg_1[i]=-999;
     phoiso_template_2events_bkgbkg_2[i]=-999;
+    for (int k=0; k<6; k++){
+      rewinfo_template_1event_sigsig_1[i*6+k]=-999;
+      rewinfo_template_1event_sigsig_2[i*6+k]=-999;
+      rewinfo_template_1event_sigbkg_1[i*6+k]=-999;
+      rewinfo_template_1event_sigbkg_2[i*6+k]=-999;
+      rewinfo_template_1event_bkgsig_1[i*6+k]=-999;
+      rewinfo_template_1event_bkgsig_2[i*6+k]=-999;
+      rewinfo_template_1event_bkgbkg_1[i*6+k]=-999;
+      rewinfo_template_1event_bkgbkg_2[i*6+k]=-999;
+      rewinfo_template_2events_sigsig_1[i*6+k]=-999;
+      rewinfo_template_2events_sigsig_2[i*6+k]=-999;
+      rewinfo_template_2events_sigbkg_1[i*6+k]=-999;
+      rewinfo_template_2events_sigbkg_2[i*6+k]=-999;
+      rewinfo_template_2events_bkgsig_1[i*6+k]=-999;
+      rewinfo_template_2events_bkgsig_2[i*6+k]=-999;
+      rewinfo_template_2events_bkgbkg_1[i*6+k]=-999;
+      rewinfo_template_2events_bkgbkg_2[i*6+k]=-999;
+    }
   }
 
   vetoobjects_count=0;

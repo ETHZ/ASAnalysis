@@ -438,6 +438,23 @@ private:
   Float_t phoiso_template_2events_bkgbkg_1[nclosest];
   Float_t phoiso_template_2events_bkgbkg_2[nclosest];
 
+  Float_t rewinfo_template_1event_sigsig_1[nclosest*6];
+  Float_t rewinfo_template_1event_sigsig_2[nclosest*6];
+  Float_t rewinfo_template_1event_sigbkg_1[nclosest*6];
+  Float_t rewinfo_template_1event_sigbkg_2[nclosest*6];
+  Float_t rewinfo_template_1event_bkgsig_1[nclosest*6];
+  Float_t rewinfo_template_1event_bkgsig_2[nclosest*6];
+  Float_t rewinfo_template_1event_bkgbkg_1[nclosest*6];
+  Float_t rewinfo_template_1event_bkgbkg_2[nclosest*6];
+  Float_t rewinfo_template_2events_sigsig_1[nclosest*6];
+  Float_t rewinfo_template_2events_sigsig_2[nclosest*6];
+  Float_t rewinfo_template_2events_sigbkg_1[nclosest*6];
+  Float_t rewinfo_template_2events_sigbkg_2[nclosest*6];
+  Float_t rewinfo_template_2events_bkgsig_1[nclosest*6];
+  Float_t rewinfo_template_2events_bkgsig_2[nclosest*6];
+  Float_t rewinfo_template_2events_bkgbkg_1[nclosest*6];
+  Float_t rewinfo_template_2events_bkgbkg_2[nclosest*6];
+
   Int_t   vetoobjects_count;
   Float_t vetoobjects_eta[global_maxN_vetoobjects];
   Float_t vetoobjects_phi[global_maxN_vetoobjects];
