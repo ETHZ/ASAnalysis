@@ -567,7 +567,11 @@ void DiPhotonMiniTree::Analyze(){
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
     else if (sel_cat==2){
+      //      std::vector<int> passing_sel = PhotonSelection(fTR,passing);
+      //      std::vector<int> passing_presel = passing;
       passing = PhotonSelection(fTR,passing,"invert_sieie_cut");
+      //      pass[sel_cat] = (passing_sel.size()>=1) && SinglePhotonEventSelection(fTR,passing);
+      //      pass[sel_cat] = (passing_presel.size()>=2) && SinglePhotonEventSelection(fTR,passing);
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
     else if (sel_cat==3){
@@ -798,6 +802,32 @@ void DiPhotonMiniTree::Analyze(){
 
       }
 
+      if (sel_cat==7) {
+	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(!pass12_whoissiglike),0,"photon");
+	int index=0;
+	for (int k=0; k<fTR->NPfCand; k++){
+	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
+	  if (fTR->PfCandPdgId[k]!=22) continue;
+	  float eta = fabs(fTR->PfCandEta[k]);
+	  if (eta>1.4442 && eta<1.56) continue;
+	  if (eta>2.5) continue;
+	  if (fTR->Pho_isPFPhoton[passing.at(!pass12_whoissiglike)] && fTR->pho_matchedPFPhotonCand[passing.at(!pass12_whoissiglike)]==k) continue;	
+	  bool removed = false;
+	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
+	  if (removed) continue;
+	  allphotonpfcand_pt[index] = fTR->PfCandPt[k];
+	  allphotonpfcand_eta[index] = fTR->PfCandEta[k];
+	  allphotonpfcand_phi[index] = fTR->PfCandPhi[k];
+	  allphotonpfcand_vx[index] = fTR->PfCandVx[k];
+	  allphotonpfcand_vy[index] = fTR->PfCandVy[k];
+	  allphotonpfcand_vz[index] = fTR->PfCandVz[k];
+	  index++;
+	}
+	allphotonpfcand_count = index;
+
+	FillVetoObjects(fTR,passing.at(!pass12_whoissiglike),TString("exclude_object_itself"));
+
+      }
 
 
       float invmass0 = (CorrPhoton(fTR,passing.at(0),0)+CorrPhoton(fTR,passing.at(1),0)).M();
@@ -1383,13 +1413,13 @@ std::vector<int> DiPhotonMiniTree::PhotonSelection(TreeReader *fTR, std::vector<
 //  }
 
 
-  if (mode=="invert_sieie_cut"){ // veto close objects
-    for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // HoverE cut
-      bool pass=1;
-      if (FindCloseJetsAndPhotons(fTR,0,*it,"exclude_object_itself")) pass=0;
-      if (!pass) it=passing.erase(it); else it++;
-    }
-  }
+//  if (mode=="invert_sieie_cut"){ // veto close objects
+//    for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // HoverE cut
+//      bool pass=1;
+//      if (FindCloseJetsAndPhotons(fTR,0,*it,"exclude_object_itself")) pass=0;
+//      if (!pass) it=passing.erase(it); else it++;
+//    }
+//  }
 
   return passing;
 
