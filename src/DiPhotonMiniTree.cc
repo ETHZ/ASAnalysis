@@ -1124,6 +1124,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 
 	  if (n1>=0){
 	    if (InputTree[m1]->GetEntry(n1)<=0) continue;
+	    if (m1==1 && input_event_pass12whoissiglike==1) {input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi;}
 	    for (int k=0; k<input_allphotonpfcand_count; k++){
 	      pfcands1->PfCandPt.push_back(input_allphotonpfcand_pt[k]);
 	      pfcands1->PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]);
@@ -1156,6 +1157,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 
 	  if (n2>=0){
 	    if (InputTree[m2]->GetEntry(n2)<=0) continue;
+	    if (m2==1 && input_event_pass12whoissiglike==1) {input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi;}
 	    for (int k=0; k<input_allphotonpfcand_count; k++){
 	      pfcands2->PfCandPt.push_back(input_allphotonpfcand_pt[k]);
 	      pfcands2->PfCandEta.push_back(input_allphotonpfcand_eta[k]-input_pholead_SCeta+fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]);
@@ -3181,6 +3183,13 @@ void DiPhotonMiniTree::InitInputTree(){
       InputTree[m]->SetBranchAddress("allphotonpfcand_vz", input_allphotonpfcand_vz   , &b_input_allphotonpfcand_vz   );
       InputTree[m]->SetBranchAddress("pholead_SCeta", &input_pholead_SCeta, &b_input_pholead_SCeta);
       InputTree[m]->SetBranchAddress("pholead_SCphi", &input_pholead_SCphi, &b_input_pholead_SCphi);
+      InputTree[m]->SetBranchAddress("pholead_pt", &input_pholead_pt, &b_input_pholead_pt);
+      InputTree[m]->SetBranchAddress("photrail_SCeta", &input_photrail_SCeta, &b_input_photrail_SCeta);
+      InputTree[m]->SetBranchAddress("photrail_SCphi", &input_photrail_SCphi, &b_input_photrail_SCphi);
+      InputTree[m]->SetBranchAddress("photrail_pt", &input_photrail_pt, &b_input_photrail_pt);
+      InputTree[m]->SetBranchAddress("event_rho", &input_event_rho, &b_input_event_rho);
+      InputTree[m]->SetBranchAddress("event_sigma", &input_event_sigma, &b_input_event_sigma);
+      InputTree[m]->SetBranchAddress("event_pass12whoissiglike", &input_event_pass12whoissiglike, &b_input_event_pass12whoissiglike);
       InputTree[m]->SetBranchAddress("vetoobjects_count",&input_vetoobjects_count,&b_input_vetoobjects_count);
       InputTree[m]->SetBranchAddress("vetoobjects_eta", input_vetoobjects_eta, &b_input_vetoobjects_eta);
       InputTree[m]->SetBranchAddress("vetoobjects_phi", input_vetoobjects_phi, &b_input_vetoobjects_phi);

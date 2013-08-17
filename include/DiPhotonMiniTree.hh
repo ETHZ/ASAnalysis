@@ -468,6 +468,13 @@ private:
   Float_t input_allphotonpfcand_vz[global_maxN_photonpfcandidates];
   Float_t input_pholead_SCeta;
   Float_t input_pholead_SCphi;
+  Float_t input_pholead_pt;
+  Float_t input_photrail_SCeta;
+  Float_t input_photrail_SCphi;
+  Float_t input_photrail_pt;
+  Float_t input_event_rho;
+  Float_t input_event_sigma;
+  Int_t   input_event_pass12whoissiglike;
   Int_t   input_vetoobjects_count;
   Float_t input_vetoobjects_eta[global_maxN_vetoobjects];
   Float_t input_vetoobjects_phi[global_maxN_vetoobjects];
@@ -481,6 +488,13 @@ private:
   TBranch *b_input_allphotonpfcand_vz   ;
   TBranch *b_input_pholead_SCeta;
   TBranch *b_input_pholead_SCphi;
+  TBranch *b_input_pholead_pt;
+  TBranch *b_input_photrail_SCeta;
+  TBranch *b_input_photrail_SCphi;
+  TBranch *b_input_photrail_pt;
+  TBranch *b_input_event_rho;
+  TBranch *b_input_event_sigma;
+  TBranch *b_input_event_pass12whoissiglike;
   TBranch *b_input_vetoobjects_count;
   TBranch *b_input_vetoobjects_eta;
   TBranch *b_input_vetoobjects_phi;
