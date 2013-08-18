@@ -1128,7 +1128,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 
 	  if (n1>=0){
 	    if (InputTree[m1]->GetEntry(n1)<=0) continue;
-	    if (m1==1 && input_event_pass12whoissiglike==1) {
+	    if (m1==1 && input_event_pass12whoissiglike==0) {
 	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
 	      input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi; input_pholead_pt = input_photrail_pt;
 	      input_photrail_SCeta = input_photemp_SCeta; input_photrail_SCphi = input_photemp_SCphi; input_photrail_pt = input_photemp_pt;
@@ -1167,7 +1167,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 
 	  if (n2>=0){
 	    if (InputTree[m2]->GetEntry(n2)<=0) continue;
-	    if (m2==1 && input_event_pass12whoissiglike==1) {
+	    if (m2==1 && input_event_pass12whoissiglike==0) {
 	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
 	      input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi; input_pholead_pt = input_photrail_pt;
 	      input_photrail_SCeta = input_photemp_SCeta; input_photrail_SCphi = input_photemp_SCphi; input_photrail_pt = input_photemp_pt;
