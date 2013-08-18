@@ -3204,7 +3204,7 @@ void DiPhotonMiniTree::InitInputTree(){
     cout << "opening " << title.Data() << endl;
     f_input = TFile::Open(title.Data(),"read");
     f_input->GetObject("Tree_1Drandomcone_template",InputTree[0]);
-    f_input->GetObject("Tree_1Dsideband_template",InputTree[1]);
+    f_input->GetObject("Tree_2Drandomconesideband_template",InputTree[1]);
     for (int m=0; m<2; m++){
       InputTree[m]->SetBranchAddress("allphotonpfcand_count", &input_allphotonpfcand_count, &b_input_allphotonpfcand_count);
       InputTree[m]->SetBranchAddress("allphotonpfcand_pt", input_allphotonpfcand_pt   , &b_input_allphotonpfcand_pt   );
