@@ -48,8 +48,8 @@ const int global_size_pfcandarrays = 30;
 
 const float global_dR_cut_acceptance = 0.45;
 
-const int nclosest = 10;
-const int nclosest_inputmatching = 20;
+const int nclosest = 5;
+const int nclosest_inputmatching = 40;
 
 typedef struct {
   float photon;
