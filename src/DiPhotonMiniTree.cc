@@ -1096,6 +1096,8 @@ void DiPhotonMiniTree::End(){
 
 void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing){
 
+  //  if (mixing!=k1Event || mode!=kSigBkg) return;
+
   //  cout << "EVENT " << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << endl;
 
   int m1 = (mode==kSigSig || mode==kSigBkg) ? 0 : 1;
@@ -1123,9 +1125,13 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	  }
 
 	  // {eta,pt,rho,sigma}
-	  float rewinfo_1[6]; 
-	  float rewinfo_2[6];
+	  float rewinfo_1[6]={-999,-999,-999,-999,-999,-999}; 
+	  float rewinfo_2[6]={-999,-999,-999,-999,-999,-999}; 
 
+//	  cout << " m1_" << m1 << " m2_" << m2 << " l_" << l << " mix_" << mixing << " mode_" << mode << endl;
+//	  cout << "pho0 " << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]] << endl;
+//	  cout << "pho1 " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]] << endl;
+//
 	  if (n1>=0){
 	    if (InputTree[m1]->GetEntry(n1)<=0) continue;
 	    if (m1==1 && input_event_pass12whoissiglike==0) {
@@ -1145,13 +1151,14 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    }
 	    std::vector<std::pair<float,float> > obj0;
 	    for (int k=0; k<input_vetoobjects_count; k++) obj0.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
-//	    if (mode==kSigSig){
-//	      cout << "pho0 " << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]] << endl;
-//	      cout << "pho1 " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]] << endl;
-//	      cout << "match_lead " << input_pholead_SCeta << " " << input_pholead_SCphi << endl;
+
+//	      cout << "1_match " << input_pholead_SCeta << " " << input_pholead_SCphi << endl;
 //	      cout << "vetoing around " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCeta << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCphi << endl;
-//	    }
+
 	    if (FindCloseJetsAndPhotons(obj0,fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
+
+//	    cout << "veto1 pass" << endl;
+
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 	    
@@ -1184,7 +1191,15 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    }
 	    std::vector<std::pair<float,float> > obj1;
 	    for (int k=0; k<input_vetoobjects_count; k++) obj1.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
+
+//	      cout << "2_match " << input_pholead_SCeta << " " << input_pholead_SCphi << endl;
+//	      cout << "vetoing around " << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCeta << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCphi << endl;
+
+
 	    if (FindCloseJetsAndPhotons(obj1,fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCeta,fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCphi)) continue; // veto around the OTHER photon
+
+//	    cout << "veto2 pass" << endl;
+
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 	    
@@ -1195,6 +1210,8 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	      continue;
 	    }
 	  }
+
+//	  cout << "filled " << found << endl;
 
 	  if (mixing==k1Event){
 	    if (mode!=kBkgBkg){
@@ -1258,7 +1275,11 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 
 	}
 
-	if (found<nclosest) std::cout << "Found only " << found << " matches in mode " << mode << " mixing " << mixing << std::endl;
+	if (found<nclosest) {
+	  std::cout << "Found only " << found << " matches in mode " << mode << " mixing " << mixing << std::endl;
+	  for (int l=0; l<nclosest; l++) cout << phoiso_template_1event_sigsig_1[l] << " " << phoiso_template_1event_sigsig_2[l] << endl;
+	}
+	else cout << "found ok" << endl;
 
 };
 
@@ -1670,9 +1691,14 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(std::vector<std::pair<float,float
   const float mindR = 0.8;
   bool found=false;
 
+  //  cout << "looking for close obj at " << eta << " " << phi << endl;
+
   for (int i=0; i<obj.size(); i++){
     float dR = Util::GetDeltaR(eta,obj.at(i).first,phi,obj.at(i).second);
-    if (dR<mindR) found=true;
+    if (dR<mindR) {
+      found=true;
+      //      cout << "found close " << obj.at(i).first << " " << obj.at(i).second << " dR=" << dR << endl;
+    }
   }
 
   return found;
