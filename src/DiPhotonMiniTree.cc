@@ -1215,20 +1215,22 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 
 	  if (mixing==k1Event){
 	    if (mode!=kBkgBkg){
-	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
 	      if (mode==kSigSig){
+		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,true);
 		phoiso_template_1event_sigsig_1[found] = isos.first;
 		phoiso_template_1event_sigsig_2[found] = isos.second;
 		memcpy(rewinfo_template_1event_sigsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 		memcpy(rewinfo_template_1event_sigsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	      }
 	      else if (mode==kSigBkg){
+		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,false);
 		phoiso_template_1event_sigbkg_1[found] = isos.first;
 		phoiso_template_1event_sigbkg_2[found] = isos.second;
 		memcpy(rewinfo_template_1event_sigbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 		memcpy(rewinfo_template_1event_sigbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	      }
 	      else if (mode==kBkgSig){
+		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,true);
 		phoiso_template_1event_bkgsig_1[found] = isos.first;
 		phoiso_template_1event_bkgsig_2[found] = isos.second;
 		memcpy(rewinfo_template_1event_bkgsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
@@ -1236,34 +1238,37 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	      }
 	    }
 	    else {
-	      phoiso_template_1event_bkgbkg_1[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands1).first;
-	      phoiso_template_1event_bkgbkg_2[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands2).second;
+	      phoiso_template_1event_bkgbkg_1[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands1,false,false).first;
+	      phoiso_template_1event_bkgbkg_2[found] = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),pfcands2,false,false).second;
 	      memcpy(rewinfo_template_1event_bkgbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_1event_bkgbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	  }
 
 	  else if (mixing==k2Events){
-	    std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands);
 	    if (mode==kSigSig){
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,true);
 	      phoiso_template_2events_sigsig_1[found] = isos.first;
 	      phoiso_template_2events_sigsig_2[found] = isos.second;
 	      memcpy(rewinfo_template_2events_sigsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_2events_sigsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	    else if (mode==kSigBkg){
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,false);
 	      phoiso_template_2events_sigbkg_1[found] = isos.first;
 	      phoiso_template_2events_sigbkg_2[found] = isos.second;
 	      memcpy(rewinfo_template_2events_sigbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_2events_sigbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	    else if (mode==kBkgSig){
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,true);
 	      phoiso_template_2events_bkgsig_1[found] = isos.first;
 	      phoiso_template_2events_bkgsig_2[found] = isos.second;
 	      memcpy(rewinfo_template_2events_bkgsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_2events_bkgsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
 	    }
 	    else if (mode==kBkgBkg){
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,false);
 	      phoiso_template_2events_bkgbkg_1[found] = isos.first;
 	      phoiso_template_2events_bkgbkg_2[found] = isos.second;
 	      memcpy(rewinfo_template_2events_bkgbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
@@ -2028,14 +2033,14 @@ isolations_struct DiPhotonMiniTree::PFConeIsolation(TreeReader *fTR, int phoqi){
   return out;
 };
 
-std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi1, int phoqi2, pfcandidates_struct *pfcands){
+std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi1, int phoqi2, pfcandidates_struct *pfcands, bool doremoval1, bool doremoval2){
 
   float result1=0;
   float result2=0;
   
-  std::vector<int> footprint = GetPFCandInsideFootprint(fTR,pfcands,phoqi1,0,"photon");  // phoqi<0 ritorna vuoto
-  std::vector<int> footprint2 = GetPFCandInsideFootprint(fTR,pfcands,phoqi2,0,"photon"); // phoqi<0 ritorna vuoto
-  footprint.insert(footprint.end(),footprint2.begin(),footprint2.end());
+  std::vector<int> footprint;
+  if (doremoval1) {std::vector<int> footprint1 = GetPFCandInsideFootprint(fTR,pfcands,phoqi1,0,"photon"); footprint.insert(footprint.end(),footprint1.begin(),footprint1.end());} // phoqi<0 ritorna vuoto
+  if (doremoval2) {std::vector<int> footprint2 = GetPFCandInsideFootprint(fTR,pfcands,phoqi2,0,"photon"); footprint.insert(footprint.end(),footprint2.begin(),footprint2.end());} // phoqi<0 ritorna vuoto
 
   for (int i=0; i<pfcands->PfCandPt.size(); i++){
 
