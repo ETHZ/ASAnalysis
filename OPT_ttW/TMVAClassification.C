@@ -75,10 +75,10 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
    // default MVA methods to be trained + tested
    std::map<std::string,int> Use;
 
-   Use["Cuts"]            = 1;
+   Use["Cuts"]            = 0;
    Use["CutsD"]           = 0;
    Use["CutsPCA"]         = 0;
-   Use["CutsGA"]          = 0;
+   Use["CutsGA"]          = 1;
    Use["CutsSA"]          = 0;
    // ---
    Use["Likelihood"]      = 0;
@@ -223,9 +223,11 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       TTree* opt_tree = (TTree*)input->Get("tree_opt");
 
 //		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
-		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt30-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
+//		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt30-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
 //		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt30-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar/";
 //		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt20-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
+		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Aug14-JetPt30-Iso5-PUID/";
+//		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug19-JetPt30-Iso5-PUID-newLepSF-minBias69400/YieldsFiles/";
 
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
@@ -378,7 +380,8 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 
    if (Use["CutsGA"])
       factory->BookMethod( TMVA::Types::kCuts, "CutsGA",
-                           "H:!V:FitMethod=GA:CutRangeMin[0]=-10:CutRangeMax[0]=10:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
+                           //"H:!V:FitMethod=GA:CutRangeMin[0]=-10:CutRangeMax[0]=10:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
+                           "H:!V:FitMethod=GA:VarProp[0]=FMax:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
    
    if (Use["CutsSA"])
       factory->BookMethod( TMVA::Types::kCuts, "CutsSA",
@@ -557,18 +560,23 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
    factory->EvaluateAllMethods();    
 
 
-   if (Use["Cuts"]) {
+   if (Use["Cuts"] || Use["CutsGA"]) {
 
     for( unsigned iEff=1; iEff<11; ++iEff ) {
 
-       TMVA::IMethod* method = (TMVA::IMethod*)factory->GetMethod("Cuts");
+       TMVA::IMethod* method;
+       if (Use["Cuts"]) method = (TMVA::IMethod*)factory->GetMethod("Cuts");
+       if (Use["CutsGA"]) method = (TMVA::IMethod*)factory->GetMethod("CutsGA");
        TMVA::MethodCuts* cuts = dynamic_cast<TMVA::MethodCuts*>(method);
 
        std::string optcutsdir = "optcuts_" + selectionName + "_" + charge;
        std::string mkdir_command = "mkdir -p " + optcutsdir;
        system(mkdir_command.c_str());
        char cutsFileName[500];
-       sprintf( cutsFileName, "%s/cuts_Seff%d.txt", optcutsdir.c_str(), 10*iEff );
+       if (Use["Cuts"])
+         sprintf( cutsFileName, "%s/cuts_Seff%d.txt", optcutsdir.c_str(), 10*iEff );
+       if (Use["CutsGA"])
+         sprintf( cutsFileName, "%s/cutsGA_Seff%d.txt", optcutsdir.c_str(), 10*iEff );
 
        ofstream ofs(cutsFileName);
 
