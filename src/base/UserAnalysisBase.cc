@@ -274,10 +274,10 @@ float UserAnalysisBase::getSusySystemPt(int pdgid1, int pdgid2){
 		}
 	}
 
-	if (npart != 2) {
-		cout << " MORE OR LESS THAN TWO OF YOUR DESIRED SUSY INITIAL PARTICLES FOUND!! CHECK UP ON THAT!!" << endl;
-		exit(-10);
-	}
+//	if (npart != 2) {
+//		cout << " MORE OR LESS THAN TWO OF YOUR DESIRED SUSY INITIAL PARTICLES FOUND!! CHECK UP ON THAT!!" << endl;
+//		exit(-10);
+//	}
 	return final.Pt();
 }
 ///////////////////////////////////////////////////////////////
