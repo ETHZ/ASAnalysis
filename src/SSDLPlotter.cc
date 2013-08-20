@@ -476,7 +476,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeFRvsEtaPlots(Elec);
 //	makeChMidvsPtPlots();
 //
-//	makeAllClosureTestsTTW();
+	makeAllClosureTestsTTW();
 //	makeAllIntPredictions();
 //	makeAllClosureTests();
 //
@@ -486,7 +486,7 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-	makeTTWDiffPredictionsSigEvent();
+//	makeTTWDiffPredictionsSigEvent();
 //	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
@@ -565,7 +565,8 @@ void SSDLPlotter::showStatusBar(int nEvent, int nEvents, int updateIntervall, bo
 	if (nEvent+1 >= nEvents) nEvent++;
 	cout.precision(3);
 	int percentageLength = 50;
-	if (nEvent%(int)updateIntervall == 0 || nEvent >= nEvents-1 || show){
+//	if (nEvent%(int)updateIntervall == 0 || nEvent >= nEvents-1 || show){
+	if (nEvent%(nEvents/100) == 0 || nEvent >= nEvents-1 || show){
 		double percentage = (double)(nEvent)/(double)nEvents*(double)100;
 		cout << "\rfinished with " << setw(8) << nEvent << " of " << setw(10) << nEvents << ": " << setw(6) << std::setprecision(2) << fixed << percentage << "%\t\tSTATUS:\t\t";
 		for (int i=0;i<percentageLength;i++)
@@ -12798,6 +12799,526 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	} // end loop over variables
 	delete FR;
 }
+//void SSDLPlotter::makeTTWClosureTestSigEvent(vector<TString> diffVarName, vector<int> nbins, vector<double*> bins, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel, int chVeto) {
+//void SSDLPlotter::makeTTWClosureTestSigEvent(int region_sel, int chVeto) {
+//	fOutputSubDir = "ClosureTestSigEventTree/";
+//	
+//	TLatex *lat = new TLatex();
+//	lat->SetNDC(kTRUE);
+//	lat->SetTextColor(kBlack);
+//	lat->SetTextSize(0.04);
+//	
+//	const float RareESyst  = 0.5;
+//	const float RareESyst2 = RareESyst*RareESyst;
+//	
+//	const float FakeESyst  = 0.5;
+//	const float FakeESyst2 = FakeESyst*FakeESyst;
+//	
+//	const float WZESyst  = 0.15;
+//	const float WZESyst2 = WZESyst*WZESyst;
+//	
+//	const float TTZESyst  = 0.5;
+//	const float TTZESyst2 = TTZESyst*TTZESyst;
+//	
+//	const float TTWESyst  = 0.5;
+//	const float TTWESyst2 = TTWESyst*TTWESyst;
+//	
+//	// only take half the events for ++/--
+//	float chargeFactor = chVeto ? 0.5:1.;
+//
+//	// preselection
+//	int   systflag  (  0 );
+//	float minHT     (  0.), maxHT     ( 8000.);
+//	float minMET    (  0.), maxMET    ( 8000.);
+//	int   minNjets  (  3 ), maxNjets  (   99 );
+//	int   minNbjetsL(  0 ), maxNbjetsL(   99 );
+//	int   minNbjetsM(  0 ), maxNbjetsM(   99 );
+//	float minPt1    ( 20.), maxPt1    ( 8000.);
+//	float minPt2    ( 20.), maxPt2    ( 8000.);
+//	float minMll    (  8.); // 8.
+//
+//	if (region_sel == 1 && chVeto == +1) {
+//		systflag   =   0 ;
+//		minHT      = 200., maxHT      =  8000.;
+//		minMET     =   0., maxMET     =  8000.;
+//		minNjets   =   3 , maxNjets   =    99 ;
+//		minNbjetsL =   1 , maxNbjetsL =    99 ;
+//		minNbjetsM =   1 , maxNbjetsM =    99 ;
+//		minPt1     =  32., maxPt1     =  8000.;
+//		minPt2     =  32., maxPt2     =  8000.;
+//		minMll     =   8.; // 8.
+//	}
+//	if (region_sel == 1 && chVeto == -1) {
+//		systflag   =   0 ;
+//		minHT      = 205., maxHT      =  8000.;
+//		minMET     =   0., maxMET     =  8000.;
+//		minNjets   =   3 , maxNjets   =    99 ;
+//		minNbjetsL =   1 , maxNbjetsL =    99 ;
+//		minNbjetsM =   1 , maxNbjetsM =    99 ;
+//		minPt1     =  30., maxPt1     =  8000.;
+//		minPt2     =  30., maxPt2     =  8000.;
+//		minMll     =   8.; // 8.
+//	}
+//
+//	TString sysString = "";
+//	TString chargeString = "";
+//	TString chargeSignString = "";
+////	if (diffVarName == "NJ"    ) minNjets = 0;
+//	if (chVeto == -1) chargeString = "_mm";
+//	if (chVeto == +1) chargeString = "_pp";
+//	if (chVeto == -1) chargeSignString = "^{-}";
+//	if (chVeto == +1) chargeSignString = "^{+}";
+//	
+//	///////////////////////////////////////////////////////////////////////////////////
+//	// RATIOS /////////////////////////////////////////////////////////////////////////
+//	///////////////////////////////////////////////////////////////////////////////////
+//	float mufratio_data(0.),  mufratio_data_e(0.);
+//	float mupratio_data(0.),  mupratio_data_e(0.);
+//	float elfratio_data(0.),  elfratio_data_e(0.);
+//	float elpratio_data(0.),  elpratio_data_e(0.);
+//	
+//	calculateRatio(fMuData, Muon, SigSup, mufratio_data, mufratio_data_e);
+//	calculateRatio(fMuData, Muon, ZDecay, mupratio_data, mupratio_data_e);
+//	
+//	calculateRatio(fEGData, Elec, SigSup, elfratio_data, elfratio_data_e);
+//	calculateRatio(fEGData, Elec, ZDecay, elpratio_data, elpratio_data_e);
+//	
+//	FakeRatios *FR = new FakeRatios();
+//	
+//	float fbb(0.),fee(0.),feb(0.);
+//	float fbbE(0.),feeE(0.),febE(0.);
+//	float fbb_mc(0.),fee_mc(0.),feb_mc(0.);
+//	float fbbE_mc(0.),feeE_mc(0.),febE_mc(0.);
+//	
+//	calculateChMisIdProb(fEGData, BB, fbb, fbbE);
+//	calculateChMisIdProb(fEGData, EB, feb, febE);
+//	calculateChMisIdProb(fEGData, EE, fee, feeE);
+//	
+//	calculateChMisIdProb(fMCBG, BB, fbb_mc, fbbE_mc);
+//	calculateChMisIdProb(fMCBG, EB, feb_mc, febE_mc);
+//	calculateChMisIdProb(fMCBG, EE, fee_mc, feeE_mc);
+//	
+//	///////////////////////////////////////////////////////////////////////////////////
+//	// SIGEVENT TREE //////////////////////////////////////////////////////////////////
+//	///////////////////////////////////////////////////////////////////////////////////
+//	
+//	TFile *pFile = TFile::Open(fOutputFileName);
+//	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
+//	
+//	string *sname = 0;
+//	int flag(0);
+//	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
+//	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+//	float eta1, eta2, mll;
+//	int   event, run;
+//	int charge;
+//	int passZVeto, passes3rdSFLepVeto;
+//	float diffVar(-9999.);
+//	string samplename;
+//	TString flavorString = "";
+//	
+//	sigtree->SetBranchAddress("SystFlag", &flag);
+//	sigtree->SetBranchAddress("Event",    &event);
+//	sigtree->SetBranchAddress("Run",      &run);
+//	sigtree->SetBranchAddress("SName",    &sname);
+//	sigtree->SetBranchAddress("SType",    &SType);
+//	sigtree->SetBranchAddress("PUWeight", &puweight);
+//	sigtree->SetBranchAddress("SLumi",    &SLumi);
+//	sigtree->SetBranchAddress("Flavor",   &Flavor);
+//	sigtree->SetBranchAddress("Charge",   &charge);
+//	sigtree->SetBranchAddress("pT1",      &pT1);
+//	sigtree->SetBranchAddress("pT2",      &pT2);
+//	sigtree->SetBranchAddress("eta1",     &eta1);
+//	sigtree->SetBranchAddress("eta2",     &eta2);
+//	sigtree->SetBranchAddress("TLCat",    &TLCat);
+//	sigtree->SetBranchAddress("HT",       &HT);
+//	sigtree->SetBranchAddress("MET",      &MET);
+//	sigtree->SetBranchAddress("MT2",      &MT2);
+//	sigtree->SetBranchAddress("NJ",       &NJ);
+//	sigtree->SetBranchAddress("NbJ",      &NbJ);
+//	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
+//	sigtree->SetBranchAddress("Mll",      &mll);
+//	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+//	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+//	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
+//	
+//	float trigScale[3] = {gMMTrigScale, gEMTrigScale, gEETrigScale};
+//	
+//	if (flavor_sel ==  0) flavorString = "_MM";	// MU-MU || E-MU || E-E
+//	if (flavor_sel ==  1) flavorString = "_EM";
+//	if (flavor_sel ==  2) flavorString = "_EE";
+//	
+//	if (flavor_sel ==  3) flavorString = "_MM_OS";	// MU-MU || E-MU || E-E
+//	if (flavor_sel ==  4) flavorString = "_EM_OS";
+//	if (flavor_sel ==  5) flavorString = "_EE_OS";
+//	
+//	for( int i = 0; i < sigtree->GetEntries(); i++ ){
+//		showStatusBar(i, sigtree->GetEntries(), 10000);
+//		sigtree->GetEntry(i);
+//		
+//		
+//		if( flag != systflag ) continue;
+//
+//		if (flavor_sel ==  0) flavorString = "_MM";	// MU-MU || E-MU || E-E
+//		if (flavor_sel ==  1) flavorString = "_EM";
+//		if (flavor_sel ==  2) flavorString = "_EE";
+//		
+//		if (flavor_sel ==  3) flavorString = "_MM_OS";	// MU-MU || E-MU || E-E
+//		if (flavor_sel ==  4) flavorString = "_EM_OS";
+//		if (flavor_sel ==  5) flavorString = "_EE_OS";
+//		
+//		if ( mll < minMll) continue;
+//		if ( HT  < minHT  || HT  > maxHT)  continue;
+//		if ( MET < minMET || MET > maxMET) continue;
+//		if ( NJ  < minNjets)      continue;
+//		if ( NbJ < minNbjetsL)    continue;
+//		if ( NbJmed < minNbjetsM) continue;
+//		
+//		gChannel chan = gChannel(Flavor);
+//		if(chan == ElMu || Flavor == 4){
+//			if(pT1 > pT2){
+//				if(pT1 < minPt1) continue;
+//				if(pT2 < minPt2) continue;
+//			}
+//			if(pT1 < pT2){
+//				if(pT1 < minPt2) continue;
+//				if(pT2 < minPt1) continue;
+//			}
+//		}
+//		else{
+//			if(pT1 < minPt1) continue;
+//			if(pT2 < minPt2) continue;
+//		}
+//		
+//		//		if (passes3rdSFLepVeto == 0) continue;
+//	
+//		// GET ALL DATA EVENTS
+//		if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
+//			if (Flavor < 3) {
+//				if (gApplyZVeto && passZVeto == 0)  continue;
+//				if (chVeto && charge != chVeto ) continue;
+//				Sample *S = fSampleMap[TString(*sname)];
+//				
+//				float npp(0.) , npf(0.) , nfp(0.) , nff(0.);
+//				float f1(0.)  , f2(0.)  , p1(0.)  , p2(0.);
+//				f1 = getFRatio(chan, pT1, eta1, S->datamc);
+//				f2 = getFRatio(chan, pT2, eta2, S->datamc);
+//				p1 = getPRatio(chan, pT1, S->datamc);
+//				p2 = getPRatio(chan, pT2, S->datamc);
+//				if(chan == ElMu){
+//					f1 = getFRatio(Muon, pT1, eta1, S->datamc);
+//					f2 = getFRatio(Elec, pT2, eta2, S->datamc);
+//					p1 = getPRatio(Muon, pT1, S->datamc);
+//					p2 = getPRatio(Elec, pT2, S->datamc);
+//				}
+//				// Get the weights (don't depend on event selection)
+//				npp = FR->getWpp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//				npf = FR->getWpf(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//				nfp = FR->getWfp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//				nff = FR->getWff(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//				
+//				if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
+//									 h_pred_fake   [var]->Fill(diffVar    , npf+nfp+nff);
+//					if (Flavor == 0) h_pred_fake_mm[var]->Fill(diffVar    , npf+nfp+nff);
+//					if (Flavor == 1) h_pred_fake_em[var]->Fill(diffVar    , npf+nfp+nff);
+//					if (Flavor == 2) h_pred_fake_ee[var]->Fill(diffVar    , npf+nfp+nff);
+//					
+//					if (TLCat == 0) {
+//						h_obs  [var]->Fill(diffVar    , 1);
+//					}
+//					if (Flavor == 0) {
+//						if (TLCat == 0)               h_obs_t11_mm[var]->Fill(diffVar, 1);
+//						if (TLCat == 1 || TLCat == 2) h_obs_t10_mm[var]->Fill(diffVar, 1);
+//						if (TLCat == 3)               h_obs_t00_mm[var]->Fill(diffVar, 1);
+//					}
+//					if (Flavor == 1) {
+//						if (TLCat == 0)               h_obs_t11_em[var]->Fill(diffVar, 1);
+//						if (TLCat == 1)               h_obs_t10_em[var]->Fill(diffVar, 1);
+//						if (TLCat == 2)               h_obs_t01_em[var]->Fill(diffVar, 1);
+//						if (TLCat == 3)               h_obs_t00_em[var]->Fill(diffVar, 1);
+//					}
+//					if (Flavor == 2) {
+//						if (TLCat == 0)               h_obs_t11_ee[var]->Fill(diffVar, 1);
+//						if (TLCat == 1 || TLCat == 2) h_obs_t10_ee[var]->Fill(diffVar, 1);
+//						if (TLCat == 3)               h_obs_t00_ee[var]->Fill(diffVar, 1);
+//					}
+//				}
+//			} // end Flavor < 3
+//			
+//			if(Flavor == 4) {       // E-MU OS
+//				if (TLCat == 0) {
+//					h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*fbb);
+//					h_obs_t11_em_BB_os[var]->Fill(diffVar    , chargeFactor*fbb);
+//				}
+//				if (TLCat == 1) {
+//					h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*fee);
+//					h_obs_t11_em_EE_os[var]->Fill(diffVar    , chargeFactor*fee);
+//				}
+//			}
+//			if(Flavor == 5) {       // E-E OS
+//				if (TLCat == 0) {
+//					h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*2*fbb);
+//					h_obs_t11_ee_BB_os[var]->Fill(diffVar    , chargeFactor*2*fbb);
+//				}
+//				if (TLCat == 1 || TLCat == 2) {
+//					h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*2*feb);
+//					h_obs_t11_ee_EB_os[var]->Fill(diffVar    , chargeFactor*2*feb);
+//				}
+//				if (TLCat == 3) {
+//					h_pred_chmid      [var]->Fill(diffVar    , chargeFactor*2*fee);
+//					h_obs_t11_ee_EE_os[var]->Fill(diffVar    , chargeFactor*2*fee);
+//				}
+//			}
+//			
+//			
+//			
+//		} // end data events
+//		
+//		
+//		// GET RARE MC EVENTS
+//		if ((SType == 15 || *sname == "TTbarWW") && TLCat == 0) { // tight-tight rare MC events
+//			if (*sname == "WWTo2L2Nu") continue;
+//			if (Flavor > 2) continue;
+//			if (chVeto && charge != chVeto ) continue;
+//			// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+//			Sample *S = fSampleMap[*sname];
+//			float scale = fLumiNorm / S->getLumi();
+////			float weight = puweight*trigScale[Flavor]*scale;
+//			float weight = puweight*HLTSF*scale;
+//			// float tmp_nt2_rare_mc_e2 = tmp_nt2_rare_mc*tmp_nt2_rare_mc;
+//			if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
+//				if (*sname == "WZTo3LNu") {
+//					h_pred_wz  [var]->Fill(diffVar    , weight);
+//				}
+//				else if (*sname == "TTbarW") {
+//					h_pred_ttw [var]->Fill(diffVar    , weight);
+//				}
+//				else if (*sname == "TTbarZ") {
+//					h_pred_ttz [var]->Fill(diffVar    , weight);
+//				}
+//				else {
+//					h_pred_rare[var]->Fill(diffVar    , weight);
+//					if (h_pred_rare_samples[var][*sname] == 0) {
+//						TString histoname = "h_pred_rare_npass_"+diffVarName[var]+"_"+(*sname);
+//						h_pred_rare_samples[var][*sname] = new TH1F(histoname, histoname, nbins[var],  bins[var] );
+//						h_pred_rare_samples[var][*sname]   ->Sumw2();
+//					}
+//					h_pred_rare_samples[var][*sname]->Fill(diffVar, 1);
+//				}
+//			}
+//		} // end rare mc events
+//	} // end sigevent tree
+//	
+//	for (int var = 0; var < diffVarName.size(); var++) {	
+//		h_obs         [var]->SetMarkerColor(kBlack);
+//		h_obs         [var]->SetMarkerStyle(20);
+//		h_obs         [var]->SetMarkerSize(2.0);
+//		h_obs         [var]->SetLineWidth(2);
+//		h_obs         [var]->SetLineColor(kBlack);
+//		h_obs         [var]->SetFillColor(kBlack);
+//		
+//		h_pred_fake   [var]->SetLineWidth(1);
+//		h_pred_chmid  [var]->SetLineWidth(1);
+//		h_pred_rare   [var]->SetLineWidth(1);
+//		h_pred_wz     [var]->SetLineWidth(1);
+//		h_pred_ttz    [var]->SetLineWidth(1);
+//		h_pred_ttw    [var]->SetLineWidth(1);
+//		
+//		h_pred_fake   [var]->SetFillColor(46);
+//		h_pred_chmid  [var]->SetFillColor(49);
+//		h_pred_rare   [var]->SetFillColor(38);
+//		h_pred_wz     [var]->SetFillColor(39);
+//		h_pred_ttz    [var]->SetFillColor(42);
+//		h_pred_ttw    [var]->SetFillColor(44);
+//		
+//		h_bg_tot      [var]->SetLineWidth(3);
+//		h_bg_tot      [var]->SetFillColor(12);
+//		h_bg_tot      [var]->SetFillStyle(3005);
+//		
+//		TGraphAsymmErrors* gr_obs  = FR->getGraphPoissonErrors( h_obs[var]  );
+//		gr_obs   ->SetMarkerColor(kBlack);
+//		gr_obs   ->SetMarkerStyle(20);
+//		gr_obs   ->SetMarkerSize(2.0);
+//		gr_obs   ->SetLineWidth(2);
+//		gr_obs   ->SetLineColor(kBlack);
+//		gr_obs   ->SetFillColor(kBlack);
+//		
+//		h_bg_tot [var]->Add(h_pred_fake  [var] );
+//		h_bg_tot [var]->Add(h_pred_chmid [var] );
+//		h_bg_tot [var]->Add(h_pred_rare  [var] );
+//		h_bg_tot [var]->Add(h_pred_wz    [var] );
+//		h_bg_tot [var]->Add(h_pred_ttz   [var] );
+//		
+//		hs_pred  [var]->Add(h_pred_fake  [var]);
+//		hs_pred  [var]->Add(h_pred_chmid [var]);
+//		hs_pred  [var]->Add(h_pred_rare  [var]);
+//		hs_pred  [var]->Add(h_pred_wz    [var]);
+//		hs_pred  [var]->Add(h_pred_ttz   [var]);
+//		hs_pred  [var]->Add(h_pred_ttw   [var]);
+//		
+//		////////////
+//		// ERRORS //
+//		////////////
+//		
+//		for (size_t b = 0; b < nbins[var]; ++b) {
+//			float prev  = h_bg_tot[var]->GetBinError(b+1);
+//			float prev2 = prev * prev;
+//			Sample *S;
+//			
+//			//FAKES
+//			FR->setNToyMCs(100); // speedup
+//			FR->setAddESyst(0.5); // additional systematics
+//			
+//			FR->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
+//			FR->setEFRatio(elfratio_data, elfratio_data_e);
+//			FR->setMPRatio(mupratio_data, mupratio_data_e);
+//			FR->setEPRatio(elpratio_data, elpratio_data_e);
+//			
+//			FR->setMMNtl(h_obs_t11_mm[var]->GetBinContent(b+1), h_obs_t10_mm[var]->GetBinContent(b+1)                                       , h_obs_t00_mm[var]->GetBinContent(b+1));
+//			FR->setEENtl(h_obs_t11_ee[var]->GetBinContent(b+1), h_obs_t10_ee[var]->GetBinContent(b+1)                                       , h_obs_t00_ee[var]->GetBinContent(b+1));
+//			FR->setEMNtl(h_obs_t11_em[var]->GetBinContent(b+1), h_obs_t10_em[var]->GetBinContent(b+1), h_obs_t01_em[var]->GetBinContent(b+1), h_obs_t00_em[var]->GetBinContent(b+1));
+//			
+//			float fake_nPass = h_pred_fake[var]->GetBinContent(b+1);
+//			float fake_syst2 = FakeESyst2 * fake_nPass*fake_nPass;
+//			float fake_stat2 = FR->getTotEStat() * FR->getTotEStat();
+//			prev2 = prev2 + fake_syst2 + fake_stat2;
+//			
+//			//CHARGE MISID
+//			float nt2_ee_BB_os = h_obs_t11_ee_BB_os[var]->GetBinContent(b+1);
+//			float nt2_ee_EB_os = h_obs_t11_ee_EB_os[var]->GetBinContent(b+1);
+//			float nt2_ee_EE_os = h_obs_t11_ee_EE_os[var]->GetBinContent(b+1);
+//			float nt2_em_BB_os = h_obs_t11_em_BB_os[var]->GetBinContent(b+1);
+//			float nt2_em_EE_os = h_obs_t11_em_EE_os[var]->GetBinContent(b+1);
+//			// Simple error propagation assuming error on number of events is FR->getEStat2()
+//			float nt11_ee_cm_e1 = sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os) ); // stat only
+//			float nt11_ee_cm_e2 = sqrt( (4*nt2_ee_BB_os*nt2_ee_BB_os*fbbE*fbbE) + (4*nt2_ee_EE_os*nt2_ee_EE_os*feeE*feeE) + 4*(febE*febE)*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
+//			float nt11_em_cm_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
+//			float nt11_em_cm_e2 = sqrt( nt2_em_BB_os*nt2_em_BB_os * fbbE*fbbE + nt2_em_EE_os*nt2_em_EE_os * feeE*feeE );
+//			float cm_syst2 = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2;
+//			float cm_stat2 = nt11_ee_cm_e1*nt11_ee_cm_e1 + nt11_em_cm_e1*nt11_em_cm_e1;
+//			prev2 = prev2 + cm_syst2 + cm_stat2;
+//			
+//			// WZ
+//			S = fSampleMap["WZTo3LNu"];
+//			float wz_scale = fLumiNorm / S->getLumi();
+//			float wz_nPass = h_pred_wz_npass[var]->GetBinContent(b+1);
+//			float wz_syst2 = WZESyst2 * wz_nPass*wz_nPass * wz_scale*wz_scale;
+//			float wz_stat2 = wz_scale*wz_scale * S->getError2(wz_nPass);
+//			prev2 = prev2 + wz_syst2 + wz_stat2;
+//			
+//			// TTZ
+//			S = fSampleMap["TTbarZ"];
+//			float ttz_scale = fLumiNorm / S->getLumi();
+//			float ttz_nPass = h_pred_ttz_npass[var]->GetBinContent(b+1);
+//			float ttz_syst2 = TTZESyst2 * ttz_nPass*ttz_nPass * ttz_scale*ttz_scale;
+//			float ttz_stat2 = ttz_scale*ttz_scale * S->getError2(ttz_nPass);
+//			prev2 = prev2 + ttz_syst2 + ttz_stat2;
+//			
+//			// TTW
+//			S = fSampleMap["TTbarW"];
+//			float ttw_scale = fLumiNorm / S->getLumi();
+//			float ttw_nPass = h_pred_ttw_npass[var]->GetBinContent(b+1);
+//			float ttw_syst2 = TTWESyst2 * ttw_nPass*ttw_nPass * ttw_scale*ttw_scale;
+//			float ttw_stat2 = ttw_scale*ttw_scale * S->getError2(ttw_nPass);
+//			prev2 = prev2 + ttw_syst2 + ttw_stat2;
+//			
+//			// RARES
+//			for (map<TString,TH1F*>::iterator it = h_pred_rare_samples[var].begin(); it != h_pred_rare_samples[var].end(); it++) {
+//				S = fSampleMap[it->first];
+//				float rare_scale = fLumiNorm / S->getLumi();
+//				float rare_nPass = it->second->GetBinContent(b+1);
+//				float rare_syst2 = RareESyst2 * rare_nPass*rare_nPass * rare_scale*rare_scale;
+//				float rare_stat2 = rare_scale*rare_scale * S->getError2(rare_nPass);
+//				prev2 = prev2 + rare_syst2 + rare_stat2;
+//			}
+//			
+//			h_bg_tot[var]->SetBinError(b+1, sqrt(prev2));
+//		}
+//		// TOT
+//		
+//		double max(0.);
+//	//	max = 1.2*h_obs->GetBinContent(2);
+//	//	if (diffVarName == "NbJmed" || diffVarName == "NJ" || diffVarName == "pT2") max = 1.2*h_obs->GetBinContent(1);
+//		max = 1.2 * std::max(h_obs[var]->GetBinContent(h_obs[var]->GetMaximumBin()),hs_pred[var]->GetMaximum());
+//		
+//		h_obs         [var]->SetMaximum(max);
+//		h_pred_fake   [var]->SetMaximum(max);
+//		h_pred_chmid  [var]->SetMaximum(max);
+//		h_pred_rare   [var]->SetMaximum(max);
+//		h_pred_wz     [var]->SetMaximum(max);
+//		h_pred_ttz    [var]->SetMaximum(max);
+//		h_pred_ttw    [var]->SetMaximum(max);
+//		h_bg_tot      [var]->SetMaximum(max);
+//		hs_pred       [var]->SetMaximum(max);
+//			
+//		hs_pred[var]->Draw("goff");
+//		hs_pred[var]->GetXaxis()->SetTitle(xAxisTitle[var].Data());
+//		hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
+//		hs_pred[var]->GetYaxis()->SetTitle(yAxisTitle[var].Data());
+//		hs_pred[var]->GetYaxis()->SetTitleSize(0.045);
+//		hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
+//		hs_pred[var]->GetYaxis()->SetLabelSize(0.045);
+//		hs_pred[var]->GetXaxis()->SetLabelSize(0.045);
+//		hs_pred[var]->GetYaxis()->SetTitleOffset(1.25);
+//		hs_pred[var]->GetXaxis()->SetTitleOffset(1.065);
+//		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
+//			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", i-1));
+//			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
+//			hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
+//			hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
+//		}
+//		if (diffVarName[var] == "Int") {
+//			for(size_t i = 1; i <= nbins[var]; ++i) {
+//				TString binlabel = "?";
+//				if (i == 1) binlabel = "e"  + chargeSignString + "e"  + chargeSignString;
+//				if (i == 2) binlabel = "#mu"+ chargeSignString + "#mu"+ chargeSignString;
+//				if (i == 3) binlabel = "e"  + chargeSignString + "#mu"+ chargeSignString;
+//				hs_pred[var]->GetXaxis()->SetBinLabel(i, binlabel);
+//			}
+//		}
+//		
+//		TLegend *leg = new TLegend(0.55,0.62,0.90,0.88);
+//		leg->AddEntry(h_obs       [var], "Data","p");
+//		leg->AddEntry(h_pred_fake [var], "Non-prompt / MisID","f");
+//		leg->AddEntry(h_pred_chmid[var], "Charge MisID","f");
+//		leg->AddEntry(h_pred_rare [var], "Rare SM","f");
+//		leg->AddEntry(h_pred_wz   [var], "WZ","f");
+//		leg->AddEntry(h_pred_ttz  [var], "t#bar{t} + Z","f");
+//		leg->AddEntry(h_pred_ttw  [var], "t#bar{t} + W","f");
+//		leg->SetFillStyle(0);
+//		leg->SetTextFont(42);
+//		leg->SetBorderSize(0);
+//		
+//		TCanvas *c_temp = new TCanvas("C_ObsPred", "Observed vs Predicted", 0, 0, 600, 600);
+//		c_temp->SetLeftMargin(0.12);
+//		c_temp->SetRightMargin(0.04);
+//		c_temp->cd();
+//		
+//		hs_pred[var]->Draw("hist");
+//		leg->Draw();
+//		h_bg_tot[var]->DrawCopy("0 E2 same");
+//		h_bg_tot[var]->SetFillStyle(0);
+//		h_bg_tot[var]->DrawCopy("hist same");
+//		gr_obs->Draw("P same");
+//		
+//		lat->SetTextSize(0.03);
+//		
+//		drawTopLine(0.56, 0.8);
+//		
+//		gPad->RedrawAxis();
+//		// Util::PrintNoEPS(c_temp, "ObsPred_" + Region::sname[reg], fOutputDir + fOutputSubDir, NULL);
+////		Util::PrintPDF (c_temp,   "ObsPred_"+diffVarName[var]+flavorString+sysString+chargeString+"_lin" , fOutputDir + fOutputSubDir);
+//		Util::PrintPDF (c_temp,   "ObsPred_"+diffVarName[var]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir);
+//	//	Util::PrintROOT(c_temp,   "ObsPred_"+diffVarName+sysString+chargeString+"_lin" , fOutputDir + fOutputSubDir);
+//		delete c_temp;
+//
+//		delete h_pred_fake[var], h_pred_fake_mm[var], h_pred_fake_em[var], h_pred_fake_ee[var], h_pred_chmid[var], h_pred_chmid_npass[var], h_pred_rare[var], h_pred_rare_npass[var], h_pred_wz[var], h_pred_wz_npass[var], h_pred_ttz[var], h_pred_ttz_npass[var], h_pred_ttw[var], h_pred_ttw_npass[var], h_bg_tot[var], h_bg_tot_npass[var];
+//		delete hs_pred[var];
+//		for (map<TString,TH1F*>::iterator it = h_pred_rare_samples[var].begin(); it != h_pred_rare_samples[var].end(); it++) delete it->second;
+//		delete h_obs[var], h_obs_t11_mm[var], h_obs_t10_mm[var], h_obs_t00_mm[var], h_obs_t11_em[var], h_obs_t10_em[var], h_obs_t01_em[var], h_obs_t00_em[var], h_obs_t11_ee[var], h_obs_t10_ee[var], h_obs_t00_ee[var], h_obs_t11_ee_BB_os[var], h_obs_t11_ee_EB_os[var], h_obs_t11_ee_EE_os[var], h_obs_t11_em_BB_os[var], h_obs_t11_em_EE_os[var];
+//	} // end loop over variables
+//	delete FR;
+//}
 void SSDLPlotter::makeKinematicPlotsPaper(){
 	fOutputSubDir = "KinPlotsPaper/";
 
@@ -15360,27 +15881,34 @@ void SSDLPlotter::makeTTWKinPlotsSigEvent() {
 	vector<int> nbins;
 	vector<double> xmin, xmax;
 
+	diffVarName.clear();
+	xAxisTitle .clear();
+	yAxisTitle .clear();
+	nbins      .clear();
+	xmin       .clear();
+	xmax       .clear();
+
 	diffVarName.push_back("HT"    );   nbins.push_back(KinPlots::nbins[ 0]);   xmin.push_back(KinPlots::xmin[ 0]);   xmax.push_back(KinPlots::xmax[ 0]);   xAxisTitle.push_back("H_{T} [GeV]"                     );   yAxisTitle.push_back("Events / 100 GeV");
-    diffVarName.push_back("MET"   );   nbins.push_back(KinPlots::nbins[ 1]);   xmin.push_back(KinPlots::xmin[ 1]);   xmax.push_back(KinPlots::xmax[ 1]);   xAxisTitle.push_back("Particle Flow E_{T}^{miss} [GeV]");   yAxisTitle.push_back("Events / 20 GeV" );
-    diffVarName.push_back("NJ"    );   nbins.push_back(KinPlots::nbins[ 2]);   xmin.push_back(KinPlots::xmin[ 2]);   xmax.push_back(KinPlots::xmax[ 2]);   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("NbJmed");   nbins.push_back(KinPlots::nbins[11]);   xmin.push_back(KinPlots::xmin[11]);   xmax.push_back(KinPlots::xmax[11]);   xAxisTitle.push_back("b-Jet Multiplicity (medium)"     );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("pT1"   );   nbins.push_back(KinPlots::nbins[ 3]);   xmin.push_back(KinPlots::xmin[ 3]);   xmax.push_back(KinPlots::xmax[ 3]);   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
-    diffVarName.push_back("pT2"   );   nbins.push_back(KinPlots::nbins[ 4]);   xmin.push_back(KinPlots::xmin[ 4]);   xmax.push_back(KinPlots::xmax[ 4]);   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
-    diffVarName.push_back("Mll"   );   nbins.push_back(KinPlots::nbins[ 5]);   xmin.push_back(KinPlots::xmin[ 5]);   xmax.push_back(KinPlots::xmax[ 5]);   xAxisTitle.push_back("m_{ll} [GeV]"                    );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("NVrtx" );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("N_{Vertices}"                    );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("PFIso1");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Leading Lepton PF Iso"           );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("PFIso2");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Subleading Lepton PF Iso"        );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("Rho"   );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("rho"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("BetaStar1"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("BetaStar2"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("2nd hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("BetaStar3"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("3rd hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("BetaStar4"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("4th hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("BetaStar5"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("5th hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("MTLep1"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("Leading Lepton M_{T}"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("MTLep2"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("Subleading Lepton M_{T}"                             );   yAxisTitle.push_back("Events"          );
-    diffVarName.push_back("minMT"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("M_{T}"                             );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("MET"   );   nbins.push_back(KinPlots::nbins[ 1]);   xmin.push_back(KinPlots::xmin[ 1]);   xmax.push_back(KinPlots::xmax[ 1]);   xAxisTitle.push_back("Particle Flow E_{T}^{miss} [GeV]");   yAxisTitle.push_back("Events / 20 GeV" );
+	diffVarName.push_back("NJ"    );   nbins.push_back(KinPlots::nbins[ 2]);   xmin.push_back(KinPlots::xmin[ 2]);   xmax.push_back(KinPlots::xmax[ 2]);   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("NbJmed");   nbins.push_back(KinPlots::nbins[11]);   xmin.push_back(KinPlots::xmin[11]);   xmax.push_back(KinPlots::xmax[11]);   xAxisTitle.push_back("b-Jet Multiplicity (medium)"     );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("pT1"   );   nbins.push_back(KinPlots::nbins[ 3]);   xmin.push_back(KinPlots::xmin[ 3]);   xmax.push_back(KinPlots::xmax[ 3]);   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
+	diffVarName.push_back("pT2"   );   nbins.push_back(KinPlots::nbins[ 4]);   xmin.push_back(KinPlots::xmin[ 4]);   xmax.push_back(KinPlots::xmax[ 4]);   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
+	diffVarName.push_back("Mll"   );   nbins.push_back(KinPlots::nbins[ 5]);   xmin.push_back(KinPlots::xmin[ 5]);   xmax.push_back(KinPlots::xmax[ 5]);   xAxisTitle.push_back("m_{ll} [GeV]"                    );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("NVrtx" );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("N_{Vertices}"                    );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("PFIso1");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Leading Lepton PF Iso"           );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("PFIso2");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Subleading Lepton PF Iso"        );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("Rho"   );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("rho"                             );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("BetaStar1"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("BetaStar2"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("2nd hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("BetaStar3"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("3rd hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("BetaStar4"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("4th hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("BetaStar5"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("5th hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
+////	diffVarName.push_back("MTLep1"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("Leading Lepton M_{T}"                             );   yAxisTitle.push_back("Events"          );
+////	diffVarName.push_back("MTLep2"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("Subleading Lepton M_{T}"                             );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("minMT"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               400.);   xAxisTitle.push_back("M_{T}"                             );   yAxisTitle.push_back("Events"          );
 
 
 
@@ -15398,12 +15926,13 @@ void SSDLPlotter::makeTTWKinPlotsSigEvent() {
 		if (i ==  5) continue; // no opposite-sign EE events
 		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, -1);
 	}
-	return;
+//	return;
 	
 	// ttbar enriched
+	cout << "ttbar enriched region.." << endl;
 	for (int i = -1; i < 6; i++) { // flavor loop
 //		if (i == -1) continue;
-//		if (i > -1) continue;  // no splitting by flavor
+		if (i > -1) continue;  // no splitting by flavor
 		if (i ==  0) continue; // no same-sign MM events
 		if (i ==  1) continue; // no same-sign EM events
 		if (i ==  2) continue; // no same-sign EE events
@@ -15417,7 +15946,7 @@ void SSDLPlotter::makeTTWKinPlotsSigEvent() {
 	// wz enriched
 	for (int i = -1; i < 6; i++) { // flavor loop
 //		if (i == -1) continue;
-//		if (i > -1) continue;  // no splitting by flavor
+		if (i > -1) continue;  // no splitting by flavor
 		if (i ==  0) continue; // no same-sign MM events
 		if (i ==  1) continue; // no same-sign EM events
 		if (i ==  2) continue; // no same-sign EE events
@@ -15500,7 +16029,6 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	bool ttbarEnr = false;
 	bool wzEnr = false;
 	bool looseSel = false;
-	TString sysString = "";
 	TString chargeString = "";
 	TString flavorString = "";
 	
@@ -15588,39 +16116,39 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	
 	//	if (diffVarName == "NJ"    ) njmin = 0;
 	
-    vector<TH1F*> h_top, h_ttbar, h_zjets, h_gjets, h_wjets, h_mc, h_rare, h_wz, h_ttz, h_ttw, h_tot;
+	vector<TH1F*> h_top, h_ttbar, h_zjets, h_gjets, h_wjets, h_mc, h_rare, h_wz, h_ttz, h_ttw, h_tot;
 	vector<THStack*> hs_tot;
 	vector<TH1D*> h_obs, h_ratio;
-    TString histoname;
-    
-    for (int i = 0; i < diffVarName.size(); i++) {
-        // TOP
-        histoname = "h_top_"        + diffVarName[i];   h_top  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_top[i]  ->Sumw2();
-        histoname = "h_ttbar_"      + diffVarName[i];   h_ttbar.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttbar[i]->Sumw2();
-        // Z+JETS
-        histoname = "h_zjets_"      + diffVarName[i];   h_zjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_zjets[i]->Sumw2();
-        // G+JETS
-        histoname = "h_gjets_"      + diffVarName[i];   h_gjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_gjets[i]->Sumw2();
-        // W+JETS
-        histoname = "h_wjets_"      + diffVarName[i];   h_wjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_wjets[i]->Sumw2();
-        // MC
-        histoname = "h_mc_"         + diffVarName[i];   h_mc   .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_mc[i]   ->Sumw2();
-        // RARES
-        histoname = "h_rare_"       + diffVarName[i];   h_rare .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_rare[i] ->Sumw2();
-        // WZ
-        histoname = "h_wz_"         + diffVarName[i];   h_wz   .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_wz  [i] ->Sumw2();
-        // TTZ
-        histoname = "h_ttz_"        + diffVarName[i];   h_ttz  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttz [i] ->Sumw2();
-        // TTW
-        histoname = "h_ttw_"        + diffVarName[i];   h_ttw  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttw [i] ->Sumw2();
-        // TOT
-        histoname = "h_tot_"        + diffVarName[i];   h_tot  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_tot [i] ->Sumw2();
-        histoname = "hs_predicted_" + diffVarName[i];   hs_tot .push_back(new THStack(histoname, "Predicted number of events"));
-        // OBSERVED
-        histoname = "h_obs_"        + diffVarName[i];   h_obs  .push_back(new TH1D(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_obs[i]  ->Sumw2();
-        // RATIO
-        histoname = "h_ratio_"      + diffVarName[i];   h_ratio.push_back(new TH1D(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ratio[i]->Sumw2();
-    }
+	TString histoname;
+	
+	for (int i = 0; i < diffVarName.size(); i++) {
+		// TOP
+		histoname = "h_top_"        + diffVarName[i];   h_top  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_top[i]  ->Sumw2();
+		histoname = "h_ttbar_"      + diffVarName[i];   h_ttbar.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttbar[i]->Sumw2();
+		// Z+JETS
+		histoname = "h_zjets_"      + diffVarName[i];   h_zjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_zjets[i]->Sumw2();
+		// G+JETS
+		histoname = "h_gjets_"      + diffVarName[i];   h_gjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_gjets[i]->Sumw2();
+		// W+JETS
+		histoname = "h_wjets_"      + diffVarName[i];   h_wjets.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_wjets[i]->Sumw2();
+		// MC
+		histoname = "h_mc_"         + diffVarName[i];   h_mc   .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_mc[i]   ->Sumw2();
+		// RARES
+		histoname = "h_rare_"       + diffVarName[i];   h_rare .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_rare[i] ->Sumw2();
+		// WZ
+		histoname = "h_wz_"         + diffVarName[i];   h_wz   .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_wz  [i] ->Sumw2();
+		// TTZ
+		histoname = "h_ttz_"        + diffVarName[i];   h_ttz  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttz [i] ->Sumw2();
+		// TTW
+		histoname = "h_ttw_"        + diffVarName[i];   h_ttw  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttw [i] ->Sumw2();
+		// TOT
+		histoname = "h_tot_"        + diffVarName[i];   h_tot  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_tot [i] ->Sumw2();
+		histoname = "hs_predicted_" + diffVarName[i];   hs_tot .push_back(new THStack(histoname, "Predicted number of events"));
+		// OBSERVED
+		histoname = "h_obs_"        + diffVarName[i];   h_obs  .push_back(new TH1D(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_obs[i]  ->Sumw2();
+		// RATIO
+		histoname = "h_ratio_"      + diffVarName[i];   h_ratio.push_back(new TH1D(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ratio[i]->Sumw2();
+	}
 	
 	///////////////////////////////////////////////////////////////////////////////////
 	// SIGEVENT TREE //////////////////////////////////////////////////////////////////
@@ -15687,7 +16215,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		if (!verbose) showStatusBar(i, sigtree->GetEntries(), 10000);
 		sigtree->GetEntry(i);
 		
-        //		if (tmp_samplename == "init") tmp_samplename = *sname;
+		//		if (tmp_samplename == "init") tmp_samplename = *sname;
 		if (verbose && tmp_samplename != *sname) {
 			if (tmp_samplename == samplename || tmp_samplename == "init") {
 				tmp_samplename = *sname;
@@ -15701,7 +16229,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		// select same-sign or opposite-sign
 		if (flavor_sel != -1 && flavor_sel != Flavor) continue;	// MU-MU || E-MU || E-E
 		if ( samesign && Flavor > 2 && !looseSel) continue; // selects same-sign events
-        //		if ( samesign && Flavor > 3) continue; // selects same-sign events EM/EE
+		//		if ( samesign && Flavor > 3) continue; // selects same-sign events EM/EE
 		if (!samesign && Flavor < 3 && !looseSel) continue; // selects opposite-sign events
 		if (wzEnr) {
 			if (!samesign && passZVeto != 0) continue;
@@ -15739,34 +16267,34 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		if (gApplyZVeto && passZVeto == 0)  continue;
 		if (chVeto && charge != chVeto ) continue;
 		
-        //		if (PFIso1 == 0. || PFIso2 == 0.) continue;
-        //		if (PFIso1 != 0. && PFIso2 != 0.) continue;
-        
-        for (int j = 0; j < diffVarName.size(); j++) {
-            if      (diffVarName[j] == "HT"    ) diffVar = HT;
-            else if (diffVarName[j] == "MET"   ) diffVar = MET;
-            else if (diffVarName[j] == "NJ"    ) diffVar = NJ+0.5;
-            else if (diffVarName[j] == "NbJmed") diffVar = NbJmed+0.5;
-            else if (diffVarName[j] == "pT1"   ) {
-                if (pT1 > pT2)                   diffVar = pT1;
-                else                             diffVar = pT2;
-            }
-            else if (diffVarName[j] == "pT2"   ) {
-                if (pT1 > pT2)                   diffVar = pT2;
-                else                             diffVar = pT1;
-            }
-            else if (diffVarName[j] == "Mll"   ) diffVar = mll;
-            else if (diffVarName[j] == "NVrtx" ) diffVar = NVrtx;
-            else if (diffVarName[j] == "PFIso1") {
-                if (pT1 > pT2)                   diffVar = PFIso1;
-                else                             diffVar = PFIso2;
-                //			TLCat = 0;
-            }
-            else if (diffVarName[j] == "PFIso2") {
-                if (pT1 > pT2)                   diffVar = PFIso2;
-                else                             diffVar = PFIso1;
-                //			TLCat = 0;
-            }
+		//		if (PFIso1 == 0. || PFIso2 == 0.) continue;
+		//		if (PFIso1 != 0. && PFIso2 != 0.) continue;
+		
+		for (int j = 0; j < diffVarName.size(); j++) {
+			if      (diffVarName[j] == "HT"    ) diffVar = HT;
+			else if (diffVarName[j] == "MET"   ) diffVar = MET;
+			else if (diffVarName[j] == "NJ"    ) diffVar = NJ+0.5;
+			else if (diffVarName[j] == "NbJmed") diffVar = NbJmed+0.5;
+			else if (diffVarName[j] == "pT1"   ) {
+				if (pT1 > pT2)                   diffVar = pT1;
+				else                             diffVar = pT2;
+			}
+			else if (diffVarName[j] == "pT2"   ) {
+				if (pT1 > pT2)                   diffVar = pT2;
+				else                             diffVar = pT1;
+			}
+			else if (diffVarName[j] == "Mll"   ) diffVar = mll;
+			else if (diffVarName[j] == "NVrtx" ) diffVar = NVrtx;
+			else if (diffVarName[j] == "PFIso1") {
+				if (pT1 > pT2)                   diffVar = PFIso1;
+				else                             diffVar = PFIso2;
+				//			TLCat = 0;
+			}
+			else if (diffVarName[j] == "PFIso2") {
+				if (pT1 > pT2)                   diffVar = PFIso2;
+				else                             diffVar = PFIso1;
+				//			TLCat = 0;
+			}
 			else if (diffVarName[j] == "D01") {
 				if (pT1 > pT2)                diffVar = D01;
 				else                          diffVar = D02;
@@ -15793,460 +16321,493 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 				if (MTLep1 > MTLep2)                diffVar = MTLep2;
 				else                          diffVar = MTLep1;
 			}
-            else                                 diffVar = -9999.;
+			else                                 diffVar = -9999.;
 
 			if ( (NJ  < minNjets || NJ > maxNjets) && diffVarName[j] != "NJ" )      continue;
             
-            // GET ALL DATA EVENTS
-            if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
-                //			if (Flavor < 3) {
-                if (gApplyZVeto && passZVeto == 0)  continue;
-                if (chVeto && charge != chVeto ) continue;
-                Sample *S = fSampleMap[TString(*sname)];
-                if (TLCat == 0) {
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Data)" << endl; samplename = *sname;}
-                    h_obs  [j]->Fill(diffVar    , 1);
-                }
-            } // end data events
-            
-            //		if (verbose && samplename != *sname) {
-            //			cout << setw(15) << *sname << "\t";
-            //			samplename = *sname;
-            //			cout << "puweight: " << setw(8) << puweight << "\ttrigScale: " << trigScale[Flavor] << "\tscale: " << setw(14) << fLumiNorm / fSampleMap[*sname]->getLumi() << "\tweight: " << setw(14) << puweight*trigScale[Flavor]*fLumiNorm / fSampleMap[*sname]->getLumi() << "\tchVeto: " << chVeto << "\t";
-            //			cout << "fLumiNorm / fSampleMap[*sname]->getLumi() = " << fLumiNorm << " / " << setw(12) << fSampleMap[*sname]->getLumi() << " = " << setw(14) << fLumiNorm / fSampleMap[*sname]->getLumi() << endl;
-            //		}
-            
-            if (SType == 10 && TLCat == 0) {
-                if (*sname == "WWTo2L2Nu") continue;
-                if (*sname == "TTbarWNLO") continue;
-                //			if (Flavor > 2) continue;
-                if (chVeto && charge != chVeto ) continue;
-                // make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
-                Sample *S = fSampleMap[*sname];
-                float scale = fLumiNorm / S->getLumi();
-                //			float weight = puweight*trigScale[Flavor]*scale;
-                float weight = puweight*HLTSF*scale;
-                //			float weight = HLTSF*scale;
-                //			float weight = puweight*scale;
-                //			float weight = scale;
-                //			if (verbose && samplename != *sname) {
-                //				cout << *sname << endl;
-                //				samplename = *sname;
-                //				cout << "puweight: " << puweight << "\ttrigScale: " << trigScale[Flavor] << "\tscale: " << scale << "\tweight: " << weight << "\tchVeto: " << chVeto << endl;
-                //				cout << "fLumiNorm / S->getLumi() = " << fLumiNorm << " / " << S->getLumi() << " = " << fLumiNorm / S->getLumi() << endl;
-                //			}
-                if (*sname == "TTJets") {
-                    h_top[j]->Fill(diffVar, weight);
-                    h_ttbar[j]->Fill(diffVar, weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Top)" << endl; samplename = *sname;}
-                }
-                //			else if (((TString)(*sname)).Contains("QCD") || *sname == "MuEnr15") {
-                //				h_qcd[j]->Fill(diffVar, weight);
-                //			}
-                else if (((TString)(*sname)).Contains("SingleT")) {
-                    h_top[j]->Fill(diffVar, weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Top)" << endl; samplename = *sname;}
-                }
-                else if (*sname == "DYJets") {
-                    h_zjets[j]->Fill(diffVar, weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Z + Jets)" << endl; samplename = *sname;}
-                }
-                else if (*sname == "WJets") {
-                    h_wjets[j]->Fill(diffVar, weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (W + Jets)" << endl; samplename = *sname;}
-                }
-                //			else if (*sname == "GYJets") {
-                //				h_gjets[j]->Fill(diffVar, weight);
-                //				if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (G + Jets)" << endl; samplename = *sname;}
-                //			}
-                else if (*sname == "TTbarWW") {
-                    h_rare  [j]->Fill(diffVar    , weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
-                }
-                else {
-                    //				if (verbose && samplename != *sname) {
-                    //					cout << *sname << endl;
-                    //					samplename = *sname;
-                    //				}
-                    h_mc[j]->Fill(diffVar, weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (remaining SM MC)" << endl; samplename = *sname;}
-                }
-            }
-            
-            // GET RARE MC EVENTS
-            if (SType == 15 && TLCat == 0) { // tight-tight rare MC events
-                //			if (*sname == "WWTo2L2Nu") continue;
-                //			if (Flavor > 2) continue;
-                if (chVeto && charge != chVeto ) continue;
-                // make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
-                Sample *S = fSampleMap[*sname];
-                float scale = fLumiNorm / S->getLumi();
-                //			float weight = puweight*trigScale[Flavor]*scale;
-                float weight = puweight*HLTSF*scale;
-                //			float weight = HLTSF*scale;
-                //			float weight = puweight*scale;
-                //			float weight = scale;
-                //			if (verbose && samplename != *sname) {
-                //				cout << *sname << endl;
-                //				samplename = *sname;
-                //				cout << "puweight: " << puweight << "\ttrigScale: " << trigScale[Flavor] << "\tscale: " << scale << "\tweight: " << weight << "\tchVeto: " << chVeto << endl;
-                //				cout << "fLumiNorm / S->getLumi() = " << fLumiNorm << " / " << S->getLumi() << " = " << fLumiNorm / S->getLumi() << endl;
-                //			}
-                // float tmp_nt2_rare_mc_e2 = tmp_nt2_rare_mc*tmp_nt2_rare_mc;
-                //			if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
-                if (*sname == "WZTo3LNu") {
-                    h_wz  [j]->Fill(diffVar    , weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (WZ)" << endl; samplename = *sname;}
-                }
-                else if (*sname == "TTbarW") {
-                    h_ttw  [j]->Fill(diffVar    , weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (tt + W)" << endl; samplename = *sname;}
-                }
-                else if (*sname == "TTbarZ") {
-                    h_ttz  [j]->Fill(diffVar    , weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (tt + Z)" << endl; samplename = *sname;}
-                }
-                else {
-                    h_rare  [j]->Fill(diffVar    , weight);
-                    if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
-                }
-                //			}
-            } // end rare mc events
-        } // end loop over kin variables
+			// GET ALL DATA EVENTS
+			if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
+				//			if (Flavor < 3) {
+				if (gApplyZVeto && passZVeto == 0)  continue;
+				if (chVeto && charge != chVeto ) continue;
+				Sample *S = fSampleMap[TString(*sname)];
+				if (TLCat == 0) {
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Data)" << endl; samplename = *sname;}
+					h_obs  [j]->Fill(diffVar    , 1);
+				}
+			} // end data events
+
+			if (SType == 10 && TLCat == 0) {
+				if (*sname == "WWTo2L2Nu") continue;
+				if (*sname == "TTbarWNLO") continue;
+				//			if (Flavor > 2) continue;
+				if (chVeto && charge != chVeto ) continue;
+				// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+				Sample *S = fSampleMap[*sname];
+				float scale = fLumiNorm / S->getLumi();
+				//			float weight = puweight*trigScale[Flavor]*scale;
+				float weight = puweight*HLTSF*scale;
+				//			float weight = HLTSF*scale;
+				//			float weight = puweight*scale;
+				//			float weight = scale;
+				if (*sname == "TTJets") {
+					h_top[j]->Fill(diffVar, weight);
+					h_ttbar[j]->Fill(diffVar, weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Top)" << endl; samplename = *sname;}
+				}
+				//			else if (((TString)(*sname)).Contains("QCD") || *sname == "MuEnr15") {
+				//				h_qcd[j]->Fill(diffVar, weight);
+				//			}
+				else if (((TString)(*sname)).Contains("SingleT")) {
+					h_top[j]->Fill(diffVar, weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Top)" << endl; samplename = *sname;}
+				}
+				else if (*sname == "DYJets") {
+					h_zjets[j]->Fill(diffVar, weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Z + Jets)" << endl; samplename = *sname;}
+				}
+				else if (*sname == "WJets") {
+					h_wjets[j]->Fill(diffVar, weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (W + Jets)" << endl; samplename = *sname;}
+				}
+				//			else if (*sname == "GYJets") {
+				//				h_gjets[j]->Fill(diffVar, weight);
+				//				if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (G + Jets)" << endl; samplename = *sname;}
+				//			}
+				else if (*sname == "TTbarWW") {
+					h_rare  [j]->Fill(diffVar    , weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
+				}
+				else {
+					//				if (verbose && samplename != *sname) {
+					//					cout << *sname << endl;
+					//					samplename = *sname;
+					//				}
+					h_mc[j]->Fill(diffVar, weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (remaining SM MC)" << endl; samplename = *sname;}
+				}
+			}
+			
+			// GET RARE MC EVENTS
+			if (SType == 15 && TLCat == 0) { // tight-tight rare MC events
+				//			if (*sname == "WWTo2L2Nu") continue;
+				//			if (Flavor > 2) continue;
+				if (chVeto && charge != chVeto ) continue;
+				// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+				Sample *S = fSampleMap[*sname];
+				float scale = fLumiNorm / S->getLumi();
+				//			float weight = puweight*trigScale[Flavor]*scale;
+				float weight = puweight*HLTSF*scale;
+				//			float weight = HLTSF*scale;
+				//			float weight = puweight*scale;
+				//			float weight = scale;
+				//			if (verbose && samplename != *sname) {
+				//				cout << *sname << endl;
+				//				samplename = *sname;
+				//				cout << "puweight: " << puweight << "\ttrigScale: " << trigScale[Flavor] << "\tscale: " << scale << "\tweight: " << weight << "\tchVeto: " << chVeto << endl;
+				//				cout << "fLumiNorm / S->getLumi() = " << fLumiNorm << " / " << S->getLumi() << " = " << fLumiNorm / S->getLumi() << endl;
+				//			}
+				// float tmp_nt2_rare_mc_e2 = tmp_nt2_rare_mc*tmp_nt2_rare_mc;
+				//			if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
+				if (*sname == "WZTo3LNu") {
+					h_wz  [j]->Fill(diffVar    , weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (WZ)" << endl; samplename = *sname;}
+				}
+				else if (*sname == "TTbarW") {
+					h_ttw  [j]->Fill(diffVar    , weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (tt + W)" << endl; samplename = *sname;}
+				}
+				else if (*sname == "TTbarZ") {
+					h_ttz  [j]->Fill(diffVar    , weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (tt + Z)" << endl; samplename = *sname;}
+				}
+				else {
+					h_rare  [j]->Fill(diffVar    , weight);
+					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
+				}
+				//			}
+			} // end rare mc events
+		} // end loop over kin variables
 		
 	} // end sigevent tree
 	
-    for (int i = 0; i < diffVarName.size(); i++) {
-        h_obs  [i]->SetMarkerColor(kBlack);
-        h_obs  [i]->SetMarkerStyle(8);
-        h_obs  [i]->SetMarkerSize(1.2);
-        h_obs  [i]->SetLineWidth(2);
-        h_obs  [i]->SetLineColor(kBlack);
-        h_obs  [i]->SetFillColor(kBlack);
-        
-        h_top  [i]->SetLineWidth(1);
-        h_zjets[i]->SetLineWidth(1);
-        h_wjets[i]->SetLineWidth(1);
-        h_gjets[i]->SetLineWidth(1);
-        h_mc   [i]->SetLineWidth(1);
-        h_rare [i]->SetLineWidth(1);
-        h_wz   [i]->SetLineWidth(1);
-        h_ttz  [i]->SetLineWidth(1);
-        h_ttw  [i]->SetLineWidth(1);
-        
-        h_top  [i]->SetFillColor(46);
-        h_zjets[i]->SetFillColor(49);
-        h_wjets[i]->SetFillColor(kOrange);
-        h_gjets[i]->SetFillColor(kGreen);
-        h_mc   [i]->SetFillColor(40);
-        h_rare [i]->SetFillColor(38);
-        h_wz   [i]->SetFillColor(39);
-        h_ttz  [i]->SetFillColor(42);
-        h_ttw  [i]->SetFillColor(44);
-        
-        h_tot  [i]->SetLineWidth(3);
-        h_tot  [i]->SetFillColor(12);
-        h_tot  [i]->SetFillStyle(3005);
-        
-        TGraphAsymmErrors* gr_obs  = FR->getGraphPoissonErrors( h_obs[i]  );
-        gr_obs    ->SetMarkerColor(kBlack);
-        gr_obs    ->SetMarkerStyle(8);
-        gr_obs    ->SetMarkerSize(1.2);
-        gr_obs    ->SetLineWidth(2);
-        gr_obs    ->SetLineColor(kBlack);
-        gr_obs    ->SetFillColor(kBlack);
-        
-        h_tot  [i]->Add(h_top    [i]);
-        h_tot  [i]->Add(h_zjets  [i]);
-        h_tot  [i]->Add(h_wjets  [i]);
+	for (int i = 0; i < diffVarName.size(); i++) {
+		h_obs  [i]->SetMarkerColor(kBlack);
+		h_obs  [i]->SetMarkerStyle(8);
+		h_obs  [i]->SetMarkerSize(1.2);
+		h_obs  [i]->SetLineWidth(2);
+		h_obs  [i]->SetLineColor(kBlack);
+		h_obs  [i]->SetFillColor(kBlack);
+		
+		h_top  [i]->SetLineWidth(1);
+		h_zjets[i]->SetLineWidth(1);
+		h_wjets[i]->SetLineWidth(1);
+		h_gjets[i]->SetLineWidth(1);
+		h_mc   [i]->SetLineWidth(1);
+		h_rare [i]->SetLineWidth(1);
+		h_wz   [i]->SetLineWidth(1);
+		h_ttz  [i]->SetLineWidth(1);
+		h_ttw  [i]->SetLineWidth(1);
+		
+		h_top  [i]->SetFillColor(46);
+		h_zjets[i]->SetFillColor(49);
+		h_wjets[i]->SetFillColor(kOrange);
+		h_gjets[i]->SetFillColor(kGreen);
+		h_mc   [i]->SetFillColor(40);
+		h_rare [i]->SetFillColor(38);
+		h_wz   [i]->SetFillColor(39);
+		h_ttz  [i]->SetFillColor(42);
+		h_ttw  [i]->SetFillColor(44);
+		
+		h_tot  [i]->SetLineWidth(3);
+		h_tot  [i]->SetFillColor(12);
+		h_tot  [i]->SetFillStyle(3005);
+		
+		TGraphAsymmErrors* gr_obs  = FR->getGraphPoissonErrors( h_obs[i]  );
+		gr_obs    ->SetMarkerColor(kBlack);
+		gr_obs    ->SetMarkerStyle(8);
+		gr_obs    ->SetMarkerSize(1.2);
+		gr_obs    ->SetLineWidth(2);
+		gr_obs    ->SetLineColor(kBlack);
+		gr_obs    ->SetFillColor(kBlack);
+		
+		h_tot  [i]->Add(h_top    [i]);
+		h_tot  [i]->Add(h_zjets  [i]);
+		h_tot  [i]->Add(h_wjets  [i]);
 //		h_tot  [i]->Add(h_gjets  [i]);
-//		h_tot  [i]->Add(h_singleT[i]);
-        h_tot  [i]->Add(h_mc	 [i]);
-        h_tot  [i]->Add(h_rare   [i]);
-        h_tot  [i]->Add(h_wz     [i]);
-        h_tot  [i]->Add(h_ttz    [i]);
-        h_tot  [i]->Add(h_ttw    [i]);
-        
-        if (ttbarEnr) {
-            hs_tot  [i]->Add(h_zjets  [i]);
-            hs_tot  [i]->Add(h_wjets  [i]);
-//			hs_tot  [i]->Add(h_gjets  [i]);
-//			hs_tot  [i]->Add(h_singleT[i]);
-            hs_tot  [i]->Add(h_mc     [i]);
-            hs_tot  [i]->Add(h_rare   [i]);
-            hs_tot  [i]->Add(h_wz     [i]);
-            hs_tot  [i]->Add(h_ttz    [i]);
-            hs_tot  [i]->Add(h_ttw    [i]);
-            hs_tot  [i]->Add(h_top    [i]);
-        }
-        else {
-            hs_tot  [i]->Add(h_top    [i]);
-            hs_tot  [i]->Add(h_zjets  [i]);
+		//		h_tot  [i]->Add(h_singleT[i]);
+		h_tot  [i]->Add(h_mc	 [i]);
+		h_tot  [i]->Add(h_rare   [i]);
+		h_tot  [i]->Add(h_wz     [i]);
+		h_tot  [i]->Add(h_ttz    [i]);
+		h_tot  [i]->Add(h_ttw    [i]);
+		
+		if (ttbarEnr) {
+			hs_tot  [i]->Add(h_zjets  [i]);
 			hs_tot  [i]->Add(h_wjets  [i]);
 //			hs_tot  [i]->Add(h_gjets  [i]);
 //			hs_tot  [i]->Add(h_singleT[i]);
-            hs_tot  [i]->Add(h_mc     [i]);
-            hs_tot  [i]->Add(h_rare   [i]);
-            hs_tot  [i]->Add(h_wz     [i]);
-            hs_tot  [i]->Add(h_ttz    [i]);
-            hs_tot  [i]->Add(h_ttw    [i]);
-        }
-        
-        double max(0.);
-        //	max = 1.2*h_obs->GetBinContent(2);
-        //	if (diffVarName == "NbJmed" || diffVarName == "NJ" || diffVarName == "pT2") max = 1.2*h_obs->GetBinContent(1);
-        
-        max = 1.2 * h_obs[i]->GetBinContent(h_obs[i]->GetMaximumBin());
-        
-        h_obs      [i]->SetMaximum(max);
-        h_top      [i]->SetMaximum(max);
-        h_zjets    [i]->SetMaximum(max);
-        h_wjets    [i]->SetMaximum(max);
-        h_gjets    [i]->SetMaximum(max);
+			hs_tot  [i]->Add(h_mc     [i]);
+			hs_tot  [i]->Add(h_rare   [i]);
+			hs_tot  [i]->Add(h_wz     [i]);
+			hs_tot  [i]->Add(h_ttz    [i]);
+			hs_tot  [i]->Add(h_ttw    [i]);
+			hs_tot  [i]->Add(h_top    [i]);
+		}
+		else {
+			hs_tot  [i]->Add(h_top    [i]);
+			hs_tot  [i]->Add(h_zjets  [i]);
+			hs_tot  [i]->Add(h_wjets  [i]);
+//			hs_tot  [i]->Add(h_gjets  [i]);
+//			hs_tot  [i]->Add(h_singleT[i]);
+			hs_tot  [i]->Add(h_mc     [i]);
+			hs_tot  [i]->Add(h_rare   [i]);
+			hs_tot  [i]->Add(h_wz     [i]);
+			hs_tot  [i]->Add(h_ttz    [i]);
+			hs_tot  [i]->Add(h_ttw    [i]);
+		}
+		
+		double max(0.);
+		//	max = 1.2*h_obs->GetBinContent(2);
+		//	if (diffVarName == "NbJmed" || diffVarName == "NJ" || diffVarName == "pT2") max = 1.2*h_obs->GetBinContent(1);
+		
+		max = 1.2 * h_obs[i]->GetBinContent(h_obs[i]->GetMaximumBin());
+		
+		h_obs      [i]->SetMaximum(max);
+		h_top      [i]->SetMaximum(max);
+		h_zjets    [i]->SetMaximum(max);
+		h_wjets    [i]->SetMaximum(max);
+		h_gjets    [i]->SetMaximum(max);
 //		h_singleT  [i]->SetMaximum(max);
-        h_mc       [i]->SetMaximum(max);
-        h_rare     [i]->SetMaximum(max);
-        h_wz       [i]->SetMaximum(max);
-        h_ttz      [i]->SetMaximum(max);
-        h_ttw      [i]->SetMaximum(max);
-        h_tot      [i]->SetMaximum(max);
-        hs_tot     [i]->SetMaximum(max);
-        
-        //	h_obs      ->SetMinimum(0.);
-        //	h_top      ->SetMinimum(0.);
-        //	h_zjets    ->SetMinimum(0.);
-        //	h_wjets    ->SetMinimum(0.);
-        //	h_gjets    ->SetMinimum(0.);
-        ////	h_singleT  ->SetMinimum(0.);
-        //	h_mc       ->SetMinimum(0.);
-        //	h_rare     ->SetMinimum(0.);
-        //	h_wz       ->SetMinimum(0.);
-        //	h_ttz      ->SetMinimum(0.);
-        //	h_ttw      ->SetMinimum(0.);
-        //	h_tot      ->SetMinimum(0.);
-        //	hs_tot     ->SetMinimum(0.);
-        
-        for (size_t j = 1; j <= h_tot[i]->GetXaxis()->GetNbins(); ++j) h_tot[i]->SetBinError(j, sqrt(0.1*h_tot[i]->GetBinContent(j)*0.1*h_tot[i]->GetBinContent(j) + h_tot[i]->GetBinError(j)*h_tot[i]->GetBinError(j)));
-        
-        // ratio plots
-        float border = 0.3;
-        float scale = (1-border)/border;
-        
-        h_ratio[i]->SetXTitle(xAxisTitle[i].Data());
-        h_ratio[i]->SetYTitle("");
-        h_ratio[i]->GetXaxis()->SetTitleSize(scale * 0.04);
-        h_ratio[i]->GetXaxis()->SetLabelSize(scale * 0.04);
-        h_ratio[i]->GetYaxis()->SetLabelSize(scale * 0.04);
+		h_mc       [i]->SetMaximum(max);
+		h_rare     [i]->SetMaximum(max);
+		h_wz       [i]->SetMaximum(max);
+		h_ttz      [i]->SetMaximum(max);
+		h_ttw      [i]->SetMaximum(max);
+		h_tot      [i]->SetMaximum(max);
+		hs_tot     [i]->SetMaximum(max);
+		
+		//	h_obs      ->SetMinimum(0.);
+		//	h_top      ->SetMinimum(0.);
+		//	h_zjets    ->SetMinimum(0.);
+		//	h_wjets    ->SetMinimum(0.);
+		//	h_gjets    ->SetMinimum(0.);
+		////	h_singleT  ->SetMinimum(0.);
+		//	h_mc       ->SetMinimum(0.);
+		//	h_rare     ->SetMinimum(0.);
+		//	h_wz       ->SetMinimum(0.);
+		//	h_ttz      ->SetMinimum(0.);
+		//	h_ttw      ->SetMinimum(0.);
+		//	h_tot      ->SetMinimum(0.);
+		//	hs_tot     ->SetMinimum(0.);
+		
+		for (size_t j = 1; j <= h_tot[i]->GetXaxis()->GetNbins(); ++j) h_tot[i]->SetBinError(j, sqrt(0.1*h_tot[i]->GetBinContent(j)*0.1*h_tot[i]->GetBinContent(j) + h_tot[i]->GetBinError(j)*h_tot[i]->GetBinError(j)));
+		
+		// ratio plots
+		float border = 0.3;
+		float scale = (1-border)/border;
+		
+		h_ratio[i]->SetXTitle(xAxisTitle[i].Data());
+		h_ratio[i]->SetYTitle("");
+		h_ratio[i]->GetXaxis()->SetTitleSize(scale * 0.04);
+		h_ratio[i]->GetXaxis()->SetLabelSize(scale * 0.04);
+		h_ratio[i]->GetYaxis()->SetLabelSize(scale * 0.04);
 //		h_ratio[i]->GetXaxis()->SetLabelSize(scale *  h_obs[i]->GetXaxis()->GetLabelSize());
 //		h_ratio[i]->GetYaxis()->SetLabelSize(scale *  h_obs[i]->GetYaxis()->GetLabelSize());
-        h_ratio[i]->GetXaxis()->SetTickLength(scale * h_obs[i]->GetXaxis()->GetTickLength());
-        h_ratio[i]->GetYaxis()->SetTickLength(h_obs[i]->GetYaxis()->GetTickLength());
-        
-        h_ratio[i]->SetFillStyle(1001);
-        h_ratio[i]->SetLineWidth(1);
-        h_ratio[i]->SetFillColor(  kGray+1);
-        h_ratio[i]->SetLineColor(  kGray+1);
-        h_ratio[i]->SetMarkerColor(kGray+1);
-        
-        h_ratio[i]->Divide(h_obs[i], h_tot[i]);
-        
-        hs_tot[i]->Draw("goff");
-        
-        hs_tot[i]->GetYaxis()->SetTitleSize(0.04);
-        hs_tot[i]->GetYaxis()->SetLabelSize(0.04);
-        
+		h_ratio[i]->GetXaxis()->SetTickLength(scale * h_obs[i]->GetXaxis()->GetTickLength());
+		h_ratio[i]->GetYaxis()->SetTickLength(h_obs[i]->GetYaxis()->GetTickLength());
+		
+		h_ratio[i]->SetFillStyle(1001);
+		h_ratio[i]->SetLineWidth(1);
+		h_ratio[i]->SetFillColor(  kGray+1);
+		h_ratio[i]->SetLineColor(  kGray+1);
+		h_ratio[i]->SetMarkerColor(kGray+1);
+		
+		h_ratio[i]->Divide(h_obs[i], h_tot[i]);
+		
+		hs_tot[i]->Draw("goff");
+		
+		hs_tot[i]->GetYaxis()->SetTitleSize(0.04);
+		hs_tot[i]->GetYaxis()->SetLabelSize(0.04);
+
 //		hs_tot[i]->GetXaxis()->SetTitle(xAxisTitle.Data());
 //		hs_tot[i]->GetXaxis()->SetTitleOffset(1.07);
-        hs_tot[i]->GetYaxis()->SetTitle(yAxisTitle[i].Data());
+		hs_tot[i]->GetYaxis()->SetTitle(yAxisTitle[i].Data());
 //		hs_tot[i]->GetYaxis()->SetTitleSize(0.045);
 //		hs_tot[i]->GetXaxis()->SetTitleSize(0.045);
 //		hs_tot[i]->GetYaxis()->SetLabelSize(0.045);
 //		hs_tot[i]->GetXaxis()->SetLabelSize(0.045);
-        hs_tot[i]->GetYaxis()->SetTitleOffset(1.25);
+		hs_tot[i]->GetYaxis()->SetTitleOffset(1.25);
 //		hs_tot[i]->GetXaxis()->SetTitleOffset(1.065);
-        if (diffVarName[i] == "NJ" || diffVarName[i] == "NbJmed"){
-            for(size_t k = 1; k <= nbins[i]; ++k) {
-                hs_tot [i]->GetXaxis()->SetBinLabel(k, Form("%d", k-1));
-                h_ratio[i]->GetXaxis()->SetBinLabel(k, Form("%d", k-1));
-            }
+		if (diffVarName[i] == "NJ" || diffVarName[i] == "NbJmed"){
+			for(size_t k = 1; k <= nbins[i]; ++k) {
+				hs_tot [i]->GetXaxis()->SetBinLabel(k, Form("%d", k-1));
+				h_ratio[i]->GetXaxis()->SetBinLabel(k, Form("%d", k-1));
+			}
 //			hs_tot[i]->GetXaxis()->SetLabelSize(0.07);
 //			hs_tot[i]->GetXaxis()->SetTitleSize(0.045);
 //			hs_tot[i]->GetXaxis()->SetTitleOffset(1.07);
-        }
-        
-        // removing x axis labels
-        for(size_t j = 1; j <= hs_tot[i]->GetXaxis()->GetNbins(); ++j) hs_tot[i]->GetXaxis()->SetBinLabel(j, "");
-        
-        TLegend *leg = new TLegend(0.70,0.62,0.90,0.88);
-        leg->AddEntry(h_obs    [i], "Data","p");
-        leg->AddEntry(h_top    [i], "Top","f");
-        leg->AddEntry(h_zjets  [i], "Z + jets","f");
-        leg->AddEntry(h_wjets  [i], "W + jets","f");
+		}
+		
+		// removing x axis labels
+		for(size_t j = 1; j <= hs_tot[i]->GetXaxis()->GetNbins(); ++j) hs_tot[i]->GetXaxis()->SetBinLabel(j, "");
+		
+		TLegend *leg = new TLegend(0.70,0.62,0.90,0.88);
+		leg->AddEntry(h_obs    [i], "Data","p");
+		leg->AddEntry(h_top    [i], "Top","f");
+		leg->AddEntry(h_zjets  [i], "Z + jets","f");
+		leg->AddEntry(h_wjets  [i], "W + jets","f");
 //		leg->AddEntry(h_gjets  [i], "gamma + jets","f");
 //		leg->AddEntry(h_singleT[i], "t","f");
-        leg->AddEntry(h_mc     [i], "remaining SM MC","f");
-        leg->AddEntry(h_rare   [i], "Rare SM","f");
-        leg->AddEntry(h_wz     [i], "WZ","f");
-        leg->AddEntry(h_ttz    [i], "t#bar{t} + Z","f");
-        leg->AddEntry(h_ttw    [i], "t#bar{t} + W","f");
-        leg->SetFillStyle(0);
-        leg->SetTextFont(42);
-        leg->SetBorderSize(0);
-        
-        TCanvas *c_temp = new TCanvas("C_ObsMC", "Observed vs Monte Carlo", 0, 0, 600, 600);
-        //	c_temp->SetLeftMargin(0.12);
-        //	c_temp->SetRightMargin(0.04);
-        c_temp->cd();
-        
-        TPad *p_plot  = new TPad("plotpad",  "Pad containing the plot", 0.00, border, 1.00, 1.00, 0, 0);
-        p_plot->SetBottomMargin(0.015);
-        p_plot->Draw();
-        TPad *p_ratio = new TPad("ratiopad", "Pad containing the ratio", 0.00, 0.00, 1.00, border, 0, 0);
-        p_ratio->SetTopMargin(0.025);
-        p_ratio->SetBottomMargin(0.35);
-        p_ratio->Draw();
-        
-        p_ratio->cd();
-        h_ratio[i]->GetYaxis()->SetNdivisions(505);
-        // setPlottingRange(h_ratio, 0.3);
-        h_ratio[i]->SetMaximum(1.99);
-        h_ratio[i]->SetMinimum(0.0);
-        h_ratio[i]->DrawCopy("E2 ");
-        TLine *l3 = new TLine(h_obs[i]->GetXaxis()->GetXmin(), 1.00, h_obs[i]->GetXaxis()->GetXmax(), 1.00);
-        l3->SetLineWidth(2);
-        l3->SetLineStyle(7);
-        l3->Draw();
-        gPad->RedrawAxis();
-        p_ratio->Draw();
-        
-        p_plot->cd();
-        
-        //	gPad->SetLogy();
-        
-        hs_tot[i]->Draw("hist");
-        leg->Draw();
-        h_tot[i]->DrawCopy("0 E2 same");
-        //	h_tot[i]->SetFillStyle(0);
-        //	h_tot[i]->DrawCopy("hist same");
-        gr_obs->Draw("P same");
-        
-        lat->SetTextSize(0.03);
-        
-        drawTopLineSim(0.56, 0.8);
-        
-        if (flavor_sel == -1 && wzEnr) lat->DrawLatex(0.14,0.85, "ee/#mu#mu");	// MU-MU || E-MU || E-E
-        if (flavor_sel == -1 && !wzEnr) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-MU || E-E
-        if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
-        if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
-        if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
-        if (flavor_sel ==  3) lat->DrawLatex(0.14,0.85, "#mu#mu (OS)");
-        if (flavor_sel ==  4) lat->DrawLatex(0.14,0.85, "e#mu (OS)");
-        if (flavor_sel ==  5) lat->DrawLatex(0.14,0.85, "ee (OS)");
-        
-        
-        
-        //	gPad->RedrawAxis();
-        // Util::PrintNoEPS(c_temp, "ObsPred_" + Region::sname[reg], fOutputDir + fOutputSubDir, NULL);
-        Util::PrintPDF (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir);
-        Util::PrintPNG (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir);
-        //	Util::PrintROOT(c_temp,   diffVarName+sysString+chargeString , fOutputDir + fOutputSubDir);
-        
-        p_plot->SetLogy();
-        Util::PrintPDF (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir + "log/");
-        Util::PrintPNG (c_temp,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir + "log/");
-        
-        //	delete c_temp, leg;
-        
-        delete p_plot, p_ratio;
-        
-        // =========== //
-        // shape plots //
-        // =========== //
-        
-        TLegend *leg2 = new TLegend(0.70,0.75,0.90,0.88);
-        leg2->AddEntry(h_ttbar[i], "t#bar{t}","f");
-        leg2->AddEntry(h_rare [i], "Rare SM","f");
+		leg->AddEntry(h_mc     [i], "remaining SM MC","f");
+		leg->AddEntry(h_rare   [i], "Rare SM","f");
+		leg->AddEntry(h_wz     [i], "WZ","f");
+		leg->AddEntry(h_ttz    [i], "t#bar{t} + Z","f");
+		leg->AddEntry(h_ttw    [i], "t#bar{t} + W","f");
+		leg->SetFillStyle(0);
+		leg->SetTextFont(42);
+		leg->SetBorderSize(0);
+		
+		TCanvas *c_temp = new TCanvas("C_ObsMC", "Observed vs Monte Carlo", 0, 0, 600, 600);
+		//	c_temp->SetLeftMargin(0.12);
+		//	c_temp->SetRightMargin(0.04);
+		cout << "c_temp->cd()" << endl;
+		c_temp->cd();
+		
+		cout << "creating pads.." << endl;
+		TPad *p_plot  = new TPad("plotpad",  "Pad containing the plot", 0.00, border, 1.00, 1.00, 0, 0);
+		p_plot->SetBottomMargin(0.015);
+		p_plot->Draw();
+		TPad *p_ratio = new TPad("ratiopad", "Pad containing the ratio", 0.00, 0.00, 1.00, border, 0, 0);
+		p_ratio->SetTopMargin(0.025);
+		p_ratio->SetBottomMargin(0.35);
+		p_ratio->Draw();
+		
+		cout << "setup h_ratio.." << endl;
+		p_ratio->cd();
+		h_ratio[i]->GetYaxis()->SetNdivisions(505);
+		// setPlottingRange(h_ratio, 0.3);
+		h_ratio[i]->SetMaximum(1.99);
+		h_ratio[i]->SetMinimum(0.0);
+		h_ratio[i]->DrawCopy("E2 ");
+		cout << "TLine.." << endl;
+		TLine *l3 = new TLine(h_obs[i]->GetXaxis()->GetXmin(), 1.00, h_obs[i]->GetXaxis()->GetXmax(), 1.00);
+		l3->SetLineWidth(2);
+		l3->SetLineStyle(7);
+		l3->Draw();
+		gPad->RedrawAxis();
+		p_ratio->Draw();
+		
+		p_plot->cd();
+		
+		//	gPad->SetLogy();
+		
+		hs_tot[i]->Draw("hist");
+		leg->Draw();
+		h_tot[i]->DrawCopy("0 E2 same");
+		//	h_tot[i]->SetFillStyle(0);
+		//	h_tot[i]->DrawCopy("hist same");
+		gr_obs->Draw("P same");
+		
+		lat->SetTextSize(0.03);
+		
+		cout << "DrawLatex" << endl;
+		if (flavor_sel == -1 && wzEnr) lat->DrawLatex(0.14,0.85, "ee/#mu#mu");	// MU-MU || E-MU || E-E
+		if (flavor_sel == -1 && !wzEnr) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-MU || E-E
+		if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
+		if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
+		if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
+		if (flavor_sel ==  3) lat->DrawLatex(0.14,0.85, "#mu#mu (OS)");
+		if (flavor_sel ==  4) lat->DrawLatex(0.14,0.85, "e#mu (OS)");
+		if (flavor_sel ==  5) lat->DrawLatex(0.14,0.85, "ee (OS)");
+		
+		drawTopLineSim(0.56, 0.8);
+		
+		
+		
+		//	gPad->RedrawAxis();
+		// Util::PrintNoEPS(c_temp, "ObsPred_" + Region::sname[reg], fOutputDir + fOutputSubDir, NULL);
+		cout << "bla.." << endl;
+		cout << "diffVarName.size(): " << diffVarName.size() << endl;
+		cout << "diffVarName[" << i << "]+flavorString+chargeString" << endl;
+//		cout << diffVarName[i] << " + " << flavorString << " + " << chargeString << endl;
+		TString filename = diffVarName[i];
+//		filename.Append(flavorString);
+//		filename.Append(chargeString);
+		cout << "filename: " << filename.Data() << endl;
+		Util::PrintPDF (c_temp,   filename , fOutputDir + fOutputSubDir);
+		Util::PrintPNG (c_temp,   filename , fOutputDir + fOutputSubDir);
+		//	Util::PrintROOT(c_temp,   diffVarName+sysString+chargeString , fOutputDir + fOutputSubDir);
+		
+		p_plot->SetLogy();
+		Util::PrintPDF (c_temp,   filename , fOutputDir + fOutputSubDir + "log/");
+		Util::PrintPNG (c_temp,   filename , fOutputDir + fOutputSubDir + "log/");
+		
+		//	delete c_temp, leg;
+		
+		delete p_plot, p_ratio;
+		
+		// =========== //
+		// shape plots //
+		// =========== //
+		
+		cout << "shape plots.." << endl;
+		
+		TLegend *leg2 = new TLegend(0.70,0.75,0.90,0.88);
+		leg2->AddEntry(h_ttbar[i], "t#bar{t}","f");
+		leg2->AddEntry(h_rare [i], "Rare SM","f");
 		//		leg2->AddEntry(h_ttz  [i], "t#bar{t} + Z","f");
-        leg2->AddEntry(h_ttw  [i], "t#bar{t} + W","f");
-        leg2->SetFillStyle(0);
-        leg2->SetTextFont(42);
-        leg2->SetBorderSize(0);
-        
-        TCanvas *c_temp2 = new TCanvas("C_MCShapes", "Monte Carlo Shapes", 0, 0, 600, 600);
-        c_temp2->SetLeftMargin(0.12);
-        c_temp2->SetRightMargin(0.04);
-        c_temp2->cd();
-        
-        h_ttbar[i]->Scale(1./h_ttbar[i]->Integral());
-        h_rare [i]->Scale(1./h_rare [i]->Integral());
-        h_ttz  [i]->Scale(1./h_ttz  [i]->Integral());
-        h_ttw  [i]->Scale(1./h_ttw  [i]->Integral());
-        
+		leg2->AddEntry(h_ttw  [i], "t#bar{t} + W","f");
+		leg2->SetFillStyle(0);
+		leg2->SetTextFont(42);
+		leg2->SetBorderSize(0);
+		
+		TCanvas *c_temp2 = new TCanvas("C_MCShapes", "Monte Carlo Shapes", 0, 0, 600, 600);
+		c_temp2->SetLeftMargin(0.12);
+		c_temp2->SetRightMargin(0.04);
+		c_temp2->cd();
+		
+		h_ttbar[i]->Scale(1./h_ttbar[i]->Integral());
+		h_rare [i]->Scale(1./h_rare [i]->Integral());
+		h_ttz  [i]->Scale(1./h_ttz  [i]->Integral());
+		h_ttw  [i]->Scale(1./h_ttw  [i]->Integral());
+		
 //        max = 1.2*h_ttbar[i]->GetBinContent(2);
 //        if (diffVarName[i] == "MET" || diffVarName[i] == "NJ") max = 1.25*h_ttbar[i]->GetBinContent(4);
 //        if (diffVarName[i] == "NbJmed") max = 1.2*h_rare[i]->GetBinContent(1);
 //        if (diffVarName[i] == "pT2") max = 1.2*h_ttbar[i]->GetBinContent(1);
 		max = 1.2 * std::max(h_ttbar[i]->GetBinContent(h_ttbar[i]->GetMaximumBin()),std::max(h_rare[i]->GetBinContent(h_rare[i]->GetMaximumBin()),std::max(h_ttz[i]->GetBinContent(h_ttz[i]->GetMaximumBin()),h_ttw[i]->GetBinContent(h_ttw[i]->GetMaximumBin()))));
-        h_ttbar[i]->SetMaximum(max);
-        h_rare [i]->SetMaximum(max);
-        h_ttz  [i]->SetMaximum(max);
-        h_ttw  [i]->SetMaximum(max);
-        
+		h_ttbar[i]->SetMaximum(max);
+		h_rare [i]->SetMaximum(max);
+		h_ttz  [i]->SetMaximum(max);
+		h_ttw  [i]->SetMaximum(max);
+		
 		h_ttbar[i]->SetFillStyle(3004);
-        h_rare [i]->SetFillStyle(3005);
-        h_ttz  [i]->SetFillStyle(3003);
-        h_ttw  [i]->SetFillStyle(0);
+		h_rare [i]->SetFillStyle(3005);
+		h_ttz  [i]->SetFillStyle(3003);
+		h_ttw  [i]->SetFillStyle(0);
+		
+		h_ttbar[i]->SetLineWidth(1);
+		h_rare [i]->SetLineWidth(1);
+		h_ttz  [i]->SetLineWidth(1);
+		h_ttw  [i]->SetLineWidth(2);
+		
+		h_ttbar[i]->SetLineColor(46);
+		h_rare [i]->SetLineColor(38);
+		h_ttz  [i]->SetLineColor(42);
+		h_ttw  [i]->SetLineColor(44);
+		
+		h_ttbar[i]->SetFillColor(46);
+		h_rare [i]->SetFillColor(38);
+		h_ttz  [i]->SetFillColor(42);
+		h_ttw  [i]->SetFillColor(44);
+		
+		h_ttbar[i]->Draw("goff");
+		h_ttbar[i]->GetXaxis()->SetTitle(xAxisTitle[i].Data());
+		h_ttbar[i]->GetYaxis()->SetTitle("Normalized to Unity");
+		h_ttbar[i]->GetYaxis()->SetTitleSize(0.045);
+		h_ttbar[i]->GetXaxis()->SetTitleSize(0.045);
+		h_ttbar[i]->GetYaxis()->SetLabelSize(0.045);
+		h_ttbar[i]->GetXaxis()->SetLabelSize(0.045);
+		h_ttbar[i]->GetYaxis()->SetTitleOffset(1.25);
+		h_ttbar[i]->GetXaxis()->SetTitleOffset(1.065);
+		
+		h_ttbar[i]->Draw("hist");
+		leg2->Draw();
+		h_rare[i] ->Draw("hist same");
+		//	h_ttz[i]  ->Draw("hist same");
+		h_ttw[i]  ->Draw("hist same");
+		
+		lat->SetTextSize(0.03);
+		
+		drawTopLineSim(0.56, 0.8);
+		
+		if (flavor_sel == -1) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-MU || E-E
+		if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
+		if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
+		if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
+		
+		gPad->RedrawAxis();
+//        Util::PrintPDF (c_temp2,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir + "MCShapes/");
+		Util::PrintPDF (c_temp2,   filename , fOutputDir + fOutputSubDir + "MCShapes/");
         
-        h_ttbar[i]->SetLineWidth(1);
-        h_rare [i]->SetLineWidth(1);
-        h_ttz  [i]->SetLineWidth(1);
-        h_ttw  [i]->SetLineWidth(2);
-        
-        h_ttbar[i]->SetLineColor(46);
-        h_rare [i]->SetLineColor(38);
-        h_ttz  [i]->SetLineColor(42);
-        h_ttw  [i]->SetLineColor(44);
-        
-        h_ttbar[i]->SetFillColor(46);
-        h_rare [i]->SetFillColor(38);
-        h_ttz  [i]->SetFillColor(42);
-        h_ttw  [i]->SetFillColor(44);
-        
-        h_ttbar[i]->Draw("goff");
-        h_ttbar[i]->GetXaxis()->SetTitle(xAxisTitle[i].Data());
-        h_ttbar[i]->GetYaxis()->SetTitle("Normalized to Unity");
-        h_ttbar[i]->GetYaxis()->SetTitleSize(0.045);
-        h_ttbar[i]->GetXaxis()->SetTitleSize(0.045);
-        h_ttbar[i]->GetYaxis()->SetLabelSize(0.045);
-        h_ttbar[i]->GetXaxis()->SetLabelSize(0.045);
-        h_ttbar[i]->GetYaxis()->SetTitleOffset(1.25);
-        h_ttbar[i]->GetXaxis()->SetTitleOffset(1.065);
-        
-        h_ttbar[i]->Draw("hist");
-        leg2->Draw();
-        h_rare[i] ->Draw("hist same");
-        //	h_ttz[i]  ->Draw("hist same");
-        h_ttw[i]  ->Draw("hist same");
-        
-        lat->SetTextSize(0.03);
-        
-        drawTopLineSim(0.56, 0.8);
-        
-        if (flavor_sel == -1) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-MU || E-E
-        if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
-        if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
-        if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
-        
-        gPad->RedrawAxis();
-        Util::PrintPDF (c_temp2,   diffVarName[i]+flavorString+sysString+chargeString , fOutputDir + fOutputSubDir + "MCShapes/");
-        
-        delete c_temp;
-        delete c_temp2;
-        delete leg;
-        delete leg2;
-        delete h_obs[i] , gr_obs[i] , h_top[i] , h_zjets[i]/* , /*h_wjets[i] , h_gjets[i] , /*h_singleT[i]*/ , h_rare[i] , h_tot[i] , h_ttz[i] , h_ttw[i] , h_wz[i] , hs_tot[i], h_ttbar[i] ;
-    }
+//		cout << "delete h_obs  [i]" << endl;   if (h_obs  [i]) delete h_obs  [i];
+//		cout << "delete gr_obs"     << endl;   if (gr_obs    ) delete gr_obs    ;
+//		cout << "delete h_top  [i]" << endl;   if (h_top  [i]) delete h_top  [i];
+//		cout << "delete h_zjets[i]" << endl;   if (h_zjets[i]) delete h_zjets[i];
+//		cout << "delete h_wjets[i]" << endl;   if (h_wjets[i]) delete h_wjets[i];
+//		cout << "delete h_gjets[i]" << endl;   if (h_gjets[i]) delete h_gjets[i];
+//		cout << "delete h_rare [i]" << endl;   if (h_rare [i]) delete h_rare [i];
+//		cout << "delete h_tot  [i]" << endl;   if (h_tot  [i]) delete h_tot  [i];
+//		cout << "delete h_ttz  [i]" << endl;   if (h_ttz  [i]) delete h_ttz  [i];
+//		cout << "delete h_ttw  [i]" << endl;   if (h_ttw  [i]) delete h_ttw  [i];
+//		cout << "delete h_wz   [i]" << endl;   if (h_wz   [i]) delete h_wz   [i];
+//		cout << "delete hs_tot [i]" << endl;   if (hs_tot [i]) delete hs_tot [i];
+//		cout << "delete h_ttbar[i]" << endl;   if (h_ttbar[i]) delete h_ttbar[i];
+//		cout << "delete h_mc   [i]" << endl;   if (h_mc   [i]) delete h_mc   [i];
+//		cout << "delete h_ratio[i]" << endl;   if (h_ratio[i]) delete h_ratio[i];
+//		cout << "delete leg" << endl;
+//        delete leg;
+//		cout << "delete leg2" << endl;
+//        delete leg2;
+//		delete gr_obs;
+//		cout << "delete h_obs[i] , gr_obs[i] , h_top[i] , h_zjets[i] , h_wjets[i] , h_gjets[i] /*, h_singleT[i]*/ , h_rare[i] , h_tot[i] , h_ttz[i] , h_ttw[i] , h_wz[i] , hs_tot[i], h_ttbar[i] ;" << endl;
+////        delete h_obs[i] , gr_obs[i] , h_top[i] , h_zjets[i] , h_wjets[i] , h_gjets[i] /*, h_singleT[i]*/ , h_rare[i] , h_tot[i] , h_ttz[i] , h_ttw[i] , h_wz[i] , hs_tot[i], h_ttbar[i] ;
+//		cout << "delete l3"         << endl;   delete l3;
+//        delete p_plot, p_ratio;
+//		cout << "delete c_temp" << endl;
+//        delete c_temp;
+//		cout << "delete c_temp2" << endl;
+//        delete c_temp2;
+		delete c_temp;
+		delete c_temp2;
+		delete leg;
+		delete leg2;
+		delete h_obs[i] , gr_obs[i] , h_top[i] , h_zjets[i]/* , /*h_wjets[i] , h_gjets[i] , /*h_singleT[i]*/ , h_rare[i] , h_tot[i] , h_ttz[i] , h_ttw[i] , h_wz[i] , hs_tot[i], h_ttbar[i] ;
+	}
+	cout << "delete FR" << endl;
 	delete FR;
+	cout << "done with kin plots." << endl;
 }
 void SSDLPlotter::makeDiffPrediction(){
 	fOutputSubDir = "DiffPredictionPlots/";
@@ -19557,9 +20118,9 @@ void SSDLPlotter::makeWZValidation(SSPrediction pred, TString label){
 void SSDLPlotter::makeAllClosureTestsTTW(){
  	TString outputdir = Util::MakeOutputDir(fOutputDir + "MCClosureTTWZ");
  	for(size_t i = 0; i < gNREGIONS; ++i){
- 		TString outputname = outputdir + "MCClosure_" + gRegions[i]->sname + ".txt";
- 		makeIntMCClosureTTW(fClosureSamples, outputname, i);
-// 		makeIntMCClosureTTW(fTTJets, outputname, i);
+ 		TString outputname = outputdir + "TTbarMCClosure_" + gRegions[i]->sname + ".txt";
+// 		makeIntMCClosureTTW(fClosureSamples, outputname, i);
+ 		makeIntMCClosureTTW(fTTJets, outputname, i);
  	}
 // LUKAS 	for(size_t i = 0; i < gNREGIONS; ++i){
 // LUKAS 		TString outputname = outputdir + "MCClosure_Sig_" + gRegions[i]->sname + ".txt";
@@ -19659,105 +20220,118 @@ void SSDLPlotter::makeIntMCClosureTTW(vector<int> samples, TString filename, int
  		float scale = fLumiNorm / S->getLumi();
  		names.push_back(S->sname);
  		scales.push_back(scale);
- 		ntt_mm.push_back(S->numbers[reg][Muon].nt2);
- 		ntl_mm.push_back(S->numbers[reg][Muon].nt10);
- 		nll_mm.push_back(S->numbers[reg][Muon].nt0);
+// 		ntt_mm.push_back(S->numbers[reg][Muon].nt2);
+// 		ntl_mm.push_back(S->numbers[reg][Muon].nt10);
+// 		nll_mm.push_back(S->numbers[reg][Muon].nt0);
+//		
+// 		ntt_em.push_back(S->numbers[reg][ElMu].nt2);
+// 		ntl_em.push_back(S->numbers[reg][ElMu].nt10);
+// 		nlt_em.push_back(S->numbers[reg][ElMu].nt01);
+// 		nll_em.push_back(S->numbers[reg][ElMu].nt0);
+//		
+// 		ntt_ee.push_back(S->numbers[reg][Elec].nt2);
+// 		ntl_ee.push_back(S->numbers[reg][Elec].nt10);
+// 		nll_ee.push_back(S->numbers[reg][Elec].nt0);
+	
+ 		ntt_mm.push_back(S->region[reg][HighPt].mm.nt20_pt                           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		ntl_mm.push_back(S->region[reg][HighPt].mm.nt10_pt                           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		nll_mm.push_back(S->region[reg][HighPt].mm.nt00_pt                           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+
+ 		ntt_em.push_back(S->region[reg][HighPt].em.nt20_pt                           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		ntl_em.push_back(S->region[reg][HighPt].em.nt10_pt                           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		nlt_em.push_back(S->region[reg][HighPt].em.nt01_pt                           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		nll_em.push_back(S->region[reg][HighPt].em.nt00_pt                           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+
+ 		ntt_ee.push_back(S->region[reg][HighPt].ee.nt20_pt                           ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		ntl_ee.push_back(S->region[reg][HighPt].ee.nt10_pt                           ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		nll_ee.push_back(S->region[reg][HighPt].ee.nt00_pt                           ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+
+ 		ntt_mm_e1.push_back(S->getError(S->region[reg][HighPt].mm.nt20_pt            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1))); // take unweighted entries
+ 		ntt_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_pt            ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntt_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt20_pt            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
 		
- 		ntt_em.push_back(S->numbers[reg][ElMu].nt2);
- 		ntl_em.push_back(S->numbers[reg][ElMu].nt10);
- 		nlt_em.push_back(S->numbers[reg][ElMu].nt01);
- 		nll_em.push_back(S->numbers[reg][ElMu].nt0);
+ 		npp_mm.push_back(S->region[reg][HighPt].mm.npp_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		npf_mm.push_back(S->region[reg][HighPt].mm.npf_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		nfp_mm.push_back(S->region[reg][HighPt].mm.nfp_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		nff_mm.push_back(S->region[reg][HighPt].mm.nff_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
 		
- 		ntt_ee.push_back(S->numbers[reg][Elec].nt2);
- 		ntl_ee.push_back(S->numbers[reg][Elec].nt10);
- 		nll_ee.push_back(S->numbers[reg][Elec].nt0);
+ 		npp_em.push_back(S->region[reg][HighPt].em.npp_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		npf_em.push_back(S->region[reg][HighPt].em.npf_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		nfp_em.push_back(S->region[reg][HighPt].em.nfp_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		nff_em.push_back(S->region[reg][HighPt].em.nff_pt                            ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
 		
- 		ntt_mm_e1.push_back(S->getError(S->region[reg][HighPt].mm.nt20_pt->GetEntries())); // take unweighted entries
- 		ntt_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_pt->GetEntries()));
- 		ntt_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt20_pt->GetEntries()));
+ 		npp_ee.push_back(S->region[reg][HighPt].ee.npp_pt                            ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		npf_ee.push_back(S->region[reg][HighPt].ee.npf_pt                            ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		nfp_ee.push_back(S->region[reg][HighPt].ee.nfp_pt                            ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		nff_ee.push_back(S->region[reg][HighPt].ee.nff_pt                            ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
 		
- 		npp_mm.push_back(S->region[reg][HighPt].mm.npp_pt->GetEntries());
- 		npf_mm.push_back(S->region[reg][HighPt].mm.npf_pt->GetEntries());
- 		nfp_mm.push_back(S->region[reg][HighPt].mm.nfp_pt->GetEntries());
- 		nff_mm.push_back(S->region[reg][HighPt].mm.nff_pt->GetEntries());
+ 		npp_tt_mm.push_back(S->region[reg][HighPt].mm.nt2pp_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		npf_tt_mm.push_back(S->region[reg][HighPt].mm.nt2pf_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		nfp_tt_mm.push_back(S->region[reg][HighPt].mm.nt2fp_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
+ 		nff_tt_mm.push_back(S->region[reg][HighPt].mm.nt2ff_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Muon)+1));
 		
- 		npp_em.push_back(S->region[reg][HighPt].em.npp_pt->GetEntries());
- 		npf_em.push_back(S->region[reg][HighPt].em.npf_pt->GetEntries());
- 		nfp_em.push_back(S->region[reg][HighPt].em.nfp_pt->GetEntries());
- 		nff_em.push_back(S->region[reg][HighPt].em.nff_pt->GetEntries());
+ 		npp_tt_em.push_back(S->region[reg][HighPt].em.nt2pp_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		npf_tt_em.push_back(S->region[reg][HighPt].em.nt2pf_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		nfp_tt_em.push_back(S->region[reg][HighPt].em.nt2fp_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		nff_tt_em.push_back(S->region[reg][HighPt].em.nt2ff_pt                       ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
 		
- 		npp_ee.push_back(S->region[reg][HighPt].ee.npp_pt->GetEntries());
- 		npf_ee.push_back(S->region[reg][HighPt].ee.npf_pt->GetEntries());
- 		nfp_ee.push_back(S->region[reg][HighPt].ee.nfp_pt->GetEntries());
- 		nff_ee.push_back(S->region[reg][HighPt].ee.nff_pt->GetEntries());
-		
- 		npp_tt_mm.push_back(S->region[reg][HighPt].mm.nt2pp_pt->GetEntries());
- 		npf_tt_mm.push_back(S->region[reg][HighPt].mm.nt2pf_pt->GetEntries());
- 		nfp_tt_mm.push_back(S->region[reg][HighPt].mm.nt2fp_pt->GetEntries());
- 		nff_tt_mm.push_back(S->region[reg][HighPt].mm.nt2ff_pt->GetEntries());
-		
- 		npp_tt_em.push_back(S->region[reg][HighPt].em.nt2pp_pt->GetEntries());
- 		npf_tt_em.push_back(S->region[reg][HighPt].em.nt2pf_pt->GetEntries());
- 		nfp_tt_em.push_back(S->region[reg][HighPt].em.nt2fp_pt->GetEntries());
- 		nff_tt_em.push_back(S->region[reg][HighPt].em.nt2ff_pt->GetEntries());
-		
- 		npp_tt_ee.push_back(S->region[reg][HighPt].ee.nt2pp_pt->GetEntries());
- 		npf_tt_ee.push_back(S->region[reg][HighPt].ee.nt2pf_pt->GetEntries());
- 		nfp_tt_ee.push_back(S->region[reg][HighPt].ee.nt2fp_pt->GetEntries());
- 		nff_tt_ee.push_back(S->region[reg][HighPt].ee.nt2ff_pt->GetEntries());
+ 		npp_tt_ee.push_back(S->region[reg][HighPt].ee.nt2pp_pt                       ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		npf_tt_ee.push_back(S->region[reg][HighPt].ee.nt2pf_pt                       ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		nfp_tt_ee.push_back(S->region[reg][HighPt].ee.nt2fp_pt                       ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		nff_tt_ee.push_back(S->region[reg][HighPt].ee.nt2ff_pt                       ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
  		
- 		ntt_os_BB_em.push_back(S->region[reg][HighPt].em.nt20_OS_BB_pt->GetEntries()); // ele in barrel
- 		ntt_os_EE_em.push_back(S->region[reg][HighPt].em.nt20_OS_EE_pt->GetEntries()); // ele in endcal
- 		ntt_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt20_OS_BB_pt->GetEntries()); // both in barrel
- 		ntt_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt20_OS_EE_pt->GetEntries()); // both in endcal
- 		ntt_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt20_OS_EB_pt->GetEntries()); // one barrel, one endcap
+ 		ntt_os_BB_em.push_back(S->region[reg][HighPt].em.nt20_OS_BB_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)); // ele in barrel
+ 		ntt_os_EE_em.push_back(S->region[reg][HighPt].em.nt20_OS_EE_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)); // ele in endcal
+ 		ntt_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt20_OS_BB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)); // both in barrel
+ 		ntt_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt20_OS_EE_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)); // both in endcal
+ 		ntt_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt20_OS_EB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)); // one barrel, one endcap
 		
-		ntl_os_BB_em.push_back(S->region[reg][HighPt].em.nt10_OS_BB_pt->GetEntries());
-		ntl_os_EE_em.push_back(S->region[reg][HighPt].em.nt10_OS_EE_pt->GetEntries());
-		ntl_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt10_OS_BB_pt->GetEntries());
-		ntl_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt10_OS_EE_pt->GetEntries());
-		ntl_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt10_OS_EB_pt->GetEntries());
+		ntl_os_BB_em.push_back(S->region[reg][HighPt].em.nt10_OS_BB_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+		ntl_os_EE_em.push_back(S->region[reg][HighPt].em.nt10_OS_EE_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+		ntl_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt10_OS_BB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+		ntl_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt10_OS_EE_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+		ntl_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt10_OS_EB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
 		
-		nlt_os_BB_em.push_back(S->region[reg][HighPt].em.nt01_OS_BB_pt->GetEntries());
-		nlt_os_EE_em.push_back(S->region[reg][HighPt].em.nt01_OS_EE_pt->GetEntries());
-		nlt_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt01_OS_BB_pt->GetEntries());
-		nlt_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt01_OS_EE_pt->GetEntries());
-		nlt_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt01_OS_EB_pt->GetEntries());
+		nlt_os_BB_em.push_back(S->region[reg][HighPt].em.nt01_OS_BB_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+		nlt_os_EE_em.push_back(S->region[reg][HighPt].em.nt01_OS_EE_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+		nlt_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt01_OS_BB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+		nlt_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt01_OS_EE_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+		nlt_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt01_OS_EB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
 		
-		nll_os_BB_em.push_back(S->region[reg][HighPt].em.nt00_OS_BB_pt->GetEntries());
-		nll_os_EE_em.push_back(S->region[reg][HighPt].em.nt00_OS_EE_pt->GetEntries());
-		nll_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt00_OS_BB_pt->GetEntries());
-		nll_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt00_OS_EE_pt->GetEntries());
-		nll_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt00_OS_EB_pt->GetEntries());
+		nll_os_BB_em.push_back(S->region[reg][HighPt].em.nt00_OS_BB_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+		nll_os_EE_em.push_back(S->region[reg][HighPt].em.nt00_OS_EE_pt               ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+		nll_os_BB_ee.push_back(S->region[reg][HighPt].ee.nt00_OS_BB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+		nll_os_EE_ee.push_back(S->region[reg][HighPt].ee.nt00_OS_EE_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+		nll_os_EB_ee.push_back(S->region[reg][HighPt].ee.nt00_OS_EB_pt               ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
  		
- 		ntt_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt20_OS_BB_pt->GetEntries()));
- 		ntt_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt20_OS_EE_pt->GetEntries()));
- 		ntt_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_OS_BB_pt->GetEntries()));
- 		ntt_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_OS_EE_pt->GetEntries()));
- 		ntt_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_OS_EB_pt->GetEntries()));
+ 		ntt_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt20_OS_BB_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntt_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt20_OS_EE_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntt_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_OS_BB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntt_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_OS_EE_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntt_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt20_OS_EB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
  		
- 		ntl_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt10_OS_BB_pt->GetEntries()));
- 		ntl_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt10_OS_EE_pt->GetEntries()));
- 		ntl_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt10_OS_BB_pt->GetEntries()));
- 		ntl_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt10_OS_EE_pt->GetEntries()));
- 		ntl_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt10_OS_EB_pt->GetEntries()));
+ 		ntl_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt10_OS_BB_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntl_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt10_OS_EE_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntl_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt10_OS_BB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntl_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt10_OS_EE_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		ntl_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt10_OS_EB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
  		
- 		nlt_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt01_OS_BB_pt->GetEntries()));
- 		nlt_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt01_OS_EE_pt->GetEntries()));
- 		nlt_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt01_OS_BB_pt->GetEntries()));
- 		nlt_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt01_OS_EE_pt->GetEntries()));
- 		nlt_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt01_OS_EB_pt->GetEntries()));
+ 		nlt_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt01_OS_BB_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		nlt_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt01_OS_EE_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		nlt_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt01_OS_BB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		nlt_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt01_OS_EE_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		nlt_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt01_OS_EB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
  		
- 		nll_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt00_OS_BB_pt->GetEntries()));
- 		nll_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt00_OS_EE_pt->GetEntries()));
- 		nll_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt00_OS_BB_pt->GetEntries()));
- 		nll_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt00_OS_EE_pt->GetEntries()));
- 		nll_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt00_OS_EB_pt->GetEntries()));
+ 		nll_os_BB_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt00_OS_BB_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		nll_os_EE_em_e1.push_back(S->getError(S->region[reg][HighPt].em.nt00_OS_EE_pt->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1)));
+ 		nll_os_BB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt00_OS_BB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		nll_os_EE_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt00_OS_EE_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
+ 		nll_os_EB_ee_e1.push_back(S->getError(S->region[reg][HighPt].ee.nt00_OS_EB_pt->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1)));
  		
- 		npp_tt_cm_ee.push_back(scale*S->region[reg][HighPt].ee.nt2pp_cm_pt->GetEntries());
- 		npp_cm_ee   .push_back(scale*S->region[reg][HighPt].ee.npp_cm_pt->GetEntries());
- 		npp_tt_cm_em.push_back(scale*S->region[reg][HighPt].em.nt2pp_cm_pt->GetEntries());
- 		npp_cm_em   .push_back(scale*S->region[reg][HighPt].em.npp_cm_pt->GetEntries());
+ 		npp_tt_cm_ee.push_back(scale*S->region[reg][HighPt].ee.nt2pp_cm_pt           ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		npp_cm_ee   .push_back(scale*S->region[reg][HighPt].ee.npp_cm_pt             ->Integral(0, getNFPtBins(Elec)+1, 0, getNFPtBins(Elec)+1));
+ 		npp_tt_cm_em.push_back(scale*S->region[reg][HighPt].em.nt2pp_cm_pt           ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
+ 		npp_cm_em   .push_back(scale*S->region[reg][HighPt].em.npp_cm_pt             ->Integral(0, getNFPtBins(Muon)+1, 0, getNFPtBins(Elec)+1));
 		
 		// LUKAS test
 //		nt20_mm.push_back(S->region[reg][HighPt].mm.nt20_pt->GetEntries());
@@ -20762,6 +21336,7 @@ void SSDLPlotter::makeTTbarClosure(){
 }
 
 void SSDLPlotter::storeWeightedPred(int baseRegion){
+	cout << "Store weighted predictions.." << endl;
 	TFile *pFile = TFile::Open(fOutputFileName);
 	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
 
