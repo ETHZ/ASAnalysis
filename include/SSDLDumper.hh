@@ -15,6 +15,8 @@
 #include "TRandom3.h"
 #include "TLorentzVector.h"
 
+#include "helper/LumiReweightingStandAlone.h"
+
 // BDT THINGS ---------------
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
@@ -998,6 +1000,7 @@ public:
 	int         fSETree_Flavor; // mm(0), em(1), ee(2)
 	int         fSETree_Charge;
 	int         fSETree_TLCat; // TL category: TT(0), TL(1), LT(2), LL(3)
+	int         fSETree_PFCat; // PF category: PP(0), PF(1), FP(2), FF(3)
 	int         fSETree_ZVeto;   // passes Z veto
 	int         fSETree_3rdVeto; // passes 3rd lepton veto
 	int			fSETree_3rdSFLepVeto; // passes 3rd SF lepton veto
@@ -1041,6 +1044,7 @@ public:
 	float		fSETree_medWP1;
 	float		fSETree_medWP2;
 	int			fSETree_NVrtx;
+	int			fSETree_NTrue;
 //	float		fSETree_Ml1l3; // invariant mass of 3rd lepton pair
 //	float		fSETree_Ml2l3; // invariant mass of 3rd lepton pair
 //	int			fSETree_Charge3rdLep;
@@ -1065,6 +1069,7 @@ public:
         GoodRunList *fGoodRunList;
 	TRandom3 *fRand3;
 	TRandom3 *fRand3Normal;
+	reweight::LumiReWeighting *fPUWeight;
 
 	// FOR THE BDT
 	// ---------------------------------------

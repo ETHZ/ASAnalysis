@@ -353,6 +353,10 @@ void SSDLDumper::init(){
 	// Prevent root from adding histograms to current file
 	TH1::AddDirectory(kFALSE);
 
+	// PU reweighting
+//	fPUWeight = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/mdunser/puhistos/may21/DataPUTrue_may21_upDown.root", "pileup", "pileup");
+	fPUWeight = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/mdunser/puhistos/may21/PU_all_minBias69400.root", "pileup", "pileup");
+
 	// FOR THE BDT. LET'S SEE HOW THAT WORKS
 	// --------------------------------------------
 //BDT. 	fReader = new TMVA::Reader( "!Color:!Silent" );
@@ -1703,7 +1707,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	gApplyZVeto   = false;
 
 	fSETree_SystFlag = flag;
-	fSETree_PUWeight = PUWeight;
+//	fSETree_PUWeight = PUWeight;
+	fSETree_PUWeight = fPUWeight->weight(PUnumTrueInteractions);
 	//	fSETree_HLTSF    = gHLTSF;
 	fSETree_BtagSF1  = gBtagSF1;
 	fSETree_BtagSF2  = gBtagSF2;
@@ -1715,6 +1720,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	fSETree_Event    = Event;
 	fSETree_MET      = getMET();
 	fSETree_NVrtx    = NVrtx;
+	fSETree_NTrue    = PUnumTrueInteractions;
 
 	fSETree_NM = getNTightMuons();
 	fSETree_NE = getNTightElectrons();
@@ -1782,6 +1788,12 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		if( isTightMuon(ind1)&&!isTightMuon(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 2;
 		if(!isTightMuon(ind1)&&!isTightMuon(ind2)) fSETree_TLCat = 3;
+		if (S->datamc != 0) {
+			if ( isPromptMuon(ind1) &&  isPromptMuon(ind2)) fSETree_PFCat = 0;
+			if ( isPromptMuon(ind1) && !isPromptMuon(ind2)) fSETree_PFCat = 1;
+			if (!isPromptMuon(ind1) &&  isPromptMuon(ind2)) fSETree_PFCat = 2;
+			if (!isPromptMuon(ind1) && !isPromptMuon(ind2)) fSETree_PFCat = 3;
+		}
 		fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
 //		if (mu3 > -1) {
 //			fSETree_Ml1l3			= getMll(ind1, mu3, Muon);
@@ -1888,6 +1900,12 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		if( isTightMuon(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
 		if(!isTightMuon(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 3;
+		if (S->datamc != 0) {
+			if ( isPromptMuon(ind1) &&  isPromptElectron(ind2)) fSETree_PFCat = 0;
+			if ( isPromptMuon(ind1) && !isPromptElectron(ind2)) fSETree_PFCat = 1;
+			if (!isPromptMuon(ind1) &&  isPromptElectron(ind2)) fSETree_PFCat = 2;
+			if (!isPromptMuon(ind1) && !isPromptElectron(ind2)) fSETree_PFCat = 3;
+		}
 		fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
 
 			// SETTING OF THE BDT VARIABLES:
@@ -1983,6 +2001,12 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		if( isTightElectron(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
 		if(!isTightElectron(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 3;
+		if (S->datamc != 0) {
+			if ( isPromptElectron(ind1) &&  isPromptElectron(ind2)) fSETree_PFCat = 0;
+			if ( isPromptElectron(ind1) && !isPromptElectron(ind2)) fSETree_PFCat = 1;
+			if (!isPromptElectron(ind1) &&  isPromptElectron(ind2)) fSETree_PFCat = 2;
+			if (!isPromptElectron(ind1) && !isPromptElectron(ind2)) fSETree_PFCat = 3;
+		}
 		fSETree_HLTSF   = getSF(S, Elec, ind1, ind2);
 
 			// SETTING OF THE BDT VARIABLES:
@@ -2035,8 +2059,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	if (S->datamc == 0) {
 		fChargeSwitch = 1;
 		
-//		////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		// MM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// MM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
 //		if (mumuSignalTrigger() && isSSLLMuEvent(ind1, ind2)){ // trigger && select loose mu/mu pair
 //			if ( isTightMuon(ind1) && isTightMuon(ind2)) {
 //				fSETree_M3      = getM3();
@@ -3061,6 +3085,7 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("Flavor",      &fSETree_Flavor  , "Flavor/I");
 	fSigEv_Tree->Branch("Charge",      &fSETree_Charge  , "Charge/I");
 	fSigEv_Tree->Branch("TLCat",       &fSETree_TLCat   , "TLCat/I");
+	fSigEv_Tree->Branch("PFCat",       &fSETree_PFCat   , "PFCat/I");
 	fSigEv_Tree->Branch("Pass3rdVeto", &fSETree_3rdVeto , "Pass3rdVeto/I");
 	fSigEv_Tree->Branch("Pass3rdSFLepVeto", &fSETree_3rdSFLepVeto , "Pass3rdSFLepVeto/I");
 	fSigEv_Tree->Branch("PassTTZSel",  &fSETree_ttZSel  , "PassTTZSel/I");
@@ -3104,6 +3129,7 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("medWP1",      &fSETree_medWP1  , "medWP1/F");
 	fSigEv_Tree->Branch("medWP2",      &fSETree_medWP2  , "medWP2/F");
 	fSigEv_Tree->Branch("NVrtx",       &fSETree_NVrtx   , "NVrtx/I");
+	fSigEv_Tree->Branch("NTrue",       &fSETree_NTrue   , "NTrue/I");
 //	fSigEv_Tree->Branch("Ml1l3",             &fSETree_Ml1l3         , "Ml1l3/F");
 //	fSigEv_Tree->Branch("Ml2l3",             &fSETree_Ml2l3         , "Ml2l3/F");
 //	fSigEv_Tree->Branch("Charge3rdLep",      &fSETree_Charge3rdLep  , "Charge3rdLep/I");
@@ -3126,6 +3152,7 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_Flavor   = -1;
 	fSETree_Charge   = -99;
 	fSETree_TLCat    = -1;
+	fSETree_PFCat    = -1;
 	fSETree_ZVeto    = -1;
 	fSETree_3rdVeto  = -1;
 	fSETree_3rdSFLepVeto = -1;
@@ -3169,6 +3196,7 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_medWP1   = -1.;
 	fSETree_medWP2   = -1.;
 	fSETree_NVrtx    = -1.;
+	fSETree_NTrue    = -1.;
 //	fSETree_Ml1l3	 = -1.;
 //	fSETree_Ml2l3	 = -1.;
 //	fSETree_Charge3rdLep = -99;
@@ -6514,7 +6542,7 @@ bool SSDLDumper::isTightMuon(int muon){
 		if(MuPFIso[muon] > gMuMaxIso) return false;
 	}
 	
-	if (fabs(MuD0[muon]) > 0.005) return false; // this is for testing only!!!
+//	if (fabs(MuD0[muon]) > 0.005) return false; // this is for testing only!!!
 	return true;
 }
 bool SSDLDumper::isGoodPrimMuon(int muon, float ptcut){
@@ -6739,7 +6767,7 @@ bool SSDLDumper::isTightElectron(int ele){
 		if(ElIsGoodElId_MediumWP[ele] != 1) return false;
 	}
 
-	if (fabs(ElD0[ele]) > 0.01) return false; // this is for testing!!!!
+//	if (fabs(ElD0[ele]) > 0.01) return false; // this is for testing!!!!
 
 	// JUST FOR FUTURE REFERENCE, THOSE ARE THE VALUES FOR MVA-ID WE USED
 	// tight MVA-ID values if(fabs(ElEta[ele]) < 0.8   &&                             ElMVAIDTrig[ele] < 0.956) return false;
@@ -6952,33 +6980,33 @@ float SSDLDumper::getLeptonSFMu(float pt, float eta){
 	
 	if (10 < pt && pt < 15)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.973;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.954;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.91;}
+		if (1.20  < aeta && aeta < 2.50) {return 1.03;}
 	}
 	else if (15 < pt && pt < 20)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.957;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.971;}
+		if (0.00  < aeta && aeta < 1.20) {return 1.01;}
+		if (1.20  < aeta && aeta < 2.50) {return 1.05;}
 	}
 	else if (20 < pt && pt < 30)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.964;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.981;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.98;}
+		if (1.20  < aeta && aeta < 2.50) {return 1.02;}
 	}
 	else if (30 < pt && pt < 40)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.971;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.978;}
+		if (0.00  < aeta && aeta < 1.20) {return 1.00;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.98;}
 	}
 	else if (40 < pt && pt < 50)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.978;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.984;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.96;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.99;}
 	}
 	else if (pt > 50)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.974;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.977;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.90;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.94;}
 	}
 	
 	// if we get here, return no SF
@@ -6991,45 +7019,45 @@ float SSDLDumper::getLeptonSFEl(float pt, float eta){
 	
 	if (10 < pt && pt < 15)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.834;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.973;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.954;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 1.119;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.66;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.85;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.41;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.76;}
 	}
 	else if (15 < pt && pt < 20)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.918;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.906;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.909;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.944;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.90;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.86;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.68;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 1.48;}
 	}
 	else if (20 < pt && pt < 30)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.954;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.923;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.921;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.993;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 1.00;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.89;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.90;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.97;}
 	}
 	else if (30 < pt && pt < 40)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.960;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.935;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.924;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.959;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.94;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.97;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.88;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.97;}
 	}
 	else if (40 < pt && pt < 50)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.972;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.955;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.950;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.968;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.96;}
+		if (0.80   < aeta && aeta < 1.4442) {return 1.20;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.96;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.88;}
 	}
 	else if (pt > 50)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.969;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.956;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.995;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.969;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.93;}
+		if (0.80   < aeta && aeta < 1.4442) {return 1.27;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.64;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 1.06;}
 	}
 	
 	// if we get here, return 0.
