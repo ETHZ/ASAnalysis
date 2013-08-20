@@ -1218,21 +1218,21 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	      if (mode==kSigSig){
 		memcpy(rewinfo_template_1event_sigsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 		memcpy(rewinfo_template_1event_sigsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
-		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,true,rewinfo_1[0]);
+		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,true,rewinfo_1[0],rewinfo_1[0]-pholead_SCeta+photrail_SCeta);
 		phoiso_template_1event_sigsig_1[found] = isos.first;
 		phoiso_template_1event_sigsig_2[found] = isos.second;
 	      }
 	      else if (mode==kSigBkg){
 		memcpy(rewinfo_template_1event_sigbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 		memcpy(rewinfo_template_1event_sigbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
-		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,false,rewinfo_2[0]);
+		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,false,rewinfo_2[0]-photrail_SCeta+pholead_SCeta,rewinfo_2[0]);
 		phoiso_template_1event_sigbkg_1[found] = isos.first;
 		phoiso_template_1event_sigbkg_2[found] = isos.second;
 	      }
 	      else if (mode==kBkgSig){
 		memcpy(rewinfo_template_1event_bkgsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 		memcpy(rewinfo_template_1event_bkgsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
-		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,true,rewinfo_1[0]);
+		std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,true,rewinfo_1[0],rewinfo_1[0]-pholead_SCeta+photrail_SCeta);
 		phoiso_template_1event_bkgsig_1[found] = isos.first;
 		phoiso_template_1event_bkgsig_2[found] = isos.second;
 	      }
@@ -1249,28 +1249,28 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	    if (mode==kSigSig){
 	      memcpy(rewinfo_template_2events_sigsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_2events_sigsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
-	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,true); // neglect small effect of eta shift for vetoing gap region in 2events
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,true,rewinfo_1[0],rewinfo_2[0]);
 	      phoiso_template_2events_sigsig_1[found] = isos.first;
 	      phoiso_template_2events_sigsig_2[found] = isos.second;
 	    }
 	    else if (mode==kSigBkg){
 	      memcpy(rewinfo_template_2events_sigbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_2events_sigbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
-	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,false); // neglect small effect of eta shift for vetoing gap region in 2events
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,true,false,rewinfo_1[0],rewinfo_2[0]);
 	      phoiso_template_2events_sigbkg_1[found] = isos.first;
 	      phoiso_template_2events_sigbkg_2[found] = isos.second;
 	    }
 	    else if (mode==kBkgSig){
 	      memcpy(rewinfo_template_2events_bkgsig_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_2events_bkgsig_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
-	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,true); // neglect small effect of eta shift for vetoing gap region in 2events
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,true,rewinfo_1[0],rewinfo_2[0]);
 	      phoiso_template_2events_bkgsig_1[found] = isos.first;
 	      phoiso_template_2events_bkgsig_2[found] = isos.second;
 	    }
 	    else if (mode==kBkgBkg){
 	      memcpy(rewinfo_template_2events_bkgbkg_1+(found*6),rewinfo_1,sizeof(rewinfo_1));
 	      memcpy(rewinfo_template_2events_bkgbkg_2+(found*6),rewinfo_2,sizeof(rewinfo_2));
-	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,false); // neglect small effect of eta shift for vetoing gap region in 2events
+	      std::pair<float,float> isos = PFPhotonIsolationFromMinitree(passing.at(0),passing.at(1),&pfcands,false,false,rewinfo_1[0],rewinfo_2[0]);
 	      phoiso_template_2events_bkgbkg_1[found] = isos.first;
 	      phoiso_template_2events_bkgbkg_2[found] = isos.second;
 	    }
@@ -2033,7 +2033,7 @@ isolations_struct DiPhotonMiniTree::PFConeIsolation(TreeReader *fTR, int phoqi){
   return out;
 };
 
-std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi1, int phoqi2, pfcandidates_struct *pfcands, bool doremoval1, bool doremoval2, float matched_eta){
+std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi1, int phoqi2, pfcandidates_struct *pfcands, bool doremoval1, bool doremoval2, float matched_eta1, float matched_eta2){
 
   float result1=0;
   float result2=0;
@@ -2050,8 +2050,8 @@ std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi
     }
     if (removed) continue;
 
-    if (phoqi1>=0) if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi1,i,matched_eta).dR<0.4) result1+=pfcands->PfCandPt[i];
-    if (phoqi2>=0) if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi2,i,matched_eta).dR<0.4) result2+=pfcands->PfCandPt[i];
+    if (phoqi1>=0) if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi1,i,matched_eta1).dR<0.4) result1+=pfcands->PfCandPt[i];
+    if (phoqi2>=0) if (GetPFCandDeltaRFromSC(fTR,pfcands,phoqi2,i,matched_eta2).dR<0.4) result2+=pfcands->PfCandPt[i];
     
 
   } // end pf cand loop
