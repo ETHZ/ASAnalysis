@@ -803,16 +803,18 @@ void DiPhotonMiniTree::Analyze(){
 	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex(event_run*10000+event_lumi,event_number);
 	if (index_matchingtree<0) {cout << "NO MATCHING FOUND!!!" << endl; cout << event_run << " " << event_lumi << " " << event_number << endl; dofill=false;}
 	matchingtree->GetEntry(index_matchingtree);
-	if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING" << endl; dofill=false;}
+	if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING (including under/overflow)" << endl; dofill=false;}
 
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_sigsig_1,matchingtree_index_1event_sigsig_2,passing,kSigSig,k1Event);
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_sigbkg_1,matchingtree_index_1event_sigbkg_2,passing,kSigBkg,k1Event);
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_bkgsig_1,matchingtree_index_1event_bkgsig_2,passing,kBkgSig,k1Event);
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_bkgbkg_1,matchingtree_index_1event_bkgbkg_2,passing,kBkgBkg,k1Event);
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_sigsig_1,matchingtree_index_2events_sigsig_2,passing,kSigSig,k2Events);
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_sigbkg_1,matchingtree_index_2events_sigbkg_2,passing,kSigBkg,k2Events);
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_bkgsig_1,matchingtree_index_2events_bkgsig_2,passing,kBkgSig,k2Events);
-	FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_bkgbkg_1,matchingtree_index_2events_bkgbkg_2,passing,kBkgBkg,k2Events);
+	if (dofill){
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_sigsig_1,matchingtree_index_1event_sigsig_2,passing,kSigSig,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_sigbkg_1,matchingtree_index_1event_sigbkg_2,passing,kSigBkg,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_bkgsig_1,matchingtree_index_1event_bkgsig_2,passing,kBkgSig,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_bkgbkg_1,matchingtree_index_1event_bkgbkg_2,passing,kBkgBkg,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_sigsig_1,matchingtree_index_2events_sigsig_2,passing,kSigSig,k2Events);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_sigbkg_1,matchingtree_index_2events_sigbkg_2,passing,kSigBkg,k2Events);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_bkgsig_1,matchingtree_index_2events_bkgsig_2,passing,kBkgSig,k2Events);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_bkgbkg_1,matchingtree_index_2events_bkgbkg_2,passing,kBkgBkg,k2Events);
+	}
 
 //	for (int l=0; l<nclosest; l++) cout << matchingtree_index_sigsig_1[l] << endl;
 //	for (int l=0; l<nclosest; l++) cout << phoiso_template_sigsig_1[l] << endl;
