@@ -31,6 +31,9 @@ DrawBase.o: $(CMSSW_BASE)/src/pandolf/CommonTools/DrawBase.C fitTools.o
 fitTools.o: $(CMSSW_BASE)/src/pandolf/CommonTools/fitTools.C
 	$(CC) $(CFLAGS) $(INCLUDES) $(CMSSW_BASE)/src/pandolf/CommonTools/fitTools.C $(ROOTFLAG) $(EXTRALIBS)
 
+StatTools.o: $(CMSSW_BASE)/src/pandolf/CommonTools/StatTools.cc
+	$(CC) $(CFLAGS) $(INCLUDES) $(CMSSW_BASE)/src/pandolf/CommonTools/StatTools.cc $(ROOTFLAG) $(EXTRALIBS)
+
 ZBiCalculator.o: ZBiCalculator.cc
 	$(CC) $(CFLAGS) $(INCLUDES) ZBiCalculator.cc $(ROOTFLAG) $(EXTRALIBS)
 

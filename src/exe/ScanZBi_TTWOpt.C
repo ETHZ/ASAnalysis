@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <fstream>
 
-#include "UserCode/pandolf/CommonTools/DrawBase.h"
-#include "UserCode/pandolf/CommonTools/StatTools.h"
+#include "pandolf/CommonTools/DrawBase.h"
+#include "pandolf/CommonTools/StatTools.h"
 
 #include "SSDLPlotter.hh"
 
@@ -20,13 +20,13 @@
 
 
 
-float fake_lumi_ = 9100.;
+float fake_lumi_ = 19466.;
 
 
 
 
 
-float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, const std::string& optcutsdir, int iEff );
+float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, const std::string& seelctionType, const std::string& charge, int iEff );
 std::pair<TH1F*,TH1F*> getHistoPassingCuts( TTree* tree, std::vector<std::string> names, std::vector<float> cutsMin, std::vector<float> cutsMax );
 
 
@@ -74,10 +74,10 @@ int main( int argc, char* argv[] ) {
     min_NJets_h = 3;
     min_NBJets_h = 1;
     min_NBJets_med_h = 1;
-    min_ptLept1_h = 35.;
-    min_ptLept2_h = 35.;
+    min_ptLept1_h = 33.;
+    min_ptLept2_h = 33.;
     min_met_h = 0.;
-    min_ht_h = 260.;
+    min_ht_h = 175.;
   
   } else if( charge=="minus" ) {
 
@@ -88,6 +88,17 @@ int main( int argc, char* argv[] ) {
     min_ptLept2_h = 33.;
     min_met_h = 0.;
     min_ht_h = 260.;
+ 
+  
+  } else if( charge=="all" ) {
+
+    min_NJets_h = 3;
+    min_NBJets_h = 1;
+    min_NBJets_med_h = 1;
+    min_ptLept1_h = 40.;
+    min_ptLept2_h = 40.;
+    min_met_h = 0.;
+    min_ht_h = 285.;
  
   }
 
@@ -112,16 +123,19 @@ int main( int argc, char* argv[] ) {
     
 
   //std::string dir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Dec20_muPFIso0p05_elPFIso0p05_jet20_withZveto";
-  std::string dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Feb22/";
+  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug20-JetPt30-Iso5-PUID-newLepSF-minBias69400";
   std::string config = dir + "/dumperconfig.cfg";
 
   SSDLPlotter* plotter = new SSDLPlotter(config);
   //std::string outputdir = "/shome/pandolf/CMSSW_4_2_8/src/DiLeptonAnalysis/NTupleProducer/macros/" + selectionType;
-  std::string outputdir = "/shome/pandolf/CMSSW_5_3_7_patch5_OPTttW_2/src/DiLeptonAnalysis/NTupleProducer/macros/";
+//  std::string outputdir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/" + selectionType + "_" + charge;
+  std::string outputdir = "plots/Aug20-JetPt30-Iso5-PUID-newLepSF-minBias69400";
   plotter->setVerbose(1);
   plotter->fDO_OPT = false;
   plotter->setOutputDir(outputdir);
-  plotter->init("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/DataCard_SSDL.dat");
+  cout << "plotter->setOutputDir(" << dir << ")" << endl;
+//  plotter->setOutputDir(dir);
+  plotter->init("/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/DataCard_SSDL.dat");
   plotter->readHistos(plotter->fOutputFileName);
   plotter->fillRatios(plotter->fMuData,    plotter->fEGData, 0);
   plotter->fillRatios(plotter->fMCBGMuEnr, plotter->fMCBG, 1);
@@ -172,7 +186,7 @@ int main( int argc, char* argv[] ) {
     if( iEff<=10 ) {
 
       char infileName[300];
-      sprintf( infileName, "%s/cuts_Seff%d.txt", optcutsdir.c_str(), iEff*10);
+      sprintf( infileName, "%s/cutsGA_Seff%d.txt", optcutsdir.c_str(), iEff*10);
       ifstream ifs(infileName);
       std::cout << "-> Opening Seff file: " << infileName << std::endl;
     
@@ -186,6 +200,7 @@ int main( int argc, char* argv[] ) {
         float cutMin, cutMax;
 
         ifs >> varName >> cutMin >> cutMax;
+        std::cout <<  varName << " " <<  cutMin << " " << cutMax << std::endl;
 
         varNames.push_back( varName );
         cutsMin.push_back( cutMin );
@@ -232,12 +247,17 @@ int main( int argc, char* argv[] ) {
     if( charge=="plus")  charge_int = 1;
     if( charge=="minus") charge_int = -1;
 
+
+std::cout << "1" << std::endl;
     TTWZPrediction ttwzpred =  plotter->makePredictionSignalEvents(min_ht, 10000., min_met, 10000., min_NJets, min_NBJets, min_NBJets_med, min_ptLept1, min_ptLept2, charge_int, true);
+std::cout << "2" << std::endl;
+
 
     float lumi_SF = lumi/plotter->fLumiNorm;
     float lumi_SF_fake = lumi/fake_lumi_;
 
-    float significance = makeDatacard( ttwzpred, lumi_SF, lumi_SF_fake, optcutsdir, iEff );
+    float significance = makeDatacard( ttwzpred, lumi_SF, lumi_SF_fake, selectionType, charge, iEff );
+std::cout << "3" << std::endl;
 
     float b_pred_mm = (ttwzpred.rare_mm+ttwzpred.wz_mm+ttwzpred.ttz_mm)*lumi_SF + (ttwzpred.fake_mm                 )*lumi_SF_fake;
     float b_pred_em = (ttwzpred.rare_em+ttwzpred.wz_em+ttwzpred.ttz_em)*lumi_SF + (ttwzpred.fake_em+ttwzpred.cmid_em)*lumi_SF_fake;
@@ -317,7 +337,6 @@ int main( int argc, char* argv[] ) {
     legend->AddEntry( h1_bg, "Background", "F");
 
     char canvasName[250];
-    sprintf( canvasName, "%s/yieldPlot_Seff%d.eps", optcutsdir.c_str(), iEff*10);
 
     //TPaveText* label = new TPaveText( 0.15, 0.65, 0.45, 0.85, "brNDC");
     //label->SetFillColor(0);
@@ -357,6 +376,8 @@ int main( int argc, char* argv[] ) {
     label_ZBi->Draw("same");
     label_sqrt->Draw("same");
     gPad->RedrawAxis();
+    sprintf( canvasName, "%s/yieldPlot_Seff%d.pdf", optcutsdir.c_str(), iEff*10);
+    sprintf( canvasName, "%s/yieldPlot_Seff%d.png", optcutsdir.c_str(), iEff*10);
     c1->SaveAs(canvasName);
 
     delete c1;
@@ -389,7 +410,7 @@ std::cout << "### " << iEff << "   ZBi: " << ZBi << "  3-channel significance: "
   gr_significance->SetMarkerColor(29);
 
 
-  TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1.1*effMax*100., 10, 0., 2.);
+  TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1.1*effMax*100., 10, 0., 2.0);
   //TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1.1*effMax*100., 10, 0., 1.6*ZBi_max ); 
   //TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1., 10, 0., 5.);
   char yAxisTitle[512];
@@ -403,10 +424,19 @@ std::cout << "### " << iEff << "   ZBi: " << ZBi << "  3-channel significance: "
     yMin = 0.7;
     yMax = 0.9;
   }
-  TLegend* legend = new TLegend( 0.47, yMin, 0.72, yMax );
+
+  std::string legendTitle;
+  if( charge=="all" )
+    legendTitle = "No Charge Selection";
+  else if( charge=="plus" )
+    legendTitle = "++ Channel";
+  else if( charge=="minus" )
+    legendTitle = "-- Channel";
+
+  TLegend* legend = new TLegend( 0.47, yMin, 0.72, yMax, legendTitle.c_str() );
   legend->SetTextSize(0.04);
   legend->SetFillColor(0);
-  legend->AddEntry(gr_ZBi, "Combined (ZBi)", "P");
+  //legend->AddEntry(gr_ZBi, "1 Channel (ZBi)", "P");
   legend->AddEntry(gr_significance, "3 Channels (combine)", "P");
 
   TCanvas* c_gr = new TCanvas("c_gr", "c_gr", 600., 600.);
@@ -416,11 +446,13 @@ std::cout << "### " << iEff << "   ZBi: " << ZBi << "  3-channel significance: "
   h2_axes_gr->Draw();
   legend->Draw("Same");
   gr_significance->Draw("P same");
-  gr_ZBi->Draw("P same");
+  //gr_ZBi->Draw("P same");
   label_sqrt->Draw("same");
 
   char ZBi_vs_Seff_name[250];
-  sprintf(ZBi_vs_Seff_name, "%s/ZBi_vs_Seff_%s.eps", optcutsdir.c_str(), charge.c_str() );
+  sprintf(ZBi_vs_Seff_name, "%s/ZBi_vs_Seff_%s.pdf", optcutsdir.c_str(), charge.c_str() );
+  c_gr->SaveAs(ZBi_vs_Seff_name);
+  sprintf(ZBi_vs_Seff_name, "%s/ZBi_vs_Seff_%s.png", optcutsdir.c_str(), charge.c_str() );
   c_gr->SaveAs(ZBi_vs_Seff_name);
 
 }
@@ -459,7 +491,11 @@ std::pair<TH1F*,TH1F*> getHistoPassingCuts( TTree* tree, std::vector<std::string
 
 
 
-float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, const std::string& optcutsdir, int iEff ) {
+float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, const std::string& selectionType, const std::string& charge, int iEff ) {
+
+  TString selectionType_tstr(selectionType);
+
+  std::string optcutsdir = "OPT_ttW/optcuts_" + selectionType + "_" + charge;
 
   // this is the reference datacard:
   std::string refDatacard = "OPT_ttW/datacard_ssdl_3channels_ttW.txt";
@@ -483,11 +519,36 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
                     ttwzpred.ttw_mm*lumiSF, ttwzpred.ttz_mm*lumiSF, ttwzpred.fake_mm*lumiSF_fake, 0.0                         , ttwzpred.wz_mm*lumiSF, ttwzpred.rare_mm*lumiSF,
                     ttwzpred.ttw_em*lumiSF, ttwzpred.ttz_em*lumiSF, ttwzpred.fake_em*lumiSF_fake, ttwzpred.cmid_em*lumiSF_fake, ttwzpred.wz_em*lumiSF, ttwzpred.rare_em*lumiSF,
                     ttwzpred.ttw_ee*lumiSF, ttwzpred.ttz_ee*lumiSF, ttwzpred.fake_ee*lumiSF_fake, ttwzpred.cmid_ee*lumiSF_fake, ttwzpred.wz_ee*lumiSF, ttwzpred.rare_ee*lumiSF) << std::endl;
+    } else if( thisLine_tstr.BeginsWith("bgUncfak") ) {
+      datacard << Form("bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-",
+                                 1.0+ttwzpred.fake_err_mm/ttwzpred.fake_mm,
+                                 1.0+ttwzpred.fake_err_em/ttwzpred.fake_em,
+                                 1.0+ttwzpred.fake_err_ee/ttwzpred.fake_ee) << endl;
+    } else if( thisLine_tstr.BeginsWith("bgUnccmi") ) {
+      datacard << Form("bgUnccmi lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-",
+                                 1.0+ttwzpred.cmid_err_em/ttwzpred.cmid_em,
+                                 1.0+ttwzpred.cmid_err_ee/ttwzpred.cmid_ee) << endl;
+    } else if( thisLine_tstr.BeginsWith("bgUncwz") ) {
+      datacard << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-",
+                                 1.0+ttwzpred.wz_err_mm  /ttwzpred.wz_mm,
+                                 1.0+ttwzpred.wz_err_em  /ttwzpred.wz_em,
+                                 1.0+ttwzpred.wz_err_ee  /ttwzpred.wz_ee)   << endl;
+    } else if( thisLine_tstr.BeginsWith("bgUncrar") ) {
+      datacard << Form("bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f",
+                                 1.0+ttwzpred.rare_err_mm/ttwzpred.rare_mm,
+                                 1.0+ttwzpred.rare_err_em/ttwzpred.rare_em,
+                                 1.0+ttwzpred.rare_err_ee/ttwzpred.rare_ee) << endl;
+    } else if( thisLine_tstr.BeginsWith("NLO") ) {
+      if( selectionType_tstr.Contains("CSV_ML") ) continue;
+      float nlo_syst;
+      if( charge=="plus" ) nlo_syst = 1.04;
+      else if( charge=="minus" ) nlo_syst = 1.27;
+      else if( charge=="all" ) nlo_syst = 1.15;
+      datacard << Form("NLO lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-", nlo_syst, nlo_syst, nlo_syst);
     } else {
       datacard << thisLine << std::endl;
     }
   } // while ifs good
-
 
   datacard.close();
 
