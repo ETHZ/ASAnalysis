@@ -577,12 +577,12 @@ void SSDLAnalysis::FillAnalysisTree(){
 	// PU correction
 	fTrho    = fTR->Rho;
 	fTnvrtx  = fTR->NVrtx;
-	fTpunint = fTR->PUnumInteractions;
+	fTpunint = fTR->PUnumTrueInteractions;
 
 	if(!fIsData) {
-		fTpuweight   = GetPUWeight    (fTR->PUnumInteractions);
-		fTpuweightUp = GetPUWeightUp  (fTR->PUnumInteractions);
-		fTpuweightDn = GetPUWeightDown(fTR->PUnumInteractions);
+		fTpuweight   = GetPUWeight    (fTR->PUnumTrueInteractions);
+		fTpuweightUp = GetPUWeightUp  (fTR->PUnumTrueInteractions);
+		fTpuweightDn = GetPUWeightDown(fTR->PUnumTrueInteractions);
 		// =============================================================
 		// the commented lines are for samples which don't have the PUnumInteractions variables
 		// fTpuweight   = GetPUWeight    (fTR->NVrtx * 1.38); // the factor of 1.38 is derived from 20000 ttW events

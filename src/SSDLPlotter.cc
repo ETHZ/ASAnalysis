@@ -18763,6 +18763,12 @@ void SSDLPlotter::printYieldsShort(float luminorm){
 	emusamples = fMuEGData;
 
 	float nt20[gNCHANNELS],    nt10[gNCHANNELS],    nt01[gNCHANNELS],    nt00[gNCHANNELS];
+	for (int i=0; i< gNCHANNELS; ++i){
+		nt20 = 0.;
+		nt10 = 0.;
+		nt01 = 0.;
+		nt00 = 0.;
+	}
 
 	// float nt2_mumu(0.),    nt10_mumu(0.),    nt0_mumu(0.);
 	// float nt2_emu(0.),    nt10_emu(0.),    nt01_emu(0.),    nt0_emu(0.);

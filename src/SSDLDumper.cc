@@ -6774,7 +6774,7 @@ float SSDLDumper::getJERScale(int jet){
 float SSDLDumper::getErrPt(float Pt, float Eta) {
   
 	float InvPerr2;
-	float N, S, C, m;
+	float N(0.), S(0.), C(0.), m(0.);
 	if(fabs(Eta) < 0.5 ) {
 		N = 3.96859;
 		S = 0.18348;
