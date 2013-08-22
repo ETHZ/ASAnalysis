@@ -162,7 +162,7 @@ void Lumi3DReWeighting::weight3D_init( float ScaleFactor ) {
 
   for (int i = 1; i<51; ++i) {
     base = base*float(i);
-    factorial[i] = base;
+    factorial[i-1] = base;
   }
 
 
