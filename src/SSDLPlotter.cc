@@ -212,7 +212,7 @@ void SSDLPlotter::init(TString filename){
 	fClosureSamples.push_back(SingleTbar_s);
 	fClosureSamples.push_back(DYJets);
 	fClosureSamples.push_back(WW);
-	//SANTI	fClosureSamples.push_back(WJets);
+	fClosureSamples.push_back(WJets);
 	fClosureSamples.push_back(WGstarMu);
 	fClosureSamples.push_back(WGstarTau);	
 	
@@ -466,17 +466,17 @@ void SSDLPlotter::doAnalysis(){
 //	// // makeNTightLoosePlots(Muon);
 //	// // makeNTightLoosePlots(Elec);
 //	// 
-//	makeFRvsPtPlots(Muon, SigSup);
-//	makeFRvsPtPlots(Elec, SigSup);
-//	makeFRvsPtPlots(Muon, ZDecay);
-//	makeFRvsPtPlots(Elec, ZDecay);
-//	makeFRvsNVPlots(Muon, ZDecay);
-//	makeFRvsNVPlots(Elec, ZDecay);
-//	makeFRvsEtaPlots(Muon);
-//	makeFRvsEtaPlots(Elec);
+	makeFRvsPtPlots(Muon, SigSup);
+	makeFRvsPtPlots(Elec, SigSup);
+	makeFRvsPtPlots(Muon, ZDecay);
+	makeFRvsPtPlots(Elec, ZDecay);
+	makeFRvsNVPlots(Muon, ZDecay);
+	makeFRvsNVPlots(Elec, ZDecay);
+	makeFRvsEtaPlots(Muon);
+	makeFRvsEtaPlots(Elec);
 //	makeChMidvsPtPlots();
 //
-	makeAllClosureTestsTTW();
+//	makeAllClosureTestsTTW();
 //	makeAllIntPredictions();
 //	makeAllClosureTests();
 //
@@ -486,8 +486,8 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-//	makeTTWDiffPredictionsSigEvent();
-//	makeTTWKinPlotsSigEvent();
+	makeTTWDiffPredictionsSigEvent();
+	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -10765,13 +10765,13 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	map< TString, TTWZPrediction > ttwzpreds_plpl, ttwzpreds_mimi;
 
 	// cuts
-	float  minHT_plpl(200.);
+	float  minHT_plpl(145.);
 	float  minPt_plpl( 32.);
 	int    minNJ_plpl(  3 );
 	int   minNbJ_plpl(  1 );
 	float minMET_plpl(  0.);
-	float  minHT_mimi(205.);
-	float  minPt_mimi( 30.);
+	float  minHT_mimi(156.);
+	float  minPt_mimi( 29.);
 	int    minNJ_mimi(  3 );
 	int   minNbJ_mimi(  1 );
 	float minMET_mimi(  0.);
@@ -12200,6 +12200,16 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	fOutputSubDir = "DiffPredictionSigEventTree/";
 	if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTree/FinalSel/";
 	if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTree/FinalSel/";
+
+//	gApplyZVeto = true;
+//	if (gApplyZVeto) {
+//		if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTreeZVeto/FinalSel/";
+//		if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTreeZVeto/FinalSel/";
+//	}
+//	else {
+//		if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTreeNoZVeto/FinalSel/";
+//		if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTreeNoZVeto/FinalSel/";
+//	}
 	
 	TLatex *lat = new TLatex();
 	lat->SetNDC(kTRUE);
@@ -12237,7 +12247,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 
 	if (region_sel == 1 && chVeto == +1) {
 		systflag   =   0 ;
-		minHT      = 200., maxHT      =  8000.;
+		minHT      = 145., maxHT      =  8000.;
 		minMET     =   0., maxMET     =  8000.;
 		minNjets   =   3 , maxNjets   =    99 ;
 		minNbjetsL =   1 , maxNbjetsL =    99 ;
@@ -12248,13 +12258,13 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	}
 	if (region_sel == 1 && chVeto == -1) {
 		systflag   =   0 ;
-		minHT      = 205., maxHT      =  8000.;
+		minHT      = 156., maxHT      =  8000.;
 		minMET     =   0., maxMET     =  8000.;
 		minNjets   =   3 , maxNjets   =    99 ;
 		minNbjetsL =   1 , maxNbjetsL =    99 ;
 		minNbjetsM =   1 , maxNbjetsM =    99 ;
-		minPt1     =  30., maxPt1     =  8000.;
-		minPt2     =  30., maxPt2     =  8000.;
+		minPt1     =  29., maxPt1     =  8000.;
+		minPt2     =  29., maxPt2     =  8000.;
 		minMll     =   8.; // 8.
 	}
 
@@ -12445,6 +12455,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 			if(pT1 < minPt1) continue;
 			if(pT2 < minPt2) continue;
 		}
+		if (gApplyZVeto && passZVeto == 0)  continue;
 		
 		//		if (passes3rdSFLepVeto == 0) continue;
 	
@@ -12474,7 +12485,6 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 			// GET ALL DATA EVENTS
 			if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
 				if (Flavor < 3) {
-					if (gApplyZVeto && passZVeto == 0)  continue;
 					if (chVeto && charge != chVeto ) continue;
 					Sample *S = fSampleMap[TString(*sname)];
 					
@@ -12641,8 +12651,9 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		////////////
 		
 		for (size_t b = 0; b < nbins[var]; ++b) {
-			float prev  = h_bg_tot[var]->GetBinError(b+1);
-			float prev2 = prev * prev;
+			//float prev  = h_bg_tot[var]->GetBinError(b+1);
+			//float prev2 = prev * prev;
+			float prev2(0.);
 			Sample *S;
 			
 			//FAKES
@@ -12682,39 +12693,46 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 			S = fSampleMap["WZTo3LNu"];
 			float wz_scale = fLumiNorm / S->getLumi();
 			float wz_nPass = h_pred_wz_npass[var]->GetBinContent(b+1);
-			float wz_syst2 = WZESyst2 * wz_nPass*wz_nPass * wz_scale*wz_scale;
+			float wz_yield = h_pred_wz[var]->GetBinContent(b+1);
+			float wz_syst2 = WZESyst2 * wz_yield * wz_yield;
 			float wz_stat2 = wz_scale*wz_scale * S->getError2(wz_nPass);
 			prev2 = prev2 + wz_syst2 + wz_stat2;
 			
+//			// TTW
+//			S = fSampleMap["TTbarW"];
+//			float ttw_scale = fLumiNorm / S->getLumi();
+//			float ttw_nPass = h_pred_ttw_npass[var]->GetBinContent(b+1);
+//			float ttw_syst2 = TTWESyst2 * ttw_nPass*ttw_nPass * ttw_scale*ttw_scale;
+//			float ttw_stat2 = ttw_scale*ttw_scale * S->getError2(ttw_nPass);
+//			prev2 = prev2 + ttw_syst2 + ttw_stat2;
+			
+			float rare_yield(0.);
+
 			// TTZ
 			S = fSampleMap["TTbarZ"];
 			float ttz_scale = fLumiNorm / S->getLumi();
 			float ttz_nPass = h_pred_ttz_npass[var]->GetBinContent(b+1);
-			float ttz_syst2 = TTZESyst2 * ttz_nPass*ttz_nPass * ttz_scale*ttz_scale;
+			float ttz_yield = h_pred_ttz      [var]->GetBinContent(b+1);
+			//float ttz_syst2 = TTZESyst2 * ttz_yield*ttz_yield;
 			float ttz_stat2 = ttz_scale*ttz_scale * S->getError2(ttz_nPass);
-			prev2 = prev2 + ttz_syst2 + ttz_stat2;
-			
-			// TTW
-			S = fSampleMap["TTbarW"];
-			float ttw_scale = fLumiNorm / S->getLumi();
-			float ttw_nPass = h_pred_ttw_npass[var]->GetBinContent(b+1);
-			float ttw_syst2 = TTWESyst2 * ttw_nPass*ttw_nPass * ttw_scale*ttw_scale;
-			float ttw_stat2 = ttw_scale*ttw_scale * S->getError2(ttw_nPass);
-			prev2 = prev2 + ttw_syst2 + ttw_stat2;
+			rare_yield += ttz_yield;
+			prev2 = prev2 /*+ ttz_syst2*/ + ttz_stat2;
 			
 			// RARES
 			for (map<TString,TH1F*>::iterator it = h_pred_rare_samples[var].begin(); it != h_pred_rare_samples[var].end(); it++) {
 				S = fSampleMap[it->first];
 				float rare_scale = fLumiNorm / S->getLumi();
 				float rare_nPass = it->second->GetBinContent(b+1);
-				float rare_syst2 = RareESyst2 * rare_nPass*rare_nPass * rare_scale*rare_scale;
+				//float rare_syst2 = RareESyst2 * rare_nPass*rare_nPass * rare_scale*rare_scale;
 				float rare_stat2 = rare_scale*rare_scale * S->getError2(rare_nPass);
-				prev2 = prev2 + rare_syst2 + rare_stat2;
+				prev2 = prev2 + rare_stat2;
 			}
-			
+			rare_yield += h_pred_rare[var]->GetBinContent(b+1);
+			float rare_syst2 = RareESyst2 * rare_yield*rare_yield;
+			prev2 += rare_syst2;
+
 			h_bg_tot[var]->SetBinError(b+1, sqrt(prev2));
 		}
-		// TOT
 		
 		double max(0.);
 	//	max = 1.2*h_obs->GetBinContent(2);
@@ -15132,11 +15150,11 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		}
 		
 //		if (passes3rdSFLepVeto == 0) continue;
+		if (gApplyZVeto && passZVeto == 0)  continue;
 
 		// GET ALL DATA EVENTS
 		if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
 			if (Flavor < 3) {
-				if (gApplyZVeto && passZVeto == 0)  continue;
 				if (chVeto && charge != chVeto ) continue;
 				Sample *S = fSampleMap[TString(*sname)];
 
@@ -15413,9 +15431,9 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		// float EE_stat = rareMapEE_stat.find(it->first) != rareMapEE_stat.end() ? weight*S->getError(rareMapEE_npass[it->first]):0.;
 
 		if (it->first == "WZTo3LNu") {
-			nt2_wz_mc_mm = MM_yiel; nt2_wz_mc_mm_e2 = MM_stat*MM_stat;
-			nt2_wz_mc_em = EM_yiel; nt2_wz_mc_em_e2 = EM_stat*EM_stat;
-			nt2_wz_mc_ee = EE_yiel; nt2_wz_mc_ee_e2 = EE_stat*EE_stat;
+			nt2_wz_mc_mm += MM_yiel; nt2_wz_mc_mm_e2 += MM_stat*MM_stat;
+			nt2_wz_mc_em += EM_yiel; nt2_wz_mc_em_e2 += EM_stat*EM_stat;
+			nt2_wz_mc_ee += EE_yiel; nt2_wz_mc_ee_e2 += EE_stat*EE_stat;
 			continue;
 		}
 		else {
@@ -15820,8 +15838,8 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	pred.ttz_ee   = nt2_ttz_mc_ee;
 	pred.ttz_err    = sqrt(nt2_ttz_mc_ee_e2 + nt2_ttz_mc_mm_e2 + nt2_ttz_mc_em_e2 + TTZESyst2*(nt2_ttz_mc_ee + nt2_ttz_mc_mm + nt2_ttz_mc_em)*(nt2_ttz_mc_ee + nt2_ttz_mc_mm + nt2_ttz_mc_em));
 	pred.ttz_err_mm = sqrt(nt2_ttz_mc_mm_e2 + TTZESyst2*nt2_ttz_mc_mm*nt2_ttz_mc_mm);
-	pred.ttz_err_ee = sqrt(nt2_ttz_mc_em_e2 + TTZESyst2*nt2_ttz_mc_em*nt2_ttz_mc_em);
-	pred.ttz_err_em = sqrt(nt2_ttz_mc_ee_e2 + TTZESyst2*nt2_ttz_mc_ee*nt2_ttz_mc_ee);
+	pred.ttz_err_em = sqrt(nt2_ttz_mc_em_e2 + TTZESyst2*nt2_ttz_mc_em*nt2_ttz_mc_em);
+	pred.ttz_err_ee = sqrt(nt2_ttz_mc_ee_e2 + TTZESyst2*nt2_ttz_mc_ee*nt2_ttz_mc_ee);
 	
 	pred.ttwz     = pred.ttw + pred.ttz;
 	pred.ttwz_mm  = pred.ttw_mm + pred.ttz_mm;
@@ -15926,7 +15944,7 @@ void SSDLPlotter::makeTTWKinPlotsSigEvent() {
 		if (i ==  5) continue; // no opposite-sign EE events
 		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, -1);
 	}
-//	return;
+	return;
 	
 	// ttbar enriched
 	cout << "ttbar enriched region.." << endl;
@@ -15986,6 +16004,8 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	if (diffVarName.size() != xmax      .size()) {cout << "check length of vectors!\n"; return;}
 	if (diffVarName.size() != xAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
 	if (diffVarName.size() != yAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
+
+	bool tmp_gApplyZVeto = gApplyZVeto;
 	
 	fOutputSubDir = "KinPlotsSigEventTree/";
 	
@@ -16328,7 +16348,6 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 			// GET ALL DATA EVENTS
 			if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
 				//			if (Flavor < 3) {
-				if (gApplyZVeto && passZVeto == 0)  continue;
 				if (chVeto && charge != chVeto ) continue;
 				Sample *S = fSampleMap[TString(*sname)];
 				if (TLCat == 0) {
@@ -16805,9 +16824,8 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		delete leg2;
 		delete h_obs[i] , gr_obs[i] , h_top[i] , h_zjets[i]/* , /*h_wjets[i] , h_gjets[i] , /*h_singleT[i]*/ , h_rare[i] , h_tot[i] , h_ttz[i] , h_ttw[i] , h_wz[i] , hs_tot[i], h_ttbar[i] ;
 	}
-	cout << "delete FR" << endl;
+	gApplyZVeto = tmp_gApplyZVeto;
 	delete FR;
-	cout << "done with kin plots." << endl;
 }
 void SSDLPlotter::makeDiffPrediction(){
 	fOutputSubDir = "DiffPredictionPlots/";
@@ -20118,9 +20136,11 @@ void SSDLPlotter::makeWZValidation(SSPrediction pred, TString label){
 void SSDLPlotter::makeAllClosureTestsTTW(){
  	TString outputdir = Util::MakeOutputDir(fOutputDir + "MCClosureTTWZ");
  	for(size_t i = 0; i < gNREGIONS; ++i){
- 		TString outputname = outputdir + "TTbarMCClosure_" + gRegions[i]->sname + ".txt";
+ 		TString outputname = outputdir + "MCClosure_" + gRegions[i]->sname + ".txt";
 // 		makeIntMCClosureTTW(fClosureSamples, outputname, i);
- 		makeIntMCClosureTTW(fTTJets, outputname, i);
+// 		makeIntMCClosureTTW(fTTJets, outputname, i);
+ 		makeIntMCClosureTTW(fMCBGNoQCDNoGJets, outputname, i);
+// 		makeIntMCClosureTTW(fMCBG, outputname, i);
  	}
 // LUKAS 	for(size_t i = 0; i < gNREGIONS; ++i){
 // LUKAS 		TString outputname = outputdir + "MCClosure_Sig_" + gRegions[i]->sname + ".txt";
@@ -20524,29 +20544,29 @@ void SSDLPlotter::makeIntMCClosureTTW(vector<int> samples, TString filename, int
 	
  	///////////////////////////////////////////
  	// Rare SM
-// LUKAS 	float ntt_rare_mm(0.), ntt_rare_em(0.), ntt_rare_ee(0.);
-// LUKAS 	float ntt_rare_mm_e1(0.), ntt_rare_em_e1(0.), ntt_rare_ee_e1(0.); // squared stat errors
-// LUKAS 	for(size_t i = 0; i < fMCRareSM.size(); ++i){
-// LUKAS 		Sample *S = fSamples[fMCRareSM[i]];
-// LUKAS 		float scale = fLumiNorm/S->getLumi();
-// LUKAS 		ntt_rare_mm += scale*S->numbers[reg][Muon].nt2;
-// LUKAS 		ntt_rare_em += scale*S->numbers[reg][ElMu].nt2;
-// LUKAS 		ntt_rare_ee += scale*S->numbers[reg][Elec].nt2;
-// LUKAS 		ntt_rare_mm_e1 += scale*scale*pow(S->getError(S->region[reg][HighPt].mm.nt20_pt->GetEntries()),2);
-// LUKAS 		ntt_rare_em_e1 += scale*scale*pow(S->getError(S->region[reg][HighPt].em.nt20_pt->GetEntries()),2);
-// LUKAS 		ntt_rare_ee_e1 += scale*scale*pow(S->getError(S->region[reg][HighPt].ee.nt20_pt->GetEntries()),2);
-// LUKAS 	}
+ 	float ntt_rare_mm(0.), ntt_rare_em(0.), ntt_rare_ee(0.);
+ 	float ntt_rare_mm_e1(0.), ntt_rare_em_e1(0.), ntt_rare_ee_e1(0.); // squared stat errors
+ 	for(size_t i = 0; i < fMCRareSM.size(); ++i){
+ 		Sample *S = fSamples[fMCRareSM[i]];
+ 		float scale = fLumiNorm/S->getLumi();
+ 		ntt_rare_mm += scale*S->numbers[reg][Muon].nt2;
+ 		ntt_rare_em += scale*S->numbers[reg][ElMu].nt2;
+ 		ntt_rare_ee += scale*S->numbers[reg][Elec].nt2;
+ 		ntt_rare_mm_e1 += scale*scale*pow(S->getError(S->region[reg][HighPt].mm.nt20_pt->GetEntries()),2);
+ 		ntt_rare_em_e1 += scale*scale*pow(S->getError(S->region[reg][HighPt].em.nt20_pt->GetEntries()),2);
+ 		ntt_rare_ee_e1 += scale*scale*pow(S->getError(S->region[reg][HighPt].ee.nt20_pt->GetEntries()),2);
+ 	}
 	
  	///////////////////////////////////////////
  	// WZ production
-// LUKAS 	float wzscale = fLumiNorm/fSamples[WZ]->getLumi();
-// LUKAS 	float ntt_wz_mm = wzscale*fSamples[WZ]->numbers[reg][Muon].nt2;
-// LUKAS 	float ntt_wz_em = wzscale*fSamples[WZ]->numbers[reg][ElMu].nt2;
-// LUKAS 	float ntt_wz_ee = wzscale*fSamples[WZ]->numbers[reg][Elec].nt2;
-// LUKAS
-// LUKAS 	float ntt_wz_mm_e1 = wzscale*wzscale*pow(fSamples[WZ]->getError(fSamples[WZ]->region[reg][HighPt].mm.nt20_pt->GetEntries()),2); // for stat error take actual entries, not pileup weighted integral...
-// LUKAS 	float ntt_wz_em_e1 = wzscale*wzscale*pow(fSamples[WZ]->getError(fSamples[WZ]->region[reg][HighPt].em.nt20_pt->GetEntries()),2);
-// LUKAS 	float ntt_wz_ee_e1 = wzscale*wzscale*pow(fSamples[WZ]->getError(fSamples[WZ]->region[reg][HighPt].ee.nt20_pt->GetEntries()),2);
+ 	float wzscale = fLumiNorm/fSamples[WZ]->getLumi();
+ 	float ntt_wz_mm = wzscale*fSamples[WZ]->numbers[reg][Muon].nt2;
+ 	float ntt_wz_em = wzscale*fSamples[WZ]->numbers[reg][ElMu].nt2;
+ 	float ntt_wz_ee = wzscale*fSamples[WZ]->numbers[reg][Elec].nt2;
+
+ 	float ntt_wz_mm_e1 = wzscale*wzscale*pow(fSamples[WZ]->getError(fSamples[WZ]->region[reg][HighPt].mm.nt20_pt->GetEntries()),2); // for stat error take actual entries, not pileup weighted integral...
+ 	float ntt_wz_em_e1 = wzscale*wzscale*pow(fSamples[WZ]->getError(fSamples[WZ]->region[reg][HighPt].em.nt20_pt->GetEntries()),2);
+ 	float ntt_wz_ee_e1 = wzscale*wzscale*pow(fSamples[WZ]->getError(fSamples[WZ]->region[reg][HighPt].ee.nt20_pt->GetEntries()),2);
 	
  	// Squared errors
  	float npp_pred_sum_mm_e1(0.), npf_pred_sum_mm_e1(0.), nff_pred_sum_mm_e1(0.);
@@ -20864,33 +20884,33 @@ void SSDLPlotter::makeIntMCClosureTTW(vector<int> samples, TString filename, int
 				ntt_cm_sum_em,               sqrt(ntt_cm_sum_em_e1),
 				ntt_cm_sum_ee,               sqrt(ntt_cm_sum_ee_e1),
 				ntt_cm_sum_ee+ntt_cm_sum_em, sqrt(ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1)) << endl;
-// LUKAS 	OUT << Form(" Irreducible     || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
-// LUKAS 	ntt_rare_mm,                         sqrt(ntt_rare_mm_e1),
-// LUKAS 	ntt_rare_em,                         sqrt(ntt_rare_em_e1),
-// LUKAS 	ntt_rare_ee,                         sqrt(ntt_rare_ee_e1),
-// LUKAS 	ntt_rare_mm+ntt_rare_em+ntt_rare_ee, sqrt(ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) << endl;
-// LUKAS 	OUT << Form(" WZ Production   || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
-// LUKAS 	ntt_wz_mm,                     sqrt(ntt_wz_mm_e1),
-// LUKAS 	ntt_wz_em,                     sqrt(ntt_wz_em_e1),
-// LUKAS 	ntt_wz_ee,                     sqrt(ntt_wz_ee_e1),
-// LUKAS 	ntt_wz_mm+ntt_wz_em+ntt_wz_ee, sqrt(ntt_wz_mm_e1+ntt_wz_em_e1+ntt_wz_ee_e1)) << endl;
+ 	OUT << Form(" Irreducible     || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+ 	ntt_rare_mm,                         sqrt(ntt_rare_mm_e1),
+ 	ntt_rare_em,                         sqrt(ntt_rare_em_e1),
+ 	ntt_rare_ee,                         sqrt(ntt_rare_ee_e1),
+ 	ntt_rare_mm+ntt_rare_em+ntt_rare_ee, sqrt(ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) << endl;
+ 	OUT << Form(" WZ Production   || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+ 	ntt_wz_mm,                     sqrt(ntt_wz_mm_e1),
+ 	ntt_wz_em,                     sqrt(ntt_wz_em_e1),
+ 	ntt_wz_ee,                     sqrt(ntt_wz_ee_e1),
+ 	ntt_wz_mm+ntt_wz_em+ntt_wz_ee, sqrt(ntt_wz_mm_e1+ntt_wz_em_e1+ntt_wz_ee_e1)) << endl;
 	
-	float tot_bg_mm = npf_pred_sum_mm                +nff_pred_sum_mm              ;
- 	float tot_bg_em = npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em+ntt_cm_sum_em;
- 	float tot_bg_ee = npf_pred_sum_ee                +nff_pred_sum_ee+ntt_cm_sum_ee;
+// WITHOUT WZ, RARES	float tot_bg_mm = npf_pred_sum_mm                +nff_pred_sum_mm              ;
+// WITHOUT WZ, RARES 	float tot_bg_em = npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em+ntt_cm_sum_em;
+// WITHOUT WZ, RARES 	float tot_bg_ee = npf_pred_sum_ee                +nff_pred_sum_ee+ntt_cm_sum_ee;
+// WITHOUT WZ, RARES 	float tot_bg = tot_bg_mm + tot_bg_em + tot_bg_ee;
+// WITHOUT WZ, RARES 	float tot_bg_mm_e1 = nF_pred_sum_mm_e1                   ;
+// WITHOUT WZ, RARES 	float tot_bg_em_e1 = nF_pred_sum_em_e1 + ntt_cm_sum_em_e1;
+// WITHOUT WZ, RARES 	float tot_bg_ee_e1 = nF_pred_sum_ee_e1 + ntt_cm_sum_ee_e1;
+// WITHOUT WZ, RARES 	float tot_bg_e1    = tot_bg_mm_e1 + tot_bg_em_e1 + tot_bg_ee_e1;
+ 	float tot_bg_mm = npf_pred_sum_mm                +nff_pred_sum_mm              +ntt_rare_mm + ntt_wz_mm;
+ 	float tot_bg_em = npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em+ntt_cm_sum_em+ntt_rare_em + ntt_wz_em;
+ 	float tot_bg_ee = npf_pred_sum_ee                +nff_pred_sum_ee+ntt_cm_sum_ee+ntt_rare_ee + ntt_wz_ee;
  	float tot_bg = tot_bg_mm + tot_bg_em + tot_bg_ee;
- 	float tot_bg_mm_e1 = nF_pred_sum_mm_e1                   ;
- 	float tot_bg_em_e1 = nF_pred_sum_em_e1 + ntt_cm_sum_em_e1;
- 	float tot_bg_ee_e1 = nF_pred_sum_ee_e1 + ntt_cm_sum_ee_e1;
+ 	float tot_bg_mm_e1 = nF_pred_sum_mm_e1                    + ntt_rare_mm_e1 + ntt_wz_mm_e1;
+ 	float tot_bg_em_e1 = nF_pred_sum_em_e1 + ntt_cm_sum_em_e1 + ntt_rare_em_e1 + ntt_wz_em_e1;
+ 	float tot_bg_ee_e1 = nF_pred_sum_ee_e1 + ntt_cm_sum_ee_e1 + ntt_rare_ee_e1 + ntt_wz_ee_e1;
  	float tot_bg_e1    = tot_bg_mm_e1 + tot_bg_em_e1 + tot_bg_ee_e1;
-// LUKAS 	float tot_bg_mm = npf_pred_sum_mm                +nff_pred_sum_mm              +ntt_rare_mm + ntt_wz_mm;
-// LUKAS 	float tot_bg_em = npf_pred_sum_em+nfp_pred_sum_em+nff_pred_sum_em+ntt_cm_sum_em+ntt_rare_em + ntt_wz_em;
-// LUKAS 	float tot_bg_ee = npf_pred_sum_ee                +nff_pred_sum_ee+ntt_cm_sum_ee+ntt_rare_ee + ntt_wz_ee;
-// LUKAS 	float tot_bg = tot_bg_mm + tot_bg_em + tot_bg_ee;
-// LUKAS 	float tot_bg_mm_e1 = nF_pred_sum_mm_e1                    + ntt_rare_mm_e1 + ntt_wz_mm_e1;
-// LUKAS 	float tot_bg_em_e1 = nF_pred_sum_em_e1 + ntt_cm_sum_em_e1 + ntt_rare_em_e1 + ntt_wz_em_e1;
-// LUKAS 	float tot_bg_ee_e1 = nF_pred_sum_ee_e1 + ntt_cm_sum_ee_e1 + ntt_rare_ee_e1 + ntt_wz_ee_e1;
-// LUKAS 	float tot_bg_e1    = tot_bg_mm_e1 + tot_bg_em_e1 + tot_bg_ee_e1;
  	float ntt_sum    = ntt_sum_mm+ntt_sum_em+ntt_sum_ee;
  	float ntt_sum_e1 = ntt_sum_mm_e1+ntt_sum_em_e1+ntt_sum_ee_e1;
  	OUT << Form(" Total Pred.     || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
@@ -20903,63 +20923,55 @@ void SSDLPlotter::makeIntMCClosureTTW(vector<int> samples, TString filename, int
 				ntt_sum_em, sqrt(ntt_sum_em_e1),
 				ntt_sum_ee, sqrt(ntt_sum_ee_e1),
 				ntt_sum,    sqrt(ntt_sum_e1)) << endl;
-	OUT << Form(" Pred./Obs.      || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+// WITHOUT WZ, RARES	OUT << Form(" Pred./Obs.      || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+// WITHOUT WZ, RARES				tot_bg_mm/ntt_sum_mm,
+// WITHOUT WZ, RARES				sqrt(nF_pred_sum_mm_e1                  /*+  ntt_rare_mm_e1 * pow(((ntt_sum_mm-tot_bg_mm)/tot_bg_mm),2)*/ + (tot_bg_mm_e1 /*- ntt_rare_mm_e1*/) * pow(tot_bg_mm/ntt_sum_mm,2)  )/ntt_sum_mm,
+// WITHOUT WZ, RARES				
+// WITHOUT WZ, RARES				tot_bg_em/ntt_sum_em,
+// WITHOUT WZ, RARES				sqrt(nF_pred_sum_em_e1+ntt_cm_sum_em_e1 /*+  ntt_rare_em_e1 * pow(((ntt_sum_em-tot_bg_em)/tot_bg_em),2)*/ + (tot_bg_em_e1 /*- ntt_rare_em_e1*/) * pow(tot_bg_em/ntt_sum_em,2)  )/ntt_sum_em,
+// WITHOUT WZ, RARES				
+// WITHOUT WZ, RARES				tot_bg_ee/ntt_sum_ee,
+// WITHOUT WZ, RARES				sqrt(nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1 +  /*ntt_rare_ee_e1 * pow(((ntt_sum_ee-tot_bg_ee)/tot_bg_ee),2)*/ + (tot_bg_ee_e1 /*- ntt_rare_ee_e1*/) * pow(tot_bg_ee/ntt_sum_ee,2)  )/ntt_sum_ee,
+// WITHOUT WZ, RARES				
+// WITHOUT WZ, RARES				tot_bg/ntt_sum,
+// WITHOUT WZ, RARES				sqrt(fakesum_e1 + ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1 +  /*(ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1) * pow(((ntt_sum-tot_bg)/tot_bg),2)*/ + (tot_bg_e1 /*- (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*/) * pow(tot_bg/ntt_sum,2)  )/ntt_sum
+// WITHOUT WZ, RARES				) << endl;
+ 	OUT << Form(" Pred./Obs.      || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
 				tot_bg_mm/ntt_sum_mm,
-//				0.,
-				sqrt(nF_pred_sum_mm_e1                  /*+  ntt_rare_mm_e1 * pow(((ntt_sum_mm-tot_bg_mm)/tot_bg_mm),2)*/ + (tot_bg_mm_e1 /*- ntt_rare_mm_e1*/) * pow(tot_bg_mm/ntt_sum_mm,2)  )/ntt_sum_mm,
-				
+				sqrt(nF_pred_sum_mm_e1                  +  ntt_rare_mm_e1 * pow(((ntt_sum_mm-tot_bg_mm)/tot_bg_mm),2) + (tot_bg_mm_e1 - ntt_rare_mm_e1) * pow(tot_bg_mm/ntt_sum_mm,2)  )/ntt_sum_mm,
 				tot_bg_em/ntt_sum_em,
-//				0.,
-				sqrt(nF_pred_sum_em_e1+ntt_cm_sum_em_e1 /*+  ntt_rare_em_e1 * pow(((ntt_sum_em-tot_bg_em)/tot_bg_em),2)*/ + (tot_bg_em_e1 /*- ntt_rare_em_e1*/) * pow(tot_bg_em/ntt_sum_em,2)  )/ntt_sum_em,
-				
+				sqrt(nF_pred_sum_em_e1+ntt_cm_sum_em_e1 +  ntt_rare_em_e1 * pow(((ntt_sum_em-tot_bg_em)/tot_bg_em),2) + (tot_bg_em_e1 - ntt_rare_em_e1) * pow(tot_bg_em/ntt_sum_em,2)  )/ntt_sum_em,
 				tot_bg_ee/ntt_sum_ee,
-//				0.,
-				sqrt(nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1 +  /*ntt_rare_ee_e1 * pow(((ntt_sum_ee-tot_bg_ee)/tot_bg_ee),2)*/ + (tot_bg_ee_e1 /*- ntt_rare_ee_e1*/) * pow(tot_bg_ee/ntt_sum_ee,2)  )/ntt_sum_ee,
-				
+				sqrt(nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1 +  ntt_rare_ee_e1 * pow(((ntt_sum_ee-tot_bg_ee)/tot_bg_ee),2) + (tot_bg_ee_e1 - ntt_rare_ee_e1) * pow(tot_bg_ee/ntt_sum_ee,2)  )/ntt_sum_ee,
 				tot_bg/ntt_sum,
-//				0.
-				sqrt(fakesum_e1 + ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1 +  /*(ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1) * pow(((ntt_sum-tot_bg)/tot_bg),2)*/ + (tot_bg_e1 /*- (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*/) * pow(tot_bg/ntt_sum,2)  )/ntt_sum
+				sqrt(fakesum_e1 + ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1 +  (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1) * pow(((ntt_sum-tot_bg)/tot_bg),2) + (tot_bg_e1 - (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) * pow(tot_bg/ntt_sum,2)  )/ntt_sum
 				) << endl;
-// 	OUT << Form(" Pred./Obs.      || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
-//				tot_bg_mm/ntt_sum_mm,
-//				sqrt(nF_pred_sum_mm_e1                  +  ntt_rare_mm_e1 * pow(((ntt_sum_mm-tot_bg_mm)/tot_bg_mm),2) + (tot_bg_mm_e1 - ntt_rare_mm_e1) * pow(tot_bg_mm/ntt_sum_mm,2)  )/ntt_sum_mm,
-//				tot_bg_em/ntt_sum_em,
-//				sqrt(nF_pred_sum_em_e1+ntt_cm_sum_em_e1 +  ntt_rare_em_e1 * pow(((ntt_sum_em-tot_bg_em)/tot_bg_em),2) + (tot_bg_em_e1 - ntt_rare_em_e1) * pow(tot_bg_em/ntt_sum_em,2)  )/ntt_sum_em,
-//				tot_bg_ee/ntt_sum_ee,
-//				sqrt(nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1 +  ntt_rare_ee_e1 * pow(((ntt_sum_ee-tot_bg_ee)/tot_bg_ee),2) + (tot_bg_ee_e1 - ntt_rare_ee_e1) * pow(tot_bg_ee/ntt_sum_ee,2)  )/ntt_sum_ee,
-//				tot_bg/ntt_sum,
-//				sqrt(fakesum_e1 + ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1 +  (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1) * pow(((ntt_sum-tot_bg)/tot_bg),2) + (tot_bg_e1 - (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)) * pow(tot_bg/ntt_sum,2)  )/ntt_sum
-//				) << endl;
-	OUT << Form(" Pred.-Obs./Pred || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+// WITHOUT WZ, RARES	OUT << Form(" Pred.-Obs./Pred || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
+// WITHOUT WZ, RARES				(tot_bg_mm-ntt_sum_mm)/tot_bg_mm,
+// WITHOUT WZ, RARES				sqrt(nF_pred_sum_mm_e1*pow(ntt_sum_mm/tot_bg_mm,2) /*+ ntt_rare_mm_e1*(pow((ntt_sum_mm-tot_bg_mm)/tot_bg_mm,2))*/ + ntt_sum_mm_e1 /*- ntt_rare_mm_e1*/)/tot_bg_mm,
+// WITHOUT WZ, RARES				
+// WITHOUT WZ, RARES				(tot_bg_em-ntt_sum_em)/tot_bg_em,
+// WITHOUT WZ, RARES				sqrt((nF_pred_sum_em_e1+ntt_cm_sum_em_e1)*pow(ntt_sum_em/tot_bg_em,2) + /*ntt_rare_em_e1*(pow((ntt_sum_em-tot_bg_em)/tot_bg_em,2))*/ + ntt_sum_em_e1 /*- ntt_rare_em_e1*/)/tot_bg_em,
+// WITHOUT WZ, RARES				
+// WITHOUT WZ, RARES				(tot_bg_ee-ntt_sum_ee)/tot_bg_ee,
+// WITHOUT WZ, RARES				sqrt((nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1)*pow(ntt_sum_ee/tot_bg_ee,2) + /*ntt_rare_ee_e1*(pow((ntt_sum_ee-tot_bg_ee)/tot_bg_ee,2))*/ + ntt_sum_ee_e1 /*- ntt_rare_ee_e1*/)/tot_bg_ee,
+// WITHOUT WZ, RARES				
+// WITHOUT WZ, RARES				(tot_bg-ntt_sum)/tot_bg,
+// WITHOUT WZ, RARES				sqrt((fakesum_e1+ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1)*pow(ntt_sum/tot_bg,2) /*+ (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*(pow((ntt_sum-tot_bg)/tot_bg,2))*/ + ntt_sum_e1 /*- (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*/)/tot_bg
+// WITHOUT WZ, RARES				) << endl;
+ 	OUT << Form(" Pred.-Obs./Pred || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
 				(tot_bg_mm-ntt_sum_mm)/tot_bg_mm,
-//				0.,
-				sqrt(nF_pred_sum_mm_e1*pow(ntt_sum_mm/tot_bg_mm,2) /*+ ntt_rare_mm_e1*(pow((ntt_sum_mm-tot_bg_mm)/tot_bg_mm,2))*/ + ntt_sum_mm_e1 /*- ntt_rare_mm_e1*/)/tot_bg_mm,
+				sqrt(nF_pred_sum_mm_e1*pow(ntt_sum_mm/tot_bg_mm,2) + ntt_rare_mm_e1*(pow((ntt_sum_mm-tot_bg_mm)/tot_bg_mm,2)) + ntt_sum_mm_e1 - ntt_rare_mm_e1)/tot_bg_mm,
 				
 				(tot_bg_em-ntt_sum_em)/tot_bg_em,
-//				0.,
-				sqrt((nF_pred_sum_em_e1+ntt_cm_sum_em_e1)*pow(ntt_sum_em/tot_bg_em,2) + /*ntt_rare_em_e1*(pow((ntt_sum_em-tot_bg_em)/tot_bg_em,2))*/ + ntt_sum_em_e1 /*- ntt_rare_em_e1*/)/tot_bg_em,
+				sqrt((nF_pred_sum_em_e1+ntt_cm_sum_em_e1)*pow(ntt_sum_em/tot_bg_em,2) + ntt_rare_em_e1*(pow((ntt_sum_em-tot_bg_em)/tot_bg_em,2)) + ntt_sum_em_e1 - ntt_rare_em_e1)/tot_bg_em,
 				
 				(tot_bg_ee-ntt_sum_ee)/tot_bg_ee,
-//				0.,
-				sqrt((nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1)*pow(ntt_sum_ee/tot_bg_ee,2) + /*ntt_rare_ee_e1*(pow((ntt_sum_ee-tot_bg_ee)/tot_bg_ee,2))*/ + ntt_sum_ee_e1 /*- ntt_rare_ee_e1*/)/tot_bg_ee,
+				sqrt((nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1)*pow(ntt_sum_ee/tot_bg_ee,2) + ntt_rare_ee_e1*(pow((ntt_sum_ee-tot_bg_ee)/tot_bg_ee,2)) + ntt_sum_ee_e1 - ntt_rare_ee_e1)/tot_bg_ee,
 				
 				(tot_bg-ntt_sum)/tot_bg,
-//				0.
-				sqrt((fakesum_e1+ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1)*pow(ntt_sum/tot_bg,2) /*+ (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*(pow((ntt_sum-tot_bg)/tot_bg,2))*/ + ntt_sum_e1 /*- (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*/)/tot_bg
+				sqrt((fakesum_e1+ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1)*pow(ntt_sum/tot_bg,2) + (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*(pow((ntt_sum-tot_bg)/tot_bg,2)) + ntt_sum_e1 - (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1))/tot_bg
 				) << endl;
-// 	OUT << Form(" Pred.-Obs./Pred || %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f & %7.2f\\pm%7.2f |",
-//				(tot_bg_mm-ntt_sum_mm)/tot_bg_mm,
-//				sqrt(nF_pred_sum_mm_e1*pow(ntt_sum_mm/tot_bg_mm,2) + ntt_rare_mm_e1*(pow((ntt_sum_mm-tot_bg_mm)/tot_bg_mm,2)) + ntt_sum_mm_e1 - ntt_rare_mm_e1)/tot_bg_mm,
-//				
-//				(tot_bg_em-ntt_sum_em)/tot_bg_em,
-//				sqrt((nF_pred_sum_em_e1+ntt_cm_sum_em_e1)*pow(ntt_sum_em/tot_bg_em,2) + ntt_rare_em_e1*(pow((ntt_sum_em-tot_bg_em)/tot_bg_em,2)) + ntt_sum_em_e1 - ntt_rare_em_e1)/tot_bg_em,
-//				
-//				(tot_bg_ee-ntt_sum_ee)/tot_bg_ee,
-//				sqrt((nF_pred_sum_ee_e1+ntt_cm_sum_ee_e1)*pow(ntt_sum_ee/tot_bg_ee,2) + ntt_rare_ee_e1*(pow((ntt_sum_ee-tot_bg_ee)/tot_bg_ee,2)) + ntt_sum_ee_e1 - ntt_rare_ee_e1)/tot_bg_ee,
-//				
-//				(tot_bg-ntt_sum)/tot_bg,
-//				sqrt((fakesum_e1+ntt_cm_sum_ee_e1+ntt_cm_sum_em_e1)*pow(ntt_sum/tot_bg,2) + (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1)*(pow((ntt_sum-tot_bg)/tot_bg,2)) + ntt_sum_e1 - (ntt_rare_mm_e1+ntt_rare_em_e1+ntt_rare_ee_e1))/tot_bg
-//				) << endl;
 	OUT << "===================================================================================================" << endl;
  	OUT << endl;
 	
