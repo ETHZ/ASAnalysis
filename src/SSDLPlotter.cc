@@ -15829,8 +15829,8 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	pred.ttw_ee   = nt2_ttw_mc_ee;
 	pred.ttw_err    = sqrt(nt2_ttw_mc_ee_e2 + nt2_ttw_mc_mm_e2 + nt2_ttw_mc_em_e2 + TTWESyst2*(nt2_ttw_mc_ee + nt2_ttw_mc_mm + nt2_ttw_mc_em)*(nt2_ttw_mc_ee + nt2_ttw_mc_mm + nt2_ttw_mc_em));
 	pred.ttw_err_mm = sqrt(nt2_ttw_mc_mm_e2 + TTWESyst2*nt2_ttw_mc_mm*nt2_ttw_mc_mm);
-	pred.ttw_err_ee = sqrt(nt2_ttw_mc_em_e2 + TTWESyst2*nt2_ttw_mc_em*nt2_ttw_mc_em);
-	pred.ttw_err_em = sqrt(nt2_ttw_mc_ee_e2 + TTWESyst2*nt2_ttw_mc_ee*nt2_ttw_mc_ee);
+	pred.ttw_err_em = sqrt(nt2_ttw_mc_em_e2 + TTWESyst2*nt2_ttw_mc_em*nt2_ttw_mc_em);
+	pred.ttw_err_ee = sqrt(nt2_ttw_mc_ee_e2 + TTWESyst2*nt2_ttw_mc_ee*nt2_ttw_mc_ee);
 	
 	pred.ttz      = nt2_ttz_mc_mm + nt2_ttz_mc_em + nt2_ttz_mc_ee;
 	pred.ttz_mm   = nt2_ttz_mc_mm;
