@@ -248,7 +248,23 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/WZTo3LNu_Yields.root");
       background->Add(tree_dir+"TTJets_Yields.root");
       background->Add(tree_dir+"WZTo3LNu_Yields.root");
-      background->Add(tree_dir+"TTbarZ_Yield.root");
+//      background->Add(tree_dir+"TTbarZ_Yield.root");
+//      background->Add(tree_dir+"DPSWW_Yields.root");
+//      background->Add(tree_dir+"HTauTau_Yields.root");
+//      background->Add(tree_dir+"HWW_Yields.root");
+//      background->Add(tree_dir+"HZZ_Yields.root");
+//      background->Add(tree_dir+"TTbarWW_Yields.root");
+//      background->Add(tree_dir+"TTbarG_Yields.root");
+//      background->Add(tree_dir+"TbZ_Yields.root");
+//      background->Add(tree_dir+"W+W+_Yields.root");
+//      background->Add(tree_dir+"W-W-_Yields.root");
+//      background->Add(tree_dir+"WGstarMu_Yields.root");
+//      background->Add(tree_dir+"WGstarTau_Yields.root");
+//      background->Add(tree_dir+"WWG_Yields.root");
+//      background->Add(tree_dir+"WWW_Yields.root");
+//      background->Add(tree_dir+"WWZ_Yields.root");
+//      background->Add(tree_dir+"WZZ_Yields.root");
+//      background->Add(tree_dir+"ZZZ_Yields.root");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jun12-woSyst/TTJets_Yields.root");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jun12-woSyst/WZTo3LNu_Yields.root");
 
