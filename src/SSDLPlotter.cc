@@ -466,14 +466,14 @@ void SSDLPlotter::doAnalysis(){
 //	// // makeNTightLoosePlots(Muon);
 //	// // makeNTightLoosePlots(Elec);
 //	// 
-	makeFRvsPtPlots(Muon, SigSup);
-	makeFRvsPtPlots(Elec, SigSup);
-	makeFRvsPtPlots(Muon, ZDecay);
-	makeFRvsPtPlots(Elec, ZDecay);
-	makeFRvsNVPlots(Muon, ZDecay);
-	makeFRvsNVPlots(Elec, ZDecay);
-	makeFRvsEtaPlots(Muon);
-	makeFRvsEtaPlots(Elec);
+//	makeFRvsPtPlots(Muon, SigSup);
+//	makeFRvsPtPlots(Elec, SigSup);
+//	makeFRvsPtPlots(Muon, ZDecay);
+//	makeFRvsPtPlots(Elec, ZDecay);
+//	makeFRvsNVPlots(Muon, ZDecay);
+//	makeFRvsNVPlots(Elec, ZDecay);
+//	makeFRvsEtaPlots(Muon);
+//	makeFRvsEtaPlots(Elec);
 //	makeChMidvsPtPlots();
 //
 //	makeAllClosureTestsTTW();
@@ -486,8 +486,8 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-	makeTTWDiffPredictionsSigEvent();
-	makeTTWKinPlotsSigEvent();
+//	makeTTWDiffPredictionsSigEvent();
+//	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -523,7 +523,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
 //	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
 
-//	makeTTWIntPredictionsSigEvent();
+	makeTTWIntPredictionsSigEvent();
 	
 //	makeTTWNLOPlots();
 	
@@ -10765,12 +10765,12 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	map< TString, TTWZPrediction > ttwzpreds_plpl, ttwzpreds_mimi;
 
 	// cuts
-	float  minHT_plpl(145.);
-	float  minPt_plpl( 32.);
+	float  minHT_plpl(150.);
+	float  minPt_plpl( 36.);
 	int    minNJ_plpl(  3 );
 	int   minNbJ_plpl(  1 );
 	float minMET_plpl(  0.);
-	float  minHT_mimi(156.);
+	float  minHT_mimi(135.);
 	float  minPt_mimi( 29.);
 	int    minNJ_mimi(  3 );
 	int   minNbJ_mimi(  1 );
@@ -12210,6 +12210,34 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 //		if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTreeNoZVeto/FinalSel/";
 //		if (region_sel > -1) fOutputSubDir = "DiffPredictionSigEventTreeNoZVeto/FinalSel/";
 //	}
+
+	TString eventlist_ntt, eventlist_ntl, eventlist_nlt, eventlist_nll;
+	eventlist_ntt = "Events_tt";
+	eventlist_ntl = "Events_tl";
+	eventlist_nlt = "Events_lt";
+	eventlist_nll = "Events_ll";
+	if (region_sel == 1 && chVeto == +1) {
+		eventlist_ntt += "_FinalSel++.txt";
+		eventlist_ntl += "_FinalSel++.txt";
+		eventlist_nlt += "_FinalSel++.txt";
+		eventlist_nll += "_FinalSel++.txt";
+	}
+	else if (region_sel == 1 && chVeto == -1) {
+		eventlist_ntt += "_FinalSel--.txt";
+		eventlist_ntl += "_FinalSel--.txt";
+		eventlist_nlt += "_FinalSel--.txt";
+		eventlist_nll += "_FinalSel--.txt";
+	}
+	else {
+		eventlist_ntt += "_PreSel.txt";
+		eventlist_ntl += "_PreSel.txt";
+		eventlist_nlt += "_PreSel.txt";
+		eventlist_nll += "_PreSel.txt";
+	}
+	fOUTSTREAM .open(eventlist_ntt.Data(), ios::trunc);
+	fOUTSTREAM2.open(eventlist_ntl.Data(), ios::trunc);
+	fOUTSTREAM3.open(eventlist_nlt.Data(), ios::trunc);
+	fOUTSTREAM4.open(eventlist_nll.Data(), ios::trunc);
 	
 	TLatex *lat = new TLatex();
 	lat->SetNDC(kTRUE);
@@ -12239,26 +12267,26 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	float minHT     (  0.), maxHT     ( 8000.);
 	float minMET    (  0.), maxMET    ( 8000.);
 	int   minNjets  (  3 ), maxNjets  (   99 );
-	int   minNbjetsL(  0 ), maxNbjetsL(   99 );
-	int   minNbjetsM(  0 ), maxNbjetsM(   99 );
+	int   minNbjetsL(  1 ), maxNbjetsL(   99 );
+	int   minNbjetsM(  1 ), maxNbjetsM(   99 );
 	float minPt1    ( 20.), maxPt1    ( 8000.);
 	float minPt2    ( 20.), maxPt2    ( 8000.);
 	float minMll    (  8.); // 8.
 
 	if (region_sel == 1 && chVeto == +1) {
 		systflag   =   0 ;
-		minHT      = 145., maxHT      =  8000.;
+		minHT      = 150., maxHT      =  8000.;
 		minMET     =   0., maxMET     =  8000.;
 		minNjets   =   3 , maxNjets   =    99 ;
 		minNbjetsL =   1 , maxNbjetsL =    99 ;
 		minNbjetsM =   1 , maxNbjetsM =    99 ;
-		minPt1     =  32., maxPt1     =  8000.;
-		minPt2     =  32., maxPt2     =  8000.;
+		minPt1     =  36., maxPt1     =  8000.;
+		minPt2     =  36., maxPt2     =  8000.;
 		minMll     =   8.; // 8.
 	}
 	if (region_sel == 1 && chVeto == -1) {
 		systflag   =   0 ;
-		minHT      = 156., maxHT      =  8000.;
+		minHT      = 135., maxHT      =  8000.;
 		minMET     =   0., maxMET     =  8000.;
 		minNjets   =   3 , maxNjets   =    99 ;
 		minNbjetsL =   1 , maxNbjetsL =    99 ;
@@ -12376,7 +12404,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
 	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
 	float eta1, eta2, mll;
-	int   event, run;
+	int   event, run, ls;
 	int charge;
 	int passZVeto, passes3rdSFLepVeto;
 	float diffVar(-9999.);
@@ -12386,6 +12414,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	sigtree->SetBranchAddress("SystFlag", &flag);
 	sigtree->SetBranchAddress("Event",    &event);
 	sigtree->SetBranchAddress("Run",      &run);
+	sigtree->SetBranchAddress("LS",       &ls);
 	sigtree->SetBranchAddress("SName",    &sname);
 	sigtree->SetBranchAddress("SType",    &SType);
 	sigtree->SetBranchAddress("PUWeight", &puweight);
@@ -12532,6 +12561,15 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 							if (TLCat == 3)               h_obs_t00_ee[var]->Fill(diffVar, 1);
 						}
 					}
+//					if (TLCat == 0 && var == 0) {
+//						cout << setw(18) << *sname << setw(7) << run << setw(5) << ls << setw(12) << event << endl;
+//					}
+
+					if (TLCat == 0 && var == 0) fOUTSTREAM  << setw(18) << *sname << setw(7) << run << setw(5) << ls << setw(12) << event << endl;
+					if (TLCat == 1 && var == 0) fOUTSTREAM2 << setw(18) << *sname << setw(7) << run << setw(5) << ls << setw(12) << event << endl;
+					if (TLCat == 2 && var == 0) fOUTSTREAM3 << setw(18) << *sname << setw(7) << run << setw(5) << ls << setw(12) << event << endl;
+					if (TLCat == 3 && var == 0) fOUTSTREAM4 << setw(18) << *sname << setw(7) << run << setw(5) << ls << setw(12) << event << endl;
+
 				} // end Flavor < 3
 				
 				if(Flavor == 4) {       // E-MU OS
@@ -12815,6 +12853,10 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		for (map<TString,TH1F*>::iterator it = h_pred_rare_samples[var].begin(); it != h_pred_rare_samples[var].end(); it++) delete it->second;
 		delete h_obs[var], h_obs_t11_mm[var], h_obs_t10_mm[var], h_obs_t00_mm[var], h_obs_t11_em[var], h_obs_t10_em[var], h_obs_t01_em[var], h_obs_t00_em[var], h_obs_t11_ee[var], h_obs_t10_ee[var], h_obs_t00_ee[var], h_obs_t11_ee_BB_os[var], h_obs_t11_ee_EB_os[var], h_obs_t11_ee_EE_os[var], h_obs_t11_em_BB_os[var], h_obs_t11_em_EE_os[var];
 	} // end loop over variables
+	fOUTSTREAM .close();
+	fOUTSTREAM2.close();
+	fOUTSTREAM3.close();
+	fOUTSTREAM4.close();
 	delete FR;
 }
 //void SSDLPlotter::makeTTWClosureTestSigEvent(vector<TString> diffVarName, vector<int> nbins, vector<double*> bins, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel, int chVeto) {
