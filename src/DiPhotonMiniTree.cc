@@ -2838,7 +2838,7 @@ void DiPhotonMiniTree::ResetVars(){
     phoiso_template_2events_bkgsig_2[i]=-999;
     phoiso_template_2events_bkgbkg_1[i]=-999;
     phoiso_template_2events_bkgbkg_2[i]=-999;
-    for (int k=0; k<4; k++){
+    for (int k=0; k<6; k++){
       rewinfo_template_1event_sigsig_1[i*6+k]=-999;
       rewinfo_template_1event_sigsig_2[i*6+k]=-999;
       rewinfo_template_1event_sigbkg_1[i*6+k]=-999;
