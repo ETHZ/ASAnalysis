@@ -82,14 +82,14 @@ static const float gMEL = 0.0005;
 static const float gMZ  = 91.;
 
 // Muon Binning //////////////////////////////////////////////////////////////////
-double SSDLDumper::gMuFPtBins[gNMuFPtBins+1] = {20., 25., 30., 35., 40., 50., 60.}; // fake ratios
+double SSDLDumper::gMuFPtBins[gNMuFPtBins+1] = {20., 25., 30., 40., 60.}; // fake ratios
 double SSDLDumper::gMuPPtbins[gNMuPPtbins+1] = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
-double SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 0.5, 1.0, 1.479, 2.0, 2.5};
+double SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1.479, 2.5};
 
 // Electron Binning //////////////////////////////////////////////////////////////
 double SSDLDumper::gElFPtBins[gNElFPtBins+1]   = {20., 25., 30., 40., 50., 60., 70., 80., 100.}; // fake ratios
 double SSDLDumper::gElPPtbins[gNElPPtbins+1]   = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
-double SSDLDumper::gElEtabins[gNElEtabins+1]   = {0., 0.5, 1.0, 1.479, 2.0, 2.5};
+double SSDLDumper::gElEtabins[gNElEtabins+1]   = {0., 1.479, 2.5};
 double SSDLDumper::gElCMIdbins[gNElCMIdbins+1] = {0., 1.479, 2.5};
 //////////////////////////////////////////////////////////////////////////////////
 
