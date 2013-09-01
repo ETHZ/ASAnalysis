@@ -22,8 +22,8 @@ using namespace std;
 
 FakeRatios::FakeRatios() : fVerbose(0), fNToyMCs(100), fAddESyst(0.0), fIsMC(false), fNGen(0) {
 	// Initialize arrays to avoid segfaults
-	fMMNtl[0] = -1.; fMMNtl[1] = -1.; fMMNtl[2] = -1.; 
-	fEENtl[0] = -1.; fEENtl[1] = -1.; fEENtl[2] = -1.; 
+	fMMNtl[0] = -1.; fMMNtl[1] = -1.; fMMNtl[2] = -1.; fMMNtl[3] = -1.;
+	fEENtl[0] = -1.; fEENtl[1] = -1.; fEENtl[2] = -1.; fEENtl[3] = -1.;
 	fEMNtl[0] = -1.; fEMNtl[1] = -1.; fEMNtl[2] = -1.; fEMNtl[3] = -1.; 
 	
 	fMFRatio[0] = 0.; fMFRatio[1] = 0.; 
@@ -37,14 +37,22 @@ FakeRatios::~FakeRatios(){}
 //____________________________________________________________________________________
 // Input
 void FakeRatios::setMMNtl(float Ntt, float Ntl, float Nll){
-	fMMNtl[0] = Ntt;
-	fMMNtl[1] = Ntl;
-	fMMNtl[2] = Nll;
+	setMMNtl(Ntt, 0.5*Ntl, 0.5*Ntl, Nll);
 }
 void FakeRatios::setEENtl(float Ntt, float Ntl, float Nll){
+	setEENtl(Ntt, 0.5*Ntl, 0.5*Ntl, Nll);
+}
+void FakeRatios::setMMNtl(float Ntt, float Ntl, float Nlt, float Nll){
+	fMMNtl[0] = Ntt;
+	fMMNtl[1] = Ntl;
+	fMMNtl[2] = Nlt;
+	fMMNtl[3] = Nll;
+}
+void FakeRatios::setEENtl(float Ntt, float Ntl, float Nlt, float Nll){
 	fEENtl[0] = Ntt;
 	fEENtl[1] = Ntl;
-	fEENtl[2] = Nll;
+	fEENtl[2] = Nlt;
+	fEENtl[3] = Nll;
 }
 void FakeRatios::setEMNtl(float Ntt, float Ntl, float Nlt, float Nll){
 	fEMNtl[0] = Ntt;
@@ -73,13 +81,13 @@ void FakeRatios::setEPRatio(float ratio, float error){
 //____________________________________________________________________________________
 // Output and combinations
 float FakeRatios::getMMNpp(){
-	return getNpp(           fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNpp(           fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMNppEStat(){
-	return getNppEStat(      fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNppEStat(      fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMNppESyst(){
-	float fromtoys = getESystFromToys2(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNpp);
+	float fromtoys = getESystFromToys2(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNpp);
 	float addsyst = fAddESyst * getMMNpp();
 	return sqrt(fromtoys + addsyst*addsyst);
 }
@@ -88,13 +96,13 @@ float FakeRatios::getMMNppETot(){
 }
 
 float FakeRatios::getMMNpf(){
-	return 2.*getNpf(           fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNpf(           fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMNpfEStat(){
-	return sqrt(2.)*getNpfEStat(      fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNpfEStat(      fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMNpfESyst(){
-	float fromtoys = 4.*getESystFromToys2(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNpf);
+	float fromtoys = getESystFromToys2(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNpf);
 	float addsyst = fAddESyst * getMMNpf();
 	return sqrt(fromtoys + addsyst*addsyst);	
 }
@@ -102,14 +110,29 @@ float FakeRatios::getMMNpfETot(){
 	return sqrt(getMMNpfEStat()*getMMNpfEStat() + getMMNpfESyst()*getMMNpfESyst());
 }
 
+float FakeRatios::getMMNfp(){
+	return getNfp(           fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+}
+float FakeRatios::getMMNfpEStat(){
+	return getNfpEStat(      fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+}
+float FakeRatios::getMMNfpESyst(){
+	float fromtoys = getESystFromToys2(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNfp);
+	float addsyst = fAddESyst * getMMNfp();
+	return sqrt(fromtoys + addsyst*addsyst);	
+}
+float FakeRatios::getMMNfpETot(){
+	return sqrt(getMMNfpEStat()*getMMNfpEStat() + getMMNfpESyst()*getMMNfpESyst());
+}
+
 float FakeRatios::getMMNff(){
-	return getNff(           fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNff(           fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMNffEStat(){
-	return getNffEStat(      fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNffEStat(      fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMNffESyst(){
-	float fromtoys = getESystFromToys2(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNff);
+	float fromtoys = getESystFromToys2(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNff);
 	float addsyst = fAddESyst * getMMNff();
 	return sqrt(fromtoys + addsyst*addsyst);	
 }
@@ -119,13 +142,13 @@ float FakeRatios::getMMNffETot(){
 
 //____________________________________________________________________________________
 float FakeRatios::getEENpp(){
-	return getNpp(   fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNpp(   fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEENppEStat(){
-	return getNppEStat(      fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNppEStat(      fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEENppESyst(){
-	float fromtoys = getESystFromToys2(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNpp);
+	float fromtoys = getESystFromToys2(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNpp);
 	float addsyst = fAddESyst * getEENpp();
 	return sqrt(fromtoys + addsyst*addsyst);	
 }
@@ -134,13 +157,13 @@ float FakeRatios::getEENppETot(){
 }
 
 float FakeRatios::getEENpf(){
-	return 2.*getNfp(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNfp(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEENpfEStat(){
-	return sqrt(2.)*getNfpEStat(      fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNfpEStat(      fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEENpfESyst(){
-	float fromtoys =  4.*getESystFromToys2(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNfp);
+	float fromtoys =  getESystFromToys2(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNfp);
 	float addsyst = fAddESyst * getEENpf();
 	return sqrt(fromtoys + addsyst*addsyst);	
 }
@@ -148,14 +171,29 @@ float FakeRatios::getEENpfETot(){
 	return sqrt(getEENpfEStat()*getEENpfEStat() + getEENpfESyst()*getEENpfESyst());
 }
 
+float FakeRatios::getEENfp(){
+	return getNfp(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+}
+float FakeRatios::getEENfpEStat(){
+	return getNfpEStat(      fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+}
+float FakeRatios::getEENfpESyst(){
+	float fromtoys =  getESystFromToys2(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNfp);
+	float addsyst = fAddESyst * getEENfp();
+	return sqrt(fromtoys + addsyst*addsyst);	
+}
+float FakeRatios::getEENfpETot(){
+	return sqrt(getEENfpEStat()*getEENfpEStat() + getEENfpESyst()*getEENfpESyst());
+}
+
 float FakeRatios::getEENff(){
-	return getNff(   fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNff(   fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEENffEStat(){
-	return getNffEStat(      fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNffEStat(      fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEENffESyst(){
-	float fromtoys = getESystFromToys2(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNff);
+	float fromtoys = getESystFromToys2(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNff);
 	float addsyst = fAddESyst * getEENff();
 	return sqrt(fromtoys + addsyst*addsyst);	
 }
@@ -242,24 +280,24 @@ float FakeRatios::getEMNffETot(){
 //____________________________________________________________________________________
 // Single channel combinations
 float FakeRatios::getMMTotFakes(){
-	return getNfpNpfNffSum(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNfpNpfNffSum(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMTotEStat(){
-	return getNfpNpfNffSumEStat(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
+	return getNfpNpfNffSumEStat(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0]);
 }
 float FakeRatios::getMMTotESyst(){
-	float fromtoys = sqrt(getESystFromToys2(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNfpNpfNffSum));
+	float fromtoys = sqrt(getESystFromToys2(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], fMFRatio[0], fMFRatio[0], fMPRatio[0], fMPRatio[0], fMFRatio[1], fMFRatio[1], fMPRatio[1], fMPRatio[1], &FakeRatios::getNfpNpfNffSum));
 	float addsyst = fAddESyst * getMMTotFakes();
 	return sqrt(fromtoys + addsyst*addsyst);
 }
 float FakeRatios::getEETotFakes(){
-	return getNfpNpfNffSum(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNfpNpfNffSum(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEETotEStat(){
-	return getNfpNpfNffSumEStat(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
+	return getNfpNpfNffSumEStat(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0]);
 }
 float FakeRatios::getEETotESyst(){
-	float fromtoys = sqrt(getESystFromToys2(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNfpNpfNffSum));
+	float fromtoys = sqrt(getESystFromToys2(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], fEFRatio[0], fEFRatio[0], fEPRatio[0], fEPRatio[0], fEFRatio[1], fEFRatio[1], fEPRatio[1], fEPRatio[1], &FakeRatios::getNfpNpfNffSum));
 	float addsyst = fAddESyst * getEETotFakes();
 	return sqrt(fromtoys + addsyst*addsyst);
 }
@@ -472,23 +510,23 @@ float FakeRatios::getTotDoubleETot(){
 // Helper methods for inside the toy loops
 float FakeRatios::getTotFakes(float f1, float f2, float p1, float p2){
 	// Need this with custom ratios inside the ESyst toy MC loops
-	float mm = getNfpNpfNffSum(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], f1, f2, p1, p2);	
-	float ee = getNfpNpfNffSum(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], f1, f2, p1, p2);
-	float em = getNfpNpfNffSum(fEMNtl[0],     fEMNtl[1],     fEMNtl[2], fEMNtl[3], f1, f2, p1, p2);
+	float mm = getNfpNpfNffSum(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], f1, f2, p1, p2);	
+	float ee = getNfpNpfNffSum(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], f1, f2, p1, p2);
+	float em = getNfpNpfNffSum(fEMNtl[0], fEMNtl[1], fEMNtl[2], fEMNtl[3], f1, f2, p1, p2);
 	return mm + ee + em;
 }
 float FakeRatios::getTotSingleFakes(float f1, float f2, float p1, float p2){
 	// Need this with custom ratios inside the ESyst toy MC loops
-	float mm = getNfpNpfSum(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], f1, f2, p1, p2);	
-	float ee = getNfpNpfSum(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], f1, f2, p1, p2);
-	float em = getNfpNpfSum(fEMNtl[0],     fEMNtl[1],     fEMNtl[2], fEMNtl[3], f1, f2, p1, p2);
+	float mm = getNfpNpfSum(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], f1, f2, p1, p2);	
+	float ee = getNfpNpfSum(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], f1, f2, p1, p2);
+	float em = getNfpNpfSum(fEMNtl[0], fEMNtl[1], fEMNtl[2], fEMNtl[3], f1, f2, p1, p2);
 	return mm + ee + em;
 }
 float FakeRatios::getTotDoubleFakes(float f1, float f2, float p1, float p2){
 	// Need this with custom ratios inside the ESyst toy MC loops
-	float mm = getNff(fMMNtl[0], 0.5*fMMNtl[1], 0.5*fMMNtl[1], fMMNtl[2], f1, f2, p1, p2);	
-	float ee = getNff(fEENtl[0], 0.5*fEENtl[1], 0.5*fEENtl[1], fEENtl[2], f1, f2, p1, p2);
-	float em = getNff(fEMNtl[0],     fEMNtl[1],     fEMNtl[2], fEMNtl[3], f1, f2, p1, p2);
+	float mm = getNff(fMMNtl[0], fMMNtl[1], fMMNtl[2], fMMNtl[3], f1, f2, p1, p2);	
+	float ee = getNff(fEENtl[0], fEENtl[1], fEENtl[2], fEENtl[3], f1, f2, p1, p2);
+	float em = getNff(fEMNtl[0], fEMNtl[1], fEMNtl[2], fEMNtl[3], f1, f2, p1, p2);
 	return mm + ee + em;
 }
 
@@ -503,15 +541,15 @@ void FakeRatios::printOutput(){
 	cout << "--------------------------------------------------------------------------------------------------------------------------" << endl;
 	cout << setw(16) << " || ";
 	cout << setw(7) << Form("%5.1f", fMMNtl[0] ) << " | ";
-	cout << setw(7) << Form("%5.1f", fMMNtl[1] ) << " | ";
-	cout << setw(7) << Form("%5.1f", fMMNtl[2] ) << " || ";
+	cout << setw(7) << Form("%5.1f", fMMNtl[1] + fMMNtl[2] ) << " | ";
+	cout << setw(7) << Form("%5.1f", fMMNtl[3] ) << " || ";
 	cout << setw(7) << Form("%5.1f", fEMNtl[0] ) << " | ";
 	cout << setw(7) << Form("%5.1f", fEMNtl[1] ) << " | ";
 	cout << setw(7) << Form("%5.1f", fEMNtl[2] ) << " | ";
 	cout << setw(7) << Form("%5.1f", fEMNtl[3] ) << " || ";
 	cout << setw(7) << Form("%5.1f", fEENtl[0] ) << " | ";
-	cout << setw(7) << Form("%5.1f", fEENtl[1] ) << " | ";
-	cout << setw(7) << Form("%5.1f", fEENtl[2] ) << " || ";
+	cout << setw(7) << Form("%5.1f", fEENtl[1] + fEENtl[2] ) << " | ";
+	cout << setw(7) << Form("%5.1f", fEENtl[3] ) << " || ";
 	cout << endl;
 	cout << "--------------------------------------------------------------------------------------------------------------------------" << endl;
 	cout << "                 ||            Mu/Mu            ||                   E/Mu                ||             E/E             ||" << endl;
@@ -519,14 +557,14 @@ void FakeRatios::printOutput(){
 	cout << "--------------------------------------------------------------------------------------------------------------------------" << endl;
 	cout << setw(16) << " || ";
 	cout << setw(7) << Form("%5.1f", getMMNpp() ) << " | ";
-	cout << setw(7) << Form("%5.1f", getMMNpf() ) << " | ";
+	cout << setw(7) << Form("%5.1f", getMMNpf() + getMMNfp() ) << " | ";
 	cout << setw(7) << Form("%5.1f", getMMNff() ) << " || ";
 	cout << setw(7) << Form("%5.1f", getEMNpp() ) << " | ";
 	cout << setw(7) << Form("%5.1f", getEMNpf() ) << " | ";
 	cout << setw(7) << Form("%5.1f", getEMNfp() ) << " | ";
 	cout << setw(7) << Form("%5.1f", getEMNff() ) << " || ";
 	cout << setw(7) << Form("%5.1f", getEENpp() ) << " | ";
-	cout << setw(7) << Form("%5.1f", getEENpf() ) << " | ";
+	cout << setw(7) << Form("%5.1f", getEENpf() + getEENfp() ) << " | ";
 	cout << setw(7) << Form("%5.1f", getEENff() ) << " || ";
 	cout << endl;
 	cout << "--------------------------------------------------------------------------------------------------------------------------" << endl;

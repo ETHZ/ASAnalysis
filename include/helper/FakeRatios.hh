@@ -31,6 +31,8 @@ public:
 	// Syntax is Ntt, Ntl, (Nlt), Nll
 	void setMMNtl(float, float, float);
 	void setEENtl(float, float, float);
+	void setMMNtl(float, float, float, float);
+	void setEENtl(float, float, float, float);
 	void setEMNtl(float, float, float, float);
 	// Syntax is ratio, error
 	void setMFRatio(float, float);
@@ -49,6 +51,10 @@ public:
 	float getMMNpfEStat();
 	float getMMNpfESyst();
 	float getMMNpfETot();
+	float getMMNfp();
+	float getMMNfpEStat();
+	float getMMNfpESyst();
+	float getMMNfpETot();
 	float getMMNff();
 	float getMMNffEStat();
 	float getMMNffESyst();
@@ -62,6 +68,10 @@ public:
 	float getEENpfEStat();
 	float getEENpfESyst();
 	float getEENpfETot();
+	float getEENfp();
+	float getEENfpEStat();
+	float getEENfpESyst();
+	float getEENfpETot();
 	float getEENff();
 	float getEENffEStat();
 	float getEENffESyst();
@@ -158,8 +168,8 @@ private:
 	
 	float fAddESyst;
 
-	float fMMNtl[3]; // tt, tl, ll
-	float fEENtl[3]; // tt, tl, ll
+	float fMMNtl[4]; // tt, tl, lt, ll
+	float fEENtl[4]; // tt, tl, lt, ll
 	float fEMNtl[4]; // tt, tl, lt, ll
 
 	float fMFRatio[2]; // ratio, error

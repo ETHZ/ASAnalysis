@@ -523,7 +523,10 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
 //	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
 
-	makeTTWIntPredictionsSigEvent();
+//	makeTTWIntPredictionsSigEvent();
+
+	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
+	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
 	
 //	makeTTWNLOPlots();
 	
@@ -15081,14 +15084,14 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	///////////////////////////////////////////////////////////////////////////////////
 	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////
-	float nt2_mm(0.), nt10_mm(0.), nt0_mm(0.);
+	float nt2_mm(0.), nt10_mm(0.), nt01_mm(0.), nt0_mm(0.);
 	float nt2_em(0.), nt10_em(0.), nt01_em(0.), nt0_em(0.);
-	float nt2_ee(0.), nt10_ee(0.), nt0_ee(0.);
+	float nt2_ee(0.), nt10_ee(0.), nt01_ee(0.), nt0_ee(0.);
 
 	// FR Predictions from event-by-event weights (pre stored)
-	float npp_mm(0.), npf_mm(0.), nff_mm(0.);
+	float npp_mm(0.), npf_mm(0.), nfp_mm(0.), nff_mm(0.);
 	float npp_em(0.), npf_em(0.), nfp_em(0.), nff_em(0.);
-	float npp_ee(0.), npf_ee(0.), nff_ee(0.);
+	float npp_ee(0.), npf_ee(0.), nfp_ee(0.), nff_ee(0.);
 
 	// OS yields
 	float nt2_ee_BB_os(0.), nt2_ee_EE_os(0.), nt2_ee_EB_os(0.);
@@ -15220,10 +15223,14 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 
 				if (Flavor == 0) {      // MUMU
 					npp_mm += npp;
-					npf_mm += (npf+nfp);
+					//npf_mm += (npf+nfp);
+					npf_mm += npf;
+					nfp_mm += nfp;
 					nff_mm += nff;
 					if (TLCat == 0)               nt2_mm++;
-				 	if (TLCat == 1 || TLCat == 2) nt10_mm++;
+				 	//if (TLCat == 1 || TLCat == 2) nt10_mm++;
+				 	if (TLCat == 1)               nt10_mm++;
+				 	if (TLCat == 2)               nt01_mm++;
 				 	if (TLCat == 3)               nt0_mm++;
 				}
 				if (Flavor == 1) {       // E-MU
@@ -15238,10 +15245,14 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 				}
 				if (Flavor == 2) {       // E-E
 					npp_ee += npp;
-					npf_ee += (nfp+npf);
+					//npf_ee += (nfp+npf);
+					npf_ee += npf;
+					nfp_ee += nfp;
 					nff_ee += nff;
 					if (TLCat == 0)               nt2_ee++;
-				 	if (TLCat == 1 || TLCat == 2) nt10_ee++;
+				 	//if (TLCat == 1 || TLCat == 2) nt10_ee++;
+				 	if (TLCat == 1)               nt10_ee++;
+				 	if (TLCat == 2)               nt01_ee++;
 				 	if (TLCat == 3)               nt0_ee++;
 				}
 //				if (TLCat == 0) {
@@ -15311,11 +15322,11 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 
 	OUT << "---------------------------------------------------------------------------------------------------------" << endl << endl;
 	OUT << "-------------------------------------------------------------------------------------------------------------" << endl;
-	OUT << "                 |           Mu/Mu          |                E/Mu               |           E/E            ||" << endl;
-	OUT << "         YIELDS  |   Ntt  |   Nt1  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Nt1  |   Nll  ||" << endl;
+	OUT << "                 |               Mu/Mu               |                E/Mu               |                E/E                ||" << endl;
+	OUT << "         YIELDS  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  ||" << endl;
 	OUT << "-------------------------------------------------------------------------------------------------------------" << endl;
-	OUT << Form("%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f \\\\\n", "Data",
-	nt2_mm, nt10_mm, nt0_mm, nt2_em, nt10_em, nt01_em, nt0_em, nt2_ee, nt10_ee, nt0_ee);
+	OUT << Form("%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f \\\\\n", "Data",
+	nt2_mm, nt10_mm, nt01_mm, nt0_mm, nt2_em, nt10_em, nt01_em, nt0_em, nt2_ee, nt10_ee, nt01_ee, nt0_ee);
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// PREDICTIONS ////////////////////////////////////////////////////////////////////
@@ -15329,15 +15340,15 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	FR->setMPRatio(mupratio_data, mupratio_data_e);
 	FR->setEPRatio(elpratio_data, elpratio_data_e);
 
-	FR->setMMNtl(nt2_mm, nt10_mm, nt0_mm);
-	FR->setEENtl(nt2_ee, nt10_ee, nt0_ee);
+	FR->setMMNtl(nt2_mm, nt10_mm, nt01_mm, nt0_mm);
+	FR->setEENtl(nt2_ee, nt10_ee, nt01_ee, nt0_ee);
 	FR->setEMNtl(nt2_em, nt10_em, nt01_em, nt0_em);
 
 	// Event-by-event differential ratios:
-	float nF_mm = npf_mm + nff_mm;
+	float nF_mm = npf_mm + nfp_mm + nff_mm;
 	float nF_em = npf_em + nfp_em + nff_em;
-	float nF_ee = npf_ee + nff_ee;
-	float nSF   = npf_mm + npf_em + nfp_em + npf_ee;
+	float nF_ee = npf_ee + nfp_ee + nff_ee;
+	float nSF   = npf_mm + nfp_mm + npf_em + nfp_em + npf_ee + nfp_ee;
 	float nDF   = nff_mm + nff_em + nff_ee;
 	float nF    = nF_mm + nF_em + nF_ee;
 
@@ -15354,7 +15365,11 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
  	npf_mm, FR->getMMNpfEStat(), FakeESyst*npf_mm,
  	npf_ee, FR->getEENpfEStat(), FakeESyst*npf_ee, 
  	npf_em, FR->getEMNpfEStat(), FakeESyst*npf_em) << endl;
- 	OUT << " Nfp             |" << Form("    -                  |    -                  | %5.1f ± %5.1f ± %5.1f |",
+// 	OUT << " Nfp             |" << Form("    -                  |    -                  | %5.1f ± %5.1f ± %5.1f |",
+// 	nfp_em, FR->getEMNfpEStat(), FakeESyst*nfp_em) << endl;
+ 	OUT << " Nfp             |" << Form(" %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f |",
+ 	nfp_mm, FR->getMMNfpEStat(), FakeESyst*nfp_mm,
+ 	nfp_ee, FR->getEENfpEStat(), FakeESyst*nfp_ee, 
  	nfp_em, FR->getEMNfpEStat(), FakeESyst*nfp_em) << endl;
  	OUT << " Nff             |" << Form(" %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f | %5.1f ± %5.1f ± %5.1f |",
  	nff_mm, FR->getMMNffEStat(), FakeESyst*nff_mm,
@@ -15419,7 +15434,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	OUT << "         YIELDS  |   Ntt  |   Nt1  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Nt1  |   Nll  ||" << endl;
 	OUT << "-------------------------------------------------------------------------------------------------------------" << endl;
 	OUT << Form("%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f \\\\\n", "Data",
-	nt2_mm, nt10_mm, nt0_mm, nt2_em, nt10_em, nt01_em, nt0_em, nt2_ee, nt10_ee, nt0_ee);
+	nt2_mm, nt10_mm + nt01_mm, nt0_mm, nt2_em, nt10_em, nt01_em, nt0_em, nt2_ee, nt10_ee + nt01_ee, nt0_ee);
 
 	OUT << "/////////////////////////////////////////////////////////////////////////////" << endl;
 	OUT << endl;
