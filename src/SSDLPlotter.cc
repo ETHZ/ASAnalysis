@@ -12380,6 +12380,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		histoname = "h_obs_"              + diffVarName[var];   h_obs             .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs               [var]->Sumw2();
 		histoname = "h_obs_t11_mm_"       + diffVarName[var];   h_obs_t11_mm      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_mm        [var]->Sumw2();
 		histoname = "h_obs_t10_mm_"       + diffVarName[var];   h_obs_t10_mm      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t10_mm        [var]->Sumw2();
+		histoname = "h_obs_t01_mm_"       + diffVarName[var];   h_obs_t01_mm      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t01_mm        [var]->Sumw2();
 		histoname = "h_obs_t00_mm_"       + diffVarName[var];   h_obs_t00_mm      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t00_mm        [var]->Sumw2();
 		histoname = "h_obs_t11_em_"       + diffVarName[var];   h_obs_t11_em      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_em        [var]->Sumw2();
 		histoname = "h_obs_t10_em_"       + diffVarName[var];   h_obs_t10_em      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t10_em        [var]->Sumw2();
@@ -12387,6 +12388,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		histoname = "h_obs_t00_em_"       + diffVarName[var];   h_obs_t00_em      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t00_em        [var]->Sumw2();
 		histoname = "h_obs_t11_ee_"       + diffVarName[var];   h_obs_t11_ee      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_ee        [var]->Sumw2();
 		histoname = "h_obs_t10_ee_"       + diffVarName[var];   h_obs_t10_ee      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t10_ee        [var]->Sumw2();
+		histoname = "h_obs_t01_ee_"       + diffVarName[var];   h_obs_t01_ee      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t01_ee        [var]->Sumw2();
 		histoname = "h_obs_t00_ee_"       + diffVarName[var];   h_obs_t00_ee      .push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t00_ee        [var]->Sumw2();
 		histoname = "h_obs_t11_ee_BB_os_" + diffVarName[var];   h_obs_t11_ee_BB_os.push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_ee_BB_os  [var]->Sumw2();
 		histoname = "h_obs_t11_ee_EB_os_" + diffVarName[var];   h_obs_t11_ee_EB_os.push_back( new TH1D(   histoname , histoname , nbins[var],  bins[var] ));   h_obs_t11_ee_EB_os  [var]->Sumw2();
@@ -12549,7 +12551,8 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 						}
 						if (Flavor == 0) {
 							if (TLCat == 0)               h_obs_t11_mm[var]->Fill(diffVar, 1);
-							if (TLCat == 1 || TLCat == 2) h_obs_t10_mm[var]->Fill(diffVar, 1);
+							if (TLCat == 1)               h_obs_t10_mm[var]->Fill(diffVar, 1);
+							if (TLCat == 2)               h_obs_t01_mm[var]->Fill(diffVar, 1);
 							if (TLCat == 3)               h_obs_t00_mm[var]->Fill(diffVar, 1);
 						}
 						if (Flavor == 1) {
@@ -12560,7 +12563,8 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 						}
 						if (Flavor == 2) {
 							if (TLCat == 0)               h_obs_t11_ee[var]->Fill(diffVar, 1);
-							if (TLCat == 1 || TLCat == 2) h_obs_t10_ee[var]->Fill(diffVar, 1);
+							if (TLCat == 1)               h_obs_t10_ee[var]->Fill(diffVar, 1);
+							if (TLCat == 2)               h_obs_t01_ee[var]->Fill(diffVar, 1);
 							if (TLCat == 3)               h_obs_t00_ee[var]->Fill(diffVar, 1);
 						}
 					}
@@ -12706,8 +12710,8 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 			FR->setMPRatio(mupratio_data, mupratio_data_e);
 			FR->setEPRatio(elpratio_data, elpratio_data_e);
 			
-			FR->setMMNtl(h_obs_t11_mm[var]->GetBinContent(b+1), h_obs_t10_mm[var]->GetBinContent(b+1)                                       , h_obs_t00_mm[var]->GetBinContent(b+1));
-			FR->setEENtl(h_obs_t11_ee[var]->GetBinContent(b+1), h_obs_t10_ee[var]->GetBinContent(b+1)                                       , h_obs_t00_ee[var]->GetBinContent(b+1));
+			FR->setMMNtl(h_obs_t11_mm[var]->GetBinContent(b+1), h_obs_t10_mm[var]->GetBinContent(b+1), h_obs_t01_mm[var]->GetBinContent(b+1), h_obs_t00_mm[var]->GetBinContent(b+1));
+			FR->setEENtl(h_obs_t11_ee[var]->GetBinContent(b+1), h_obs_t10_ee[var]->GetBinContent(b+1)  h_obs_t01_ee[var]->GetBinContent(b+1), h_obs_t00_ee[var]->GetBinContent(b+1));
 			FR->setEMNtl(h_obs_t11_em[var]->GetBinContent(b+1), h_obs_t10_em[var]->GetBinContent(b+1), h_obs_t01_em[var]->GetBinContent(b+1), h_obs_t00_em[var]->GetBinContent(b+1));
 			
 			float fake_nPass = h_pred_fake[var]->GetBinContent(b+1);
@@ -12854,7 +12858,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		delete h_pred_fake[var], h_pred_fake_mm[var], h_pred_fake_em[var], h_pred_fake_ee[var], h_pred_chmid[var], h_pred_chmid_npass[var], h_pred_rare[var], h_pred_rare_npass[var], h_pred_wz[var], h_pred_wz_npass[var], h_pred_ttz[var], h_pred_ttz_npass[var], h_pred_ttw[var], h_pred_ttw_npass[var], h_bg_tot[var], h_bg_tot_npass[var];
 		delete hs_pred[var];
 		for (map<TString,TH1F*>::iterator it = h_pred_rare_samples[var].begin(); it != h_pred_rare_samples[var].end(); it++) delete it->second;
-		delete h_obs[var], h_obs_t11_mm[var], h_obs_t10_mm[var], h_obs_t00_mm[var], h_obs_t11_em[var], h_obs_t10_em[var], h_obs_t01_em[var], h_obs_t00_em[var], h_obs_t11_ee[var], h_obs_t10_ee[var], h_obs_t00_ee[var], h_obs_t11_ee_BB_os[var], h_obs_t11_ee_EB_os[var], h_obs_t11_ee_EE_os[var], h_obs_t11_em_BB_os[var], h_obs_t11_em_EE_os[var];
+		delete h_obs[var], h_obs_t11_mm[var], h_obs_t10_mm[var], h_obs_t01_mm[var], h_obs_t00_mm[var], h_obs_t11_em[var], h_obs_t10_em[var], h_obs_t01_em[var], h_obs_t00_em[var], h_obs_t11_ee[var], h_obs_t10_ee[var], h_obs_t01_ee[var], h_obs_t00_ee[var], h_obs_t11_ee_BB_os[var], h_obs_t11_ee_EB_os[var], h_obs_t11_ee_EE_os[var], h_obs_t11_em_BB_os[var], h_obs_t11_em_EE_os[var];
 	} // end loop over variables
 	fOUTSTREAM .close();
 	fOUTSTREAM2.close();
