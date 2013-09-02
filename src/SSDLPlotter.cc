@@ -12346,7 +12346,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	vector<TH1F*> h_pred_fake, h_pred_fake_mm, h_pred_fake_em, h_pred_fake_ee, h_pred_chmid, h_pred_chmid_npass, h_pred_rare, h_pred_rare_npass, h_pred_wz, h_pred_wz_npass, h_pred_ttz, h_pred_ttz_npass, h_pred_ttw, h_pred_ttw_npass, h_bg_tot, h_bg_tot_npass;
 	vector<THStack*> hs_pred;
 	vector< std::map<TString , TH1F* > > h_pred_rare_samples;
-	vector<TH1D*> h_obs, h_obs_t11_mm, h_obs_t10_mm, h_obs_t00_mm, h_obs_t11_em, h_obs_t10_em, h_obs_t01_em, h_obs_t00_em, h_obs_t11_ee, h_obs_t10_ee, h_obs_t00_ee, h_obs_t11_ee_BB_os, h_obs_t11_ee_EB_os, h_obs_t11_ee_EE_os, h_obs_t11_em_BB_os, h_obs_t11_em_EE_os;
+	vector<TH1D*> h_obs, h_obs_t11_mm, h_obs_t10_mm, h_obs_t01_mm, h_obs_t00_mm, h_obs_t11_em, h_obs_t10_em, h_obs_t01_em, h_obs_t00_em, h_obs_t11_ee, h_obs_t10_ee, h_obs_t01_ee, h_obs_t00_ee, h_obs_t11_ee_BB_os, h_obs_t11_ee_EB_os, h_obs_t11_ee_EE_os, h_obs_t11_em_BB_os, h_obs_t11_em_EE_os;
 	TString histoname;
 
 	for (int var = 0; var < diffVarName.size(); var++) {
@@ -12711,7 +12711,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 			FR->setEPRatio(elpratio_data, elpratio_data_e);
 			
 			FR->setMMNtl(h_obs_t11_mm[var]->GetBinContent(b+1), h_obs_t10_mm[var]->GetBinContent(b+1), h_obs_t01_mm[var]->GetBinContent(b+1), h_obs_t00_mm[var]->GetBinContent(b+1));
-			FR->setEENtl(h_obs_t11_ee[var]->GetBinContent(b+1), h_obs_t10_ee[var]->GetBinContent(b+1)  h_obs_t01_ee[var]->GetBinContent(b+1), h_obs_t00_ee[var]->GetBinContent(b+1));
+			FR->setEENtl(h_obs_t11_ee[var]->GetBinContent(b+1), h_obs_t10_ee[var]->GetBinContent(b+1), h_obs_t01_ee[var]->GetBinContent(b+1), h_obs_t00_ee[var]->GetBinContent(b+1));
 			FR->setEMNtl(h_obs_t11_em[var]->GetBinContent(b+1), h_obs_t10_em[var]->GetBinContent(b+1), h_obs_t01_em[var]->GetBinContent(b+1), h_obs_t00_em[var]->GetBinContent(b+1));
 			
 			float fake_nPass = h_pred_fake[var]->GetBinContent(b+1);
