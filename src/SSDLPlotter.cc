@@ -486,8 +486,8 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-//	makeTTWDiffPredictionsSigEvent();
-//	makeTTWKinPlotsSigEvent();
+	makeTTWDiffPredictionsSigEvent();
+	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -525,8 +525,8 @@ void SSDLPlotter::doAnalysis(){
 
 //	makeTTWIntPredictionsSigEvent();
 
-	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
-	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
+//	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
+//	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
 	
 //	makeTTWNLOPlots();
 	
