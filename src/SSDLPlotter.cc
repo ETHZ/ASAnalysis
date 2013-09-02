@@ -12805,7 +12805,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		hs_pred[var]->GetYaxis()->SetTitleOffset(1.25);
 		hs_pred[var]->GetXaxis()->SetTitleOffset(1.065);
 		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
-			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", i-1));
+			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", (int)bins[var][i-1]));
 			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
 			hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
 			hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
