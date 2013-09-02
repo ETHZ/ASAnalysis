@@ -15732,10 +15732,10 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		// allLabel = "all (++)";
 	}
 	
-	h_pred_fake->SetBinContent(1, npf_ee+         nff_ee);
-	h_pred_fake->SetBinContent(2, npf_mm+         nff_mm);
+	h_pred_fake->SetBinContent(1, npf_ee+nfp_ee + nff_ee);
+	h_pred_fake->SetBinContent(2, npf_mm+nfp_mm + nff_mm);
 	h_pred_fake->SetBinContent(3, npf_em+nfp_em + nff_em);
-	if (addTotalBin) h_pred_fake->SetBinContent(4, npf_ee+npf_mm+npf_em+nfp_em + nff_ee+nff_mm+nff_em);
+	if (addTotalBin) h_pred_fake->SetBinContent(4, npf_ee+nfp_ee+npf_mm+nfp_mm+npf_em+nfp_em + nff_ee+nff_mm+nff_em);
 	h_pred_fake->GetXaxis()->SetBinLabel(1, eeLabel);
 	h_pred_fake->GetXaxis()->SetBinLabel(2, mmLabel);
 	h_pred_fake->GetXaxis()->SetBinLabel(3, emLabel);
