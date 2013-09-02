@@ -122,12 +122,12 @@ TString SSDLDumper::KinPlots::axis_label[SSDLDumper::gNKinVars] = {"H_{T} [GeV]"
 //////////////////////////////////////////////////////////////////////////////////
 double SSDLDumper::gDiffHTBins  [gNDiffHTBins+1]   = { 0., 100., 200., 320., 400., 500., 600.};
 double SSDLDumper::gDiffMETBins [gNDiffMETBins+1]  = { 0.,   20.,  40.,  60.,  80., 100., 120.};
-double SSDLDumper::gDiffNJBins  [gNDiffNJBins+1]   = { 0.,    1.,   2.,   3.,   4.,   5.,   6.}; // fill NJets + 0.5 to hit the right bin
+double SSDLDumper::gDiffNJBins  [gNDiffNJBins+1]   = { 3.,   4.,   5.,   6.}; // fill NJets + 0.5 to hit the right bin
 double SSDLDumper::gDiffMT2Bins [gNDiffMT2Bins+1]  = { 0.,   25.,  50., 100.                  };
 double SSDLDumper::gDiffPT1Bins [gNDiffPT1Bins+1]  = { 20., 40., 60., 80., 100., 120., 140., 160., 180., 200.};
 double SSDLDumper::gDiffPT2Bins [gNDiffPT2Bins+1]  = { 20., 30., 40., 50.,  60.,  70.,  80.,  90., 100.      };
 double SSDLDumper::gDiffNBJBins [gNDiffNBJBins+1]  = { 0., 1., 2., 3., 4.};
-double SSDLDumper::gDiffNBJMBins[gNDiffNBJMBins+1] = { 0., 1., 2., 3.    };
+double SSDLDumper::gDiffNBJMBins[gNDiffNBJMBins+1] = { 1., 2., 3.    };
 double SSDLDumper::gDiffMET3Bins[gNDiffMET3Bins+1] = {80., 90., 100., 110., 120., 140., 160., 180., 200., 250.};
 double SSDLDumper::gDiffMET2Bins[gNDiffMET2Bins+1] = {120., 140., 160., 180., 200., 250., 300.};
 

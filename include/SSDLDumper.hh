@@ -55,12 +55,12 @@ public:
 	static const int gNDiffMETBins  = 6;
 	static const int gNDiffMET2Bins = 6;
 	static const int gNDiffMET3Bins = 9;
-	static const int gNDiffNJBins   = 6;
+	static const int gNDiffNJBins   = 3;
 	static const int gNDiffMT2Bins  = 3;
 	static const int gNDiffPT1Bins  = 9;
 	static const int gNDiffPT2Bins  = 8;
 	static const int gNDiffNBJBins  = 4;
-	static const int gNDiffNBJMBins = 3;
+	static const int gNDiffNBJMBins = 2;
 
 	static double gDiffHTBins  [gNDiffHTBins+1];
 	static double gDiffMETBins [gNDiffMETBins+1];
