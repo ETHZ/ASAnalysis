@@ -486,7 +486,7 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-	makeTTWDiffPredictionsSigEvent();
+//	makeTTWDiffPredictionsSigEvent();
 //	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
@@ -523,7 +523,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
 //	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
 
-//	makeTTWIntPredictionsSigEvent();
+	makeTTWIntPredictionsSigEvent();
 
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
@@ -10768,13 +10768,13 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	map< TString, TTWZPrediction > ttwzpreds_plpl, ttwzpreds_mimi;
 
 	// cuts
-	float  minHT_plpl(150.);
-	float  minPt_plpl( 36.);
+	float  minHT_plpl(245.);
+	float  minPt_plpl( 26.);
 	int    minNJ_plpl(  3 );
 	int   minNbJ_plpl(  1 );
 	float minMET_plpl(  0.);
-	float  minHT_mimi(135.);
-	float  minPt_mimi( 29.);
+	float  minHT_mimi(280.);
+	float  minPt_mimi( 27.);
 	int    minNJ_mimi(  3 );
 	int   minNbJ_mimi(  1 );
 	float minMET_mimi(  0.);
