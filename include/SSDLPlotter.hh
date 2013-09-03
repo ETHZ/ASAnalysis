@@ -301,6 +301,7 @@ public:
 	void makeRatioPlots(gChannel);
 	void make2DRatioPlots(gChannel);
 	void makeNTightLoosePlots(gChannel);
+	void makeNTightLoosePlots(gChannel, gFPSwitch, bool);
 	void makeFakeGenIDTables();
 	void makeFakeGenIDTable(vector<int>, gChannel, gFPSwitch, TString);
 	void makeMIDIsolationPlots(gChannel chan, gFPSwitch);
