@@ -6308,16 +6308,32 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	wjets_samples.push_back(WJets);
 	zjets_samples.push_back(DYJets);
 
-	TH2D *H_nloose_qcd   = new TH2D("NLooseQCD"  , "NLoose QCD"  , getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_qcd->Sumw2();
-	TH2D *H_nloose_wjets = new TH2D("NLooseWJets", "NLoose WJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_wjets->Sumw2();
-	TH2D *H_nloose_zjets = new TH2D("NLooseZJets", "NLoose ZJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_zjets->Sumw2();
-	TH2D *H_ntight       = new TH2D("NTight"     , "NTight Muons", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight->Sumw2();
+	TH2D *H_nloose_qcd  ;
+	TH2D *H_nloose_wjets;
+	TH2D *H_nloose_zjets;
+	TH2D *H_ntight      ;
+	if (fp == SigSup) {
+		H_nloose_qcd   = new TH2D("NLooseQCD"  , "NLoose QCD"  , getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_qcd  ->Sumw2();
+		H_nloose_wjets = new TH2D("NLooseWJets", "NLoose WJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_wjets->Sumw2();
+		H_nloose_zjets = new TH2D("NLooseZJets", "NLoose ZJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_zjets->Sumw2();
+		H_ntight_qcd   = new TH2D("NTightQCD"  , "NTight QCD"  , getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_qcd  ->Sumw2();
+		H_ntight_wjets = new TH2D("NTightWJets", "NTight WJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_wjets->Sumw2();
+		H_ntight_zjets = new TH2D("NTightZJets", "NTight ZJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_zjets->Sumw2();
+	}
+	if (fp == ZDecay) {
+		H_nloose_qcd   = new TH2D("NLooseQCD"  , "NLoose QCD"  , getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_qcd->Sumw2();
+		H_nloose_wjets = new TH2D("NLooseWJets", "NLoose WJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_wjets->Sumw2();
+		H_nloose_zjets = new TH2D("NLooseZJets", "NLoose ZJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_zjets->Sumw2();
+		H_ntight_qcd   = new TH2D("NTightQCD"  , "NTight QCD"  , getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_qcd  ->Sumw2();
+		H_ntight_wjets = new TH2D("NTightWJets", "NTight WJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_wjets->Sumw2();
+		H_ntight_zjets = new TH2D("NTightZJets", "NTight ZJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_zjets->Sumw2();
+	}
 	TH1D *H_ntight_nv = new TH1D("NTight_NV", "NTight Muons NV", 18, 0., 36.); H_ntight_nv->Sumw2();
 	TH1D *H_nloose_nv = new TH1D("NLoose_NV", "NLoose Muons NV", 18, 0., 36.); H_nloose_nv->Sumw2();
 
-	getPassedTotal(qcd_samples  , chan, fp, H_ntight, H_nloose_qcd  , H_ntight_nv, H_nloose_nv, output);
-	getPassedTotal(wjets_samples, chan, fp, H_ntight, H_nloose_wjets, H_ntight_nv, H_nloose_nv, output);
-	getPassedTotal(zjets_samples, chan, fp, H_ntight, H_nloose_zjets, H_ntight_nv, H_nloose_nv, output);
+	getPassedTotal(qcd_samples  , chan, fp, H_ntight_qcd  , H_nloose_qcd  , H_ntight_nv, H_nloose_nv, output);
+	getPassedTotal(wjets_samples, chan, fp, H_ntight_wjets, H_nloose_wjets, H_ntight_nv, H_nloose_nv, output);
+	getPassedTotal(zjets_samples, chan, fp, H_ntight_zjets, H_nloose_zjets, H_ntight_nv, H_nloose_nv, output);
 
 	TH1D *h_loosept_qcd    = H_nloose_qcd  ->ProjectionX();
 	TH1D *h_loosept_wjets  = H_nloose_wjets->ProjectionX();
@@ -6351,6 +6367,10 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	h_looseeta_wjets->SetLineWidth(1);
 	h_looseeta_zjets->SetLineWidth(1);
 
+	hs_loosept->GetYaxis()->SetTitleSize(0.04);
+	hs_loosept->GetYaxis()->SetLabelSize(0.04);
+	hs_loosept->GetYaxis()->SetTitle("p_{T} GeV");
+
 	TLegend *leg = new TLegend(0.70,0.62,0.90,0.88);
 	leg->AddEntry(h_loosept_qcd  , "QCD"   , "f");
 	leg->AddEntry(h_loosept_wjets, "W+Jets", "f");
@@ -6368,7 +6388,7 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	leg->Draw();
 	drawTopLineSim(0.56, 0.8);
 		
-	TString filename = "NLoose";
+	TString filename = "NLoosePt";
 	Util::PrintPDF (c_temp,   filename , fOutputDir + fOutputSubDir);
 	Util::PrintPNG (c_temp,   filename , fOutputDir + fOutputSubDir);
 
