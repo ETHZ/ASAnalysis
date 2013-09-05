@@ -7960,7 +7960,6 @@ void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_r
   float ospair_e(0.), sspair_e(0.);
   for (size_t i=0; i<samples.size(); ++i){
     Sample *S = fSamples[samples[i]];
-//	cout << "processing sample " << S->sname << ".." << endl;
 
     float scale = fLumiNorm/S->getLumi(); // Normalize all
     if(S->datamc == 0) scale = 1;    
@@ -7989,7 +7988,6 @@ void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_r
     }
   }
   
-  cout << "ratioWithBinomErrors( " << sspair <<", " << ospair << ", " << chmid << ", " << chmide << ");" << endl;
   ratioWithBinomErrors(sspair, ospair, chmid, chmide);
 	cout << "n sspair: " << sspair << endl;
 	cout << "n ospair: " << ospair << endl;
@@ -12422,17 +12420,24 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
 
@@ -12500,6 +12505,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	if (region_sel == 4) fOutputSubDir = "DiffPredictionSigEventTree/3J0bJ/";
 	if (region_sel == 5) fOutputSubDir = "DiffPredictionSigEventTree/1J0bJ/";
 	if (region_sel == 6) fOutputSubDir = "DiffPredictionSigEventTree/0J0bJ/";
+	if (region_sel == 7) fOutputSubDir = "DiffPredictionSigEventTree/3J1bJ/";
 
 //	gApplyZVeto = true;
 //	if (gApplyZVeto) {
@@ -12624,6 +12630,17 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		minNjets   =   0 , maxNjets   =    99 ;
 		minNbjetsL =   0 , maxNbjetsL =    99 ;
 		minNbjetsM =   0 , maxNbjetsM =    99 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 7) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   3 , maxNjets   =    99 ;
+		minNbjetsL =   1 , maxNbjetsL =    99 ;
+		minNbjetsM =   1 , maxNbjetsM =    99 ;
 		minPt1     =  20., maxPt1     =  8000.;
 		minPt2     =  20., maxPt2     =  8000.;
 		minMll     =   8.; // 8.
