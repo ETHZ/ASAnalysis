@@ -353,13 +353,25 @@ void SSDLPlotter::init(TString filename){
 	fMuData    .push_back(DoubleMu3);
 	fMuData    .push_back(DoubleMu4);
 	fMuData    .push_back(DoubleMu5);
+	fMuData    .push_back(DoubleMu6);
+
+//	fEGData    .push_back(DoubleEle1);
+//	fEGData    .push_back(DoubleEle1a);
+//	fEGData    .push_back(DoubleEle2);
+//	fEGData    .push_back(DoubleEle3);
+//	fEGData    .push_back(DoubleEle4);
+//	fEGData    .push_back(DoubleEle5);
 
 	fEGData    .push_back(DoubleEle1);
 	fEGData    .push_back(DoubleEle1a);
 	fEGData    .push_back(DoubleEle2);
+	fEGData    .push_back(DoubleEle2a);
 	fEGData    .push_back(DoubleEle3);
 	fEGData    .push_back(DoubleEle4);
+	fEGData    .push_back(DoubleEle4a);
 	fEGData    .push_back(DoubleEle5);
+	fEGData    .push_back(DoubleEle6);
+	fEGData    .push_back(DoubleEle6a);
 
 	fMuEGData  .push_back(MuEG1);
 	fMuEGData  .push_back(MuEG1a);
@@ -367,6 +379,7 @@ void SSDLPlotter::init(TString filename){
 	fMuEGData  .push_back(MuEG3);
 	fMuEGData  .push_back(MuEG4);
 	fMuEGData  .push_back(MuEG5);
+	fMuEGData  .push_back(MuEG6);
 
 	// OTHER SAMPLES:
        	fHighPtData.push_back(DoubleMu1);
@@ -375,13 +388,18 @@ void SSDLPlotter::init(TString filename){
 	fHighPtData.push_back(DoubleMu3);
 	fHighPtData.push_back(DoubleMu4);
 	fHighPtData.push_back(DoubleMu5);
+	fHighPtData.push_back(DoubleMu6);
 
 	fHighPtData.push_back(DoubleEle1);
 	fHighPtData.push_back(DoubleEle1a);
 	fHighPtData.push_back(DoubleEle2);
+	fHighPtData.push_back(DoubleEle2a);
 	fHighPtData.push_back(DoubleEle3);
 	fHighPtData.push_back(DoubleEle4);
+	fHighPtData.push_back(DoubleEle4a);
 	fHighPtData.push_back(DoubleEle5);
+	fHighPtData.push_back(DoubleEle6);
+	fHighPtData.push_back(DoubleEle6a);
 
 	fHighPtData.push_back(MuEG1);
 	fHighPtData.push_back(MuEG1a);
@@ -389,6 +407,7 @@ void SSDLPlotter::init(TString filename){
 	fHighPtData.push_back(MuEG3);
 	fHighPtData.push_back(MuEG4);
 	fHighPtData.push_back(MuEG5);
+	fHighPtData.push_back(MuEG6);
 }
 void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
         // This macro runs over the the SMS scans 
@@ -571,10 +590,10 @@ void SSDLPlotter::doAnalysis(){
 }
 void SSDLPlotter::showStatusBar(int nEvent, int nEvents, int updateIntervall, bool show, bool makeNewLine) {
 	if (nEvent+1 >= nEvents) nEvent++;
-	cout.precision(3);
+//	cout.precision(3);
 	int percentageLength = 50;
 //	if (nEvent%(int)updateIntervall == 0 || nEvent >= nEvents-1 || show){
-	if (nEvent%(nEvents/100) == 0 || nEvent >= nEvents-1 || show){
+	if (nEvent%(nEvents/10) == 0 || nEvent >= nEvents-1 || show){
 		double percentage = (double)(nEvent)/(double)nEvents*(double)100;
 		cout << "\rfinished with " << setw(8) << nEvent << " of " << setw(10) << nEvents << ": " << setw(6) << std::setprecision(2) << fixed << percentage << "%\t\tSTATUS:\t\t";
 		for (int i=0;i<percentageLength;i++)
@@ -7935,11 +7954,13 @@ TH1D* SSDLPlotter::getFRatio(vector<int> samples, gChannel chan, int ratiovar, b
 }
 //____________________________________________________________________________
 void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_reg, float &chmid, float &chmide){
+	cout << "SSDLPlotter::calculateChMisIdProb" << endl;
   
   float ospair(0.),   sspair(0.);
   float ospair_e(0.), sspair_e(0.);
   for (size_t i=0; i<samples.size(); ++i){
     Sample *S = fSamples[samples[i]];
+//	cout << "processing sample " << S->sname << ".." << endl;
 
     float scale = fLumiNorm/S->getLumi(); // Normalize all
     if(S->datamc == 0) scale = 1;    
@@ -7968,12 +7989,17 @@ void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_r
     }
   }
   
+  cout << "ratioWithBinomErrors( " << sspair <<", " << ospair << ", " << chmid << ", " << chmide << ");" << endl;
   ratioWithBinomErrors(sspair, ospair, chmid, chmide);
+	cout << "n sspair: " << sspair << endl;
+	cout << "n ospair: " << ospair << endl;
   
   // Divide to get the per-electron probability...
   chmid  = chmid  / 2.;
   chmide = chmide / 2.;
   
+	cout << "charge mis-ID probability: " << chmid << " +/- " << chmide << endl;
+
   return;
 }
 
@@ -12387,12 +12413,26 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	diffVarName.push_back("NVrtx"  );   nbins.push_back(          40 );   bins.push_back(               NVrtxbins );   xAxisTitle.push_back("N_{Vertices}"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("minMT"  );   nbins.push_back(          20 );   bins.push_back(               minMTbins );   xAxisTitle.push_back("M_{T}"                                );   yAxisTitle.push_back("Events"          );
 
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, -1);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3);
+	// region_sel = 2 2J 1bJ
+	// region_sel = 3 2J 0bJ
+	// region_sel = 4 3J 0bJ
+	// region_sel = 5 1J 0bJ
+	// region_sel = 6 0J 0bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, -1,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
 
@@ -12455,8 +12495,11 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	cout << endl;
 	fOutputSubDir = "DiffPredictionSigEventTree/";
 	if (region_sel == 1) fOutputSubDir = "DiffPredictionSigEventTree/FinalSel/";
-	if (region_sel == 2) fOutputSubDir = "DiffPredictionSigEventTree/LoosePreSel/";
-	if (region_sel == 3) fOutputSubDir = "DiffPredictionSigEventTree/LooserPreSel/";
+	if (region_sel == 2) fOutputSubDir = "DiffPredictionSigEventTree/2J1bJ/";
+	if (region_sel == 3) fOutputSubDir = "DiffPredictionSigEventTree/2J0bJ/";
+	if (region_sel == 4) fOutputSubDir = "DiffPredictionSigEventTree/3J0bJ/";
+	if (region_sel == 5) fOutputSubDir = "DiffPredictionSigEventTree/1J0bJ/";
+	if (region_sel == 6) fOutputSubDir = "DiffPredictionSigEventTree/0J0bJ/";
 
 //	gApplyZVeto = true;
 //	if (gApplyZVeto) {
@@ -12518,7 +12561,6 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	
 	// only take half the events for ++/--
 	float chargeFactor = chVeto ? 0.5:1.;
-	cout << "chVeto: " << chVeto << endl;
 
 	// preselection
 	int   systflag  (  0 );
@@ -12547,6 +12589,39 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		minHT      =   0., maxHT      =  8000.;
 		minMET     =   0., maxMET     =  8000.;
 		minNjets   =   2 , maxNjets   =    99 ;
+		minNbjetsL =   0 , maxNbjetsL =    99 ;
+		minNbjetsM =   0 , maxNbjetsM =    99 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 4) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   3 , maxNjets   =    99 ;
+		minNbjetsL =   0 , maxNbjetsL =    99 ;
+		minNbjetsM =   0 , maxNbjetsM =    99 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 5) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   1 , maxNjets   =    99 ;
+		minNbjetsL =   0 , maxNbjetsL =    99 ;
+		minNbjetsM =   0 , maxNbjetsM =    99 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 6) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   0 , maxNjets   =    99 ;
 		minNbjetsL =   0 , maxNbjetsL =    99 ;
 		minNbjetsM =   0 , maxNbjetsM =    99 ;
 		minPt1     =  20., maxPt1     =  8000.;
@@ -12610,10 +12685,10 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	calculateChMisIdProb(fEGData, EB, feb, febE);
 	calculateChMisIdProb(fEGData, EE, fee, feeE);
 
-	cout << "charge mis-ID probability:" << endl;
-	cout << "fbb: " << fbb << " +/- " << fbbE << endl;
-	cout << "feb: " << feb << " +/- " << febE << endl;
-	cout << "fee: " << fee << " +/- " << feeE << endl;
+//	cout << "charge mis-ID probability:" << endl;
+//	cout << "fbb: " << fbb << " +/- " << fbbE << endl;
+//	cout << "feb: " << feb << " +/- " << febE << endl;
+//	cout << "fee: " << fee << " +/- " << feeE << endl;
 	
 	calculateChMisIdProb(fMCBG, BB, fbb_mc, fbbE_mc);
 	calculateChMisIdProb(fMCBG, EB, feb_mc, febE_mc);
@@ -15542,7 +15617,8 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		}
 		
 //		if (passes3rdSFLepVeto == 0) continue;
-		if (gApplyZVeto && passZVeto == 0)  continue;
+//		if (gApplyZVeto && passZVeto == 0)  continue;
+		if (gApplyZVeto && Flavor < 3 && passZVeto == 0)  continue; // do not apply Z veto on OS
 
 		// GET ALL DATA EVENTS
 		if(SType < 3) {             // 0,1,2 are DoubleMu, DoubleEle, MuEG
