@@ -485,7 +485,9 @@ void SSDLDumper::loopEvents(Sample *S){
 	fDoCounting = true;
 	if(S->datamc == 0){
 		TString eventfilename  = fOutputDir + S->sname + "_SignalEvents.txt";
+//		TString mllfilename    = fOutputDir + S->sname + "_mll.txt";
 		fOUTSTREAM.open(eventfilename.Data(), ios::trunc);		
+//		fOUTSTREAM2.open(mllfilename .Data(), ios::trunc);
 //SIGEVENTS PRINTOUT		for(regIt = gRegions.begin(); regIt != gRegions.end(); regIt++) {
 //SIGEVENTS PRINTOUT			TString allRegionSigEvents  = fOutputDir + S->sname + "_SignalEvents_"+(*regIt)->sname+".txt";
 //SIGEVENTS PRINTOUT			(*regIt)->regionOutstream.open(allRegionSigEvents.Data(), ios::trunc);		
@@ -686,6 +688,7 @@ void SSDLDumper::loopEvents(Sample *S){
 
 	if(S->datamc == 0){
 		 fOUTSTREAM.close();
+//		 fOUTSTREAM2.close();
 //SIGEVENTS PRINTOUT		 for(regIt = gRegions.begin(); regIt != gRegions.end(); regIt++) {
 //SIGEVENTS PRINTOUT			//outStreamMap[(*regIt)->sname].close();
 //SIGEVENTS PRINTOUT			(*regIt)->regionOutstream.close();
@@ -6203,13 +6206,17 @@ bool SSDLDumper::isZElElChMisIdEvent(int &el1, int &el2){
 	if (!isTightElectron(el2))          return false;
 	if (getMET() > 30.)                 return false;
 	if (ElMT[0] > 25.)                  return false;
-//	if (getNJets() < 2)                 return false;
+	if (getNJets() < 1)                 return false;
 	
 	TLorentzVector p1, p2;
 	p1.SetPtEtaPhiM(ElPt[el1], ElEta[el1], ElPhi[el1], gMEL);
 	p2.SetPtEtaPhiM(ElPt[el2], ElEta[el2], ElPhi[el2], gMEL);
 	double m = (p1+p2).M();
 	if(fabs(gMZ - m) > 15.)             return false;
+
+//	int isSS(0);
+//	if (ElCharge[el1] == ElCharge[el2]) isSS = 1;
+//	fOUTSTREAM2 << isSS << " " << m << endl;
 	
 	setHypLepton1(el1, Elec);
 	setHypLepton2(el2, Elec);
