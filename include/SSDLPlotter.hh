@@ -339,6 +339,7 @@ public:
 	void makeTTWDiffPredictionsSigEvent();
 //	void makeTTWDiffPredictionSigEvent(TString, int, double*);
 	void makeTTWDiffPredictionSigEvent(vector<TString>, vector<int>, vector<double*>, vector<TString>, vector<TString>, int = -1, int = 0, int = 0);
+	void makeTTWDiffPredictionSigEvent(vector<TString>, vector<int>, vector<double>, vector<double>, vector<TString>, vector<TString>, int = -1, int = 0, int = 0);
 	TTWZPrediction makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw=false, int flag=0);
 	void makeTTWKinPlotsSigEvent();
 	void makeTTWKinPlotSigEvent(vector<TString>, vector<int>, vector<double>, vector<double>, vector<TString>, vector<TString>, int = -1, int = 0);
