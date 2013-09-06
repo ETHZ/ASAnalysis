@@ -510,8 +510,8 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-	makeTTWDiffPredictionsSigEvent();
-//	makeTTWKinPlotsSigEvent();
+//	makeTTWDiffPredictionsSigEvent();
+	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -12434,12 +12434,15 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
 
 	return;
 	diffVarName.clear();
@@ -12499,13 +12502,13 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	}
 	cout << endl;
 	fOutputSubDir = "DiffPredictionSigEventTree/";
-	if (region_sel == 1) fOutputSubDir = "DiffPredictionSigEventTree/FinalSel/";
-	if (region_sel == 2) fOutputSubDir = "DiffPredictionSigEventTree/2J1bJ/";
-	if (region_sel == 3) fOutputSubDir = "DiffPredictionSigEventTree/2J0bJ/";
-	if (region_sel == 4) fOutputSubDir = "DiffPredictionSigEventTree/3J0bJ/";
-	if (region_sel == 5) fOutputSubDir = "DiffPredictionSigEventTree/1J0bJ/";
-	if (region_sel == 6) fOutputSubDir = "DiffPredictionSigEventTree/0J0bJ/";
-	if (region_sel == 7) fOutputSubDir = "DiffPredictionSigEventTree/3J1bJ/";
+	if (region_sel == 1)  fOutputSubDir = "DiffPredictionSigEventTree/FinalSel/";
+	if (region_sel == 2)  fOutputSubDir = "DiffPredictionSigEventTree/2J1bJ/";
+	if (region_sel == 3)  fOutputSubDir = "DiffPredictionSigEventTree/2J0bJ/";
+	if (region_sel == 4)  fOutputSubDir = "DiffPredictionSigEventTree/3J0bJ/";
+	if (region_sel == 5)  fOutputSubDir = "DiffPredictionSigEventTree/1J0bJ/";
+	if (region_sel == 6)  fOutputSubDir = "DiffPredictionSigEventTree/0J0bJ/";
+	if (region_sel == 7)  fOutputSubDir = "DiffPredictionSigEventTree/3J1bJ/";
 
 //	gApplyZVeto = true;
 //	if (gApplyZVeto) {
@@ -12578,6 +12581,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	float minPt1    ( 20.), maxPt1    ( 8000.);
 	float minPt2    ( 20.), maxPt2    ( 8000.);
 	float minMll    (  8.); // 8.
+	bool tmp_applyZVeto = gApplyZVeto;
 
 	if (region_sel == 2) {
 		systflag   =   0 ;
@@ -12786,7 +12790,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
-	int passZVeto, passes3rdSFLepVeto;
+	int passZVeto, passes3rdVeto, passes3rdSFLepVeto;
 	float diffVar(-9999.);
 	string samplename;
 	TString flavorString = "";
@@ -12814,6 +12818,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
 	sigtree->SetBranchAddress("Mll",      &mll);
 	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+	sigtree->SetBranchAddress("Pass3rdVeto", &passes3rdVeto);
 	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
 	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
 	sigtree->SetBranchAddress("NVrtx", &NVrtx);
@@ -12832,7 +12837,8 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	sigtree->SetBranchAddress("MTLep2", &MTLep2);
 
 	float trigScale[3] = {gMMTrigScale, gEMTrigScale, gEETrigScale};
-	
+
+	flavorString = "_ALL";	
 	if (flavor_sel ==  0) flavorString = "_MM";	// MU-MU || E-MU || E-E
 	if (flavor_sel ==  1) flavorString = "_EM";
 	if (flavor_sel ==  2) flavorString = "_EE";
@@ -12848,7 +12854,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		
 		if( flag != systflag ) continue;
 
-		if (flavor_sel != -1 && ((Flavor < 3 && flavor_sel != Flavor) || (Flavor > 3 && flavor_sel+3 != Flavor))) continue;	// MU-MU || E-MU || E-E
+		if ( flavor_sel != -1 && ((Flavor < 3 && flavor_sel != Flavor) || (Flavor > 3 && flavor_sel+3 != Flavor))) continue;	// MU-MU || E-MU || E-E
 		if ( mll < minMll) continue;
 		if ( HT  < minHT  || HT  > maxHT)  continue;
 		if ( MET < minMET || MET > maxMET) continue;
@@ -12872,7 +12878,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 			if(pT2 < minPt2) continue;
 		}
 		if (gApplyZVeto && Flavor < 3 && passZVeto == 0)  continue; // do not apply Z veto on OS
-		
+
 		//		if (passes3rdSFLepVeto == 0) continue;
 	
 		for (int var = 0; var < diffVarName.size(); var++) {	
@@ -13279,6 +13285,13 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		gr_obs->Draw("P same");
 		
 		lat->SetTextSize(0.03);
+		if (flavor_sel == -1) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-E
+		if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
+		if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
+		if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
+		if (flavor_sel ==  3) lat->DrawLatex(0.14,0.85, "#mu#mu (OS)");
+		if (flavor_sel ==  4) lat->DrawLatex(0.14,0.85, "e#mu (OS)");
+		if (flavor_sel ==  5) lat->DrawLatex(0.14,0.85, "ee (OS)");
 		
 		drawTopLine(0.56, 0.8);
 		
@@ -13300,6 +13313,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	fOUTSTREAM3.close();
 	fOUTSTREAM4.close();
 	delete FR;
+	gApplyZVeto = tmp_applyZVeto;
 }
 //void SSDLPlotter::makeTTWClosureTestSigEvent(vector<TString> diffVarName, vector<int> nbins, vector<double*> bins, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel, int chVeto) {
 //void SSDLPlotter::makeTTWClosureTestSigEvent(int region_sel, int chVeto) {
@@ -16430,38 +16444,38 @@ void SSDLPlotter::makeTTWKinPlotsSigEvent() {
 
 
 
-	for (int i = -1; i < 6; i++) { // flavor loop
-//		if (i == -1) continue;
-		if (i > -1) continue;
-//		if (i ==  0) continue; // no same-sign MM events
-//		if (i ==  1) continue; // no same-sign EM events
-//		if (i ==  2) continue; // no same-sign EE events
-		if (i ==  3) continue; // no opposite-sign MM events
-		if (i ==  4) continue; // no opposite-sign EM events
-		if (i ==  5) continue; // no opposite-sign EE events
-		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, -1);
-	}
-	return;
-	
-	// ttbar enriched
-	cout << "ttbar enriched region.." << endl;
-	for (int i = -1; i < 6; i++) { // flavor loop
-//		if (i == -1) continue;
-		if (i > -1) continue;  // no splitting by flavor
-		if (i ==  0) continue; // no same-sign MM events
-		if (i ==  1) continue; // no same-sign EM events
-		if (i ==  2) continue; // no same-sign EE events
+//	for (int i = -1; i < 6; i++) { // flavor loop
+////		if (i == -1) continue;
+//		if (i > -1) continue;
+////		if (i ==  0) continue; // no same-sign MM events
+////		if (i ==  1) continue; // no same-sign EM events
+////		if (i ==  2) continue; // no same-sign EE events
 //		if (i ==  3) continue; // no opposite-sign MM events
 //		if (i ==  4) continue; // no opposite-sign EM events
 //		if (i ==  5) continue; // no opposite-sign EE events
-		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, 1);
-	}
+//		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, -1);
+//	}
 //	return;
+//	
+//	// ttbar enriched
+//	cout << "ttbar enriched region.." << endl;
+//	for (int i = -1; i < 6; i++) { // flavor loop
+////		if (i == -1) continue;
+//		if (i > -1) continue;  // no splitting by flavor
+//		if (i ==  0) continue; // no same-sign MM events
+//		if (i ==  1) continue; // no same-sign EM events
+//		if (i ==  2) continue; // no same-sign EE events
+////		if (i ==  3) continue; // no opposite-sign MM events
+////		if (i ==  4) continue; // no opposite-sign EM events
+////		if (i ==  5) continue; // no opposite-sign EE events
+//		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, 1);
+//	}
+////	return;
 	
 	// wz enriched
 	for (int i = -1; i < 6; i++) { // flavor loop
 //		if (i == -1) continue;
-		if (i > -1) continue;  // no splitting by flavor
+//		if (i > -1) continue;  // no splitting by flavor
 		if (i ==  0) continue; // no same-sign MM events
 		if (i ==  1) continue; // no same-sign EM events
 		if (i ==  2) continue; // no same-sign EE events
@@ -16601,6 +16615,8 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		minMll     =  8.; // 8.
 	}
 	
+	if (flavor_sel == -1) flavorString = "_ALL";
+	if (flavor_sel == -1 || wzEnr) flavorString = "_ALL_SF_OS";
 	if (flavor_sel ==  0) flavorString = "_MM";	// MU-MU || E-MU || E-E
 	if (flavor_sel ==  1) flavorString = "_EM";
 	if (flavor_sel ==  2) flavorString = "_EE";
@@ -17127,10 +17143,8 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		TCanvas *c_temp = new TCanvas("C_ObsMC", "Observed vs Monte Carlo", 0, 0, 600, 600);
 		//	c_temp->SetLeftMargin(0.12);
 		//	c_temp->SetRightMargin(0.04);
-		cout << "c_temp->cd()" << endl;
 		c_temp->cd();
 		
-		cout << "creating pads.." << endl;
 		TPad *p_plot  = new TPad("plotpad",  "Pad containing the plot", 0.00, border, 1.00, 1.00, 0, 0);
 		p_plot->SetBottomMargin(0.015);
 		p_plot->Draw();
@@ -17139,14 +17153,12 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		p_ratio->SetBottomMargin(0.35);
 		p_ratio->Draw();
 		
-		cout << "setup h_ratio.." << endl;
 		p_ratio->cd();
 		h_ratio[i]->GetYaxis()->SetNdivisions(505);
 		// setPlottingRange(h_ratio, 0.3);
 		h_ratio[i]->SetMaximum(1.99);
 		h_ratio[i]->SetMinimum(0.0);
 		h_ratio[i]->DrawCopy("E2 ");
-		cout << "TLine.." << endl;
 		TLine *l3 = new TLine(h_obs[i]->GetXaxis()->GetXmin(), 1.00, h_obs[i]->GetXaxis()->GetXmax(), 1.00);
 		l3->SetLineWidth(2);
 		l3->SetLineStyle(7);
@@ -17167,7 +17179,6 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		
 		lat->SetTextSize(0.03);
 		
-		cout << "DrawLatex" << endl;
 		if (flavor_sel == -1 && wzEnr) lat->DrawLatex(0.14,0.85, "ee/#mu#mu");	// MU-MU || E-MU || E-E
 		if (flavor_sel == -1 && !wzEnr) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-MU || E-E
 		if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
@@ -17183,14 +17194,9 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		
 		//	gPad->RedrawAxis();
 		// Util::PrintNoEPS(c_temp, "ObsPred_" + Region::sname[reg], fOutputDir + fOutputSubDir, NULL);
-		cout << "bla.." << endl;
-		cout << "diffVarName.size(): " << diffVarName.size() << endl;
-		cout << "diffVarName[" << i << "]+flavorString+chargeString" << endl;
-//		cout << diffVarName[i] << " + " << flavorString << " + " << chargeString << endl;
-		TString filename = diffVarName[i];
+		TString filename = diffVarName[i] + flavorString + chargeString;
 //		filename.Append(flavorString);
 //		filename.Append(chargeString);
-		cout << "filename: " << filename.Data() << endl;
 		Util::PrintPDF (c_temp,   filename , fOutputDir + fOutputSubDir);
 		Util::PrintPNG (c_temp,   filename , fOutputDir + fOutputSubDir);
 		//	Util::PrintROOT(c_temp,   diffVarName+sysString+chargeString , fOutputDir + fOutputSubDir);
