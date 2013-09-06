@@ -510,8 +510,8 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-//	makeTTWDiffPredictionsSigEvent();
-	makeTTWKinPlotsSigEvent();
+	makeTTWDiffPredictionsSigEvent();
+//	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -12385,7 +12385,8 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	double NbJbins[4] = {0., 1., 2., 3.};
 
 
-	double Mllbins[15]   = {20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300.};
+//	double Mllbins[15]   = {20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300.};
+	double Mllbins[20]   = {20.,  40.,  60.,  80., 84., 89, 91., 93., 95., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300.};
 	double NVrtxbins[41] = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.,  10.,  11.,  12.,  13.,  14.,  15.,  16.,  17.,  18.,  19.,  20.,  21.,  22.,  23.,  24.,  25.,  26.,  27.,  28.,  29.,  30.,  31.,  32.,  33.,  34.,  35.,  36.,  37.,  38.,  39.,  40.};
 	double minMTbins[21] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400.};
 
@@ -12407,7 +12408,8 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	diffVarName.push_back("pT1"    );   nbins.push_back(NDiffPT1Bins );   bins.push_back(SSDLDumper::gDiffPT1Bins );   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
 	diffVarName.push_back("pT2"    );   nbins.push_back(NDiffPT2Bins );   bins.push_back(SSDLDumper::gDiffPT2Bins );   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
 	diffVarName.push_back("Int"    );   nbins.push_back(           3 );   bins.push_back(                 intbins );   xAxisTitle.push_back(""                                );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("Mll"    );   nbins.push_back(          14 );   bins.push_back(                 Mllbins );   xAxisTitle.push_back("m_{ll} [GeV]"                                );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("Mll"    );   nbins.push_back(          14 );   bins.push_back(                 Mllbins );   xAxisTitle.push_back("m_{ll} [GeV]"                                );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("Mll"    );   nbins.push_back(          19 );   bins.push_back(                 Mllbins );   xAxisTitle.push_back("m_{ll} [GeV]"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("NVrtx"  );   nbins.push_back(          40 );   bins.push_back(               NVrtxbins );   xAxisTitle.push_back("N_{Vertices}"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("minMT"  );   nbins.push_back(          20 );   bins.push_back(               minMTbins );   xAxisTitle.push_back("M_{T}"                                );   yAxisTitle.push_back("Events"          );
 
@@ -12417,32 +12419,39 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	// region_sel = 5 1J 0bJ
 	// region_sel = 6 0J 0bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, -1,  0);
+	// 2 J   1 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+	// 2 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+	// 3 J   0 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+	// 1 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+	// 0 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
+	// 3 J   1 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+	// final sel
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
 
 	return;
 	diffVarName.clear();
