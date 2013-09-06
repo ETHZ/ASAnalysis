@@ -169,20 +169,24 @@ def merge_and_clean():
 	for dir in special_dirs:
 		print '[status] at special dir:', dir
 		dir_cat = 'cat '
+		dir_cat_ChMisID = 'cat '
 ##		dir_cat_reg = 'cat '
 		isdata=False
 		for ls in os.listdir(output_location):
 			if os.path.isdir(output_location+ls) and ls.startswith(dir+'_output'):
 				if os.path.isfile(output_location+ls+'/'+dir+'_SignalEvents.txt'):
 					dir_cat+=output_location+ls+'/'+dir+'_SignalEvents.txt '
+					dir_cat_ChMisID+=output_location+ls+'/'+dir+'_ZElElChMisIdEvents.txt '
 ##					for reg in regions:
 ##						os.system('cat '+output_location+ls+'/'+dir+'_SignalEvents_'+reg+'.txt >> '+output_location+dir+'_SignalEvents_'+reg+'.txt ')
 					isdata=True
 		dir_hadd = 'hadd -f '+output_location+dir+'_Yields.root '+output_location+dir+'_output*/*.root > /dev/null'
 		dir_cat+=' >& '+output_location+dir+'_SignalEvents.txt '
+		dir_cat_ChMisID+=' >& '+output_location+dir+'_ZElElChMisIdEvents.txt '
 		os.system(dir_hadd)
 		if isdata:
 			os.system(dir_cat)
+			os.system(dir_cat_ChMisID)
 
 	os.system('rm -r tmp/ ; rm ssdl_* ; rm sgejob-* -rf')
 	#os.system('rm sgejob-* -rf') # no cleaning up, for debugging puposes
