@@ -228,17 +228,29 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 //		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul31-JetPt20-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/";
 //		TString tree_dir = "/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Aug14-JetPt30-Iso5-PUID/";
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug23-JetPt30-Iso5-PUID-newLepSF-minBias69400/YieldsFiles/";
-		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug29-JetPt30-Iso5-fake-binning-test/YieldsFiles/";
+//		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug29-JetPt30-Iso5-fake-binning-test/YieldsFiles/";
+		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep05-JetPt30-Iso5-ChMisID-1J/YieldsFiles/";
 
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul27-OSYields-JetPt20-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/TTbarW_Yields.root");      
       TFile* signalFile = TFile::Open(tree_dir+"TTbarW_Yields.root");      
+      TFile* backgroundFile_ttbar = TFile::Open(tree_dir+"TTJets_Yields.root");      
+      TFile* backgroundFile_wz    = TFile::Open(tree_dir+"WZTo3LNu_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jun12-woSyst/TTbarW_Yields.root");      
       TTree *signal     = (TTree*)signalFile->Get("SigEvents");
 
-      TChain* background = new TChain("SigEvents");
+	TTree *background_ttbar = (TTree*)backgroundFile_ttbar->Get("SigEvents");
+	TTree *background_wz    = (TTree*)backgroundFile_wz   ->Get("SigEvents");
+
+	float lumi_ttbar(1.), lumi_wz(1.);
+	background_ttbar->SetBranchAddress("SLumi",    &lumi_ttbar);
+	background_wz   ->SetBranchAddress("SLumi",    &lumi_wz   );
+	background_ttbar->GetEntry(0);
+	background_wz   ->GetEntry(0);
+
+//      TChain* background = new TChain("SigEvents");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTJets_Yields.root");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/WZTo3LNu_Yields.root");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/TTJets_Yields.root");
@@ -247,8 +259,8 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul27-OSYields-JetPt20-Iso9-10-newTTbarXsec/WZTo3LNu_Yields.root");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/TTJets_Yields.root");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/WZTo3LNu_Yields.root");
-      background->Add(tree_dir+"TTJets_Yields.root");
-      background->Add(tree_dir+"WZTo3LNu_Yields.root");
+//      background->Add(tree_dir+"TTJets_Yields.root");
+//      background->Add(tree_dir+"WZTo3LNu_Yields.root");
 //      background->Add(tree_dir+"TTbarZ_Yield.root");
 //      background->Add(tree_dir+"DPSWW_Yields.root");
 //      background->Add(tree_dir+"HTauTau_Yields.root");
@@ -276,13 +288,17 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       // global event weights per tree (see below for setting event-wise weights)
       Double_t signalWeight     = 1.0;
       Double_t backgroundWeight = 1.0;
+      Double_t backgroundWeight_ttbar = (Double_t)(1./lumi_ttbar);
+      Double_t backgroundWeight_wz    = (Double_t)(1./lumi_wz   );
 
       // ====== register trees ====================================================
       //
       // the following method is the prefered one:
       // you can add an arbitrary number of signal or background trees
       factory->AddSignalTree    ( signal,     signalWeight     );
-      factory->AddBackgroundTree( background, backgroundWeight );
+//      factory->AddBackgroundTree( background, backgroundWeight );
+      factory->AddBackgroundTree( background_ttbar, backgroundWeight_ttbar );
+      factory->AddBackgroundTree( background_wz   , backgroundWeight_wz    );
 
       // To give different trees for training and testing, do as follows:
       //    factory->AddSignalTree( signalTrainingTree, signalTrainWeight, "Training" );
