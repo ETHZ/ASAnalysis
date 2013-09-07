@@ -158,6 +158,11 @@ int main( int argc, char* argv[] ) {
   float effS_ZBi_max = 0.;
   float effMax = 0.;
 
+	// preselection
+    int charge_int = 0;
+    if( charge=="plus")  charge_int = 1;
+    if( charge=="minus") charge_int = -1;
+    TTWZPrediction ttwzpred_presel =  plotter->makePredictionSignalEvents(0., 10000., 0., 10000., 3, 1, 1, 20., 20., charge_int, true);
 
   //for( unsigned iEff=11; iEff<=nEffStep; ++iEff ) {
   for( unsigned iEff=1; iEff<=nEffStep; ++iEff ) {
@@ -244,9 +249,9 @@ int main( int argc, char* argv[] ) {
 
     
 
-    int charge_int = 0;
-    if( charge=="plus")  charge_int = 1;
-    if( charge=="minus") charge_int = -1;
+//    int charge_int = 0;
+//    if( charge=="plus")  charge_int = 1;
+//    if( charge=="minus") charge_int = -1;
 
 
 std::cout << "1" << std::endl;
@@ -300,8 +305,14 @@ std::cout << "3" << std::endl;
     h1_signal->SetFillColor( 46 );
     h1_bg->SetFillColor( 38 );
 
+	// preselection
+    float s_presel_mm = ttwzpred_presel.ttw_mm*lumi_SF;
+    float s_presel_em = ttwzpred_presel.ttw_em*lumi_SF;
+    float s_presel_ee = ttwzpred_presel.ttw_ee*lumi_SF;
+    float s_presel = s_presel_mm + s_presel_em + s_presel_ee;
 
-    float effS = (s_mm+s_em+s_ee)/(0.232*lumi*0.22*0.22*0.67);
+//    float effS = (s_mm+s_em+s_ee)/(0.232*lumi*0.22*0.22*0.67);
+    float effS = (s_mm+s_em+s_ee) / s_presel;
 
     if( effS > effMax )
       effMax = effS;
