@@ -101,7 +101,7 @@ public:
 //		DoubleEle1              , DoubleEle1a, DoubleEle2,  DoubleEle3, DoubleEle4, DoubleEle5, 
 //		MuEG1                   , MuEG1a     , MuEG2     ,  MuEG3     , MuEG4     , MuEG5     , 
 		// fake samples
-		TTJets,
+		TTJets, TTJets_v1, TTJets_madgraph_v1, TTJets_madgraph_v2,
 		SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
 		WJets,
 		DYJets,
