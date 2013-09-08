@@ -6206,7 +6206,7 @@ bool SSDLDumper::isZElElChMisIdEvent(int &el1, int &el2){
 	if (!isTightElectron(el2))          return false;
 	if (getMET() > 30.)                 return false;
 	if (ElMT[0] > 25.)                  return false;
-//	if (getNJets() < 1)                 return false;
+	if (getNJets() < 1)                 return false;
 	
 	TLorentzVector p1, p2;
 	p1.SetPtEtaPhiM(ElPt[el1], ElEta[el1], ElPhi[el1], gMEL);
