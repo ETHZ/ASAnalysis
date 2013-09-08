@@ -298,7 +298,7 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       factory->AddSignalTree    ( signal,     signalWeight     );
 //      factory->AddBackgroundTree( background, backgroundWeight );
       factory->AddBackgroundTree( background_ttbar, backgroundWeight_ttbar );
-      factory->AddBackgroundTree( background_wz   , backgroundWeight_wz    );
+//      factory->AddBackgroundTree( background_wz   , backgroundWeight_wz    );
 
       // To give different trees for training and testing, do as follows:
       //    factory->AddSignalTree( signalTrainingTree, signalTrainWeight, "Training" );
