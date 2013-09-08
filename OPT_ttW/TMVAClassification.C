@@ -415,7 +415,7 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
    if (Use["CutsGA"])
       factory->BookMethod( TMVA::Types::kCuts, "CutsGA",
                            //"H:!V:FitMethod=GA:CutRangeMin[0]=-10:CutRangeMax[0]=10:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
-                           "H:!V:FitMethod=GA:VarProp[0]=FMax:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
+                           "H:!V:FitMethod=GA:CutRangeMin[1]=20:CutRangeMax[1]=8000:VarProp[0]=FMax:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
    
    if (Use["CutsSA"])
       factory->BookMethod( TMVA::Types::kCuts, "CutsSA",
