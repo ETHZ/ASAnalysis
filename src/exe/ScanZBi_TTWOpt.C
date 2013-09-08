@@ -103,7 +103,7 @@ int main( int argc, char* argv[] ) {
   }
 
   
-  int nEffStep = 10;
+  int nEffStep = 20;
   if( min_NJets_h>0 && min_NBJets_h>0 || min_NBJets_med_h>0 ||
       min_ptLept1_h>0 || min_ptLept2_h>0 || 
       min_met_h>0 || min_ht_h>0 ) 
@@ -125,13 +125,14 @@ int main( int argc, char* argv[] ) {
   //std::string dir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Dec20_muPFIso0p05_elPFIso0p05_jet20_withZveto";
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug23-JetPt30-Iso5-PUID-newLepSF-minBias69400";
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug29-JetPt30-Iso5-fake-binning-test";
-  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep05-JetPt30-Iso5-ChMisID-1J";
+//  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep05-JetPt30-Iso5-ChMisID-1J";
+  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep08-JetPt30-Iso5-ChMisID-1J-allTTJets";
   std::string config = dir + "/dumperconfig.cfg";
 
   SSDLPlotter* plotter = new SSDLPlotter(config);
   //std::string outputdir = "/shome/pandolf/CMSSW_4_2_8/src/DiLeptonAnalysis/NTupleProducer/macros/" + selectionType;
 //  std::string outputdir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/" + selectionType + "_" + charge;
-  std::string outputdir = "plots/Sep05-JetPt30-Iso5-ChMisID-1J";
+  std::string outputdir = "plots/Sep08-JetPt30-Iso5-ChMisID-1J-allTTJets";
   plotter->setVerbose(1);
   plotter->fDO_OPT = false;
   plotter->setOutputDir(outputdir);
@@ -168,7 +169,7 @@ int main( int argc, char* argv[] ) {
   //for( unsigned iEff=11; iEff<=nEffStep; ++iEff ) {
   for( unsigned iEff=1; iEff<=nEffStep; ++iEff ) {
 
-    if( iEff==11 ) {
+    if( iEff==21 ) {
       std::cout << std::endl;
       std::cout << "-> Cross checking this selection: " << std::endl;
       std::cout << "NJets >= " << min_NJets_h << std::endl;
@@ -190,10 +191,10 @@ int main( int argc, char* argv[] ) {
     float min_ht = 0.;
 
 
-    if( iEff<=10 ) {
+    if( iEff<=20 ) {
 
       char infileName[300];
-      sprintf( infileName, "%s/cutsGA_Seff%d.txt", optcutsdir.c_str(), iEff*10);
+      sprintf( infileName, "%s/cutsGA_Seff%d.txt", optcutsdir.c_str(), iEff*5);
       ifstream ifs(infileName);
       std::cout << "-> Opening Seff file: " << infileName << std::endl;
     
@@ -318,7 +319,7 @@ std::cout << "3" << std::endl;
     if( effS > effMax )
       effMax = effS;
 
-    if( iEff<=10 ) { 
+    if( iEff<=20 ) { 
       gr_ZBi->SetPoint( iEff-1, 100.*effS, ZBi );
       gr_significance->SetPoint( iEff-1, 100.*effS, significance );
     }
@@ -389,8 +390,8 @@ std::cout << "3" << std::endl;
     label_ZBi->Draw("same");
     label_sqrt->Draw("same");
     gPad->RedrawAxis();
-    sprintf( canvasName, "%s/yieldPlot_Seff%d.pdf", optcutsdir.c_str(), iEff*10);
-    sprintf( canvasName, "%s/yieldPlot_Seff%d.png", optcutsdir.c_str(), iEff*10);
+    sprintf( canvasName, "%s/yieldPlot_Seff%d.pdf", optcutsdir.c_str(), iEff*5);
+    sprintf( canvasName, "%s/yieldPlot_Seff%d.png", optcutsdir.c_str(), iEff*5);
     c1->SaveAs(canvasName);
 
     delete c1;
@@ -423,7 +424,7 @@ std::cout << "### " << iEff << "   ZBi: " << ZBi << "  3-channel significance: "
   gr_significance->SetMarkerColor(29);
 
 
-  TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1.1*effMax*100., 12, 0., 2.4);
+  TH2D* h2_axes_gr = new TH2D("axes_gr", "", 20, 0., 1.1*effMax*100., 12, 0., 2.4);
   //TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1.1*effMax*100., 10, 0., 1.6*ZBi_max ); 
   //TH2D* h2_axes_gr = new TH2D("axes_gr", "", 10, 0., 1., 10, 0., 5.);
   char yAxisTitle[512];
@@ -517,7 +518,7 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
 
   // this is the output datacard:
   char datacardName[500];
-  sprintf( datacardName, "%s/datacard_eff%d.txt", optcutsdir.c_str(), iEff*10 );
+  sprintf( datacardName, "%s/datacard_eff%d.txt", optcutsdir.c_str(), iEff*5 );
   std::string datacardName_str(datacardName);
   std::ofstream datacard(datacardName);
 
@@ -569,7 +570,7 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
   std::cout << "-> Computing significance... " << std::endl;
     
   char significanceFileName[1028];
-  sprintf( significanceFileName, "%s/significance_eff%d.txt", optcutsdir.c_str(), iEff*10 );
+  sprintf( significanceFileName, "%s/significance_eff%d.txt", optcutsdir.c_str(), iEff*5 );
   std::string significanceFileName_str(significanceFileName);
   std::string combineCommand = "combine -M ProfileLikelihood --significance " + datacardName_str + "  -t -1 --expectSignal=1";
 ////std::string combineCommand = "combine -M ProfileLikelihood --significance " + datacardName_str + "  -t -1 --expectSignal=1 >&! " + significanceFileName_str;
