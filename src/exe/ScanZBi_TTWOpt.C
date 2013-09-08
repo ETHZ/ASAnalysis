@@ -533,6 +533,11 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
                     ttwzpred.ttw_mm*lumiSF, ttwzpred.ttz_mm*lumiSF, ttwzpred.fake_mm*lumiSF_fake, 0.0                         , ttwzpred.wz_mm*lumiSF, ttwzpred.rare_mm*lumiSF,
                     ttwzpred.ttw_em*lumiSF, ttwzpred.ttz_em*lumiSF, ttwzpred.fake_em*lumiSF_fake, ttwzpred.cmid_em*lumiSF_fake, ttwzpred.wz_em*lumiSF, ttwzpred.rare_em*lumiSF,
                     ttwzpred.ttw_ee*lumiSF, ttwzpred.ttz_ee*lumiSF, ttwzpred.fake_ee*lumiSF_fake, ttwzpred.cmid_ee*lumiSF_fake, ttwzpred.wz_ee*lumiSF, ttwzpred.rare_ee*lumiSF) << std::endl;
+    } else if( thisLine_tstr.BeginsWith("bgUncttz") ) {
+      datacard << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-",
+					   1.0+ttwzpred.ttz_err_mm/ttwzpred.ttz_mm,
+					   1.0+ttwzpred.ttz_err_em/ttwzpred.ttz_em,
+					   1.0+ttwzpred.ttz_err_ee/ttwzpred.ttz_ee)   << endl;
     } else if( thisLine_tstr.BeginsWith("bgUncfak") ) {
       datacard << Form("bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-",
                                  1.0+ttwzpred.fake_err_mm/ttwzpred.fake_mm,
