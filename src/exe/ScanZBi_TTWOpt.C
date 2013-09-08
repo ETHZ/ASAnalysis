@@ -124,13 +124,14 @@ int main( int argc, char* argv[] ) {
 
   //std::string dir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Dec20_muPFIso0p05_elPFIso0p05_jet20_withZveto";
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug23-JetPt30-Iso5-PUID-newLepSF-minBias69400";
-  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug29-JetPt30-Iso5-fake-binning-test";
+//  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug29-JetPt30-Iso5-fake-binning-test";
+  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep05-JetPt30-Iso5-ChMisID-1J";
   std::string config = dir + "/dumperconfig.cfg";
 
   SSDLPlotter* plotter = new SSDLPlotter(config);
   //std::string outputdir = "/shome/pandolf/CMSSW_4_2_8/src/DiLeptonAnalysis/NTupleProducer/macros/" + selectionType;
 //  std::string outputdir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/" + selectionType + "_" + charge;
-  std::string outputdir = "plots/Aug29-JetPt30-Iso5-fake-binning-test";
+  std::string outputdir = "plots/Sep05-JetPt30-Iso5-ChMisID-1J";
   plotter->setVerbose(1);
   plotter->fDO_OPT = false;
   plotter->setOutputDir(outputdir);
