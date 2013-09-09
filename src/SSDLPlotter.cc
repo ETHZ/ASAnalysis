@@ -59,6 +59,22 @@ float SSDLPlotter::gMMTrigScale = 1.; //0.872;
 float SSDLPlotter::gEMTrigScale = 1.; //0.925;
 float SSDLPlotter::gEETrigScale = 1.; //0.954;
 
+// ttW final selection
+static const float gMinHT_ttWSel_pp      = 205.;
+static const float gMinMET_ttWSel_pp     =   0.;
+static const int   gMinNjets_ttWSel_pp   =   3 ;
+static const int   gMinNbjetsL_ttWSel_pp =   1 ;
+static const int   gMinNbjetsM_ttWSel_pp =   1 ;
+static const float gMinPt1_ttWSel_pp     =  32.;
+static const float gMinPt2_ttWSel_pp     =  32.;
+static const float gMinHT_ttWSel_mm      = 190.;
+static const float gMinMET_ttWSel_mm     =   0.;
+static const int   gMinNjets_ttWSel_mm   =   3 ;
+static const int   gMinNbjetsL_ttWSel_mm =   1 ;
+static const int   gMinNbjetsM_ttWSel_mm =   1 ;
+static const float gMinPt1_ttWSel_mm     =  34.;
+static const float gMinPt2_ttWSel_mm     =  34.;
+
 ttGpred ttG_SR0;
 
 //____________________________________________________________________________
@@ -510,7 +526,7 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-//	makeTTWDiffPredictionsSigEvent();
+	makeTTWDiffPredictionsSigEvent();
 //	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
@@ -547,7 +563,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
 //	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
 
-	makeTTWIntPredictionsSigEvent();
+//	makeTTWIntPredictionsSigEvent();
 
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
@@ -7954,7 +7970,7 @@ TH1D* SSDLPlotter::getFRatio(vector<int> samples, gChannel chan, int ratiovar, b
 }
 //____________________________________________________________________________
 void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_reg, float &chmid, float &chmide){
-	cout << "SSDLPlotter::calculateChMisIdProb" << endl;
+//	cout << "SSDLPlotter::calculateChMisIdProb" << endl;
   
   float ospair(0.),   sspair(0.);
   float ospair_e(0.), sspair_e(0.);
@@ -7989,8 +8005,8 @@ void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_r
   }
   
   ratioWithBinomErrors(sspair, ospair, chmid, chmide);
-	cout << "n sspair: " << sspair << endl;
-	cout << "n ospair: " << ospair << endl;
+//	cout << "n sspair: " << sspair << endl;
+//	cout << "n ospair: " << ospair << endl;
   
   // Divide to get the per-electron probability...
   chmid  = chmid  / 2.;
@@ -8000,7 +8016,7 @@ void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_r
 	chmid  = chmid  * 1.62;
 	chmide = chmide * 1.62;
   
-	cout << "charge mis-ID probability: " << chmid << " +/- " << chmide << endl;
+//	cout << "charge mis-ID probability: " << chmid << " +/- " << chmide << endl;
 
   return;
 }
@@ -10973,19 +10989,23 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	map< TString, TTWZPrediction > ttwzpreds_plpl, ttwzpreds_mimi;
 
 	// cuts
-	float  minHT_plpl(155.);
-	float  minPt_plpl( 32.);
-	int    minNJ_plpl(  3 );
-	int   minNbJ_plpl(  1 );
-	float minMET_plpl(  0.);
-	float  minHT_mimi(265.);
-	float  minPt_mimi( 29.);
-	int    minNJ_mimi(  3 );
-	int   minNbJ_mimi(  1 );
-	float minMET_mimi(  0.);
+	float  minHT_plpl ( gMinHT_ttWSel_pp      );
+	float minMET_plpl ( gMinMET_ttWSel_pp     );
+	int    minNJ_plpl ( gMinNjets_ttWSel_pp   );
+	int  minNbJL_plpl ( gMinNbjetsL_ttWSel_pp );
+	int  minNbJM_plpl ( gMinNbjetsM_ttWSel_pp );
+	float minPt1_plpl ( gMinPt1_ttWSel_pp     );
+	float minPt2_plpl ( gMinPt2_ttWSel_pp     );
+	float  minHT_mimi ( gMinHT_ttWSel_mm      );
+	float minMET_mimi ( gMinMET_ttWSel_mm     );
+	int    minNJ_mimi ( gMinNjets_ttWSel_mm   );
+	int  minNbJL_mimi ( gMinNbjetsL_ttWSel_mm );
+	int  minNbJM_mimi ( gMinNbjetsM_ttWSel_mm );
+	float minPt1_mimi ( gMinPt1_ttWSel_mm     );
+	float minPt2_mimi ( gMinPt2_ttWSel_mm     );
 
-	ttwzpreds_plpl = makeTTWIntPredictionsSigEvent(minHT_plpl, 8000., minMET_plpl, 8000., minNJ_plpl, minNbJ_plpl, minNbJ_plpl, minPt_plpl, minPt_plpl, +1, true);
-	ttwzpreds_mimi = makeTTWIntPredictionsSigEvent(minHT_mimi, 8000., minMET_mimi, 8000., minNJ_mimi, minNbJ_mimi, minNbJ_mimi, minPt_mimi, minPt_mimi, -1, true);
+	ttwzpreds_plpl = makeTTWIntPredictionsSigEvent(minHT_plpl, 8000., minMET_plpl, 8000., minNJ_plpl, minNbJL_plpl, minNbJM_plpl, minPt1_plpl, minPt2_plpl, +1, true);
+	ttwzpreds_mimi = makeTTWIntPredictionsSigEvent(minHT_mimi, 8000., minMET_mimi, 8000., minNJ_mimi, minNbJL_mimi, minNbJM_mimi, minPt1_mimi, minPt2_mimi, -1, true);
 //	ttwzpreds_plpl = makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
 //	ttwzpreds_mimi = makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
 
@@ -11105,21 +11125,23 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM << "%%% cuts %%%" << endl;
 	fOUTSTREAM << "% gApplyZVeto: " << gApplyZVeto << endl;
-	fOUTSTREAM << Form("\\newcommand    {\\MuMaxIso}{%4.2f}",tmp_gMuMaxIso) << endl;
-	fOUTSTREAM << Form("\\newcommand    {\\ElMaxIso}{%4.2f}",tmp_gElMaxIso) << endl;
-	fOUTSTREAM << Form("\\newcommand    {\\jetPtCut}{%3.0f}",tmp_gMinJetPt) << endl;
+	fOUTSTREAM << Form("\\newcommand     {\\MuMaxIso}{%4.2f}",tmp_gMuMaxIso) << endl;
+	fOUTSTREAM << Form("\\newcommand     {\\ElMaxIso}{%4.2f}",tmp_gElMaxIso) << endl;
+	fOUTSTREAM << Form("\\newcommand     {\\jetPtCut}{%3.0f}",tmp_gMinJetPt) << endl;
 	fOUTSTREAM << endl;
-	fOUTSTREAM << Form("\\newcommand   {\\HTCutPlPl}{%3.0f}",   minHT_plpl) << endl;
-	fOUTSTREAM << Form("\\newcommand{\\lepPtCutPlPl}{%3.0f}",   minPt_plpl) << endl;
-	fOUTSTREAM << Form("\\newcommand      {\\NJPlPl}{%3d}"  ,   minNJ_plpl) << endl;
-	fOUTSTREAM << Form("\\newcommand     {\\NbJPlPl}{%3d}"  ,  minNbJ_plpl) << endl;
-	fOUTSTREAM << Form("\\newcommand     {\\METPlPl}{%3.0f}",  minMET_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand    {\\HTCutPlPl}{%3.0f}",   minHT_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\lepPt1CutPlPl}{%3.0f}",   minPt1_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\lepPt2CutPlPl}{%3.0f}",   minPt2_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand       {\\NJPlPl}{%3d}"  ,   minNJ_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand      {\\NbJPlPl}{%3d}"  , minNbJM_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand      {\\METPlPl}{%3.0f}",  minMET_plpl) << endl;
 	fOUTSTREAM << endl;
-	fOUTSTREAM << Form("\\newcommand   {\\HTCutMiMi}{%3.0f}",   minHT_mimi) << endl;
-	fOUTSTREAM << Form("\\newcommand{\\lepPtCutMiMi}{%3.0f}",   minPt_mimi) << endl;
-	fOUTSTREAM << Form("\\newcommand      {\\NJMiMi}{%3d}"  ,   minNJ_mimi) << endl;
-	fOUTSTREAM << Form("\\newcommand     {\\NbJMiMi}{%3d}"  ,  minNbJ_mimi) << endl;
-	fOUTSTREAM << Form("\\newcommand     {\\METMiMi}{%3.0f}",  minMET_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand    {\\HTCutMiMi}{%3.0f}",   minHT_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\lepPt1CutMiMi}{%3.0f}",   minPt1_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\lepPt2CutMiMi}{%3.0f}",   minPt2_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand       {\\NJMiMi}{%3d}"  ,   minNJ_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand      {\\NbJMiMi}{%3d}"  , minNbJM_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand      {\\METMiMi}{%3.0f}",  minMET_mimi) << endl;
 	fOUTSTREAM << endl;
 	fOUTSTREAM << "%%% final events %%%" << endl;
 	fOUTSTREAM << Form("\\newcommand{\\nObsPlPl}{%3d}",
@@ -12425,31 +12447,31 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, -1,  0);
 	// 2 J   1 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
-//	// 2 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
-//	// 3 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
-////	// 1 J   0 bJ
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+	// 2 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+	// 3 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+	// 1 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
 ////	// 0 J   0 bJ
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
-////	// 3 J   1 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+	// 3 J   1 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 //	// >=2 J   ==0 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
@@ -12681,24 +12703,24 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	}
 	if (region_sel == 1 && chVeto == +1) {
 		systflag   =   0 ;
-		minHT      = 155., maxHT      =  8000.;
-		minMET     =   0., maxMET     =  8000.;
-		minNjets   =   3 , maxNjets   =    99 ;
-		minNbjetsL =   1 , maxNbjetsL =    99 ;
-		minNbjetsM =   1 , maxNbjetsM =    99 ;
-		minPt1     =  32., maxPt1     =  8000.;
-		minPt2     =  32., maxPt2     =  8000.;
+		minHT      = gMinHT_ttWSel_pp      , maxHT      =  8000.;
+		minMET     = gMinMET_ttWSel_pp     , maxMET     =  8000.;
+		minNjets   = gMinNjets_ttWSel_pp   , maxNjets   =    99 ;
+		minNbjetsL = gMinNbjetsL_ttWSel_pp , maxNbjetsL =    99 ;
+		minNbjetsM = gMinNbjetsM_ttWSel_pp , maxNbjetsM =    99 ;
+		minPt1     = gMinPt1_ttWSel_pp     , maxPt1     =  8000.;
+		minPt2     = gMinPt2_ttWSel_pp     , maxPt2     =  8000.;
 		minMll     =   8.; // 8.
 	}
 	if (region_sel == 1 && chVeto == -1) {
 		systflag   =   0 ;
-		minHT      = 265., maxHT      =  8000.;
-		minMET     =   0., maxMET     =  8000.;
-		minNjets   =   3 , maxNjets   =    99 ;
-		minNbjetsL =   1 , maxNbjetsL =    99 ;
-		minNbjetsM =   1 , maxNbjetsM =    99 ;
-		minPt1     =  29., maxPt1     =  8000.;
-		minPt2     =  29., maxPt2     =  8000.;
+		minHT      = gMinHT_ttWSel_mm      , maxHT      =  8000.;
+		minMET     = gMinMET_ttWSel_mm     , maxMET     =  8000.;
+		minNjets   = gMinNjets_ttWSel_mm   , maxNjets   =    99 ;
+		minNbjetsL = gMinNbjetsL_ttWSel_mm , maxNbjetsL =    99 ;
+		minNbjetsM = gMinNbjetsM_ttWSel_mm , maxNbjetsM =    99 ;
+		minPt1     = gMinPt1_ttWSel_mm     , maxPt1     =  8000.;
+		minPt2     = gMinPt2_ttWSel_mm     , maxPt2     =  8000.;
 		minMll     =   8.; // 8.
 	}
 
