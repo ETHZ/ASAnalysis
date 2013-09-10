@@ -499,13 +499,13 @@ void SSDLPlotter::doAnalysis(){
 //	makeRatioPlots(Elec);
 //	make2DRatioPlots(Muon);
 //	make2DRatioPlots(Elec);
-//	makeNTightLoosePlots(Muon);
-//	makeNTightLoosePlots(Elec);
-//	makeNTightLoosePlots(Muon, SigSup, true);
-//	makeNTightLoosePlots(Elec, SigSup, true);
-//	makeNTightLoosePlots(Muon, ZDecay, true);
-//	makeNTightLoosePlots(Elec, ZDecay, true);
-//	// 
+////	makeNTightLoosePlots(Muon);
+////	makeNTightLoosePlots(Elec);
+////	makeNTightLoosePlots(Muon, SigSup, true);
+////	makeNTightLoosePlots(Elec, SigSup, true);
+////	makeNTightLoosePlots(Muon, ZDecay, true);
+////	makeNTightLoosePlots(Elec, ZDecay, true);
+////	// 
 //	makeFRvsPtPlots(Muon, SigSup);
 //	makeFRvsPtPlots(Elec, SigSup);
 //	makeFRvsPtPlots(Muon, ZDecay);
@@ -526,8 +526,8 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-	makeTTWDiffPredictionsSigEvent();
-//	makeTTWKinPlotsSigEvent();
+//	makeTTWDiffPredictionsSigEvent();
+	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -11130,15 +11130,15 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	fOUTSTREAM << Form("\\newcommand     {\\jetPtCut}{%3.0f}",tmp_gMinJetPt) << endl;
 	fOUTSTREAM << endl;
 	fOUTSTREAM << Form("\\newcommand    {\\HTCutPlPl}{%3.0f}",   minHT_plpl) << endl;
-	fOUTSTREAM << Form("\\newcommand{\\lepPt1CutPlPl}{%3.0f}",   minPt1_plpl) << endl;
-	fOUTSTREAM << Form("\\newcommand{\\lepPt2CutPlPl}{%3.0f}",   minPt2_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\leadingLepPtCutPlPl}{%3.0f}",   minPt1_plpl) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\subleadingLepPtCutPlPl}{%3.0f}",   minPt2_plpl) << endl;
 	fOUTSTREAM << Form("\\newcommand       {\\NJPlPl}{%3d}"  ,   minNJ_plpl) << endl;
 	fOUTSTREAM << Form("\\newcommand      {\\NbJPlPl}{%3d}"  , minNbJM_plpl) << endl;
 	fOUTSTREAM << Form("\\newcommand      {\\METPlPl}{%3.0f}",  minMET_plpl) << endl;
 	fOUTSTREAM << endl;
 	fOUTSTREAM << Form("\\newcommand    {\\HTCutMiMi}{%3.0f}",   minHT_mimi) << endl;
-	fOUTSTREAM << Form("\\newcommand{\\lepPt1CutMiMi}{%3.0f}",   minPt1_mimi) << endl;
-	fOUTSTREAM << Form("\\newcommand{\\lepPt2CutMiMi}{%3.0f}",   minPt2_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\leadingLepPtCutMiMi}{%3.0f}",   minPt1_mimi) << endl;
+	fOUTSTREAM << Form("\\newcommand{\\subleadingLepPtCutMiMi}{%3.0f}",   minPt2_mimi) << endl;
 	fOUTSTREAM << Form("\\newcommand       {\\NJMiMi}{%3d}"  ,   minNJ_mimi) << endl;
 	fOUTSTREAM << Form("\\newcommand      {\\NbJMiMi}{%3d}"  , minNbJM_mimi) << endl;
 	fOUTSTREAM << Form("\\newcommand      {\\METMiMi}{%3.0f}",  minMET_mimi) << endl;
@@ -12452,16 +12452,16 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
-	// 3 J   0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
-	// 1 J   0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+//	// 3 J   0 bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+//	// 1 J   0 bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
 ////	// 0 J   0 bJ
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
@@ -12472,14 +12472,14 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
-//	// >=2 J   ==0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
+	// >=2 J   ==0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
 	// final sel
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
@@ -16524,19 +16524,19 @@ void SSDLPlotter::makeTTWKinPlotsSigEvent() {
 //	}
 ////	return;
 	
-	// wz enriched
-	for (int i = -1; i < 6; i++) { // flavor loop
-//		if (i == -1) continue;
-//		if (i > -1) continue;  // no splitting by flavor
-		if (i ==  0) continue; // no same-sign MM events
-		if (i ==  1) continue; // no same-sign EM events
-		if (i ==  2) continue; // no same-sign EE events
-//		if (i ==  3) continue; // no opposite-sign MM events
-		if (i ==  4) continue; // no opposite-sign EM events
-//		if (i ==  5) continue; // no opposite-sign EE events
-		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, 2);
-	}
-//	return;
+//	// wz enriched
+//	for (int i = -1; i < 6; i++) { // flavor loop
+////		if (i == -1) continue;
+////		if (i > -1) continue;  // no splitting by flavor
+//		if (i ==  0) continue; // no same-sign MM events
+//		if (i ==  1) continue; // no same-sign EM events
+//		if (i ==  2) continue; // no same-sign EE events
+////		if (i ==  3) continue; // no opposite-sign MM events
+//		if (i ==  4) continue; // no opposite-sign EM events
+////		if (i ==  5) continue; // no opposite-sign EE events
+//		makeTTWKinPlotSigEvent(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, i, 2);
+//	}
+////	return;
 	
 	// loose sel
 	for (int i = -1; i < 6; i++) { // flavor loop
@@ -16954,10 +16954,10 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 					h_wjets[j]->Fill(diffVar, weight);
 					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (W + Jets)" << endl; samplename = *sname;}
 				}
-				//			else if (*sname == "GYJets") {
-				//				h_gjets[j]->Fill(diffVar, weight);
-				//				if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (G + Jets)" << endl; samplename = *sname;}
-				//			}
+			else if (*sname == "GYJets" || *sname == "GJets200" || *sname == "GJets400") {
+				h_gjets[j]->Fill(diffVar, weight);
+				if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (G + Jets)" << endl; samplename = *sname;}
+			}
 				else if (*sname == "TTbarWW") {
 					h_rare  [j]->Fill(diffVar    , weight);
 					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
@@ -17101,7 +17101,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		h_top      [i]->SetMaximum(max);
 		h_zjets    [i]->SetMaximum(max);
 		h_wjets    [i]->SetMaximum(max);
-		h_gjets    [i]->SetMaximum(max);
+//		h_gjets    [i]->SetMaximum(max);
 //		h_singleT  [i]->SetMaximum(max);
 		h_mc       [i]->SetMaximum(max);
 		h_rare     [i]->SetMaximum(max);
@@ -17183,7 +17183,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		leg->AddEntry(h_wjets  [i], "W + jets","f");
 //		leg->AddEntry(h_gjets  [i], "gamma + jets","f");
 //		leg->AddEntry(h_singleT[i], "t","f");
-		leg->AddEntry(h_mc     [i], "remaining SM MC","f");
+		leg->AddEntry(h_mc     [i], "QCD","f");
 		leg->AddEntry(h_rare   [i], "Rare SM","f");
 		leg->AddEntry(h_wz     [i], "WZ","f");
 		leg->AddEntry(h_ttz    [i], "t#bar{t} + Z","f");
