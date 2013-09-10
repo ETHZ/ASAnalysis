@@ -527,7 +527,7 @@ void SSDLPlotter::doAnalysis(){
 	
 	
 //	makeTTWDiffPredictionsSigEvent();
-	makeTTWKinPlotsSigEvent();
+//	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -567,6 +567,10 @@ void SSDLPlotter::doAnalysis(){
 
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
+
+	// final selection
+	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
+//	makePredictionSignalEvents(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, +1, true, 0);
 	
 //	makeTTWNLOPlots();
 	
@@ -16147,6 +16151,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	TH1D    *h_pred_ttw   ;
 	TH1D    *h_pred_ttz   ;
 	TH1D    *h_pred_tot   ;
+	TH1D    *h_pred_bg    ;
 	
 	if (addTotalBin) {
 		h_obs        = new TH1D("h_observed"   , "Observed number of events" , 4 , 0. , 4. );
@@ -16157,6 +16162,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		h_pred_ttw   = new TH1D("h_pred_ttw"   , "Predicted ttW"             , 4 , 0. , 4. );
 		h_pred_ttz   = new TH1D("h_pred_ttz"   , "Predicted ttZ"             , 4 , 0. , 4. );
 		h_pred_tot   = new TH1D("h_pred_tot"   , "Total Prediction"          , 4 , 0. , 4. );
+		h_pred_bg    = new TH1D("h_pred_bg"    , "Total BG Prediction"       , 4 , 0. , 4. );
 	}
 	else {
 		h_obs        = new TH1D("h_observed"   , "Observed number of events" , 3 , 0. , 3. );
@@ -16167,6 +16173,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		h_pred_ttw   = new TH1D("h_pred_ttw"   , "Predicted ttW"             , 3 , 0. , 3. );
 		h_pred_ttz   = new TH1D("h_pred_ttz"   , "Predicted ttZ"             , 3 , 0. , 3. );
 		h_pred_tot   = new TH1D("h_pred_tot"   , "Total Prediction"          , 3 , 0. , 3. );
+		h_pred_bg    = new TH1D("h_pred_bg"    , "Total BG Prediction"       , 3 , 0. , 3. );
 	}
 	THStack *hs_pred      = new THStack("hs_predicted", "Predicted number of events");
 
@@ -16201,6 +16208,12 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	// h_pred_tot  ->SetFillStyle(3013);
 	h_pred_tot  ->SetFillColor(12);
 	h_pred_tot  ->SetFillStyle(3005);
+
+	h_pred_bg  ->SetLineWidth(3);
+	// h_pred_bg  ->SetFillColor(kBlack);
+	// h_pred_bg  ->SetFillStyle(3013);
+	h_pred_bg  ->SetFillColor(12);
+	//h_pred_bg  ->SetFillStyle(3005);
 
 	// Add numbers:
 	h_obs->SetBinContent(1, nt2_ee);
@@ -16274,10 +16287,21 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	h_pred_tot->Add(h_pred_mc);
 	h_pred_tot->Add(h_pred_wz);
 	h_pred_tot->Add(h_pred_ttz);
+	h_pred_tot->Add(h_pred_ttw);
 	h_pred_tot->SetBinError(1, sqrt(ee_tot_stat2 + ee_tot_syst2));
 	h_pred_tot->SetBinError(2, sqrt(mm_tot_stat2 + mm_tot_syst2));
 	h_pred_tot->SetBinError(3, sqrt(em_tot_stat2 + em_tot_syst2));
 	if (addTotalBin) h_pred_tot->SetBinError(4, sqrt(comb_tot_stat2 + comb_tot_syst2));
+
+	h_pred_bg->Add(h_pred_fake);
+	h_pred_bg->Add(h_pred_chmid);
+	h_pred_bg->Add(h_pred_mc);
+	h_pred_bg->Add(h_pred_wz);
+	h_pred_bg->Add(h_pred_ttz);
+	h_pred_bg->SetBinError(1, sqrt(ee_tot_stat2 + ee_tot_syst2));
+	h_pred_bg->SetBinError(2, sqrt(mm_tot_stat2 + mm_tot_syst2));
+	h_pred_bg->SetBinError(3, sqrt(em_tot_stat2 + em_tot_syst2));
+	if (addTotalBin) h_pred_bg->SetBinError(4, sqrt(comb_tot_stat2 + comb_tot_syst2));
 
 	hs_pred->Add(h_pred_fake);
 	hs_pred->Add(h_pred_chmid);
@@ -16312,6 +16336,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	h_pred_ttw  ->SetMaximum(max);
 	h_pred_ttz  ->SetMaximum(max);
 	h_pred_tot  ->SetMaximum(max);
+	h_pred_bg   ->SetMaximum(max);
 	hs_pred     ->SetMaximum(max);
 	hs_pred->Draw("goff");
 	hs_pred->GetXaxis()->SetBinLabel(1, "ee");
@@ -16343,8 +16368,8 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	hs_pred->Draw("hist");
 	leg->Draw();
 	h_pred_tot->DrawCopy("0 E2 same");
-	h_pred_tot->SetFillStyle(0);
-	h_pred_tot->DrawCopy("hist same");
+	h_pred_bg->SetFillStyle(0);
+	h_pred_bg->DrawCopy("hist same");
 	gr_obs->Draw("P same");
 	
 	lat->SetTextSize(0.03);
@@ -16375,7 +16400,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	Util::PrintROOT(c_temp,   Form("ObsPred_customRegion_HT%.0f"+jvString+"MET%.0fNJ%.0iNbjL%.0iNbjM%.0iPT1%.0fPT2%.0f_"+sysString+chargeString, minHT, minMET, minNjets, minNbjetsL, minNbjetsM, minPt1, minPt2) , fOutputDir + fOutputSubDir);
 
 	delete c_temp;	
-	delete h_obs, h_pred_fake, h_pred_chmid, h_pred_mc, h_pred_tot, hs_pred;
+	delete h_obs, h_pred_fake, h_pred_chmid, h_pred_mc, h_pred_tot, h_pred_bg, hs_pred;
 	delete gr_obs;
 	delete FR;
 
