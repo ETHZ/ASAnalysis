@@ -59,6 +59,15 @@ float SSDLPlotter::gMMTrigScale = 1.; //0.872;
 float SSDLPlotter::gEMTrigScale = 1.; //0.925;
 float SSDLPlotter::gEETrigScale = 1.; //0.954;
 
+// ttW preselection
+static const float gMinHT_ttWPresel      =   0.;
+static const float gMinMET_ttWPresel     =   0.;
+static const int   gMinNjets_ttWPresel   =   3 ;
+static const int   gMinNbjetsL_ttWPresel =   1 ;
+static const int   gMinNbjetsM_ttWPresel =   1 ;
+static const float gMinPt1_ttWPresel     =  20.;
+static const float gMinPt2_ttWPresel     =  20.;
+
 // ttW final selection
 static const float gMinHT_ttWSel_pp      = 205.;
 static const float gMinMET_ttWSel_pp     =   0.;
@@ -569,8 +578,11 @@ void SSDLPlotter::doAnalysis(){
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
 
 	// final selection
-	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
-	makePredictionSignalEvents(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
+//	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
+//	makePredictionSignalEvents(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
+	
+	getTTWGeneratorSystematic(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
+	getTTWGeneratorSystematic(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
 	
 //	makeTTWNLOPlots();
 	
@@ -6825,7 +6837,7 @@ void SSDLPlotter::makeTTWNLOPlots(){
 	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1, -1);
 }
 void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins, vector<double> xmin, vector<double> xmax, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel){
-	//	TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag){
+//	TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag){
 	if (diffVarName.size() != nbins     .size()) {cout << "check length of vectors!\n"; return;}
 	if (diffVarName.size() != xmin      .size()) {cout << "check length of vectors!\n"; return;}
 	if (diffVarName.size() != xmax      .size()) {cout << "check length of vectors!\n"; return;}
@@ -7206,6 +7218,178 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	
 	OUT.close();
 	
+}
+float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag, bool plots) {
+	TString chargeString = "";
+	TString flavorString = "";
+
+	fOutputSubDir = "TTWGeneratorSystematics/";
+	TString outputdir = Util::MakeOutputDir(fOutputDir + fOutputSubDir);
+
+	if (chVeto == -1) chargeString = "_mm";
+	if (chVeto == +1) chargeString = "_pp";
+	
+	ofstream OUT(outputdir+"generator_syst_table"+chargeString+".tex", ios::trunc);
+	
+	OUT << "%/////////////////////////////////////////////////////////////////////////////" << endl;
+	OUT << "% Producing predictions " ;
+	OUT << "%  scaling MC to " << fLumiNorm << " /pb" << endl << endl;
+	OUT << "%-----------------------------------------------------------------------------" << endl;
+	OUT << "% These are the cuts: " << endl;
+	OUT << Form("\%  minHT:    %4.0f  || maxHT:     %4.0f", minHT   , maxHT    ) << endl;
+	OUT << Form("\%  minMET:   %4.0f  || maxMET:    %4.0f", minMET  , maxMET   ) << endl;
+	OUT << Form("\%  minNjets:   %2i  ", minNjets) << endl;
+	OUT << Form("\%  minNbjetsL: %2i  ", minNbjetsL) << endl;
+	OUT << Form("\%  minNbjetsM: %2i  ", minNbjetsM) << endl;
+	OUT << Form("\%  minpT1:     %2.0f  ", minPt1) << endl;
+	OUT << Form("\%  minpT2:     %2.0f  ", minPt2) << endl;
+	OUT << Form("\%  minMill:     %2.0f  ", 8.) << endl;
+	OUT << "%-----------------------------------------------------------------------------" << endl;
+	
+	TFile *pFile = TFile::Open(fOutputFileName);
+	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
+	
+	string *sname = 0;
+	int flag;
+	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
+	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float eta1, eta2, mll;
+	int   event, run;
+	int charge;
+	int passZVeto, passes3rdSFLepVeto;
+	float diffVar(-999.);
+	
+	sigtree->SetBranchAddress("SystFlag", &flag);
+	sigtree->SetBranchAddress("Event",    &event);
+	sigtree->SetBranchAddress("Run",      &run);
+	sigtree->SetBranchAddress("SName",    &sname);
+	sigtree->SetBranchAddress("SType",    &SType);
+	sigtree->SetBranchAddress("PUWeight", &puweight);
+	sigtree->SetBranchAddress("SLumi",    &SLumi);
+	sigtree->SetBranchAddress("Flavor",   &Flavor);
+	sigtree->SetBranchAddress("Charge",   &charge);
+	sigtree->SetBranchAddress("pT1",      &pT1);
+	sigtree->SetBranchAddress("pT2",      &pT2);
+	sigtree->SetBranchAddress("eta1",     &eta1);
+	sigtree->SetBranchAddress("eta2",     &eta2);
+	sigtree->SetBranchAddress("TLCat",    &TLCat);
+	sigtree->SetBranchAddress("HT",       &HT);
+	sigtree->SetBranchAddress("MET",      &MET);
+	sigtree->SetBranchAddress("MT2",      &MT2);
+	sigtree->SetBranchAddress("NJ",       &NJ);
+	sigtree->SetBranchAddress("NbJ",      &NbJ);
+	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
+	sigtree->SetBranchAddress("Mll",      &mll);
+	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
+
+	float ttw_madgraph       (0.), ttw_aMCatNLO       (0.);
+	float ttw_madgraph_presel(0.), ttw_aMCatNLO_presel(0.);
+	int   ttw_madgraph_npass       (0.), ttw_aMCatNLO_npass       (0.);
+	int   ttw_madgraph_presel_npass(0.), ttw_aMCatNLO_presel_npass(0.);
+	
+	for( int i = 0; i < sigtree->GetEntries(); i++ ){
+		showStatusBar(i, sigtree->GetEntries(), 10000);
+		sigtree->GetEntry(i);
+		
+		if( flag != systflag ) continue;
+		if (*sname != "TTbarW" && *sname != "TTbarWNLO") continue;
+		
+		//////////////////
+		// preselection //
+		//////////////////
+		if (chVeto && charge != chVeto ) continue;
+		if (Flavor > 2) continue;
+		if (TLCat != 0) continue;
+		if ( mll < 8.) continue;
+		if ( HT     < gMinHT_ttWPresel      || HT  > 8000. )  continue;
+		if ( MET    < gMinMET_ttWPresel     || MET > 8000. ) continue;
+		if ( NJ     < gMinNjets_ttWPresel   )                continue;
+		if ( NbJ    < gMinNbjetsL_ttWPresel )                continue;
+		if ( NbJmed < gMinNbjetsM_ttWPresel )                continue;
+		if (pT1 > pT2) {
+			if(pT1 < gMinPt1_ttWPresel) continue;
+			if(pT2 < gMinPt2_ttWPresel) continue;
+		}
+		else {
+			if(pT1 < gMinPt2_ttWPresel) continue;
+			if(pT2 < gMinPt1_ttWPresel) continue;
+		}
+		Sample *S = fSampleMap[*sname];
+		float scale = fLumiNorm / S->getLumi();
+
+		if (*sname == "TTbarW"   ) {
+			ttw_madgraph_presel += scale*puweight*HLTSF;
+			ttw_madgraph_presel_npass++;
+		}
+		if (*sname == "TTbarWNLO") {
+			ttw_aMCatNLO_presel += scale*puweight*HLTSF;
+			ttw_aMCatNLO_presel_npass++;
+		}
+
+		///////////////
+		// selection //
+		///////////////
+		if ( HT  < minHT  || HT  > maxHT)  continue;
+		if ( MET < minMET || MET > maxMET) continue;
+		if ( NJ  < minNjets)      continue;
+		if ( NbJ < minNbjetsL)    continue;
+		if ( NbJmed < minNbjetsM) continue;
+		if (pT1 > pT2) {
+			if(pT1 < minPt1) continue;
+			if(pT2 < minPt2) continue;
+		}
+		else {
+			if(pT1 < minPt2) continue;
+			if(pT2 < minPt1) continue;
+		}
+
+		if (*sname == "TTbarW"   ) {
+			ttw_madgraph += scale*puweight*HLTSF;
+			ttw_madgraph_npass++;
+		}
+		if (*sname == "TTbarWNLO") {
+			ttw_aMCatNLO += scale*puweight*HLTSF;
+			ttw_aMCatNLO_npass++;
+		}
+		
+	} // end loop over sigtree
+
+	float ttw_eff_madgraph  (0.);
+	float ttw_eff_madgraph_e(0.);
+	float ttw_eff_aMCatNLO  (0.);
+	float ttw_eff_aMCatNLO_e(0.);
+
+	int ttw_madgraph_ngen = fSampleMap["TTbarW"]   ->ngen;
+	int ttw_aMCatNLO_ngen = fSampleMap["TTbarWNLO"]->ngen;
+
+	ratioWithBinomErrors(ttw_madgraph_npass, ttw_madgraph_ngen, ttw_eff_madgraph, ttw_eff_madgraph_e);
+	ratioWithBinomErrors(ttw_aMCatNLO_npass, ttw_aMCatNLO_ngen, ttw_eff_aMCatNLO, ttw_eff_aMCatNLO_e);
+
+	float generator_syst = (ttw_eff_aMCatNLO / ttw_eff_madgraph) - 1.;
+
+	OUT << "\\begin{tabular}{l|rrr|rrr|r}\n";
+	OUT << "	\\hline\n";
+	OUT << "	channel &  \\multicolumn{3}{c|}{MadGraph}  &  \\multicolumn{3}{c|}{aMCatNLO}  &  rel diff \\\\\n";
+	OUT << "	        &  nPassFinalSel  &      nPassPresel  &  sig eff  &  nPassFinalSel  &      nPassPresel  &  sig eff  &	\\\\\n";
+	OUT << "	\\hline\n";
+	if (chVeto ==  1) OUT << "\t$++$";
+	if (chVeto == -1) OUT << "\t$--$";
+	OUT << Form("    &  %8d  &  %8d  &  %7.4f  &  %8d  &  %8d  &  %7.4f  &  %6.2f\\%	\\\\",
+			ttw_madgraph_npass       ,
+			ttw_madgraph_presel_npass,
+			ttw_eff_madgraph,
+			ttw_aMCatNLO_npass       ,
+			ttw_aMCatNLO_presel_npass,
+			ttw_eff_aMCatNLO,
+			generator_syst * 100.
+		) << endl;
+	OUT << "	\\hline\n";
+	OUT << "\\end{tabular}\n";
+	OUT.close();
+
+	return generator_syst;
 }
 void SSDLPlotter::makePRLPlot1(){
 	FakeRatios *FR = new FakeRatios();
