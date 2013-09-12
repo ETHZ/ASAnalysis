@@ -501,10 +501,12 @@ void SSDLPlotter::doAnalysis(){
 //	make2DRatioPlots(Elec);
 ////	makeNTightLoosePlots(Muon);
 ////	makeNTightLoosePlots(Elec);
-	makeNTightLoosePlots(Muon, SigSup, true);
-	makeNTightLoosePlots(Elec, SigSup, true);
-	makeNTightLoosePlots(Muon, ZDecay, true);
-	makeNTightLoosePlots(Elec, ZDecay, true);
+//	makeNTightLoosePlots(Muon, SigSup, true);
+//	makeNTightLoosePlots(Elec, SigSup, true);
+//	makeNTightLoosePlots(Muon, ZDecay, true);
+//	makeNTightLoosePlots(Elec, ZDecay, true);
+	makeRatioControlPlots(Muon);
+	makeRatioControlPlots(Elec);
 ////	// 
 //	makeFRvsPtPlots(Muon, SigSup);
 //	makeFRvsPtPlots(Elec, SigSup);
@@ -6046,7 +6048,7 @@ void SSDLPlotter::makeRatioPlots(gChannel chan){
 	}
 
 	// Customization
-	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
+	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
 
 	for(size_t i = 0; i < gNRatioVars; ++i){
 		TH1D *h_ratio_data = getFRatio(datasamples, chan, i);
@@ -6114,6 +6116,147 @@ void SSDLPlotter::makeRatioPlots(gChannel chan){
 		Util::PrintPDF(  c_temp, "FRatio_" + name + "_" + FRatioPlots::var_name[i], fOutputDir + fOutputSubDir);
 		delete c_temp, leg, lat;
 		delete h_ratio_data, h_ratio_mc;
+	}
+	fOutputSubDir = "";
+}
+void SSDLPlotter::makeRatioControlPlots(gChannel chan){
+	TString name;
+	if(chan == Muon) name = "Muons";
+	if(chan == Elec) name = "Electrons";
+
+	fOutputSubDir = "RatioControlPlots/" + name + "/";
+	char cmd[100];
+    sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
+    system(cmd);
+
+	vector<int> data_samples, wjets_samples, zjets_samples;
+
+	if (chan == Muon) data_samples = fMuData;
+	if (chan == Elec) data_samples = fEGData;
+	wjets_samples.push_back(WJets);
+	zjets_samples.push_back(DYJets);
+
+	// Customization
+	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
+
+	for(size_t ratiovar = 9; ratiovar < gNRatioVars; ++ratiovar){
+		TH1D *ntight_data  = new TH1D("h_NTight_Data" ,  "NTight Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *ntight_wjets = new TH1D("h_NTight_WJets",  "NTight WJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *ntight_zjets = new TH1D("h_NTight_ZJets",  "NTight ZJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *nloose_data  = new TH1D("h_NLoose_Data" ,  "NLoose Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *nloose_wjets = new TH1D("h_NLoose_WJets",  "NLoose WJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *nloose_zjets = new TH1D("h_NLoose_ZJets",  "NLoose ZJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		THStack *hs_tight = new THStack("hs_NTight", "NTight");
+		THStack *hs_loose = new THStack("hs_NLoose", "NLoose");
+
+		// lumi for prescaled triggers
+		float tmp_fLumiNorm = fLumiNorm;
+		if (chan == Muon) fLumiNorm = 24.9;
+		if (chan == Elec) fLumiNorm = 23.845;
+
+		getFRatioPlots( data_samples, chan, ratiovar, ntight_data , nloose_data );
+		getFRatioPlots(wjets_samples, chan, ratiovar, ntight_wjets, nloose_wjets);
+		getFRatioPlots(zjets_samples, chan, ratiovar, ntight_zjets, nloose_zjets);
+
+		nloose_wjets->SetFillColor(kOrange);
+		nloose_zjets->SetFillColor(kGreen);
+		ntight_wjets->SetFillColor(kOrange);
+		ntight_zjets->SetFillColor(kGreen);
+
+		hs_tight->Add(ntight_zjets);
+		hs_tight->Add(ntight_wjets);
+		hs_loose->Add(nloose_zjets);
+		hs_loose->Add(nloose_wjets);
+
+//	TH1D *ratio  = new TH1D("h_TLRatio", "TLRatio", FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	ntight->Sumw2(); nloose->Sumw2(); ratio->Sumw2();
+//		TH1D *h_ratio_data = getFRatio(datasamples, chan, i);
+//		TH1D *h_ratio_mc   = getFRatio(mcsamples,   chan, i);
+//		h_ratio_data->SetName(Form("FRatio_%s_data", FRatioPlots::var_name[ratiovar].Data()));
+//		h_ratio_mc  ->SetName(Form("FRatio_%s_mc",   FRatioPlots::var_name[ratiovar].Data()));
+
+		double max(0.);
+		max = 1.2 * std::max(nloose_data->GetBinContent(nloose_data->GetMaximumBin()),hs_loose->GetMaximum());
+		nloose_data->SetMaximum(max);
+		hs_loose   ->SetMaximum(max);
+		max = 1.2 * std::max(ntight_data->GetBinContent(ntight_data->GetMaximumBin()),hs_tight->GetMaximum());
+		ntight_data->SetMaximum(max);
+		hs_tight   ->SetMaximum(max);
+		
+		nloose_data->SetMarkerColor(kBlack);
+		nloose_data->SetMarkerStyle(20);
+		nloose_data->SetMarkerSize(1.5);
+		nloose_data->SetLineWidth(2);
+		nloose_data->SetLineColor(kBlack);
+		nloose_data->SetFillColor(kBlack);
+		ntight_data->SetMarkerColor(kBlack);
+		ntight_data->SetMarkerStyle(20);
+		ntight_data->SetMarkerSize(1.5);
+		ntight_data->SetLineWidth(2);
+		ntight_data->SetLineColor(kBlack);
+		ntight_data->SetFillColor(kBlack);
+
+		hs_loose->Draw("goff");
+		hs_loose->GetXaxis()->SetTitle(axis_name[ratiovar]);
+		hs_loose->GetYaxis()->SetTitleOffset(1.2);
+		hs_loose->GetYaxis()->SetTitle("N_{Loose}");
+		hs_tight->Draw("goff");
+		hs_tight->GetXaxis()->SetTitle(axis_name[ratiovar]);
+		hs_tight->GetYaxis()->SetTitleOffset(1.2);
+		hs_tight->GetYaxis()->SetTitle("N_{Tight}");
+
+		TLatex *lat = new TLatex();
+		lat->SetNDC(kTRUE);
+		lat->SetTextColor(kBlack);
+		lat->SetTextSize(0.04);
+	
+		TLegend *leg = new TLegend(0.15,0.75,0.35,0.88);
+		leg->AddEntry(nloose_data, "Data",         "p");
+		leg->AddEntry(nloose_wjets,   "W+Jets",   "f");
+		leg->AddEntry(nloose_zjets,   "Z+Jets",   "f");
+		leg->SetFillStyle(0);
+		leg->SetTextFont(42);
+		leg->SetBorderSize(0);
+
+		TCanvas *c_temp = new TCanvas("C_Temp", "fRatio", 0, 0, 600, 600);
+		c_temp->cd();
+
+		hs_tight->Draw("hist");
+		leg->Draw();
+		ntight_data->Draw("P same");
+
+		Util::PrintPDF(  c_temp, "NTight_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+
+//		delete c_temp, leg, lat;
+//		delete ntight_data ;
+//		delete ntight_wjets;
+//		delete ntight_zjets;
+//		delete nloose_data ;
+//		delete nloose_wjets;
+//		delete nloose_zjets;
+//		delete hs_tight ;
+//		delete hs_loose ;
+
+		fLumiNorm = tmp_fLumiNorm;
+
+
+
+//		// gPad->SetLogy();
+//		h_ratio_mc  ->DrawCopy("AXIS");
+//		h_ratio_mc  ->DrawCopy("PE X0 SAME");
+//		h_ratio_data->DrawCopy("PE SAME");
+//		leg->Draw();
+//		lat->DrawLatex(0.70,0.92, Form("L_{int.} = %2.1f fb^{-1}", fLumiNorm/1000.));
+//		lat->DrawLatex(0.11,0.92, name);
+//		double ymean(0.), yrms(0.);
+//		getWeightedYMeanRMS(h_ratio_data, ymean, yrms);
+//		lat->SetTextSize(0.03);
+//		lat->DrawLatex(0.25,0.92, Form("Mean ratio: %4.2f #pm %4.2f", ymean, yrms));
+//	
+//		// Util::PrintNoEPS(c_temp, "FRatio_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir, NULL);
+//		Util::PrintPDF(  c_temp, "FRatio_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+//		delete c_temp, leg, lat;
+//		delete h_ratio_data, h_ratio_mc;
 	}
 	fOutputSubDir = "";
 }
@@ -8044,6 +8187,28 @@ TH1D* SSDLPlotter::getFRatio(vector<int> samples, gChannel chan, int ratiovar, b
 
 	delete ntight, nloose;
 	return ratio;
+}
+void SSDLPlotter::getFRatioPlots(vector<int> samples, gChannel chan, int ratiovar, TH1D*& ntight, TH1D*& nloose, bool output){
+	gStyle->SetOptStat(0);
+
+//	TH1D *ntight = new TH1D("h_NTight",  "NTight",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	TH1D *nloose = new TH1D("h_NLoose",  "NLoose",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	TH1D *ratio  = new TH1D("h_TLRatio", "TLRatio", FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	ntight->Sumw2(); nloose->Sumw2(); ratio->Sumw2();
+
+	for(size_t i = 0; i < samples.size(); ++i){
+		Sample *S = fSamples[samples[i]];
+
+		float scale = fLumiNorm / S->getLumi();
+		if(S->datamc == 0) scale = 1;
+
+		FRatioPlots *RP;
+		if(chan == Muon) RP = &S->ratioplots[0];
+		if(chan == Elec) RP = &S->ratioplots[1];
+		ntight->Add(RP->ntight[ratiovar], scale);
+		nloose->Add(RP->nloose[ratiovar], scale);
+	}
+	return;
 }
 //____________________________________________________________________________
 void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_reg, float &chmid, float &chmide){

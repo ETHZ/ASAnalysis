@@ -299,6 +299,7 @@ public:
 	void makeFRvsNVPlots(gChannel, gFPSwitch);
 	void makeFRvsEtaPlots(gChannel);
 	void makeRatioPlots(gChannel);
+	void makeRatioControlPlots(gChannel);
 	void make2DRatioPlots(gChannel);
 	void makeNTightLoosePlots(gChannel);
 	void makeNTightLoosePlots(gChannel, gFPSwitch, bool);
@@ -390,6 +391,7 @@ public:
 	void getPassedTotal(vector<int>,  gChannel, gFPSwitch, TH2D*&, TH2D*&, TH1D*&, TH1D*&, bool = false);
 	void getPassedTotalTTbar(vector<int>,  gChannel, gFPSwitch, TH2D*&, TH2D*&, bool = false);
 	TH1D* getFRatio(vector<int>, gChannel, int = 0, bool = false);
+	void getFRatioPlots(vector<int>, gChannel, int, TH1D*&, TH1D*&, bool = false);
 
 	void ratioWithBinomErrors(float, float, float&, float&);
 	void ratioWithPoissErrors(float, float, float&, float&);
