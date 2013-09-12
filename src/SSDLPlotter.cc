@@ -7346,11 +7346,11 @@ float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float min
 		}
 
 		if (*sname == "TTbarW"   ) {
-			ttw_madgraph += scale*puweight*HLTSF;
+			ttw_madgraph += puweight*HLTSF;
 			ttw_madgraph_npass++;
 		}
 		if (*sname == "TTbarWNLO") {
-			ttw_aMCatNLO += scale*puweight*HLTSF;
+			ttw_aMCatNLO += puweight*HLTSF;
 			ttw_aMCatNLO_npass++;
 		}
 		
@@ -7378,12 +7378,24 @@ float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float min
 	if (chVeto == -1) OUT << "\t$--$";
 	OUT << Form("    &  %8d  &  %8d  &  %7.4f  &  %8d  &  %8d  &  %7.4f  &  %6.2f\\%	\\\\",
 			ttw_madgraph_npass       ,
-			ttw_madgraph_presel_npass,
+			ttw_madgraph_ngen,
 			ttw_eff_madgraph,
 			ttw_aMCatNLO_npass       ,
-			ttw_aMCatNLO_presel_npass,
+			ttw_aMCatNLO_ngen,
 			ttw_eff_aMCatNLO,
 			generator_syst * 100.
+		) << endl;
+	OUT << "	\\hline\n";
+	if (chVeto ==  1) OUT << "\t$++ weighted$";
+	if (chVeto == -1) OUT << "\t$-- weighted$";
+	OUT << Form("    &  %7.4f  &  %8d  &  %7.4f  &  %7.4f  &  %8d  &  %7.4f  &  %6.2f\\%	\\\\",
+			ttw_madgraph       ,
+			ttw_madgraph_ngen,
+			ttw_madgraph / ((float)ttw_madgraph_ngen),
+			ttw_aMCatNLO       ,
+			ttw_aMCatNLO_ngen,
+			ttw_aMCatNLO / ((float)ttw_aMCatNLO_ngen),
+			(((ttw_aMCatNLO / ((float)ttw_aMCatNLO_ngen)) / (ttw_madgraph / ((float)ttw_madgraph_ngen))) - 1.) * 100.
 		) << endl;
 	OUT << "	\\hline\n";
 	OUT << "\\end{tabular}\n";
