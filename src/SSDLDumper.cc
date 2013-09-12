@@ -1490,20 +1490,20 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 		looseElInd = -1;
 		if(isSigSupElEvent(looseElInd)){
 			if( isTightElectron(looseElInd) ){
-				RP0->ntight[9]->Fill(getMET(),                    gEventWeight);
+				RP1->ntight[9]->Fill(getMET(),                    gEventWeight);
 			}
 			if( isLooseElectron(looseElInd) ){
-				RP0->nloose[9]->Fill(getMET(),                    gEventWeight);
+				RP1->nloose[9]->Fill(getMET(),                    gEventWeight);
 			}
 		}
 		fC_minMet_Control = 30.;
 		looseElInd = -1;
 		if(isSigSupElEvent(looseElInd)){
 			if( isTightElectron(looseElInd) ){
-				RP0->ntight[10]->Fill(ElMT[looseElInd],                  gEventWeight);
+				RP1->ntight[10]->Fill(ElMT[looseElInd],                  gEventWeight);
 			}
 			if( isLooseElectron(looseElInd) ){
-				RP0->nloose[10]->Fill(ElMT[looseElInd],                  gEventWeight);
+				RP1->nloose[10]->Fill(ElMT[looseElInd],                  gEventWeight);
 			}
 		}		
 		fC_maxMt_Control  = tmp_maxMt_Control;
