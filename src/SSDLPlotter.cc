@@ -6139,7 +6139,7 @@ void SSDLPlotter::makeRatioControlPlots(gChannel chan){
 	// Customization
 	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
 
-	for(size_t ratiovar = 9; ratiovar < gNRatioVars; ++ratiovar){
+	for(size_t ratiovar = 0; ratiovar < gNRatioVars; ++ratiovar){
 		TH1D *ntight_data  = new TH1D("h_NTight_Data" ,  "NTight Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
 		TH1D *ntight_wjets = new TH1D("h_NTight_WJets",  "NTight WJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
 		TH1D *ntight_zjets = new TH1D("h_NTight_ZJets",  "NTight ZJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
