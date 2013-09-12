@@ -149,10 +149,10 @@ TString SSDLDumper::DiffPredYields::axis_label[SSDLDumper::gNDiffVars] = {"H_{T}
                                                                           "b-Jet Multiplicity (medium)"};
 
 //////////////////////////////////////////////////////////////////////////////////
-TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT"};
-int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      10 ,         5  ,        10  ,        10  ,       3 ,    5 ,   10 };
-float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      30.,         5. ,        30. ,        50. ,       0.,    0.,    0.};
-float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     300.,        25. ,       150. ,       150. ,       3.,   40.,  100.};
+TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT", "MET",  "MT"};
+int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      10 ,         5  ,        10  ,        10  ,       3 ,    5 ,   10 ,    5 ,   10 };
+float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      30.,         5. ,        30. ,        50. ,       0.,    0.,    0.,    0.,    0.};
+float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     300.,        25. ,       150. ,       150. ,       3.,   40.,  100.,   40.,  100.};
 
 //////////////////////////////////////////////////////////////////////////////////
 TString SSDLDumper::IsoPlots::sel_name[SSDLDumper::gNSels] = {"Base", "SigSup"};
@@ -347,6 +347,7 @@ void SSDLDumper::init(){
 	setRegionCuts(gRegion[gBaseRegion]); // no argument = reset to gBaseRegion
 
  	fC_maxMet_Control = 20.;
+ 	fC_minMet_Control = -999.;
 	fC_maxMt_Control  = 15.;
 	//fC_maxMt_Control  = 20.;
 	
@@ -1401,6 +1402,35 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 			}
 		}		
 		fC_maxMt_Control = tmp_mtC;
+
+		// control plots for EWK correction
+		float tmp_maxMet_Control = fC_maxMet_Control;
+		float tmp_minMet_Control = fC_minMet_Control;
+		float tmp_maxMt_Control  = fC_maxMt_Control;
+		fC_maxMet_Control = 1000.;
+		fC_maxMt_Control  = 1000.;
+		looseMuInd = -1;
+		if(isSigSupMuEvent(looseMuInd)){
+			if( isTightMuon(looseMuInd) ){
+				RP0->ntight[9]->Fill(getMET(),                    gEventWeight);
+			}
+			if( isLooseMuon(looseMuInd) ){
+				RP0->nloose[9]->Fill(getMET(),                    gEventWeight);
+			}
+		}
+		fC_minMet_Control = 30.;
+		looseMuInd = -1;
+		if(isSigSupMuEvent(looseMuInd)){
+			if( isTightMuon(looseMuInd) ){
+				RP0->ntight[10]->Fill(MuMT[looseMuInd],                  gEventWeight);
+			}
+			if( isLooseMuon(looseMuInd) ){
+				RP0->nloose[10]->Fill(MuMT[looseMuInd],                  gEventWeight);
+			}
+		}		
+		fC_maxMt_Control  = tmp_maxMt_Control;
+		fC_maxMet_Control = tmp_maxMet_Control;
+		fC_minMet_Control = tmp_minMet_Control;
 	}
 	resetHypLeptons();
 	setRegionCuts(gRegion[gBaseRegion]);
@@ -1450,6 +1480,35 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 			}
 		}		
 		fC_maxMt_Control = tmp_mtC;
+
+		// control plots for EWK correction
+		float tmp_maxMet_Control = fC_maxMet_Control;
+		float tmp_minMet_Control = fC_minMet_Control;
+		float tmp_maxMt_Control  = fC_maxMt_Control;
+		fC_maxMet_Control = 1000.;
+		fC_maxMt_Control  = 1000.;
+		looseElInd = -1;
+		if(isSigSupElEvent(looseElInd)){
+			if( isTightElectron(looseElInd) ){
+				RP0->ntight[9]->Fill(getMET(),                    gEventWeight);
+			}
+			if( isLooseElectron(looseElInd) ){
+				RP0->nloose[9]->Fill(getMET(),                    gEventWeight);
+			}
+		}
+		fC_minMet_Control = 30.;
+		looseElInd = -1;
+		if(isSigSupElEvent(looseElInd)){
+			if( isTightElectron(looseElInd) ){
+				RP0->ntight[10]->Fill(ElMT[looseElInd],                  gEventWeight);
+			}
+			if( isLooseElectron(looseElInd) ){
+				RP0->nloose[10]->Fill(ElMT[looseElInd],                  gEventWeight);
+			}
+		}		
+		fC_maxMt_Control  = tmp_maxMt_Control;
+		fC_maxMet_Control = tmp_maxMet_Control;
+		fC_minMet_Control = tmp_minMet_Control;
 	}
 	setRegionCuts(gRegion[gBaseRegion]);
 	resetHypLeptons();
@@ -6110,6 +6169,7 @@ bool SSDLDumper::isSigSupMuEvent(int &mu1, int &mu2){
 	if(getMT(mu1,Muon) > fC_maxMt_Control)  return false;
 	//if(getMT(mu1,Muon) > fC_maxMt_Control+5)  return false;
 	if(getMET() > fC_maxMet_Control)   return false;
+	if(getMET() < fC_minMet_Control)   return false;
 	int nmus(0),nvetomu(0);
 	for (int i=0; i< NMus; ++i){
 	 	if (isLooseMuon(i)) nmus++;
@@ -6160,6 +6220,7 @@ bool SSDLDumper::isSigSupElEvent(int &el1, int &el2){
 	if(getMT(el1,Elec) > (fC_maxMt_Control+5.)) return false;
 	//if(getMT(el1,Elec) > (fC_maxMt_Control)) return false;
 	if(getMET() > fC_maxMet_Control)  return false;
+	if(getMET() < fC_minMet_Control)  return false;
 	int nels(0),nvetoels(0);
 	for (int i = 0; i < NEls; i++) {
 		if (isLooseElectron(i)) nels++;
