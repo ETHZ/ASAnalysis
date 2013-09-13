@@ -11388,24 +11388,24 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	fOUTSTREAM << "	        &  nPass  &      nGen  &  sig eff  &  nPass  &      nGen  &  sig eff  &	\\\\\n";
 	fOUTSTREAM << "	\\hline\n";
 	fOUTSTREAM << "\t$++$";
-	fOUTSTREAM << Form("    &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %6.2f\\%	\\\\",
-			ttwzpreds_plpl["Normal"].ttw    ,
-			ttwzpreds_plpl["Normal"].ttw_gen,
-			ttwzpreds_plpl["Normal"].ttw / (float)ttwzpreds_plpl["Normal"].ttw_gen,
-			ttwzpreds_plpl["Normal"].ttw_aMCatNLO    ,
-			ttwzpreds_plpl["Normal"].ttw_aMCatNLO_gen,
-			ttwzpreds_plpl["Normal"].ttw_aMCatNLO / (float)ttwzpreds_plpl["Normal"].ttw_aMCatNLO_gen,
+	fOUTSTREAM << Form("    &  %4.1f  &  %4.0f  &  %7.4f  &  %4.1f  &  %4.0f  &  %7.4f  &  %6.2f\\%	\\\\",
+			ttwzpreds_plpl["Normal"].ttw     * fSampleMap["TTbarW"]->getLumi() / fLumiNorm,
+			ttwzpreds_plpl["Normal"].ttw_gen * fSampleMap["TTbarW"]->getLumi() / fLumiNorm,
+			ttwzpreds_plpl["Normal"].ttw / ttwzpreds_plpl["Normal"].ttw_gen,
+			ttwzpreds_plpl["Normal"].ttw_aMCatNLO     * fSampleMap["TTbarWNLO"]->getLumi() / fLumiNorm,
+			ttwzpreds_plpl["Normal"].ttw_aMCatNLO_gen * fSampleMap["TTbarWNLO"]->getLumi() / fLumiNorm,
+			ttwzpreds_plpl["Normal"].ttw_aMCatNLO / ttwzpreds_plpl["Normal"].ttw_aMCatNLO_gen,
 			(gen_syst_plpl - 1.) * 100.
 		) << endl;
 	fOUTSTREAM << "	\\hline\n";
 	fOUTSTREAM << "\t$--$";
-	fOUTSTREAM << Form("    &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %6.2f\\%	\\\\",
-			ttwzpreds_mimi["Normal"].ttw    ,
-			ttwzpreds_mimi["Normal"].ttw_gen,
-			ttwzpreds_mimi["Normal"].ttw / (float)ttwzpreds_mimi["Normal"].ttw_gen,
-			ttwzpreds_mimi["Normal"].ttw_aMCatNLO    ,
-			ttwzpreds_mimi["Normal"].ttw_aMCatNLO_gen,
-			ttwzpreds_mimi["Normal"].ttw_aMCatNLO / (float)ttwzpreds_mimi["Normal"].ttw_aMCatNLO_gen,
+	fOUTSTREAM << Form("    &  %4.1f  &  %4.0f  &  %7.4f  &  %4.1f  &  %4.0f  &  %7.4f  &  %6.2f\\%	\\\\",
+			ttwzpreds_mimi["Normal"].ttw     * fSampleMap["TTbarW"]->getLumi() / fLumiNorm,
+			ttwzpreds_mimi["Normal"].ttw_gen * fSampleMap["TTbarW"]->getLumi() / fLumiNorm,
+			ttwzpreds_mimi["Normal"].ttw / ttwzpreds_mimi["Normal"].ttw_gen,
+			ttwzpreds_mimi["Normal"].ttw_aMCatNLO     * fSampleMap["TTbarWNLO"]->getLumi() / fLumiNorm,
+			ttwzpreds_mimi["Normal"].ttw_aMCatNLO_gen * fSampleMap["TTbarWNLO"]->getLumi() / fLumiNorm,
+			ttwzpreds_mimi["Normal"].ttw_aMCatNLO / ttwzpreds_mimi["Normal"].ttw_aMCatNLO_gen,
 			(gen_syst_mimi - 1.) * 100.
 		) << endl;
 	fOUTSTREAM << "	\\hline\n";
