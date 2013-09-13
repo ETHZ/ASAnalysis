@@ -559,10 +559,7 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
                                  1.0+ttwzpred.rare_err_ee/ttwzpred.rare_ee) << endl;
     } else if( thisLine_tstr.BeginsWith("NLO") ) {
       if( selectionType_tstr.Contains("CSV_ML") ) continue;
-      float nlo_syst;
-      if( charge=="plus" ) nlo_syst = 1.04;
-      else if( charge=="minus" ) nlo_syst = 1.27;
-      else if( charge=="all" ) nlo_syst = 1.15;
+      float nlo_syst = (ttwzpred.ttw_aMCatNLO / ttwzpred.ttw_aMCatNLO_gen) / (ttwzpred.ttw / ttwzpred.ttw_gen);
       datacard << Form("NLO lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-", nlo_syst, nlo_syst, nlo_syst);
     } else {
       datacard << thisLine << std::endl;

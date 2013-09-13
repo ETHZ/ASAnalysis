@@ -11831,9 +11831,6 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	const float nlo_syst_plpl = 1.038;
 	const float nlo_syst_mimi = 1.270;
 	float nlo_syst = (ttwzpreds["Normal"].ttw_aMCatNLO / ttwzpreds["Normal"].ttw_aMCatNLO_gen) / (ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw_gen);
-//	float nlo_syst = 1.13; // old numbers for the moment
-//	if (chVeto == +1) nlo_syst = nlo_syst_plpl;
-//	if (chVeto == -1) nlo_syst = nlo_syst_mimi;
 	TString lumiError = "1.044";
 	
 	datacard = outputdir + "datacard_TTWZ" + chargeString + ".txt";
@@ -16685,13 +16682,9 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	pred.ttw_err_em = sqrt(nt2_ttw_mc_em_e2 + TTWESyst2*nt2_ttw_mc_em*nt2_ttw_mc_em);
 	pred.ttw_err_ee = sqrt(nt2_ttw_mc_ee_e2 + TTWESyst2*nt2_ttw_mc_ee*nt2_ttw_mc_ee);
 	pred.ttw_gen = (float)fSampleMap["TTbarW"]   ->ngen * fLumiNorm / fSampleMap["TTbarW"]->getLumi();
-	cout << "pred.ttw_gen = (float)fSampleMap[TTbarW]   ->ngen * fLumiNorm / fSampleMap[TTbarW]->getLumi();" << endl;
-	cout << "pred.ttw_gen = " << (float)fSampleMap["TTbarW"]   ->ngen << " * " << fLumiNorm << " / " << fSampleMap["TTbarW"]->getLumi() << endl;
 
 	pred.ttw_aMCatNLO     = nt2_ttw_aMCatNLO_mm + nt2_ttw_aMCatNLO_em + nt2_ttw_aMCatNLO_ee;
 	pred.ttw_aMCatNLO_gen = (float)fSampleMap["TTbarWNLO"]->ngen * fLumiNorm / fSampleMap["TTbarWNLO"]->getLumi();
-	cout << "pred.ttw_aMCatNLO_gen = (float)fSampleMap[TTbarWNLO]->ngen * fLumiNorm / fSampleMap[TTbarWNLO]->getLumi();" << endl;
-	cout << "pred.ttw_gen = " << (float)fSampleMap["TTbarWNLO"]   ->ngen << " * " << fLumiNorm << " / " << fSampleMap["TTbarWNLO"]->getLumi() << endl;
 	
 	pred.ttz      = nt2_ttz_mc_mm + nt2_ttz_mc_em + nt2_ttz_mc_ee;
 	pred.ttz_mm   = nt2_ttz_mc_mm;
