@@ -40,6 +40,7 @@ static const bool gRatiosFromTTbar = false;
 static const bool gFullDataBlind = false;
 static const bool gTTHBG = true;
 static const bool gTTWZ = true;
+static const bool gEWKCorrection = true;
 
 static const float gMMU = 0.1057;
 static const float gMEL = 0.0005;
@@ -124,6 +125,8 @@ void SSDLPlotter::init(TString filename){
 	else fLumiNorm = 9100.;	// ttV 2012 analysis
 //	fLumiNorm = 9100.;	// ttV 2012 analysis
 //	fLumiNorm = 19466.;   // Moriond 2013 dataset
+	fLumiNormHLTMu17      = 24.9;
+	fLumiNormHLTEl17Jet30 = 23.845;
 
 	// Cuts:
 	fC_minMu1pt = 20.;
@@ -497,17 +500,17 @@ void SSDLPlotter::doAnalysis(){
 
 //	makeRatioPlots(Muon);
 //	makeRatioPlots(Elec);
-//	make2DRatioPlots(Muon);
-//	make2DRatioPlots(Elec);
+	make2DRatioPlots(Muon);
+	make2DRatioPlots(Elec);
 ////	makeNTightLoosePlots(Muon);
 ////	makeNTightLoosePlots(Elec);
 //	makeNTightLoosePlots(Muon, SigSup, true);
 //	makeNTightLoosePlots(Elec, SigSup, true);
 //	makeNTightLoosePlots(Muon, ZDecay, true);
 //	makeNTightLoosePlots(Elec, ZDecay, true);
-	makeRatioControlPlots(Muon);
-	makeRatioControlPlots(Elec);
-////	// 
+//	makeRatioControlPlots(Muon);
+//	makeRatioControlPlots(Elec);
+//////	// 
 //	makeFRvsPtPlots(Muon, SigSup);
 //	makeFRvsPtPlots(Elec, SigSup);
 //	makeFRvsPtPlots(Muon, ZDecay);
@@ -528,7 +531,7 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-//	makeTTWDiffPredictionsSigEvent();
+	makeTTWDiffPredictionsSigEvent();
 //	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
@@ -569,6 +572,8 @@ void SSDLPlotter::doAnalysis(){
 
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
+
+	makePredictionSignalEvents(0., 8000., 0., 8000., 3, 1, 1, 20., 20., 0, true, 0);
 
 	// final selection
 //	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
@@ -7858,16 +7863,52 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 	h_pt->Sumw2();
 	h_eta->Sumw2();
 
+	vector<int> wjets_samples, zjets_samples;
+	wjets_samples.push_back(WJets);
+	zjets_samples.push_back(DYJets);
+
 	TH2D *H_ntight = new TH2D("NTight", "NTight Muons", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
 	TH2D *H_nloose = new TH2D("NLoose", "NLoose Muons", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
 	H_ntight->Sumw2();
 	H_nloose->Sumw2();
+	TH2D *H_ntight_wjets = new TH2D("NTight_WJets", "NTight Muons WJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	TH2D *H_nloose_wjets = new TH2D("NLoose_WJets", "NLoose Muons WJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	H_ntight_wjets->Sumw2();
+	H_nloose_wjets->Sumw2();
+	TH2D *H_ntight_zjets = new TH2D("NTight_ZJets", "NTight Muons ZJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	TH2D *H_nloose_zjets = new TH2D("NLoose_ZJets", "NLoose Muons ZJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	H_ntight_zjets->Sumw2();
+	H_nloose_zjets->Sumw2();
 
 	TH1D *H_ntight_nv = new TH1D("NTight_NV", "NTight Muons NV", 18, 0., 36.); H_ntight_nv->Sumw2();
 	TH1D *H_nloose_nv = new TH1D("NLoose_NV", "NLoose Muons NV", 18, 0., 36.); H_nloose_nv->Sumw2();
+	TH1D *H_ntight_nv_wjets = new TH1D("NTight_NV_WJets", "NTight Muons NV WJets", 18, 0., 36.); H_ntight_nv_wjets->Sumw2();
+	TH1D *H_nloose_nv_wjets = new TH1D("NLoose_NV_WJets", "NLoose Muons NV WJets", 18, 0., 36.); H_nloose_nv_wjets->Sumw2();
+	TH1D *H_ntight_nv_zjets = new TH1D("NTight_NV_ZJets", "NTight Muons NV ZJets", 18, 0., 36.); H_ntight_nv_zjets->Sumw2();
+	TH1D *H_nloose_nv_zjets = new TH1D("NLoose_NV_ZJets", "NLoose Muons NV ZJets", 18, 0., 36.); H_nloose_nv_zjets->Sumw2();
 	if (gRatiosFromTTbar || ttbarMatched) getPassedTotalTTbar(samples, chan, fp, H_ntight, H_nloose, output);
 	// marc jan 27 else getPassedTotal(samples, chan, fp, H_ntight, H_nloose, output);
-	else getPassedTotal(samples, chan, fp, H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, output);
+	else {
+		getPassedTotal(samples, chan, fp, H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, output);
+		getPassedTotal(wjets_samples, chan, fp, H_ntight_wjets, H_nloose_wjets, H_ntight_nv_wjets, H_nloose_nv_wjets, output);
+		getPassedTotal(zjets_samples, chan, fp, H_ntight_zjets, H_nloose_zjets, H_ntight_nv_zjets, H_nloose_nv_zjets, output);
+	}
+	if (fp == SigSup && gEWKCorrection) {
+		float lumi(1.);
+		if (chan == Muon) lumi = fLumiNormHLTMu17;
+		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30;
+		// mc samples are scaled to fLumiNorm. now scale to prescaled triggers.
+		float scale_wjets = lumi / fLumiNorm;
+		float scale_zjets = lumi / fLumiNorm;
+		H_ntight   ->Add(H_ntight_wjets   , (-1.) * scale_wjets);
+		H_ntight   ->Add(H_ntight_zjets   , (-1.) * scale_zjets);
+		H_nloose   ->Add(H_nloose_wjets   , (-1.) * scale_wjets);
+		H_nloose   ->Add(H_nloose_zjets   , (-1.) * scale_zjets);
+		H_ntight_nv->Add(H_ntight_nv_wjets, (-1.) * scale_wjets);
+		H_ntight_nv->Add(H_ntight_nv_zjets, (-1.) * scale_zjets);
+		H_nloose_nv->Add(H_nloose_nv_wjets, (-1.) * scale_wjets);
+		H_nloose_nv->Add(H_nloose_nv_zjets, (-1.) * scale_zjets);
+	}
 	h_2d->Divide(H_ntight,    H_nloose,    1., 1., "B");
 	h_nv->Divide(H_ntight_nv, H_nloose_nv, 1., 1., "B");
 
@@ -12702,16 +12743,16 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
-//	// 3 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
-//	// 1 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+	// 3 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+	// 1 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
 ////	// 0 J   0 bJ
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
@@ -12723,11 +12764,11 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 	// >=2 J   ==0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
-	// final sel
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
+//	// final sel
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);

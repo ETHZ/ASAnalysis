@@ -480,6 +480,8 @@ public:
 	TLatex *fLatex;
 	
 	float fLumiNorm;      // Normalize everything to this luminosity
+	float fLumiNormHLTMu17;
+	float fLumiNormHLTEl17Jet30;
 	float fBinWidthScale; // Normalize bin contents to this width
 
 	TH1D *fH1D_MufRatio;
