@@ -531,7 +531,7 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-	makeTTWDiffPredictionsSigEvent();
+//	makeTTWDiffPredictionsSigEvent();
 //	makeTTWKinPlotsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
@@ -573,7 +573,7 @@ void SSDLPlotter::doAnalysis(){
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
 
-	makePredictionSignalEvents(0., 8000., 0., 8000., 3, 1, 1, 20., 20., 0, true, 0);
+//	makePredictionSignalEvents(0., 8000., 0., 8000., 3, 1, 1, 20., 20., 0, true, 0);
 
 	// final selection
 //	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
@@ -6301,6 +6301,7 @@ void SSDLPlotter::make2DRatioPlots(gChannel chan){
 	drawTopLine();
 
 	Util::PrintPDF(c_temp, "FRatio2D_" + name, fOutputDir + fOutputSubDir);
+	Util::PrintPNG(c_temp, "FRatio2D_" + name, fOutputDir + fOutputSubDir);
 	delete c_temp;
 	fOutputSubDir = "";
 }
@@ -7760,9 +7761,9 @@ void SSDLPlotter::fillRatios(vector<int> frmusamples, vector<int> frelsamples, v
 		fH1D_MupRatio = fillRatioPt(Muon, prmusamples, ZDecay, false);
 		fH1D_ElfRatio = fillRatioPt(Elec, frelsamples, SigSup, false);
 		fH1D_ElpRatio = fillRatioPt(Elec, prelsamples, ZDecay, false);
-		fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, false);
+		fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, true);
 		fH2D_MupRatio = fillRatio(  Muon, prmusamples, ZDecay, false);
-		fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, false);
+		fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, true);
 		fH2D_ElpRatio = fillRatio(  Elec, prelsamples, ZDecay, false);
 	}
 	if(datamc == 1){
@@ -7919,19 +7920,27 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 
 	h_pt ->Divide(hmutightpt,  hmuloosept,  1., 1., "B"); // binomial
 	h_eta->Divide(hmutighteta, hmulooseeta, 1., 1., "B"); // weights are ignored
-	delete H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, hmuloosept, hmulooseeta, hmutightpt, hmutighteta;
 	TString name = "";
+	if (fp == SigSup) name += "F";
+	if (fp == ZDecay) name += "P";
+	name += h_2d->GetName();
 	for(size_t i = 0; i < samples.size(); ++i){
 		int sample = samples[i];
-		name += h_2d->GetName();
 		name += "_";
 		name += fSamples[sample]->sname;
 	}
+	if (gEWKCorrection) name += "_EWKCorrected";
 	if(output){
-		printObject(h_2d,  TString("Ratio")    + name, "colz");
-		printObject(h_pt,  TString("RatioPt")  + name, "PE1");
-		printObject(h_eta, TString("RatioEta") + name, "PE1");
+//	if (fp == SigSup) {
+		fOutputSubDir = "Ratios/";
+		printObject(h_2d,     TString("Ratio")    + name, "colz text");
+		printObject(h_pt,     TString("RatioPt")  + name, "PE1");
+		printObject(h_eta,    TString("RatioEta") + name, "PE1");
+		printObject(H_ntight, TString("NTight")   + name, "colz text");
+		printObject(H_nloose, TString("NLoose")   + name, "colz text");
+		fOutputSubDir = "";
 	}
+	delete H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, hmuloosept, hmulooseeta, hmutightpt, hmutighteta;
 }
 void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, float &ratio, float &ratioe){
 	double ntight(0.), nloose(0.);
