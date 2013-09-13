@@ -572,7 +572,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
 //	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
 
-//	makeTTWIntPredictionsSigEvent();
+	makeTTWIntPredictionsSigEvent();
 
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
@@ -7299,6 +7299,7 @@ float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float min
 		//////////////////
 		// preselection //
 		//////////////////
+		if (gApplyZVeto && passZVeto == 0)  continue;
 		if (chVeto && charge != chVeto ) continue;
 		if (Flavor > 2) continue;
 		if (TLCat != 0) continue;
@@ -11368,6 +11369,49 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 
 	fOUTSTREAM.close();
 
+	////////////////////////////////
+	// generator systematic table //
+	////////////////////////////////
+	float gen_syst_plpl(1.), gen_syst_mimi(1.);
+	gen_syst_plpl = (ttwzpreds_plpl["Normal"].ttw_aMCatNLO / ttwzpreds_plpl["Normal"].ttw_aMCatNLO_gen) / (ttwzpreds_plpl["Normal"].ttw / ttwzpreds_plpl["Normal"].ttw_gen);
+	gen_syst_mimi = (ttwzpreds_mimi["Normal"].ttw_aMCatNLO / ttwzpreds_mimi["Normal"].ttw_aMCatNLO_gen) / (ttwzpreds_mimi["Normal"].ttw / ttwzpreds_mimi["Normal"].ttw_gen);
+
+	TString generator_syst_table     = outputdir + "generator_syst_table.tex";
+	fOUTSTREAM.open(generator_syst_table.Data(), ios::trunc);
+	fOUTSTREAM << "%!TEX root = ../AN-12-445.tex" << endl;
+	fOUTSTREAM << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	fOUTSTREAM << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM << "%\n%\n";
+	fOUTSTREAM << "\\begin{tabular}{l|rrr|rrr|r}\n";
+	fOUTSTREAM << "	\\hline\n";
+	fOUTSTREAM << "	channel &  \\multicolumn{3}{c|}{MadGraph}  &  \\multicolumn{3}{c|}{aMCatNLO}  &  rel diff \\\\\n";
+	fOUTSTREAM << "	        &  nPass  &      nGen  &  sig eff  &  nPass  &      nGen  &  sig eff  &	\\\\\n";
+	fOUTSTREAM << "	\\hline\n";
+	fOUTSTREAM << "\t$++$";
+	fOUTSTREAM << Form("    &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %6.2f\\%	\\\\",
+			ttwzpreds_plpl["Normal"].ttw    ,
+			ttwzpreds_plpl["Normal"].ttw_gen,
+			ttwzpreds_plpl["Normal"].ttw / (float)ttwzpreds_plpl["Normal"].ttw_gen,
+			ttwzpreds_plpl["Normal"].ttw_aMCatNLO    ,
+			ttwzpreds_plpl["Normal"].ttw_aMCatNLO_gen,
+			ttwzpreds_plpl["Normal"].ttw_aMCatNLO / (float)ttwzpreds_plpl["Normal"].ttw_aMCatNLO_gen,
+			(gen_syst_plpl - 1.) * 100.
+		) << endl;
+	fOUTSTREAM << "	\\hline\n";
+	fOUTSTREAM << "\t$--$";
+	fOUTSTREAM << Form("    &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %7.4f  &  %6.2f\\%	\\\\",
+			ttwzpreds_mimi["Normal"].ttw    ,
+			ttwzpreds_mimi["Normal"].ttw_gen,
+			ttwzpreds_mimi["Normal"].ttw / (float)ttwzpreds_mimi["Normal"].ttw_gen,
+			ttwzpreds_mimi["Normal"].ttw_aMCatNLO    ,
+			ttwzpreds_mimi["Normal"].ttw_aMCatNLO_gen,
+			ttwzpreds_mimi["Normal"].ttw_aMCatNLO / (float)ttwzpreds_mimi["Normal"].ttw_aMCatNLO_gen,
+			(gen_syst_mimi - 1.) * 100.
+		) << endl;
+	fOUTSTREAM << "	\\hline\n";
+	fOUTSTREAM << "\\end{tabular}\n";
+
+	fOUTSTREAM.close();
 
 	///////////////////////
 	// combined datacard //
@@ -11640,8 +11684,9 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 //					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn,
 //					   scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn) << endl;
 	fOUTSTREAM << Form("NLO      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-",
-					   nlo_syst_plpl, nlo_syst_plpl, nlo_syst_plpl,
-					   nlo_syst_mimi, nlo_syst_mimi, nlo_syst_mimi) << endl;
+						gen_syst_plpl, gen_syst_plpl, gen_syst_plpl,
+						gen_syst_mimi, gen_syst_mimi, gen_syst_mimi
+						) << endl;
 	fOUTSTREAM << endl;
 	fOUTSTREAM.close();
 }
@@ -11785,9 +11830,10 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	const float scale_syst_dn = 0.961;
 	const float nlo_syst_plpl = 1.038;
 	const float nlo_syst_mimi = 1.270;
-	float nlo_syst = 1.13; // old numbers for the moment
-	if (chVeto == +1) nlo_syst = nlo_syst_plpl;
-	if (chVeto == -1) nlo_syst = nlo_syst_mimi;
+	float nlo_syst = (ttwzpreds["Normal"].ttw_aMCatNLO / ttwzpreds["Normal"].ttw_aMCatNLO_gen) / (ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw_gen);
+//	float nlo_syst = 1.13; // old numbers for the moment
+//	if (chVeto == +1) nlo_syst = nlo_syst_plpl;
+//	if (chVeto == -1) nlo_syst = nlo_syst_mimi;
 	TString lumiError = "1.044";
 	
 	datacard = outputdir + "datacard_TTWZ" + chargeString + ".txt";
@@ -15861,6 +15907,10 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	std::map< std::string, int > rareMapEM_npass;
 	std::map< std::string, int > rareMapEE_npass;
 
+	float nt2_ttw_aMCatNLO_mm (0.);
+	float nt2_ttw_aMCatNLO_em (0.);
+	float nt2_ttw_aMCatNLO_ee (0.);
+
 	for(size_t i = 0; i < fMCRareSM.size(); ++i){
 		Sample *S = fSamples[fMCRareSM[i]];
 		std::string name = (string) S->sname;
@@ -16002,6 +16052,25 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 				rareMapEE_npass[*sname] ++;
 			}
 		} // end rare mc events
+
+		// get ttW aMCatNLO events for generator systematic
+		if (*sname == "TTbarWNLO" && TLCat == 0) {
+			if (Flavor > 2) continue;
+			if (chVeto && charge != chVeto ) continue;
+			// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
+			Sample *S = fSampleMap[*sname];
+			float scale = fLumiNorm / S->getLumi();
+			float tmp_nt2 = puweight*HLTSF*scale;
+			if (Flavor == 0) {
+				nt2_ttw_aMCatNLO_mm += tmp_nt2;
+			}
+			if (Flavor == 1) {
+				nt2_ttw_aMCatNLO_em += tmp_nt2;
+			}
+			if (Flavor == 2) {
+				nt2_ttw_aMCatNLO_ee += tmp_nt2;
+			}
+		} // end ttW aMCatNLO events
 		
 	}
 	// float nt2_rare_mc_mm_e1 = sqrt(nt2_rare_mc_mm_e2);
@@ -16615,6 +16684,14 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	pred.ttw_err_mm = sqrt(nt2_ttw_mc_mm_e2 + TTWESyst2*nt2_ttw_mc_mm*nt2_ttw_mc_mm);
 	pred.ttw_err_em = sqrt(nt2_ttw_mc_em_e2 + TTWESyst2*nt2_ttw_mc_em*nt2_ttw_mc_em);
 	pred.ttw_err_ee = sqrt(nt2_ttw_mc_ee_e2 + TTWESyst2*nt2_ttw_mc_ee*nt2_ttw_mc_ee);
+	pred.ttw_gen = (float)fSampleMap["TTbarW"]   ->ngen * fLumiNorm / fSampleMap["TTbarW"]->getLumi();
+	cout << "pred.ttw_gen = (float)fSampleMap[TTbarW]   ->ngen * fLumiNorm / fSampleMap[TTbarW]->getLumi();" << endl;
+	cout << "pred.ttw_gen = " << (float)fSampleMap["TTbarW"]   ->ngen << " * " << fLumiNorm << " / " << fSampleMap["TTbarW"]->getLumi() << endl;
+
+	pred.ttw_aMCatNLO     = nt2_ttw_aMCatNLO_mm + nt2_ttw_aMCatNLO_em + nt2_ttw_aMCatNLO_ee;
+	pred.ttw_aMCatNLO_gen = (float)fSampleMap["TTbarWNLO"]->ngen * fLumiNorm / fSampleMap["TTbarWNLO"]->getLumi();
+	cout << "pred.ttw_aMCatNLO_gen = (float)fSampleMap[TTbarWNLO]->ngen * fLumiNorm / fSampleMap[TTbarWNLO]->getLumi();" << endl;
+	cout << "pred.ttw_gen = " << (float)fSampleMap["TTbarWNLO"]   ->ngen << " * " << fLumiNorm << " / " << fSampleMap["TTbarWNLO"]->getLumi() << endl;
 	
 	pred.ttz      = nt2_ttz_mc_mm + nt2_ttz_mc_em + nt2_ttz_mc_ee;
 	pred.ttz_mm   = nt2_ttz_mc_mm;
