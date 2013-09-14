@@ -370,7 +370,7 @@ public:
     	        TEfficiency *chmid_B_pt;
 	};
 	// static const int gNRatioVars = 8;
-	static const int gNRatioVars = 9;
+	static const int gNRatioVars = 11;
 	struct FRatioPlots{
 		static TString var_name[gNRatioVars];
 		static int nbins[gNRatioVars];
@@ -937,6 +937,7 @@ public:
 	float fC_minMu2pt;
 	float fC_minEl1pt;
 	float fC_minEl2pt;
+	float fC_minMet_Control;
 	float fC_maxMet_Control;
 	float fC_maxMt_Control;
 	int   fC_app3rdVet; // 3rd lepton veto

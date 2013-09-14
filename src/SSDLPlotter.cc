@@ -40,6 +40,7 @@ static const bool gRatiosFromTTbar = false;
 static const bool gFullDataBlind = false;
 static const bool gTTHBG = true;
 static const bool gTTWZ = true;
+static const bool gEWKCorrection = false;
 
 static const float gMMU = 0.1057;
 static const float gMEL = 0.0005;
@@ -133,6 +134,8 @@ void SSDLPlotter::init(TString filename){
 	else fLumiNorm = 9100.;	// ttV 2012 analysis
 //	fLumiNorm = 9100.;	// ttV 2012 analysis
 //	fLumiNorm = 19466.;   // Moriond 2013 dataset
+	fLumiNormHLTMu17      = 24.9;
+	fLumiNormHLTEl17Jet30 = 23.845;
 
 	// Cuts:
 	fC_minMu1pt = 20.;
@@ -506,15 +509,17 @@ void SSDLPlotter::doAnalysis(){
 
 //	makeRatioPlots(Muon);
 //	makeRatioPlots(Elec);
-//	make2DRatioPlots(Muon);
-//	make2DRatioPlots(Elec);
+	make2DRatioPlots(Muon);
+	make2DRatioPlots(Elec);
 ////	makeNTightLoosePlots(Muon);
 ////	makeNTightLoosePlots(Elec);
-////	makeNTightLoosePlots(Muon, SigSup, true);
-////	makeNTightLoosePlots(Elec, SigSup, true);
-////	makeNTightLoosePlots(Muon, ZDecay, true);
-////	makeNTightLoosePlots(Elec, ZDecay, true);
-////	// 
+//	makeNTightLoosePlots(Muon, SigSup, true);
+//	makeNTightLoosePlots(Elec, SigSup, true);
+//	makeNTightLoosePlots(Muon, ZDecay, true);
+//	makeNTightLoosePlots(Elec, ZDecay, true);
+//	makeRatioControlPlots(Muon);
+//	makeRatioControlPlots(Elec);
+//////	// 
 //	makeFRvsPtPlots(Muon, SigSup);
 //	makeFRvsPtPlots(Elec, SigSup);
 //	makeFRvsPtPlots(Muon, ZDecay);
@@ -576,6 +581,8 @@ void SSDLPlotter::doAnalysis(){
 
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
+
+//	makePredictionSignalEvents(0., 8000., 0., 8000., 3, 1, 1, 20., 20., 0, true, 0);
 
 	// final selection
 //	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
@@ -6058,7 +6065,7 @@ void SSDLPlotter::makeRatioPlots(gChannel chan){
 	}
 
 	// Customization
-	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
+	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
 
 	for(size_t i = 0; i < gNRatioVars; ++i){
 		TH1D *h_ratio_data = getFRatio(datasamples, chan, i);
@@ -6129,6 +6136,155 @@ void SSDLPlotter::makeRatioPlots(gChannel chan){
 	}
 	fOutputSubDir = "";
 }
+void SSDLPlotter::makeRatioControlPlots(gChannel chan){
+	TString name;
+	if(chan == Muon) name = "Muons";
+	if(chan == Elec) name = "Electrons";
+
+	fOutputSubDir = "RatioControlPlots/" + name + "/";
+	char cmd[100];
+    sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
+    system(cmd);
+
+	vector<int> data_samples, wjets_samples, zjets_samples;
+
+	if (chan == Muon) data_samples = fMuData;
+	if (chan == Elec) data_samples = fEGData;
+	wjets_samples.push_back(WJets);
+	zjets_samples.push_back(DYJets);
+
+	// Customization
+	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
+
+	for(size_t ratiovar = 0; ratiovar < gNRatioVars; ++ratiovar){
+		TH1D *ntight_data  = new TH1D("h_NTight_Data" ,  "NTight Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *ntight_wjets = new TH1D("h_NTight_WJets",  "NTight WJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *ntight_zjets = new TH1D("h_NTight_ZJets",  "NTight ZJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *nloose_data  = new TH1D("h_NLoose_Data" ,  "NLoose Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *nloose_wjets = new TH1D("h_NLoose_WJets",  "NLoose WJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		TH1D *nloose_zjets = new TH1D("h_NLoose_ZJets",  "NLoose ZJets",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+		THStack *hs_tight = new THStack("hs_NTight", "NTight");
+		THStack *hs_loose = new THStack("hs_NLoose", "NLoose");
+
+		// lumi for prescaled triggers
+		float tmp_fLumiNorm = fLumiNorm;
+		if (chan == Muon) fLumiNorm = 24.9;
+		if (chan == Elec) fLumiNorm = 23.845;
+
+		getFRatioPlots( data_samples, chan, ratiovar, ntight_data , nloose_data );
+		getFRatioPlots(wjets_samples, chan, ratiovar, ntight_wjets, nloose_wjets);
+		getFRatioPlots(zjets_samples, chan, ratiovar, ntight_zjets, nloose_zjets);
+
+		nloose_wjets->SetFillColor(kOrange);
+		nloose_zjets->SetFillColor(kGreen);
+		ntight_wjets->SetFillColor(kOrange);
+		ntight_zjets->SetFillColor(kGreen);
+
+		hs_tight->Add(ntight_zjets);
+		hs_tight->Add(ntight_wjets);
+		hs_loose->Add(nloose_zjets);
+		hs_loose->Add(nloose_wjets);
+
+//	TH1D *ratio  = new TH1D("h_TLRatio", "TLRatio", FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	ntight->Sumw2(); nloose->Sumw2(); ratio->Sumw2();
+//		TH1D *h_ratio_data = getFRatio(datasamples, chan, i);
+//		TH1D *h_ratio_mc   = getFRatio(mcsamples,   chan, i);
+//		h_ratio_data->SetName(Form("FRatio_%s_data", FRatioPlots::var_name[ratiovar].Data()));
+//		h_ratio_mc  ->SetName(Form("FRatio_%s_mc",   FRatioPlots::var_name[ratiovar].Data()));
+
+		double max(0.);
+		max = 1.2 * std::max(nloose_data->GetBinContent(nloose_data->GetMaximumBin()),hs_loose->GetMaximum());
+		nloose_data->SetMaximum(max);
+		hs_loose   ->SetMaximum(max);
+		max = 1.2 * std::max(ntight_data->GetBinContent(ntight_data->GetMaximumBin()),hs_tight->GetMaximum());
+		ntight_data->SetMaximum(max);
+		hs_tight   ->SetMaximum(max);
+		
+		nloose_data->SetMarkerColor(kBlack);
+		nloose_data->SetMarkerStyle(20);
+		nloose_data->SetMarkerSize(1.5);
+		nloose_data->SetLineWidth(2);
+		nloose_data->SetLineColor(kBlack);
+		nloose_data->SetFillColor(kBlack);
+		ntight_data->SetMarkerColor(kBlack);
+		ntight_data->SetMarkerStyle(20);
+		ntight_data->SetMarkerSize(1.5);
+		ntight_data->SetLineWidth(2);
+		ntight_data->SetLineColor(kBlack);
+		ntight_data->SetFillColor(kBlack);
+
+		hs_loose->Draw("goff");
+		hs_loose->GetXaxis()->SetTitle(axis_name[ratiovar]);
+		hs_loose->GetYaxis()->SetTitleOffset(1.2);
+		hs_loose->GetYaxis()->SetTitle("N_{Loose}");
+		hs_tight->Draw("goff");
+		hs_tight->GetXaxis()->SetTitle(axis_name[ratiovar]);
+		hs_tight->GetYaxis()->SetTitleOffset(1.2);
+		hs_tight->GetYaxis()->SetTitle("N_{Tight}");
+
+		TLatex *lat = new TLatex();
+		lat->SetNDC(kTRUE);
+		lat->SetTextColor(kBlack);
+		lat->SetTextSize(0.04);
+	
+		TLegend *leg = new TLegend(0.15,0.75,0.35,0.88);
+		leg->AddEntry(nloose_data, "Data",         "p");
+		leg->AddEntry(nloose_wjets,   "W+Jets",   "f");
+		leg->AddEntry(nloose_zjets,   "Z+Jets",   "f");
+		leg->SetFillStyle(0);
+		leg->SetTextFont(42);
+		leg->SetBorderSize(0);
+
+		TCanvas *c_temp = new TCanvas("C_Temp", "fRatio", 0, 0, 600, 600);
+		c_temp->cd();
+
+		hs_tight->Draw("hist");
+		leg->Draw();
+		ntight_data->Draw("P same");
+		drawTopLine(0.56, 0.8);
+		Util::PrintPDF(  c_temp, "NTight_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+		Util::PrintPNG(  c_temp, "NTight_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+
+		hs_loose->Draw("hist");
+		leg->Draw();
+		nloose_data->Draw("P same");
+		drawTopLine(0.56, 0.8);
+		Util::PrintPDF(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+		Util::PrintPNG(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+
+//		delete c_temp, leg, lat;
+//		delete ntight_data ;
+//		delete ntight_wjets;
+//		delete ntight_zjets;
+//		delete nloose_data ;
+//		delete nloose_wjets;
+//		delete nloose_zjets;
+//		delete hs_tight ;
+//		delete hs_loose ;
+
+		fLumiNorm = tmp_fLumiNorm;
+
+
+
+//		// gPad->SetLogy();
+//		h_ratio_mc  ->DrawCopy("AXIS");
+//		h_ratio_mc  ->DrawCopy("PE X0 SAME");
+//		h_ratio_data->DrawCopy("PE SAME");
+//		leg->Draw();
+//		lat->DrawLatex(0.70,0.92, Form("L_{int.} = %2.1f fb^{-1}", fLumiNorm/1000.));
+//		lat->DrawLatex(0.11,0.92, name);
+//		double ymean(0.), yrms(0.);
+//		getWeightedYMeanRMS(h_ratio_data, ymean, yrms);
+//		lat->SetTextSize(0.03);
+//		lat->DrawLatex(0.25,0.92, Form("Mean ratio: %4.2f #pm %4.2f", ymean, yrms));
+//	
+//		// Util::PrintNoEPS(c_temp, "FRatio_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir, NULL);
+//		Util::PrintPDF(  c_temp, "FRatio_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+//		delete c_temp, leg, lat;
+//		delete h_ratio_data, h_ratio_mc;
+	}
+	fOutputSubDir = "";
+}
 void SSDLPlotter::make2DRatioPlots(gChannel chan){
 	TH2D* histo = fH2D_MufRatio;
 	if(chan == Elec) histo = fH2D_ElfRatio;
@@ -6157,6 +6313,7 @@ void SSDLPlotter::make2DRatioPlots(gChannel chan){
 	drawTopLine();
 
 	Util::PrintPDF(c_temp, "FRatio2D_" + name, fOutputDir + fOutputSubDir);
+	Util::PrintPNG(c_temp, "FRatio2D_" + name, fOutputDir + fOutputSubDir);
 	delete c_temp;
 	fOutputSubDir = "";
 }
@@ -6353,31 +6510,43 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
 	system(cmd);
 
-	vector<int> qcd_samples, wjets_samples, zjets_samples;
+	vector<int> qcd_samples, wjets_samples, zjets_samples, data_samples;
 
-	if(chan == Muon) qcd_samples  = fMuEnr;
-	if(chan == Elec) qcd_samples  = fEMEnr;
+	if(chan == Muon){
+		data_samples = fMuData;
+		qcd_samples  = fMuEnr;
+	}
+	if(chan == Elec){
+		data_samples = fEGData;
+		qcd_samples  = fEMEnr;
+	}
 	wjets_samples.push_back(WJets);
 	zjets_samples.push_back(DYJets);
 
+	TH2D *H_nloose_data ;
 	TH2D *H_nloose_qcd  ;
 	TH2D *H_nloose_wjets;
 	TH2D *H_nloose_zjets;
+	TH2D *H_ntight_data ;
 	TH2D *H_ntight_qcd  ;
 	TH2D *H_ntight_wjets;
 	TH2D *H_ntight_zjets;
 	if (fp == SigSup) {
+		H_nloose_data  = new TH2D("NLooseData" , "NLoose Data" , getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_data ->Sumw2();
 		H_nloose_qcd   = new TH2D("NLooseQCD"  , "NLoose QCD"  , getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_qcd  ->Sumw2();
 		H_nloose_wjets = new TH2D("NLooseWJets", "NLoose WJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_wjets->Sumw2();
 		H_nloose_zjets = new TH2D("NLooseZJets", "NLoose ZJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_zjets->Sumw2();
+		H_ntight_data  = new TH2D("NTightData" , "NTight Data" , getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_data ->Sumw2();
 		H_ntight_qcd   = new TH2D("NTightQCD"  , "NTight QCD"  , getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_qcd  ->Sumw2();
 		H_ntight_wjets = new TH2D("NTightWJets", "NTight WJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_wjets->Sumw2();
 		H_ntight_zjets = new TH2D("NTightZJets", "NTight ZJets", getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_zjets->Sumw2();
 	}
 	if (fp == ZDecay) {
-		H_nloose_qcd   = new TH2D("NLooseQCD"  , "NLoose QCD"  , getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_qcd->Sumw2();
+		H_nloose_data  = new TH2D("NLooseData" , "NLoose Data" , getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_data ->Sumw2();
+		H_nloose_qcd   = new TH2D("NLooseQCD"  , "NLoose QCD"  , getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_qcd  ->Sumw2();
 		H_nloose_wjets = new TH2D("NLooseWJets", "NLoose WJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_wjets->Sumw2();
 		H_nloose_zjets = new TH2D("NLooseZJets", "NLoose ZJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_nloose_zjets->Sumw2();
+		H_ntight_data  = new TH2D("NTightData" , "NTight Data" , getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_data ->Sumw2();
 		H_ntight_qcd   = new TH2D("NTightQCD"  , "NTight QCD"  , getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_qcd  ->Sumw2();
 		H_ntight_wjets = new TH2D("NTightWJets", "NTight WJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_wjets->Sumw2();
 		H_ntight_zjets = new TH2D("NTightZJets", "NTight ZJets", getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan),  getEtaBins(chan)); H_ntight_zjets->Sumw2();
@@ -6385,20 +6554,31 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	TH1D *H_ntight_nv = new TH1D("NTight_NV", "NTight Muons NV", 18, 0., 36.); H_ntight_nv->Sumw2();
 	TH1D *H_nloose_nv = new TH1D("NLoose_NV", "NLoose Muons NV", 18, 0., 36.); H_nloose_nv->Sumw2();
 
-	getPassedTotal(qcd_samples  , chan, fp, H_ntight_qcd  , H_nloose_qcd  , H_ntight_nv, H_nloose_nv, output);
+	float tmp_fLumiNorm = fLumiNorm;
+	if (chan == Muon) fLumiNorm = 24.9;
+	if (chan == Elec) fLumiNorm = 23.845;
+
+	getPassedTotal( data_samples, chan, fp, H_ntight_data , H_nloose_data , H_ntight_nv, H_nloose_nv, output);
+	getPassedTotal(  qcd_samples, chan, fp, H_ntight_qcd  , H_nloose_qcd  , H_ntight_nv, H_nloose_nv, output);
 	getPassedTotal(wjets_samples, chan, fp, H_ntight_wjets, H_nloose_wjets, H_ntight_nv, H_nloose_nv, output);
 	getPassedTotal(zjets_samples, chan, fp, H_ntight_zjets, H_nloose_zjets, H_ntight_nv, H_nloose_nv, output);
 
+	fLumiNorm = tmp_fLumiNorm;
+
 	cout << "projections.." << endl;
+	TH1D *h_loosept_data   = H_nloose_data ->ProjectionX();
 	TH1D *h_loosept_qcd    = H_nloose_qcd  ->ProjectionX();
 	TH1D *h_loosept_wjets  = H_nloose_wjets->ProjectionX();
 	TH1D *h_loosept_zjets  = H_nloose_zjets->ProjectionX();
+	TH1D *h_looseeta_data  = H_nloose_data ->ProjectionY();
 	TH1D *h_looseeta_qcd   = H_nloose_qcd  ->ProjectionY();
 	TH1D *h_looseeta_wjets = H_nloose_wjets->ProjectionY();
 	TH1D *h_looseeta_zjets = H_nloose_zjets->ProjectionY();
+	TH1D *h_tightpt_data   = H_ntight_data ->ProjectionX();
 	TH1D *h_tightpt_qcd    = H_ntight_qcd  ->ProjectionX();
 	TH1D *h_tightpt_wjets  = H_ntight_wjets->ProjectionX();
 	TH1D *h_tightpt_zjets  = H_ntight_zjets->ProjectionX();
+	TH1D *h_tighteta_data  = H_ntight_data ->ProjectionY();
 	TH1D *h_tighteta_qcd   = H_ntight_qcd  ->ProjectionY();
 	TH1D *h_tighteta_wjets = H_ntight_wjets->ProjectionY();
 	TH1D *h_tighteta_zjets = H_ntight_zjets->ProjectionY();
@@ -6412,16 +6592,16 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	THStack *hs_tighteta = new THStack("NTightEta", "NTightEta");
 
 	cout << "adding to stacks.." << endl;
-	hs_loosept ->Add(h_loosept_qcd   );
+//	hs_loosept ->Add(h_loosept_qcd   );
 	hs_loosept ->Add(h_loosept_wjets );
 	hs_loosept ->Add(h_loosept_zjets );
-	hs_looseeta->Add(h_looseeta_qcd  );
+//	hs_looseeta->Add(h_looseeta_qcd  );
 	hs_looseeta->Add(h_looseeta_wjets);
 	hs_looseeta->Add(h_looseeta_zjets);
-	hs_tightpt ->Add(h_tightpt_qcd   );
+//	hs_tightpt ->Add(h_tightpt_qcd   );
 	hs_tightpt ->Add(h_tightpt_wjets );
 	hs_tightpt ->Add(h_tightpt_zjets );
-	hs_tighteta->Add(h_tighteta_qcd  );
+//	hs_tighteta->Add(h_tighteta_qcd  );
 	hs_tighteta->Add(h_tighteta_wjets);
 	hs_tighteta->Add(h_tighteta_zjets);
 
@@ -6464,9 +6644,55 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	hs_tightpt->GetXaxis()->SetTitle("p_{T} GeV");
 	hs_tightpt->GetYaxis()->SetTitle("n tight");
 
-	cout << "legend.." << endl;
+
+	double max(0.);
+	max = 1.2 * std::max(h_loosept_data->GetBinContent(h_loosept_data->GetMaximumBin()),hs_loosept->GetMaximum());
+	h_loosept_data  ->SetMaximum(max);
+	h_loosept_qcd   ->SetMaximum(max);
+	h_loosept_wjets ->SetMaximum(max);
+	h_loosept_zjets ->SetMaximum(max);
+	hs_loosept      ->SetMaximum(max);
+	max = 1.2 * std::max(h_looseeta_data->GetBinContent(h_looseeta_data->GetMaximumBin()),hs_looseeta->GetMaximum());
+	h_looseeta_data ->SetMaximum(max);
+	h_looseeta_qcd  ->SetMaximum(max);
+	h_looseeta_wjets->SetMaximum(max);
+	h_looseeta_zjets->SetMaximum(max);
+	hs_looseeta     ->SetMaximum(max);
+	max = 1.2 * std::max(h_tightpt_data->GetBinContent(h_tightpt_data->GetMaximumBin()),hs_tightpt->GetMaximum());
+	h_tightpt_data  ->SetMaximum(max);
+	h_tightpt_qcd   ->SetMaximum(max);
+	h_tightpt_wjets ->SetMaximum(max);
+	h_tightpt_zjets ->SetMaximum(max);
+	hs_tightpt      ->SetMaximum(max);
+	max = 1.2 * std::max(h_tighteta_data->GetBinContent(h_tighteta_data->GetMaximumBin()),hs_tighteta->GetMaximum());
+	h_tighteta_data ->SetMaximum(max);
+	h_tighteta_qcd  ->SetMaximum(max);
+	h_tighteta_wjets->SetMaximum(max);
+	h_tighteta_zjets->SetMaximum(max);
+	hs_tighteta     ->SetMaximum(max);
+
+	FakeRatios *FR = new FakeRatios();
+
+	TGraphAsymmErrors* gr_loosept_data  = FR->getGraphPoissonErrors( h_loosept_data  );
+	gr_loosept_data   ->SetMarkerColor(kBlack);
+	gr_loosept_data   ->SetMarkerStyle(20);
+	gr_loosept_data   ->SetMarkerSize(2.0);
+	gr_loosept_data   ->SetLineWidth(2);
+	gr_loosept_data   ->SetLineColor(kBlack);
+	gr_loosept_data   ->SetFillColor(kBlack);
+
+	TGraphAsymmErrors* gr_tightpt_data  = FR->getGraphPoissonErrors( h_tightpt_data  );
+	gr_tightpt_data   ->SetMarkerColor(kBlack);
+	gr_tightpt_data   ->SetMarkerStyle(20);
+	gr_tightpt_data   ->SetMarkerSize(2.0);
+	gr_tightpt_data   ->SetLineWidth(2);
+	gr_tightpt_data   ->SetLineColor(kBlack);
+	gr_tightpt_data   ->SetFillColor(kBlack);
+
+//	cout << "legend.." << endl;
 	TLegend *leg = new TLegend(0.70,0.62,0.90,0.88);
-	leg->AddEntry(h_loosept_qcd  , "QCD"   , "f");
+	leg->AddEntry(h_loosept_data , "Data"  , "p");
+//	leg->AddEntry(h_loosept_qcd  , "QCD"   , "f");
 	leg->AddEntry(h_loosept_wjets, "W+Jets", "f");
 	leg->AddEntry(h_loosept_zjets, "Z+Jets", "f");
 	leg->SetFillStyle(0);
@@ -6480,6 +6706,8 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 
 	hs_loosept->Draw("hist");
 	leg->Draw();
+//	h_loosept_data->Draw("P same");
+	gr_loosept_data->Draw("P same");
 	drawTopLineSim(0.56, 0.8);
 		
 	TString filename = "NLoosePt";
@@ -6488,6 +6716,7 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 
 	hs_tightpt->Draw("hist");
 	leg->Draw();
+	gr_tightpt_data->Draw("P same");
 	drawTopLineSim(0.56, 0.8);
 		
 	filename = "NTightPt";
@@ -6510,6 +6739,7 @@ void SSDLPlotter::makeNTightLoosePlots(gChannel chan, gFPSwitch fp, bool output)
 	delete hs_tighteta;
 
 	delete c_temp;
+	delete FR;
 }
 
 void SSDLPlotter::makeFakeGenIDTables(){
@@ -7831,16 +8061,52 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 	h_pt->Sumw2();
 	h_eta->Sumw2();
 
+	vector<int> wjets_samples, zjets_samples;
+	wjets_samples.push_back(WJets);
+	zjets_samples.push_back(DYJets);
+
 	TH2D *H_ntight = new TH2D("NTight", "NTight Muons", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
 	TH2D *H_nloose = new TH2D("NLoose", "NLoose Muons", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
 	H_ntight->Sumw2();
 	H_nloose->Sumw2();
+	TH2D *H_ntight_wjets = new TH2D("NTight_WJets", "NTight Muons WJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	TH2D *H_nloose_wjets = new TH2D("NLoose_WJets", "NLoose Muons WJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	H_ntight_wjets->Sumw2();
+	H_nloose_wjets->Sumw2();
+	TH2D *H_ntight_zjets = new TH2D("NTight_ZJets", "NTight Muons ZJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	TH2D *H_nloose_zjets = new TH2D("NLoose_ZJets", "NLoose Muons ZJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
+	H_ntight_zjets->Sumw2();
+	H_nloose_zjets->Sumw2();
 
 	TH1D *H_ntight_nv = new TH1D("NTight_NV", "NTight Muons NV", 18, 0., 36.); H_ntight_nv->Sumw2();
 	TH1D *H_nloose_nv = new TH1D("NLoose_NV", "NLoose Muons NV", 18, 0., 36.); H_nloose_nv->Sumw2();
+	TH1D *H_ntight_nv_wjets = new TH1D("NTight_NV_WJets", "NTight Muons NV WJets", 18, 0., 36.); H_ntight_nv_wjets->Sumw2();
+	TH1D *H_nloose_nv_wjets = new TH1D("NLoose_NV_WJets", "NLoose Muons NV WJets", 18, 0., 36.); H_nloose_nv_wjets->Sumw2();
+	TH1D *H_ntight_nv_zjets = new TH1D("NTight_NV_ZJets", "NTight Muons NV ZJets", 18, 0., 36.); H_ntight_nv_zjets->Sumw2();
+	TH1D *H_nloose_nv_zjets = new TH1D("NLoose_NV_ZJets", "NLoose Muons NV ZJets", 18, 0., 36.); H_nloose_nv_zjets->Sumw2();
 	if (gRatiosFromTTbar || ttbarMatched) getPassedTotalTTbar(samples, chan, fp, H_ntight, H_nloose, output);
 	// marc jan 27 else getPassedTotal(samples, chan, fp, H_ntight, H_nloose, output);
-	else getPassedTotal(samples, chan, fp, H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, output);
+	else {
+		getPassedTotal(samples, chan, fp, H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, output);
+		getPassedTotal(wjets_samples, chan, fp, H_ntight_wjets, H_nloose_wjets, H_ntight_nv_wjets, H_nloose_nv_wjets, output);
+		getPassedTotal(zjets_samples, chan, fp, H_ntight_zjets, H_nloose_zjets, H_ntight_nv_zjets, H_nloose_nv_zjets, output);
+	}
+	if (fp == SigSup && gEWKCorrection) {
+		float lumi(1.);
+		if (chan == Muon) lumi = fLumiNormHLTMu17;
+		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30;
+		// mc samples are scaled to fLumiNorm. now scale to prescaled triggers.
+		float scale_wjets = lumi / fLumiNorm;
+		float scale_zjets = lumi / fLumiNorm;
+		H_ntight   ->Add(H_ntight_wjets   , (-1.) * scale_wjets);
+		H_ntight   ->Add(H_ntight_zjets   , (-1.) * scale_zjets);
+		H_nloose   ->Add(H_nloose_wjets   , (-1.) * scale_wjets);
+		H_nloose   ->Add(H_nloose_zjets   , (-1.) * scale_zjets);
+		H_ntight_nv->Add(H_ntight_nv_wjets, (-1.) * scale_wjets);
+		H_ntight_nv->Add(H_ntight_nv_zjets, (-1.) * scale_zjets);
+		H_nloose_nv->Add(H_nloose_nv_wjets, (-1.) * scale_wjets);
+		H_nloose_nv->Add(H_nloose_nv_zjets, (-1.) * scale_zjets);
+	}
 	h_2d->Divide(H_ntight,    H_nloose,    1., 1., "B");
 	h_nv->Divide(H_ntight_nv, H_nloose_nv, 1., 1., "B");
 
@@ -7851,19 +8117,27 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 
 	h_pt ->Divide(hmutightpt,  hmuloosept,  1., 1., "B"); // binomial
 	h_eta->Divide(hmutighteta, hmulooseeta, 1., 1., "B"); // weights are ignored
-	delete H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, hmuloosept, hmulooseeta, hmutightpt, hmutighteta;
 	TString name = "";
+	if (fp == SigSup) name += "F";
+	if (fp == ZDecay) name += "P";
+	name += h_2d->GetName();
 	for(size_t i = 0; i < samples.size(); ++i){
 		int sample = samples[i];
-		name += h_2d->GetName();
 		name += "_";
 		name += fSamples[sample]->sname;
 	}
+	if (gEWKCorrection) name += "_EWKCorrected";
 	if(output){
-		printObject(h_2d,  TString("Ratio")    + name, "colz");
-		printObject(h_pt,  TString("RatioPt")  + name, "PE1");
-		printObject(h_eta, TString("RatioEta") + name, "PE1");
+//	if (fp == SigSup) {
+		fOutputSubDir = "Ratios/";
+		printObject(h_2d,     TString("Ratio")    + name, "colz text");
+		printObject(h_pt,     TString("RatioPt")  + name, "PE1");
+		printObject(h_eta,    TString("RatioEta") + name, "PE1");
+		printObject(H_ntight, TString("NTight")   + name, "colz text");
+		printObject(H_nloose, TString("NLoose")   + name, "colz text");
+		fOutputSubDir = "";
 	}
+	delete H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, hmuloosept, hmulooseeta, hmutightpt, hmutighteta;
 }
 void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, float &ratio, float &ratioe){
 	double ntight(0.), nloose(0.);
@@ -8168,6 +8442,28 @@ TH1D* SSDLPlotter::getFRatio(vector<int> samples, gChannel chan, int ratiovar, b
 
 	delete ntight, nloose;
 	return ratio;
+}
+void SSDLPlotter::getFRatioPlots(vector<int> samples, gChannel chan, int ratiovar, TH1D*& ntight, TH1D*& nloose, bool output){
+	gStyle->SetOptStat(0);
+
+//	TH1D *ntight = new TH1D("h_NTight",  "NTight",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	TH1D *nloose = new TH1D("h_NLoose",  "NLoose",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	TH1D *ratio  = new TH1D("h_TLRatio", "TLRatio", FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
+//	ntight->Sumw2(); nloose->Sumw2(); ratio->Sumw2();
+
+	for(size_t i = 0; i < samples.size(); ++i){
+		Sample *S = fSamples[samples[i]];
+
+		float scale = fLumiNorm / S->getLumi();
+		if(S->datamc == 0) scale = 1;
+
+		FRatioPlots *RP;
+		if(chan == Muon) RP = &S->ratioplots[0];
+		if(chan == Elec) RP = &S->ratioplots[1];
+		ntight->Add(RP->ntight[ratiovar], scale);
+		nloose->Add(RP->nloose[ratiovar], scale);
+	}
+	return;
 }
 //____________________________________________________________________________
 void SSDLPlotter::calculateChMisIdProb(vector<int>  samples, gChMisIdReg chmid_reg, float &chmid, float &chmide){
@@ -12695,16 +12991,16 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
-//	// 3 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
-//	// 1 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+	// 3 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+	// 1 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
 ////	// 0 J   0 bJ
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
@@ -12716,11 +13012,11 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 	// >=2 J   ==0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
-	// final sel
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
+//	// final sel
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
