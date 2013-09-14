@@ -169,6 +169,11 @@ int main( int argc, char* argv[] ) {
   //for( unsigned iEff=11; iEff<=nEffStep; ++iEff ) {
   for( unsigned iEff=1; iEff<=nEffStep; ++iEff ) {
 
+	if (iEff < 4) {
+		std::cout << "skipping point with sig eff < 20 %" << std::endl;
+		continue;
+	}
+
     if( iEff==21 ) {
       std::cout << std::endl;
       std::cout << "-> Cross checking this selection: " << std::endl;
