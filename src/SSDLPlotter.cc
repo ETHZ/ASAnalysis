@@ -7761,9 +7761,9 @@ void SSDLPlotter::fillRatios(vector<int> frmusamples, vector<int> frelsamples, v
 		fH1D_MupRatio = fillRatioPt(Muon, prmusamples, ZDecay, false);
 		fH1D_ElfRatio = fillRatioPt(Elec, frelsamples, SigSup, false);
 		fH1D_ElpRatio = fillRatioPt(Elec, prelsamples, ZDecay, false);
-		fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, true);
+		fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, false);
 		fH2D_MupRatio = fillRatio(  Muon, prmusamples, ZDecay, false);
-		fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, true);
+		fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, false);
 		fH2D_ElpRatio = fillRatio(  Elec, prelsamples, ZDecay, false);
 	}
 	if(datamc == 1){
