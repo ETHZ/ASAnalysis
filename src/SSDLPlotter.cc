@@ -517,8 +517,8 @@ void SSDLPlotter::doAnalysis(){
 //	makeNTightLoosePlots(Elec, SigSup, true);
 //	makeNTightLoosePlots(Muon, ZDecay, true);
 //	makeNTightLoosePlots(Elec, ZDecay, true);
-//	makeRatioControlPlots(Muon);
-//	makeRatioControlPlots(Elec);
+	makeRatioControlPlots(Muon);
+	makeRatioControlPlots(Elec);
 //////	// 
 //	makeFRvsPtPlots(Muon, SigSup);
 //	makeFRvsPtPlots(Elec, SigSup);
@@ -542,6 +542,8 @@ void SSDLPlotter::doAnalysis(){
 	
 //	makeTTWDiffPredictionsSigEvent();
 //	makeTTWKinPlotsSigEvent();
+
+//	makeTTWIntPredictionsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -577,8 +579,6 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
 //	makeTTWIntPredictionsSigEvent(205., 8000., 0., 8000., 3, 1, 1, 30., 30.,-1, true);
 
-	makeTTWIntPredictionsSigEvent();
-
 //	makePredictionSignalEvents(150., 8000., 0., 8000., 3, 1, 1, 36., 36., +1, true, 0);
 //	makePredictionSignalEvents(135., 8000., 0., 8000., 3, 1, 1, 29., 29., -1, true, 0);
 
@@ -588,8 +588,8 @@ void SSDLPlotter::doAnalysis(){
 //	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
 //	makePredictionSignalEvents(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
 	
-	getTTWGeneratorSystematic(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
-	getTTWGeneratorSystematic(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
+//	getTTWGeneratorSystematic(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
+//	getTTWGeneratorSystematic(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
 	
 //	makeTTWNLOPlots();
 	
@@ -6154,7 +6154,7 @@ void SSDLPlotter::makeRatioControlPlots(gChannel chan){
 	zjets_samples.push_back(DYJets);
 
 	// Customization
-	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)"};
+	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "p_{T} (GeV)"};
 
 	for(size_t ratiovar = 0; ratiovar < gNRatioVars; ++ratiovar){
 		TH1D *ntight_data  = new TH1D("h_NTight_Data" ,  "NTight Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);

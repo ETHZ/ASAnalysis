@@ -149,10 +149,10 @@ TString SSDLDumper::DiffPredYields::axis_label[SSDLDumper::gNDiffVars] = {"H_{T}
                                                                           "b-Jet Multiplicity (medium)"};
 
 //////////////////////////////////////////////////////////////////////////////////
-TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT", "MET_noMTCut",  "MT_MET30"};
-int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      10 ,         5  ,        10  ,        10  ,       3 ,    5 ,   10 ,   20 ,   20 };
-float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      30.,         5. ,        30. ,        50. ,       0.,    0.,    0.,    0.,    0.};
-float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     300.,        25. ,       150. ,       150. ,       3.,   40.,  100.,  100.,  200.};
+TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT", "MET_noMTCut",  "MT_MET30", "LepPt"};
+int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      10 ,         5  ,        10  ,        10  ,       3 ,    5 ,   10 ,           20 ,         20 ,     14 };
+float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      30.,         5. ,        30. ,        50. ,       0.,    0.,    0.,            0.,          0.,     10.};
+float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     300.,        25. ,       150. ,       150. ,       3.,   40.,  100.,          100.,        200.,    150.};
 
 //////////////////////////////////////////////////////////////////////////////////
 TString SSDLDumper::IsoPlots::sel_name[SSDLDumper::gNSels] = {"Base", "SigSup"};
@@ -1360,22 +1360,24 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 		int looseMuInd(-1);
 		if(isSigSupMuEvent(looseMuInd)){
 			if( isTightMuon(looseMuInd) ){
-				RP0->ntight[0]->Fill(getNJets(),                        gEventWeight);
-				RP0->ntight[1]->Fill(getHT(),                           gEventWeight);
-				RP0->ntight[2]->Fill(getMaxJPt(),                       gEventWeight);
-				RP0->ntight[3]->Fill(NVrtx,                             gEventWeight);
-				RP0->ntight[4]->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
-				RP0->ntight[5]->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
-				RP0->ntight[6]->Fill(getNBTags(),                       gEventWeight);
+				RP0->ntight[0] ->Fill(getNJets(),                        gEventWeight);
+				RP0->ntight[1] ->Fill(getHT(),                           gEventWeight);
+				RP0->ntight[2] ->Fill(getMaxJPt(),                       gEventWeight);
+				RP0->ntight[3] ->Fill(NVrtx,                             gEventWeight);
+				RP0->ntight[4] ->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
+				RP0->ntight[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
+				RP0->ntight[6] ->Fill(getNBTags(),                       gEventWeight);
+				RP0->ntight[11]->Fill(MuPt[looseMuInd],                  gEventWeight);
 			}
 			if( isLooseMuon(looseMuInd) ){
-				RP0->nloose[0]->Fill(getNJets(),                        gEventWeight);
-				RP0->nloose[1]->Fill(getHT(),                           gEventWeight);
-				RP0->nloose[2]->Fill(getMaxJPt(),                       gEventWeight);
-				RP0->nloose[3]->Fill(NVrtx,                             gEventWeight);
-				RP0->nloose[4]->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
-				RP0->nloose[5]->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
-				RP0->nloose[6]->Fill(getNBTags(),                       gEventWeight);
+				RP0->nloose[0] ->Fill(getNJets(),                        gEventWeight);
+				RP0->nloose[1] ->Fill(getHT(),                           gEventWeight);
+				RP0->nloose[2] ->Fill(getMaxJPt(),                       gEventWeight);
+				RP0->nloose[3] ->Fill(NVrtx,                             gEventWeight);
+				RP0->nloose[4] ->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
+				RP0->nloose[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
+				RP0->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
+				RP0->nloose[11]->Fill(MuPt[looseMuInd],                  gEventWeight);
 			}
 		}
 		float tmp_metC = fC_maxMet_Control;
@@ -1438,22 +1440,24 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 		int looseElInd(-1);
 		if(isSigSupElEvent(looseElInd)){
 			if( isTightElectron(looseElInd) ){
-				RP1->ntight[0]->Fill(getNJets(),                        gEventWeight);
-				RP1->ntight[1]->Fill(getHT(),                           gEventWeight);
-				RP1->ntight[2]->Fill(getMaxJPt(),                       gEventWeight);
-				RP1->ntight[3]->Fill(NVrtx,                             gEventWeight);
-				RP1->ntight[4]->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
-				RP1->ntight[5]->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
-				RP1->ntight[6]->Fill(getNBTags(),                       gEventWeight);
+				RP1->ntight[0] ->Fill(getNJets(),                        gEventWeight);
+				RP1->ntight[1] ->Fill(getHT(),                           gEventWeight);
+				RP1->ntight[2] ->Fill(getMaxJPt(),                       gEventWeight);
+				RP1->ntight[3] ->Fill(NVrtx,                             gEventWeight);
+				RP1->ntight[4] ->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
+				RP1->ntight[5] ->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
+				RP1->ntight[6] ->Fill(getNBTags(),                       gEventWeight);
+				RP1->ntight[11]->Fill(ElPt[looseElInd],                  gEventWeight);
 			}
 			if( isLooseElectron(looseElInd) ){
-				RP1->nloose[0]->Fill(getNJets(),                        gEventWeight);
-				RP1->nloose[1]->Fill(getHT(),                           gEventWeight);
-				RP1->nloose[2]->Fill(getMaxJPt(),                       gEventWeight);
-				RP1->nloose[3]->Fill(NVrtx,                             gEventWeight);
-				RP1->nloose[4]->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
-				RP1->nloose[5]->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
-				RP1->nloose[6]->Fill(getNBTags(),                       gEventWeight);
+				RP1->nloose[0] ->Fill(getNJets(),                        gEventWeight);
+				RP1->nloose[1] ->Fill(getHT(),                           gEventWeight);
+				RP1->nloose[2] ->Fill(getMaxJPt(),                       gEventWeight);
+				RP1->nloose[3] ->Fill(NVrtx,                             gEventWeight);
+				RP1->nloose[4] ->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
+				RP1->nloose[5] ->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
+				RP1->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
+				RP1->nloose[11]->Fill(ElPt[looseElInd],                  gEventWeight);
 			}
 		}
 		float tmp_metC = fC_maxMet_Control;

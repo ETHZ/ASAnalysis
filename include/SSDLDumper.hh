@@ -370,7 +370,7 @@ public:
     	        TEfficiency *chmid_B_pt;
 	};
 	// static const int gNRatioVars = 8;
-	static const int gNRatioVars = 11;
+	static const int gNRatioVars = 12;
 	struct FRatioPlots{
 		static TString var_name[gNRatioVars];
 		static int nbins[gNRatioVars];
