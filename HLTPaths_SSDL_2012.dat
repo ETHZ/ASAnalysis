@@ -13,6 +13,12 @@ Path	HLT_Mu17_v4
 Path	HLT_Mu17_v5
 
 PATHSET
+Name	HLT_MU24_ETA2P1
+Path	HLT_Mu24_eta2p1_v3
+Path	HLT_Mu24_eta2p1_v4
+Path	HLT_Mu24_eta2p1_v5
+
+PATHSET
 Name	HLT_ELE17_TIGHT
 Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v3
 Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4
