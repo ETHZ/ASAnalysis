@@ -40,7 +40,7 @@ static const bool gRatiosFromTTbar = false;
 static const bool gFullDataBlind = false;
 static const bool gTTHBG = true;
 static const bool gTTWZ = true;
-static const bool gEWKCorrection = false;
+static const bool gEWKCorrection = true;
 
 static const float gMMU = 0.1057;
 static const float gMEL = 0.0005;
@@ -585,8 +585,8 @@ void SSDLPlotter::doAnalysis(){
 //	makePredictionSignalEvents(0., 8000., 0., 8000., 3, 1, 1, 20., 20., 0, true, 0);
 
 	// final selection
-//	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
-//	makePredictionSignalEvents(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
+	makePredictionSignalEvents(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
+	makePredictionSignalEvents(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
 	
 //	getTTWGeneratorSystematic(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, +1, true, 0);
 //	getTTWGeneratorSystematic(gMinHT_ttWSel_mm, 8000., gMinMET_ttWSel_mm, 8000., gMinNjets_ttWSel_mm, gMinNbjetsL_ttWSel_mm, gMinNbjetsM_ttWSel_mm, gMinPt1_ttWSel_mm, gMinPt2_ttWSel_mm, -1, true, 0);
@@ -8127,8 +8127,8 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 		name += fSamples[sample]->sname;
 	}
 	if (gEWKCorrection) name += "_EWKCorrected";
-	if(output){
-//	if (fp == SigSup) {
+//	if(output){
+	if (fp == SigSup) {
 		fOutputSubDir = "Ratios/";
 		printObject(h_2d,     TString("Ratio")    + name, "colz text");
 		printObject(h_pt,     TString("RatioPt")  + name, "PE1");

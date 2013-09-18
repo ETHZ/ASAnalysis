@@ -4689,7 +4689,8 @@ bool SSDLDumper::elmuSignalTrigger(){
 bool SSDLDumper::singleMuTrigger(){
 	// Pretend MC samples always fire trigger
 	if(fSample->datamc > 0) return true;
-	if (gTTWZ) return ( HLT_MU17 > 0  );
+//	if (gTTWZ) return ( HLT_MU17 > 0  );
+	if (gTTWZ) return ( HLT_MU24_ETA2P1 > 0  );
 	// marc return ( (HLT_MU8 > 0 || HLT_MU17 > 0 ) );
 	if (!gTTWZ) return ( (HLT_MU8 > 0 || HLT_MU17 > 0 ) );
 }
