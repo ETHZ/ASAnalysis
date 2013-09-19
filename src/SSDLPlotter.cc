@@ -6148,7 +6148,16 @@ void SSDLPlotter::makeRatioControlPlots(gChannel chan){
 
 	vector<int> data_samples, wjets_samples, zjets_samples;
 
-	if (chan == Muon) data_samples = fMuData;
+//	if (chan == Muon) data_samples = fMuData;
+	if (chan == Muon) {
+		data_samples.push_back(SingleMu1);
+		data_samples.push_back(SingleMu2);
+		data_samples.push_back(SingleMu3);
+		data_samples.push_back(SingleMu4);
+		data_samples.push_back(SingleMu5);
+		data_samples.push_back(SingleMu6);
+		data_samples.push_back(SingleMu7);
+	}
 	if (chan == Elec) data_samples = fEGData;
 	wjets_samples.push_back(WJets);
 	zjets_samples.push_back(DYJets);
@@ -6168,7 +6177,8 @@ void SSDLPlotter::makeRatioControlPlots(gChannel chan){
 
 		// lumi for prescaled triggers
 		float tmp_fLumiNorm = fLumiNorm;
-		if (chan == Muon) fLumiNorm = 24.9;
+//		if (chan == Muon) fLumiNorm = 24.9;
+		if (chan == Muon) fLumiNorm = 116.;
 		if (chan == Elec) fLumiNorm = 23.845;
 
 		getFRatioPlots( data_samples, chan, ratiovar, ntight_data , nloose_data );

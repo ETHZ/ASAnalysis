@@ -100,6 +100,7 @@ public:
 //		DoubleMu1 = sample_begin, DoubleMu1a , DoubleMu2 ,  DoubleMu3 , DoubleMu4 , DoubleMu5 , 
 //		DoubleEle1              , DoubleEle1a, DoubleEle2,  DoubleEle3, DoubleEle4, DoubleEle5, 
 //		MuEG1                   , MuEG1a     , MuEG2     ,  MuEG3     , MuEG4     , MuEG5     , 
+		SingleMu1, SingleMu2, SingleMu3, SingleMu4, SingleMu5, SingleMu6, SingleMu7,
 		// fake samples
 		TTJets, TTJets_v1, TTJets_madgraph_v1, TTJets_madgraph_v2,
 		SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
@@ -370,7 +371,7 @@ public:
     	        TEfficiency *chmid_B_pt;
 	};
 	// static const int gNRatioVars = 8;
-	static const int gNRatioVars = 12;
+	static const int gNRatioVars = 14;
 	struct FRatioPlots{
 		static TString var_name[gNRatioVars];
 		static int nbins[gNRatioVars];

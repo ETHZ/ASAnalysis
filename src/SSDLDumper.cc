@@ -149,10 +149,10 @@ TString SSDLDumper::DiffPredYields::axis_label[SSDLDumper::gNDiffVars] = {"H_{T}
                                                                           "b-Jet Multiplicity (medium)"};
 
 //////////////////////////////////////////////////////////////////////////////////
-TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT", "MET_noMTCut",  "MT_MET30", "LepPt"};
-int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      10 ,         5  ,        10  ,        10  ,       3 ,   20 ,   10 ,           20 ,         20 ,     56 };
-float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      30.,         5. ,        30. ,        50. ,       0.,    0.,    0.,            0.,          0.,     10.};
-float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     300.,        25. ,       150. ,       150. ,       3.,  100.,  100.,          100.,        200.,    150.};
+TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT", "MET_noMTCut",  "MT_MET30", "LepPt", "LepEta", "LepIso"};
+int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      10 ,         5  ,        10  ,        10  ,       3 ,   20 ,   10 ,           20 ,         20 ,     56 ,    12 ,     20 };
+float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      30.,         5. ,        30. ,        50. ,       0.,    0.,    0.,            0.,          0.,     10.,     0.,      0.};
+float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     300.,        25. ,       150. ,       150. ,       3.,  100.,  100.,          100.,        200.,    150.,    2.4,      1.};
 
 //////////////////////////////////////////////////////////////////////////////////
 TString SSDLDumper::IsoPlots::sel_name[SSDLDumper::gNSels] = {"Base", "SigSup"};
@@ -1359,6 +1359,7 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 	if(singleMuTrigger()){
 		int looseMuInd(-1);
 		if(isSigSupMuEvent(looseMuInd)){
+//			if (MuPt[looseMuInd] > 25. && fabs(MuEta[looseMuInd]) < 2.4) {
 			if( isTightMuon(looseMuInd) ){
 				RP0->ntight[0] ->Fill(getNJets(),                        gEventWeight);
 				RP0->ntight[1] ->Fill(getHT(),                           gEventWeight);
@@ -1367,7 +1368,9 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 				RP0->ntight[4] ->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
 				RP0->ntight[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
 				RP0->ntight[6] ->Fill(getNBTags(),                       gEventWeight);
-				RP0->ntight[11]->Fill(MuPt[looseMuInd],                  gEventWeight);
+				RP0->ntight[11]->Fill(MuPt   [looseMuInd],               gEventWeight);
+				RP0->ntight[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
+				RP0->ntight[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
 			}
 			if( isLooseMuon(looseMuInd) ){
 				RP0->nloose[0] ->Fill(getNJets(),                        gEventWeight);
@@ -1378,7 +1381,10 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 				RP0->nloose[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
 				RP0->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
 				RP0->nloose[11]->Fill(MuPt[looseMuInd],                  gEventWeight);
+				RP0->ntight[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
+				RP0->ntight[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
 			}
+//			}
 		}
 		float tmp_metC = fC_maxMet_Control;
 		float tmp_mtC  = fC_maxMt_Control;
@@ -1447,7 +1453,9 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 				RP1->ntight[4] ->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
 				RP1->ntight[5] ->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
 				RP1->ntight[6] ->Fill(getNBTags(),                       gEventWeight);
-				RP1->ntight[11]->Fill(ElPt[looseElInd],                  gEventWeight);
+				RP1->ntight[11]->Fill(ElPt   [looseElInd],               gEventWeight);
+				RP0->ntight[12]->Fill(ElEta  [looseElInd],               gEventWeight);
+				RP0->ntight[13]->Fill(ElPFIso[looseElInd],               gEventWeight);
 			}
 			if( isLooseElectron(looseElInd) ){
 				RP1->nloose[0] ->Fill(getNJets(),                        gEventWeight);
@@ -1457,7 +1465,9 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 				RP1->nloose[4] ->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
 				RP1->nloose[5] ->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
 				RP1->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
-				RP1->nloose[11]->Fill(ElPt[looseElInd],                  gEventWeight);
+				RP1->nloose[11]->Fill(ElPt   [looseElInd],               gEventWeight);
+				RP0->ntight[12]->Fill(ElEta  [looseElInd],               gEventWeight);
+				RP0->ntight[13]->Fill(ElPFIso[looseElInd],               gEventWeight);
 			}
 		}
 		float tmp_metC = fC_maxMet_Control;
@@ -1527,45 +1537,49 @@ void SSDLDumper::fillTLRatios(Sample *S){
 	// QCD Control Region
 	int looseMuInd(-1);
 	if(singleMuTrigger() && isSigSupMuEvent(looseMuInd)){
-		if( isTightMuon(looseMuInd) ){
-			S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	
-			S->tlratios[0].fntight_nv->Fill(NVrtx,                                     gEventWeight);
-			if(S->datamc > 0) S->tlratios[0].sst_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
-		}
-		if( isLooseMuon(looseMuInd) ){
-			S->tlratios[0].fratio_pt ->Fill(isTightMuon(looseMuInd), MuPt[looseMuInd]);
-			S->tlratios[0].fratio_eta->Fill(isTightMuon(looseMuInd), fabs(MuEta[looseMuInd]));
-			S->tlratios[0].fratio_nv ->Fill(isTightMuon(looseMuInd), NVrtx);
-
-			S->tlratios[0].fnloose   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);
-			S->tlratios[0].fnloose_nv->Fill(NVrtx,                                     gEventWeight);
-			if(S->datamc > 0) S->tlratios[0].ssl_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
-			
-			if (S->datamc > 0) {
-				if (fabs(MuGenMID[looseMuInd]) == 24)         S->tlratios[0].sigSup_MID24_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
-				if ((int)fabs(MuGenMID[looseMuInd])/100 == 5) S->tlratios[0].sigSup_MID500_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
-				if ((int)fabs(MuGenMID[looseMuInd])/100 == 4) S->tlratios[0].sigSup_MID400_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
-				if (fabs(MuGenMID[looseMuInd]) == 15)         S->tlratios[0].sigSup_MID15_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
+		if (!(S->chansel == 0 &&  MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[1] ) &&
+		    !(S->chansel == 5 && (MuPt[looseMuInd] <  SSDLDumper::gMuFPtBins[1] || fabs(MuEta[looseMuInd]) >= SSDLDumper::gMuEtabins[1]))  // be careful with the bins here!
+) {
+			if( isTightMuon(looseMuInd) ){
+				S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	
+				S->tlratios[0].fntight_nv->Fill(NVrtx,                                     gEventWeight);
+				if(S->datamc > 0) S->tlratios[0].sst_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
 			}
-			float dPhiLooseJet(-1.);
-			dPhiLooseJet = fabs(getClosestJetDPhi(looseMuInd, Muon, 50.)); 	if (dPhiLooseJet > TMath::Pi()) dPhiLooseJet =- TMath::Pi();
-			S->tlratios[0].sigSup_dPhiLooseJet->Fill(dPhiLooseJet , gEventWeight);
-			S->tlratios[0].sigSup_nJets       ->Fill(getNJets(50.), gEventWeight);
-		}
-		
-		// signal suppressed region with at least one veto muon
-		int mu1(-1), mu2(-1);
-		isSigSupMuEvent(mu1, mu2);
-		if (mu2 > 0) {
-			float dRVetoLoose(-1.), dRVetoJet(-1);
-			dRVetoLoose	= Util::GetDeltaR(MuEta[mu1], MuEta[mu2], MuPhi[mu1], MuPhi[mu2]);	if (fabs(dRVetoLoose) > TMath::Pi()) dRVetoLoose = fabs(dRVetoLoose) - TMath::Pi();
-			dRVetoJet	= getClosestJetDR(mu2, Muon, 50.);									if (fabs(dRVetoJet  ) > TMath::Pi()) dRVetoJet   = fabs(dRVetoJet  ) - TMath::Pi();
-			S->tlratios[0].sigSup_mll           ->Fill(getMll(mu1, mu2, Muon), gEventWeight);
-			S->tlratios[0].sigSup_dRVetoLoose   ->Fill(dRVetoLoose           , gEventWeight);
-			S->tlratios[0].sigSup_dRVetoJet     ->Fill(dRVetoJet             , gEventWeight);
-			S->tlratios[0].sigSup_mllDRVetoLoose->Fill(getMll(mu1, mu2, Muon), dRVetoLoose, gEventWeight);
-			S->tlratios[0].sigSup_jetptDRVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.), dRVetoJet, gEventWeight);
-			S->tlratios[0].sigSup_deltaPtVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.) - MuPt[mu2]);
+			if( isLooseMuon(looseMuInd) ){
+				S->tlratios[0].fratio_pt ->Fill(isTightMuon(looseMuInd), MuPt[looseMuInd]);
+				S->tlratios[0].fratio_eta->Fill(isTightMuon(looseMuInd), fabs(MuEta[looseMuInd]));
+				S->tlratios[0].fratio_nv ->Fill(isTightMuon(looseMuInd), NVrtx);
+
+				S->tlratios[0].fnloose   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);
+				S->tlratios[0].fnloose_nv->Fill(NVrtx,                                     gEventWeight);
+				if(S->datamc > 0) S->tlratios[0].ssl_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
+				
+				if (S->datamc > 0) {
+					if (fabs(MuGenMID[looseMuInd]) == 24)         S->tlratios[0].sigSup_MID24_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
+					if ((int)fabs(MuGenMID[looseMuInd])/100 == 5) S->tlratios[0].sigSup_MID500_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
+					if ((int)fabs(MuGenMID[looseMuInd])/100 == 4) S->tlratios[0].sigSup_MID400_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
+					if (fabs(MuGenMID[looseMuInd]) == 15)         S->tlratios[0].sigSup_MID15_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
+				}
+				float dPhiLooseJet(-1.);
+				dPhiLooseJet = fabs(getClosestJetDPhi(looseMuInd, Muon, 50.)); 	if (dPhiLooseJet > TMath::Pi()) dPhiLooseJet =- TMath::Pi();
+				S->tlratios[0].sigSup_dPhiLooseJet->Fill(dPhiLooseJet , gEventWeight);
+				S->tlratios[0].sigSup_nJets       ->Fill(getNJets(50.), gEventWeight);
+			}
+			
+			// signal suppressed region with at least one veto muon
+			int mu1(-1), mu2(-1);
+			isSigSupMuEvent(mu1, mu2);
+			if (mu2 > 0) {
+				float dRVetoLoose(-1.), dRVetoJet(-1);
+				dRVetoLoose	= Util::GetDeltaR(MuEta[mu1], MuEta[mu2], MuPhi[mu1], MuPhi[mu2]);	if (fabs(dRVetoLoose) > TMath::Pi()) dRVetoLoose = fabs(dRVetoLoose) - TMath::Pi();
+				dRVetoJet	= getClosestJetDR(mu2, Muon, 50.);									if (fabs(dRVetoJet  ) > TMath::Pi()) dRVetoJet   = fabs(dRVetoJet  ) - TMath::Pi();
+				S->tlratios[0].sigSup_mll           ->Fill(getMll(mu1, mu2, Muon), gEventWeight);
+				S->tlratios[0].sigSup_dRVetoLoose   ->Fill(dRVetoLoose           , gEventWeight);
+				S->tlratios[0].sigSup_dRVetoJet     ->Fill(dRVetoJet             , gEventWeight);
+				S->tlratios[0].sigSup_mllDRVetoLoose->Fill(getMll(mu1, mu2, Muon), dRVetoLoose, gEventWeight);
+				S->tlratios[0].sigSup_jetptDRVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.), dRVetoJet, gEventWeight);
+				S->tlratios[0].sigSup_deltaPtVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.) - MuPt[mu2]);
+			}
 		}
 	}
 	// ZMuMu Control Region
@@ -3282,6 +3296,7 @@ int SSDLDumper::getSampleType(Sample *S){
 	if(S->sname.Contains("MuEG"))      return 2;
 	if(S->sname.Contains("MuHad"))     return 3;
 	if(S->sname.Contains("EleHad"))    return 4;
+	if(S->sname.Contains("SingleMu"))  return 5;
 	else return -1;
 }
 
@@ -4690,7 +4705,12 @@ bool SSDLDumper::singleMuTrigger(){
 	// Pretend MC samples always fire trigger
 	if(fSample->datamc > 0) return true;
 //	if (gTTWZ) return ( HLT_MU17 > 0  );
-	if (gTTWZ) return ( HLT_MU24_ETA2P1 > 0  );
+//	if (gTTWZ) return ( HLT_MU24_ETA2P1 > 0  );
+	if (gTTWZ) {
+		if (fSample->chansel == 0 && HLT_MU17 > 0)        return true;
+		if (fSample->chansel == 5 && HLT_MU24_ETA2P1 > 0) return true;  // SingleMu
+		else return false;
+	}
 	// marc return ( (HLT_MU8 > 0 || HLT_MU17 > 0 ) );
 	if (!gTTWZ) return ( (HLT_MU8 > 0 || HLT_MU17 > 0 ) );
 }
