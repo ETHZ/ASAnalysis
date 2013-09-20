@@ -84,7 +84,7 @@ static const float gMZ  = 91.;
 // Muon Binning //////////////////////////////////////////////////////////////////
 double SSDLDumper::gMuFPtBins[gNMuFPtBins+1] = {20., 25., 30., 40., 60.}; // fake ratios
 double SSDLDumper::gMuPPtbins[gNMuPPtbins+1] = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
-double SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1.479, 2.5};
+double SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1., 2.1, 2.5};
 
 // Electron Binning //////////////////////////////////////////////////////////////
 double SSDLDumper::gElFPtBins[gNElFPtBins+1]   = {20., 25., 30., 40., 50., 60., 70., 80., 100.}; // fake ratios
@@ -1380,7 +1380,7 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 				RP0->nloose[4] ->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
 				RP0->nloose[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
 				RP0->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
-				RP0->nloose[11]->Fill(MuPt[looseMuInd],                  gEventWeight);
+				RP0->nloose[11]->Fill(MuPt   [looseMuInd],               gEventWeight);
 				RP0->nloose[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
 				RP0->nloose[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
 			}
@@ -1537,8 +1537,8 @@ void SSDLDumper::fillTLRatios(Sample *S){
 	// QCD Control Region
 	int looseMuInd(-1);
 	if(singleMuTrigger() && isSigSupMuEvent(looseMuInd)){
-		if (!(S->chansel == 0 &&  MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[1] ) &&
-		    !(S->chansel == 5 && (MuPt[looseMuInd] <  SSDLDumper::gMuFPtBins[1] || fabs(MuEta[looseMuInd]) >= SSDLDumper::gMuEtabins[1]))  // be careful with the bins here!
+		if (!(S->chansel == 0 &&  MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2] ) &&
+		    !(S->chansel == 5 && (MuPt[looseMuInd] <  SSDLDumper::gMuFPtBins[1] || fabs(MuEta[looseMuInd]) >= SSDLDumper::gMuEtabins[2]))  // be careful with the bins here!
 ) {
 			if( isTightMuon(looseMuInd) ){
 				S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	
