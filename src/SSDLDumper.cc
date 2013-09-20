@@ -1381,8 +1381,8 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 				RP0->nloose[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
 				RP0->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
 				RP0->nloose[11]->Fill(MuPt[looseMuInd],                  gEventWeight);
-				RP0->ntight[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
-				RP0->ntight[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
+				RP0->nloose[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
+				RP0->nloose[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
 			}
 //			}
 		}
@@ -1466,8 +1466,8 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 				RP1->nloose[5] ->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
 				RP1->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
 				RP1->nloose[11]->Fill(ElPt   [looseElInd],               gEventWeight);
-				RP0->ntight[12]->Fill(ElEta  [looseElInd],               gEventWeight);
-				RP0->ntight[13]->Fill(ElPFIso[looseElInd],               gEventWeight);
+				RP0->nloose[12]->Fill(ElEta  [looseElInd],               gEventWeight);
+				RP0->nloose[13]->Fill(ElPFIso[looseElInd],               gEventWeight);
 			}
 		}
 		float tmp_metC = fC_maxMet_Control;
