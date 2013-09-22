@@ -303,7 +303,7 @@ public:
 	void makeFRvsNVPlots(gChannel, gFPSwitch);
 	void makeFRvsEtaPlots(gChannel);
 	void makeRatioPlots(gChannel);
-	void makeRatioControlPlots(int, bool = false, plot = true);
+	void makeRatioControlPlots(int, bool = false, bool = true);
 	void make2DRatioPlots(gChannel);
 	void makeNTightLoosePlots(gChannel);
 	void makeNTightLoosePlots(gChannel, gFPSwitch, bool);
