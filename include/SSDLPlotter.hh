@@ -303,7 +303,7 @@ public:
 	void makeFRvsNVPlots(gChannel, gFPSwitch);
 	void makeFRvsEtaPlots(gChannel);
 	void makeRatioPlots(gChannel);
-	void makeRatioControlPlots(gChannel);
+	void makeRatioControlPlots(int, bool = false);
 	void make2DRatioPlots(gChannel);
 	void makeNTightLoosePlots(gChannel);
 	void makeNTightLoosePlots(gChannel, gFPSwitch, bool);
@@ -396,7 +396,7 @@ public:
 	void getPassedTotal(vector<int>,  gChannel, gFPSwitch, TH2D*&, TH2D*&, TH1D*&, TH1D*&, bool = false);
 	void getPassedTotalTTbar(vector<int>,  gChannel, gFPSwitch, TH2D*&, TH2D*&, bool = false);
 	TH1D* getFRatio(vector<int>, gChannel, int = 0, bool = false);
-	void getFRatioPlots(vector<int>, gChannel, int, TH1D*&, TH1D*&, bool = false);
+	void getFRatioPlots(vector<int>, int, int, TH1D*&, TH1D*&, bool = false);
 
 	void ratioWithBinomErrors(float, float, float&, float&);
 	void ratioWithPoissErrors(float, float, float&, float&);
@@ -469,6 +469,8 @@ public:
 	vector<int> fMCRareSM; // Rare SM backgrounds
 	vector<int> fMCOnlyQCD; // Onlye QCD samples
 	vector<int> fMuData;  // Muon data samples
+	vector<int> fSingleMuData; // SingleMu data samples
+	vector<int> fMuTotData; // SingleMu and DoubleMu data samples
 	vector<int> fEGData;  // EG data samples
 	vector<int> fMuEGData;  // MuEG dataset
 	vector<int> fMuHadData;  // Muon data samples
@@ -486,8 +488,14 @@ public:
 	
 	float fLumiNorm;      // Normalize everything to this luminosity
 	float fLumiNormHLTMu17;
+	float fLumiNormHLTMu24Eta2p1;
 	float fLumiNormHLTEl17Jet30;
 	float fBinWidthScale; // Normalize bin contents to this width
+
+	float fEWKElSF;
+	float fEWKMuSF;
+	float fEWKMu17SF;
+	float fEWKMu24SF;
 
 	TH1D *fH1D_MufRatio;
 	TH1D *fH1D_MupRatio;

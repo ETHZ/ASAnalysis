@@ -134,8 +134,13 @@ void SSDLPlotter::init(TString filename){
 	else fLumiNorm = 9100.;	// ttV 2012 analysis
 //	fLumiNorm = 9100.;	// ttV 2012 analysis
 //	fLumiNorm = 19466.;   // Moriond 2013 dataset
-	fLumiNormHLTMu17      = 24.9;
-	fLumiNormHLTEl17Jet30 = 23.845;
+	fLumiNormHLTMu17       = 24.9;
+	fLumiNormHLTMu24Eta2p1 = 116.;
+	fLumiNormHLTEl17Jet30  = 23.845;
+	fEWKElSF   = 1.;
+	fEWKMuSF   = 1.;
+	fEWKMu17SF = 1.;
+	fEWKMu24SF = 1.;
 
 	// Cuts:
 	fC_minMu1pt = 20.;
@@ -375,20 +380,36 @@ void SSDLPlotter::init(TString filename){
 	
 
 	/// DATA SAMPLES:
-	fMuData    .push_back(DoubleMu1);
+	fMuData    .push_back(DoubleMu1 );
 	fMuData    .push_back(DoubleMu1a);
-	fMuData    .push_back(DoubleMu2);
-	fMuData    .push_back(DoubleMu3);
-	fMuData    .push_back(DoubleMu4);
-	fMuData    .push_back(DoubleMu5);
-	fMuData    .push_back(DoubleMu6);
+	fMuData    .push_back(DoubleMu2 );
+	fMuData    .push_back(DoubleMu3 );
+	fMuData    .push_back(DoubleMu4 );
+	fMuData    .push_back(DoubleMu5 );
+	fMuData    .push_back(DoubleMu6 );
 
-//	fEGData    .push_back(DoubleEle1);
-//	fEGData    .push_back(DoubleEle1a);
-//	fEGData    .push_back(DoubleEle2);
-//	fEGData    .push_back(DoubleEle3);
-//	fEGData    .push_back(DoubleEle4);
-//	fEGData    .push_back(DoubleEle5);
+	fSingleMuData.push_back(SingleMu1);
+	fSingleMuData.push_back(SingleMu2);
+	fSingleMuData.push_back(SingleMu3);
+	fSingleMuData.push_back(SingleMu4);
+	fSingleMuData.push_back(SingleMu5);
+	fSingleMuData.push_back(SingleMu6);
+	fSingleMuData.push_back(SingleMu7);
+
+	fMuTotData   .push_back(DoubleMu1 );
+	fMuTotData   .push_back(DoubleMu1a);
+	fMuTotData   .push_back(DoubleMu2 );
+	fMuTotData   .push_back(DoubleMu3 );
+	fMuTotData   .push_back(DoubleMu4 );
+	fMuTotData   .push_back(DoubleMu5 );
+	fMuTotData   .push_back(DoubleMu6 );
+	fMuTotData   .push_back(SingleMu1 );
+	fMuTotData   .push_back(SingleMu2 );
+	fMuTotData   .push_back(SingleMu3 );
+	fMuTotData   .push_back(SingleMu4 );
+	fMuTotData   .push_back(SingleMu5 );
+	fMuTotData   .push_back(SingleMu6 );
+	fMuTotData   .push_back(SingleMu7 );
 
 	fEGData    .push_back(DoubleEle1);
 	fEGData    .push_back(DoubleEle1a);
@@ -464,7 +485,11 @@ void SSDLPlotter::doAnalysis(){
        
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
         if(readHistos(fOutputFileName) != 0) return;
-	fillRatios(fMuData,    fEGData,    0);
+	makeRatioControlPlots(0, true); // Mu
+	makeRatioControlPlots(1, true); // El
+	makeRatioControlPlots(2, true); // Mu17
+	makeRatioControlPlots(3, true); // Mu24_eta2p1
+	fillRatios(fMuTotData,    fEGData,    0);
 	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
 	storeWeightedPred(gRegion[gBaseRegion]);
 	ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
@@ -517,8 +542,10 @@ void SSDLPlotter::doAnalysis(){
 //	makeNTightLoosePlots(Elec, SigSup, true);
 //	makeNTightLoosePlots(Muon, ZDecay, true);
 //	makeNTightLoosePlots(Elec, ZDecay, true);
-	makeRatioControlPlots(Muon);
-	makeRatioControlPlots(Elec);
+	makeRatioControlPlots(0, false); // Mu
+	makeRatioControlPlots(1, false); // El
+	makeRatioControlPlots(2, false); // Mu17
+	makeRatioControlPlots(3, false); // Mu24_eta2p1
 //////	// 
 //	makeFRvsPtPlots(Muon, SigSup);
 //	makeFRvsPtPlots(Elec, SigSup);
@@ -6136,34 +6163,30 @@ void SSDLPlotter::makeRatioPlots(gChannel chan){
 	}
 	fOutputSubDir = "";
 }
-void SSDLPlotter::makeRatioControlPlots(gChannel chan){
+void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF){
 	TString name;
-	if(chan == Muon) name = "Muons";
-	if(chan == Elec) name = "Electrons";
+	if(chan == 0) name = "Muons";
+	if(chan == 1) name = "Electrons";
+	if(chan == 2) name = "Mu17";
+	if(chan == 3) name = "Mu24";
 
-	fOutputSubDir = "RatioControlPlots/" + name + "/";
+	fOutputSubDir = "RatioControlPlots/";
+	if (calcSF) fOutputSubDir = fOutputSubDir + "woSF/";
+	fOutputSubDir = fOutputSubDir + name + "/";
 	char cmd[100];
     sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
     system(cmd);
 
 	vector<int> data_samples, wjets_samples, zjets_samples;
 
-//	if (chan == Muon) data_samples = fMuData;
-	if (chan == Muon) {
-		data_samples.push_back(SingleMu1);
-		data_samples.push_back(SingleMu2);
-		data_samples.push_back(SingleMu3);
-		data_samples.push_back(SingleMu4);
-		data_samples.push_back(SingleMu5);
-		data_samples.push_back(SingleMu6);
-		data_samples.push_back(SingleMu7);
-	}
-	if (chan == Elec) data_samples = fEGData;
+	if (chan == 0 || chan == 2) data_samples = fMuData;
+	if (chan == 3)              data_samples = fSingleMuData;
+	if (chan == 1)              data_samples = fEGData;
 	wjets_samples.push_back(WJets);
 	zjets_samples.push_back(DYJets);
 
 	// Customization
-	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "p_{T} (GeV)"};
+	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "p_{T} (GeV)", "#eta", "Lepton PF Iso" };
 
 	for(size_t ratiovar = 0; ratiovar < gNRatioVars; ++ratiovar){
 		TH1D *ntight_data  = new TH1D("h_NTight_Data" ,  "NTight Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
@@ -6177,9 +6200,14 @@ void SSDLPlotter::makeRatioControlPlots(gChannel chan){
 
 		// lumi for prescaled triggers
 		float tmp_fLumiNorm = fLumiNorm;
-//		if (chan == Muon) fLumiNorm = 24.9;
-		if (chan == Muon) fLumiNorm = 116.;
-		if (chan == Elec) fLumiNorm = 23.845;
+		float scale_EWK = 1.;
+		if (!calcSF && chan == 1) scale_EWK = fEWKElSF;
+		if (!calcSF && chan == 2) scale_EWK = fEWKMu17SF;
+		if (!calcSF && chan == 3) scale_EWK = fEWKMu24SF;
+		if (chan == 0) fLumiNorm = 24.9;
+		if (chan == 1) fLumiNorm = fLumiNormHLTEl17Jet30  * scale_EWK;
+		if (chan == 2) fLumiNorm = fLumiNormHLTMu17       * scale_EWK;
+		if (chan == 3) fLumiNorm = fLumiNormHLTMu24Eta2p1 * scale_EWK;
 
 		getFRatioPlots( data_samples, chan, ratiovar, ntight_data , nloose_data );
 		getFRatioPlots(wjets_samples, chan, ratiovar, ntight_wjets, nloose_wjets);
@@ -6195,12 +6223,17 @@ void SSDLPlotter::makeRatioControlPlots(gChannel chan){
 		hs_loose->Add(nloose_zjets);
 		hs_loose->Add(nloose_wjets);
 
-//	TH1D *ratio  = new TH1D("h_TLRatio", "TLRatio", FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
-//	ntight->Sumw2(); nloose->Sumw2(); ratio->Sumw2();
-//		TH1D *h_ratio_data = getFRatio(datasamples, chan, i);
-//		TH1D *h_ratio_mc   = getFRatio(mcsamples,   chan, i);
-//		h_ratio_data->SetName(Form("FRatio_%s_data", FRatioPlots::var_name[ratiovar].Data()));
-//		h_ratio_mc  ->SetName(Form("FRatio_%s_mc",   FRatioPlots::var_name[ratiovar].Data()));
+		if (ratiovar == 10 && chan > 0) {
+			if (chan == 1) cout << "Electrons:" << endl;
+			if (chan == 2) cout << "Mu17:"      << endl;
+			if (chan == 3) cout << "Mu24:"      << endl;
+			int binmin = ntight_data->FindBin(60.);
+			int binmax = ntight_data->FindBin(90.)-1;
+			cout << "SF = " << ntight_data->Integral(binmin, binmax) << " / " << ntight_wjets->Integral(binmin, binmax) + ntight_zjets->Integral(binmin, binmax) << " = " << ntight_data->Integral(binmin, binmax) / (ntight_wjets->Integral(binmin, binmax) + ntight_zjets->Integral(binmin, binmax) ) << endl;
+			if (calcSF && chan == 1) fEWKElSF   = ntight_data->Integral(binmin, binmax) / (ntight_wjets->Integral(binmin, binmax) + ntight_zjets->Integral(binmin, binmax));
+			if (calcSF && chan == 2) fEWKMu17SF = ntight_data->Integral(binmin, binmax) / (ntight_wjets->Integral(binmin, binmax) + ntight_zjets->Integral(binmin, binmax));
+			if (calcSF && chan == 3) fEWKMu24SF = ntight_data->Integral(binmin, binmax) / (ntight_wjets->Integral(binmin, binmax) + ntight_zjets->Integral(binmin, binmax));
+		}
 
 		double max(0.);
 		max = 1.2 * std::max(nloose_data->GetBinContent(nloose_data->GetMaximumBin()),hs_loose->GetMaximum());
@@ -6273,25 +6306,6 @@ void SSDLPlotter::makeRatioControlPlots(gChannel chan){
 //		delete hs_loose ;
 
 		fLumiNorm = tmp_fLumiNorm;
-
-
-
-//		// gPad->SetLogy();
-//		h_ratio_mc  ->DrawCopy("AXIS");
-//		h_ratio_mc  ->DrawCopy("PE X0 SAME");
-//		h_ratio_data->DrawCopy("PE SAME");
-//		leg->Draw();
-//		lat->DrawLatex(0.70,0.92, Form("L_{int.} = %2.1f fb^{-1}", fLumiNorm/1000.));
-//		lat->DrawLatex(0.11,0.92, name);
-//		double ymean(0.), yrms(0.);
-//		getWeightedYMeanRMS(h_ratio_data, ymean, yrms);
-//		lat->SetTextSize(0.03);
-//		lat->DrawLatex(0.25,0.92, Form("Mean ratio: %4.2f #pm %4.2f", ymean, yrms));
-//	
-//		// Util::PrintNoEPS(c_temp, "FRatio_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir, NULL);
-//		Util::PrintPDF(  c_temp, "FRatio_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
-//		delete c_temp, leg, lat;
-//		delete h_ratio_data, h_ratio_mc;
 	}
 	fOutputSubDir = "";
 }
@@ -8103,19 +8117,34 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 	}
 	if (fp == SigSup && gEWKCorrection) {
 		float lumi(1.);
-		if (chan == Muon) lumi = fLumiNormHLTMu17;
-		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30;
+		if (chan == Muon) lumi = fLumiNormHLTMu17      * fEWKMuSF;
+		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30 * fEWKElSF;
 		// mc samples are scaled to fLumiNorm. now scale to prescaled triggers.
-		float scale_wjets = lumi / fLumiNorm;
-		float scale_zjets = lumi / fLumiNorm;
-		H_ntight   ->Add(H_ntight_wjets   , (-1.) * scale_wjets);
-		H_ntight   ->Add(H_ntight_zjets   , (-1.) * scale_zjets);
-		H_nloose   ->Add(H_nloose_wjets   , (-1.) * scale_wjets);
-		H_nloose   ->Add(H_nloose_zjets   , (-1.) * scale_zjets);
-		H_ntight_nv->Add(H_ntight_nv_wjets, (-1.) * scale_wjets);
-		H_ntight_nv->Add(H_ntight_nv_zjets, (-1.) * scale_zjets);
-		H_nloose_nv->Add(H_nloose_nv_wjets, (-1.) * scale_wjets);
-		H_nloose_nv->Add(H_nloose_nv_zjets, (-1.) * scale_zjets);
+		float scale_vjets = lumi / fLumiNorm;
+		if (chan == Elec) {
+			H_ntight   ->Add(H_ntight_wjets   , (-1.) * scale_vjets);
+			H_ntight   ->Add(H_ntight_zjets   , (-1.) * scale_vjets);
+			H_nloose   ->Add(H_nloose_wjets   , (-1.) * scale_vjets);
+			H_nloose   ->Add(H_nloose_zjets   , (-1.) * scale_vjets);
+			H_ntight_nv->Add(H_ntight_nv_wjets, (-1.) * scale_vjets);
+			H_ntight_nv->Add(H_ntight_nv_zjets, (-1.) * scale_vjets);
+			H_nloose_nv->Add(H_nloose_nv_wjets, (-1.) * scale_vjets);
+			H_nloose_nv->Add(H_nloose_nv_zjets, (-1.) * scale_vjets);
+		}
+		if (chan == Muon) {
+			for (int ptbin = 1; ptbin < gNMuFPtBins+1; ptbin++) {
+				for (int etabin = 1; etabin < gNMuEtabins+1; etabin++) {
+					int bin = H_nloose->GetBin(ptbin, etabin);
+					if (ptbin > 1 && etabin < 3) lumi = fLumiNormHLTMu24Eta2p1 * fEWKMu24SF;
+					else                         lumi = fLumiNormHLTMu17       * fEWKMu17SF;
+					float scale = lumi / fLumiNorm;
+					H_ntight   ->AddBinContent(bin, (-1.) * scale * H_ntight_wjets->GetBinContent(bin));
+					H_ntight   ->AddBinContent(bin, (-1.) * scale * H_ntight_zjets->GetBinContent(bin));
+					H_nloose   ->AddBinContent(bin, (-1.) * scale * H_nloose_wjets->GetBinContent(bin));
+					H_nloose   ->AddBinContent(bin, (-1.) * scale * H_nloose_zjets->GetBinContent(bin));
+				}
+			}
+		}
 	}
 	h_2d->Divide(H_ntight,    H_nloose,    1., 1., "B");
 	h_nv->Divide(H_ntight_nv, H_nloose_nv, 1., 1., "B");
@@ -8453,13 +8482,8 @@ TH1D* SSDLPlotter::getFRatio(vector<int> samples, gChannel chan, int ratiovar, b
 	delete ntight, nloose;
 	return ratio;
 }
-void SSDLPlotter::getFRatioPlots(vector<int> samples, gChannel chan, int ratiovar, TH1D*& ntight, TH1D*& nloose, bool output){
+void SSDLPlotter::getFRatioPlots(vector<int> samples, int chan, int ratiovar, TH1D*& ntight, TH1D*& nloose, bool output){
 	gStyle->SetOptStat(0);
-
-//	TH1D *ntight = new TH1D("h_NTight",  "NTight",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
-//	TH1D *nloose = new TH1D("h_NLoose",  "NLoose",  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
-//	TH1D *ratio  = new TH1D("h_TLRatio", "TLRatio", FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
-//	ntight->Sumw2(); nloose->Sumw2(); ratio->Sumw2();
 
 	for(size_t i = 0; i < samples.size(); ++i){
 		Sample *S = fSamples[samples[i]];
@@ -8468,8 +8492,7 @@ void SSDLPlotter::getFRatioPlots(vector<int> samples, gChannel chan, int ratiova
 		if(S->datamc == 0) scale = 1;
 
 		FRatioPlots *RP;
-		if(chan == Muon) RP = &S->ratioplots[0];
-		if(chan == Elec) RP = &S->ratioplots[1];
+		RP = &S->ratioplots[chan];
 		ntight->Add(RP->ntight[ratiovar], scale);
 		nloose->Add(RP->nloose[ratiovar], scale);
 	}

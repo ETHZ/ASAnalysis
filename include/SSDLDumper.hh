@@ -445,7 +445,7 @@ public:
 
 	static const int gNKinSels = 3;
 	static TString gKinSelNames[gNKinSels];
-	static TString gEMULabel[2];
+	static TString gEMULabel[4];
 	static TString gChanLabel[gNCHANNELS];
 	static TString gHiLoLabel[3];
 	std::vector< SSDLDumper::Region* > gRegions;
@@ -511,7 +511,7 @@ public:
 	        KinPlots    kinplots_wz2l[gNKinSels];
 	        IsoPlots    isoplots[2]; // e and mu
  	        IdPlots     idplots; // only for electrons
-		FRatioPlots ratioplots[2]; // e and mu
+		FRatioPlots ratioplots[4]; // e, mu, mu17, mu24
 	        TLRatios    tlratios[2]; //e and mu   ///SAVING ALL RATIO INFORMATION HERE INSTEAD ON EACH REGION
  	        ChMisIDProb chmisid;                  ///SAVING ALL CHMID INFORMATION HERE INSTEAD ON EACH REGION
 	        PuPlots     puplots[2];
