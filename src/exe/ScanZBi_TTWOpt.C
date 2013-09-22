@@ -141,7 +141,12 @@ int main( int argc, char* argv[] ) {
 //  plotter->setOutputDir(dir);
   plotter->init("/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/DataCard_SSDL.dat");
   plotter->readHistos(plotter->fOutputFileName);
-  plotter->fillRatios(plotter->fMuData,    plotter->fEGData, 0);
+  plotter->makeRatioControlPlots(0, true); // Mu
+  plotter->makeRatioControlPlots(1, true); // El
+  plotter->makeRatioControlPlots(2, true); // Mu17
+  plotter->makeRatioControlPlots(3, true); // Mu24_eta2p1
+  plotter->fillRatios(plotter->fMuTotData,    plotter->fEGData,    0);
+//  plotter->fillRatios(plotter->fMuData,    plotter->fEGData, 0);
   plotter->fillRatios(plotter->fMCBGMuEnr, plotter->fMCBG, 1);
   plotter->storeWeightedPred(plotter->gRegion[plotter->gBaseRegion]);
   //plotter->doAnalysis();
