@@ -2,11 +2,11 @@
 ## #### SingleMu  #####
 /SingleMu/pablom-V03-09-01_SingleMu-Run2012A-recover-06Aug2012-v1-78a6c7f738b6e33736140124e4f64092/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
 /SingleMu/pablom-V03-09-01_SingleMu-Run2012A-13Jul2012-v1-d509f6f6f2ed390401a23296b0740882/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
-/SingleMu/pablom-V03-09-01_SingleMu-Run2012C-EcalRecover-11Dec2012-v1-ae8907b722febc42a20177aeb71b8421/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+/SingleMu/pablom-V03-09-01_SingleMu-Run2012C-EcalRecover-11Dec2012-v1-ae8907b722febc42a20177aeb71b8421/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
 /SingleMu/pablom-V03-09-01_SingleMu-Run2012C-24Aug2012-v1-a7b324c190d2cb3ee0451568b4fe1774/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
-/SingleMu/pablom-V03-09-01_SingleMu-Run2012C-PromptReco-v2-ae8907b722febc42a20177aeb71b8421/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
-/SingleMu/pablom-V03-09-01_SingleMu-Run2012B-13Jul2012-v1-3-d509f6f6f2ed390401a23296b0740882/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
-/SingleMu/pablom-V03-09-01_SingleMu-Run2012D-PromptReco-v1-ed27575347012eeeb5efebc15a8ff0a1/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+/SingleMu/pablom-V03-09-01_SingleMu-Run2012C-PromptReco-v2-ae8907b722febc42a20177aeb71b8421/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+/SingleMu/pablom-V03-09-01_SingleMu-Run2012B-13Jul2012-v1-3-d509f6f6f2ed390401a23296b0740882/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 10 -1
+/SingleMu/pablom-V03-09-01_SingleMu-Run2012D-PromptReco-v1-ed27575347012eeeb5efebc15a8ff0a1/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
 ###
 ### #### DoubleMu  #####
 #/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012A-13Jul2012-v1-8b40af1c1a7112b82abff0ac5ab711c2/USER			' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1

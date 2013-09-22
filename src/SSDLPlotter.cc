@@ -70,20 +70,20 @@ static const float gMinPt1_ttWPresel     =  20.;
 static const float gMinPt2_ttWPresel     =  20.;
 
 // ttW final selection
-static const float gMinHT_ttWSel_pp      = 205.;
+static const float gMinHT_ttWSel_pp      = 150.;
 static const float gMinMET_ttWSel_pp     =   0.;
 static const int   gMinNjets_ttWSel_pp   =   3 ;
 static const int   gMinNbjetsL_ttWSel_pp =   1 ;
 static const int   gMinNbjetsM_ttWSel_pp =   1 ;
-static const float gMinPt1_ttWSel_pp     =  32.;
-static const float gMinPt2_ttWSel_pp     =  32.;
-static const float gMinHT_ttWSel_mm      = 190.;
+static const float gMinPt1_ttWSel_pp     =  33.;
+static const float gMinPt2_ttWSel_pp     =  33.;
+static const float gMinHT_ttWSel_mm      = 150.;
 static const float gMinMET_ttWSel_mm     =   0.;
 static const int   gMinNjets_ttWSel_mm   =   3 ;
 static const int   gMinNbjetsL_ttWSel_mm =   1 ;
 static const int   gMinNbjetsM_ttWSel_mm =   1 ;
-static const float gMinPt1_ttWSel_mm     =  34.;
-static const float gMinPt2_ttWSel_mm     =  34.;
+static const float gMinPt1_ttWSel_mm     =  33.;
+static const float gMinPt2_ttWSel_mm     =  33.;
 
 ttGpred ttG_SR0;
 
@@ -485,10 +485,10 @@ void SSDLPlotter::doAnalysis(){
        
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
         if(readHistos(fOutputFileName) != 0) return;
-	makeRatioControlPlots(0, true); // Mu
-	makeRatioControlPlots(1, true); // El
-	makeRatioControlPlots(2, true); // Mu17
-	makeRatioControlPlots(3, true); // Mu24_eta2p1
+	makeRatioControlPlots(0, true, false); // Mu
+	makeRatioControlPlots(1, true, false); // El
+	makeRatioControlPlots(2, true, false); // Mu17
+	makeRatioControlPlots(3, true, false); // Mu24_eta2p1
 	fillRatios(fMuTotData,    fEGData,    0);
 	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
 	storeWeightedPred(gRegion[gBaseRegion]);
@@ -534,18 +534,18 @@ void SSDLPlotter::doAnalysis(){
 
 //	makeRatioPlots(Muon);
 //	makeRatioPlots(Elec);
-	make2DRatioPlots(Muon);
-	make2DRatioPlots(Elec);
+//	make2DRatioPlots(Muon);
+//	make2DRatioPlots(Elec);
 ////	makeNTightLoosePlots(Muon);
 ////	makeNTightLoosePlots(Elec);
 //	makeNTightLoosePlots(Muon, SigSup, true);
 //	makeNTightLoosePlots(Elec, SigSup, true);
 //	makeNTightLoosePlots(Muon, ZDecay, true);
 //	makeNTightLoosePlots(Elec, ZDecay, true);
-	makeRatioControlPlots(0, false); // Mu
-	makeRatioControlPlots(1, false); // El
-	makeRatioControlPlots(2, false); // Mu17
-	makeRatioControlPlots(3, false); // Mu24_eta2p1
+//	makeRatioControlPlots(0, false); // Mu
+//	makeRatioControlPlots(1, false); // El
+//	makeRatioControlPlots(2, false); // Mu17
+//	makeRatioControlPlots(3, false); // Mu24_eta2p1
 //////	// 
 //	makeFRvsPtPlots(Muon, SigSup);
 //	makeFRvsPtPlots(Elec, SigSup);
@@ -567,10 +567,10 @@ void SSDLPlotter::doAnalysis(){
 	// printAllYieldTables();
 	
 	
-//	makeTTWDiffPredictionsSigEvent();
+	makeTTWDiffPredictionsSigEvent();
 //	makeTTWKinPlotsSigEvent();
 
-//	makeTTWIntPredictionsSigEvent();
+	makeTTWIntPredictionsSigEvent();
 	
 // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
 	
@@ -8166,8 +8166,8 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 		name += fSamples[sample]->sname;
 	}
 	if (gEWKCorrection) name += "_EWKCorrected";
-//	if(output){
-	if (fp == SigSup) {
+	if(output){
+//	if (fp == SigSup) {
 		fOutputSubDir = "Ratios/";
 		printObject(h_2d,     TString("Ratio")    + name, "colz text");
 		printObject(h_pt,     TString("RatioPt")  + name, "PE1");
@@ -13021,19 +13021,19 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
 	// 2 J   0 bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
-	// 3 J   0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
-	// 1 J   0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+//	// 3 J   0 bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+//	// 1 J   0 bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
 ////	// 0 J   0 bJ
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
@@ -13041,9 +13041,9 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
 	// 3 J   1 bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 	// >=2 J   ==0 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
