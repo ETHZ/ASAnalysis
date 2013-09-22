@@ -6163,7 +6163,7 @@ void SSDLPlotter::makeRatioPlots(gChannel chan){
 	}
 	fOutputSubDir = "";
 }
-void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF){
+void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF, bool plot){
 	TString name;
 	if(chan == 0) name = "Muons";
 	if(chan == 1) name = "Electrons";
@@ -6285,15 +6285,15 @@ void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF){
 		leg->Draw();
 		ntight_data->Draw("P same");
 		drawTopLine(0.56, 0.8);
-		Util::PrintPDF(  c_temp, "NTight_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
-		Util::PrintPNG(  c_temp, "NTight_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+		if (plot) Util::PrintPDF(  c_temp, "NTight_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+		if (plot) Util::PrintPNG(  c_temp, "NTight_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
 
 		hs_loose->Draw("hist");
 		leg->Draw();
 		nloose_data->Draw("P same");
 		drawTopLine(0.56, 0.8);
-		Util::PrintPDF(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
-		Util::PrintPNG(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+		if (plot) Util::PrintPDF(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
+		if (plot) Util::PrintPNG(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
 
 //		delete c_temp, leg, lat;
 //		delete ntight_data ;
