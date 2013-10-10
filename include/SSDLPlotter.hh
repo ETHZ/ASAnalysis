@@ -374,8 +374,8 @@ public:
 	//////////////////////////////
 	// Fake ratios
 	// Calculate from pre stored numbers, with fixed selections:
-	void fillRatios(vector<int>, vector<int>, int = 0);
-	void fillRatios(vector<int>, vector<int>, vector<int>, vector<int>, int = 0);
+  void fillRatios(vector<int>, vector<int>, int = 0,  bool printOutput=false);
+  void fillRatios(vector<int>, vector<int>, vector<int>, vector<int>, int = 0,  bool printOutput=false);
 	TH1D* fillRatioPt(gChannel, int, gFPSwitch, bool = false);
 	TH1D* fillRatioPt(gChannel, vector<int>, gFPSwitch, bool = false);
 	TH2D* fillRatio(gChannel, int, gFPSwitch, bool = false);
