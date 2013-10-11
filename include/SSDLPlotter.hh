@@ -334,6 +334,7 @@ public:
         void makeWZValidation(SSPrediction,TString label="");
         SSPrediction makeIntPrediction(TString, int);
         // old SSPrediction makeIntPrediction(TString, gRegion);
+	void makeClosureTestSigEvents(float, float, int, int, float, float);
 	void makeTTWIntPredictions();
 	TTWZPrediction makeIntPredictionTTW(TString, int);
 	// old TTWZPrediction makeIntPredictionTTW(TString, gRegion);

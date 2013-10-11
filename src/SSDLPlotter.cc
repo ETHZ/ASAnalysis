@@ -474,6 +474,10 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 	scanModelGeneric(file , gRegion[region], model, lowpt);
 }
 void SSDLPlotter::doAnalysis(){
+  // sandBox();         
+  //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
+
+
   cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
   if(readHistos(fOutputFileName) != 0) return;
 
@@ -570,8 +574,8 @@ void SSDLPlotter::doAnalysis(){
 //	makeMuIsolationPlots(false); // if true, loops on TTbar sample
 	// makeElIsolationPlots(false); // if true, loops on TTbar sample
 	// makeElIdPlots();
-//	makeNT2KinPlots(false);
-//	makeNT2KinPlots(true);
+	//makeNT2KinPlots(false);
+	//makeNT2KinPlots(true);
 	//makeMETvsHTPlot(fMuData, fEGData, fMuEGData, HighPt);
 
 	// makeMETvsHTPlotPRL();
@@ -611,6 +615,14 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWDiffPredictions();
 //	makeTTWIntPredictions();
 	// printAllYieldTables();
+	
+	
+	// makeTTWDiffPredictionsSigEvent();
+	// makeTTWKinPlotsSigEvent();
+
+	//  makeTTWIntPredictionsSigEvent();
+	
+ 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
   
   // BM to speed up plots for FR
   //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
@@ -623,9 +635,6 @@ void SSDLPlotter::doAnalysis(){
   //makeTTWIntPredictionsSigEvent();
   //cout << "...done ===" << endl;
   //
-
-// 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
-	
 	// presel
 //	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20., 0, true);
 //	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20.,-1, true);
@@ -705,6 +714,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeFakeGenIDTables();
 //	makeMIDIsolationPlots(Muon, SigSup);
 //	makeMIDIsolationPlots(Muon, Sig);
+	makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
 }
 void SSDLPlotter::showStatusBar(int nEvent, int nEvents, int updateIntervall, bool show, bool makeNewLine) {
 	if (nEvent+1 >= nEvents) nEvent++;
@@ -6356,6 +6366,7 @@ void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF, bool plot){
 //		delete nloose_zjets;
 //		delete hs_tight ;
 //		delete hs_loose ;
+		delete c_temp;
 
 		fLumiNorm = tmp_fLumiNorm;
 	}
@@ -12086,6 +12097,140 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 						gen_syst_mimi, gen_syst_mimi, gen_syst_mimi
 						) << endl;
 	fOUTSTREAM << endl;
+	fOUTSTREAM.close();
+}
+void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ, int minNbJ, float minPT1, float minPT2){
+	TString outputdir = Util::MakeOutputDir(fOutputDir + "ClosureTestSigEventTree");
+	fOutputSubDir = "ClosureTestSigEventTree/";
+	TString title = Form("_HT%.0f_MET%.0f_NJ%i_NbJ%i_PT%.0f_PT%.0f.txt", minHT, minMET, minNJ, minNbJ, minPT1, minPT2);
+	TString outfile = outputdir + "ClosureTest"+title;
+	fOUTSTREAM.open(outfile.Data(), ios::trunc);
+	fOUTSTREAM << Form("min HT:  %.0f  minMET:  %0.0f  minNJ:  %i  minNbJ:  %i  minPT1:  %.0f  minPT2:  %.0f", minHT, minMET, minNJ, minNbJ, minPT1, minPT2);
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// RATIOS /////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	// float mufratio_data(0.),  mufratio_data_e(0.);
+	// float mupratio_data(0.),  mupratio_data_e(0.);
+	// float elfratio_data(0.),  elfratio_data_e(0.);
+	// float elpratio_data(0.),  elpratio_data_e(0.);
+
+
+	TH2D * fRatioHistoMu;
+	TH2D * fRatioHistoMu_e;
+	TH2D * pRatioHistoMu;
+	TH2D * pRatioHistoMu_e;
+
+	TH2D * fRatioHistoEl;
+	TH2D * fRatioHistoEl_e;
+	TH2D * pRatioHistoEl;
+	TH2D * pRatioHistoEl_e;
+
+	
+	fRatioHistoMu	= new TH2D("fRatioMu"  , "fRatioMu"  , getNFPtBins(Muon), getFPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
+	fRatioHistoMu_e	= new TH2D("fRatioMu_e", "fRatioMu_e", getNFPtBins(Muon), getFPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
+	pRatioHistoMu	= new TH2D("pRatioMu"  , "pRatioMu"  , getNPPtBins(Muon), getPPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
+	pRatioHistoMu_e	= new TH2D("pRatioMu_e", "pRatioMu_e", getNPPtBins(Muon), getPPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
+                                                                                                                   
+	fRatioHistoEl	= new TH2D("fRatioEl"  , "fRatioEl"  , getNFPtBins(Elec), getFPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
+	fRatioHistoEl_e	= new TH2D("fRatioEl_e", "fRatioEl_e", getNFPtBins(Elec), getFPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
+	pRatioHistoEl	= new TH2D("pRatioEl"  , "pRatioEl"  , getNPPtBins(Elec), getPPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
+	pRatioHistoEl_e	= new TH2D("pRatioEl_e", "pRatioEl_e", getNPPtBins(Elec), getPPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
+
+	bool dataRatio = false;
+
+	cout << Form("fRatioHistoMu nbinsx: %d xmin: %.2f xmax: %.2f nbinsy: %d ymin: %.2f ymax: %.2f", fRatioHistoMu->GetNbinsX(), fRatioHistoMu->GetXaxis()->GetXmin(), fRatioHistoMu->GetXaxis()->GetXmax(), fRatioHistoMu->GetNbinsY(), fRatioHistoMu->GetYaxis()->GetXmin(), fRatioHistoMu->GetYaxis()->GetXmax() ) << endl;
+	
+	if (dataRatio){
+		// ratio from data:
+		//===========================
+		calculateRatio(fMuData, Muon, SigSup, fRatioHistoMu);
+		calculateRatio(fMuData, Muon, ZDecay, pRatioHistoMu);
+
+		calculateRatio(fEGData, Elec, SigSup, fRatioHistoMu);
+		calculateRatio(fEGData, Elec, ZDecay, pRatioHistoMu);
+	}
+	else {
+		// ratio from MC:
+		//===========================
+		std::vector<int> mcSamples;
+		mcSamples.push_back(QCD50);
+		mcSamples.push_back(QCD80);
+		mcSamples.push_back(QCD120);
+		mcSamples.push_back(QCD170);
+		mcSamples.push_back(QCD300);
+		mcSamples.push_back(QCD470);
+		mcSamples.push_back(QCD600);
+		mcSamples.push_back(QCD800);
+	
+		mcSamples.push_back(QCDEM30);
+		mcSamples.push_back(QCDEM80);
+		mcSamples.push_back(QCDEM250);
+		mcSamples.push_back(QCDMuEnr15);
+	
+		calculateRatio(mcSamples , Muon, SigSup, fRatioHistoMu);
+	 	// calculateRatio(fMCBGMuEnr, Muon, ZDecay, pRatioHistoMu);
+	 	// calculateRatio(mcSamples , Elec, SigSup, fRatioHistoEl);
+	 	// calculateRatio(fMCBGEMEnr, Elec, ZDecay, pRatioHistoEl);
+	}
+
+	fOUTSTREAM << "content of bins for the ratio histogram:" << endl;
+
+	fOUTSTREAM << "fRatioHistoMu" << endl;
+	for (int i=1; i <= getNFPtBins(Muon)*getNFPtBins(Muon); ++i){
+		fOUTSTREAM << Form("%d: %.4f", i, fRatioHistoMu->GetBinContent(i)) << endl;
+	}
+
+	///////////////////////////////////////////////////////////////////////////////////
+	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////
+	float nt2_mm(0.), nt10_mm(0.), nt01_mm(0.), nt0_mm(0.);
+	float nt2_em(0.), nt10_em(0.), nt01_em(0.), nt0_em(0.);
+	float nt2_ee(0.), nt10_ee(0.), nt01_ee(0.), nt0_ee(0.);
+
+	// FR Predictions from event-by-event weights (pre stored)
+	float npp_mm(0.), npf_mm(0.), nfp_mm(0.), nff_mm(0.);
+	float npp_em(0.), npf_em(0.), nfp_em(0.), nff_em(0.);
+	float npp_ee(0.), npf_ee(0.), nfp_ee(0.), nff_ee(0.);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	TFile *pFile = TFile::Open(fOutputFileName);
+	TTree *sigtree; getObjectSafe(pFile, "SigEvents", sigtree);
+	
+	string *sname = 0;
+	int flag;
+	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
+	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float eta1, eta2, mll;
+	int   event, run, ls;
+	int charge;
+	int passZVeto, passes3rdSFLepVeto;
+
+	sigtree->SetBranchAddress("SystFlag", &flag);
+	sigtree->SetBranchAddress("Event",    &event);
+	sigtree->SetBranchAddress("LS",       &ls);
+	sigtree->SetBranchAddress("Run",      &run);
+	sigtree->SetBranchAddress("SName",    &sname);
+	sigtree->SetBranchAddress("SType",    &SType);
+	sigtree->SetBranchAddress("PUWeight", &puweight);
+	sigtree->SetBranchAddress("SLumi",    &SLumi);
+	sigtree->SetBranchAddress("Flavor",   &Flavor);
+	sigtree->SetBranchAddress("Charge",   &charge);
+	sigtree->SetBranchAddress("pT1",      &pT1);
+	sigtree->SetBranchAddress("pT2",      &pT2);
+	sigtree->SetBranchAddress("eta1",     &eta1);
+	sigtree->SetBranchAddress("eta2",     &eta2);
+	sigtree->SetBranchAddress("TLCat",    &TLCat);
+	sigtree->SetBranchAddress("HT",       &HT);
+	sigtree->SetBranchAddress("MET",      &MET);
+	sigtree->SetBranchAddress("NJ",       &NJ);
+	sigtree->SetBranchAddress("NbJ",      &NbJ);
+	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
+	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
+	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
+
+	FakeRatios *FR = new FakeRatios();
+
 	fOUTSTREAM.close();
 }
 map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1, float pT2, int chVeto, bool ttw , int flag){

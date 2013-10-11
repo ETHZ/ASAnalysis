@@ -104,7 +104,7 @@ public:
 		// fake samples
 		TTJets, TTJets_v1, TTJets_madgraph_v1, TTJets_madgraph_v2,
 		SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
-		WJets,
+		WJets, WJets2, WbbJets,
 		DYJets,
 		// no longer needed GVJets,
 		// not here yet GJets200, GJets400,
@@ -774,8 +774,8 @@ public:
 	virtual void  setMET(float );
 	virtual float getMET();
 	virtual float getMETPhi();
-        virtual int getNJets(float = 0., bool doLepCleaning=true);
-	virtual float getNthJetPt(int = 0);
+	virtual int getNJets(float = 0., bool doLepCleaning=true);
+	virtual float getNthJetPt(int = 0, bool = false);
 	virtual int getNBTags(float = 0., bool doLepCleaning=true);
 	virtual int getNBTagsMed();
 	virtual float getBetaStar(int);
@@ -786,10 +786,10 @@ public:
 	virtual float getDPhiMLs(int, int, gChannel);
 	virtual float getMT2(int, int, gChannel);
 	virtual float getMll(int, int, gChannel);
-        virtual int   getClosestJet(int, gChannel, float = 20., bool doLepCleaning=true);
-        virtual float getClosestJetPt(int, gChannel, float = 20.,bool doLepCleaning=true);
-        virtual float getClosestJetDR(int, gChannel, float = 20.,bool doLepCleaning=true);
-        virtual float getClosestJetDPhi(int, gChannel, float = 20.,bool doLepCleaning=true);
+	virtual int   getClosestJet(int, gChannel, float = 20., bool doLepCleaning=true, bool bJet = false);
+	virtual float getClosestJetPt(int, gChannel, float = 20.,bool doLepCleaning=true);
+	virtual float getClosestJetDR(int, gChannel, float = 20.,bool doLepCleaning=true, bool bJet = false);
+	virtual float getClosestJetDPhi(int, gChannel, float = 20.,bool doLepCleaning=true);
 	virtual float getSecondClosestJetDR(int, gChannel);
 	virtual int   getFarestJet(int, gChannel, float = 20.);
 	virtual int   getAwayJet(int, gChannel);
@@ -994,9 +994,8 @@ public:
 	int         fSETree_SystFlag; // 0 nominal, 1 jets up, 2 jets dn, 3 jets smeared, 4 btag up, 5 btag dn, 6 lep up, 7 lep dn
 	float       fSETree_PUWeight;
 	float       fSETree_HLTSF;
-	float       fSETree_BtagSF1;
-	float       fSETree_BtagSF2;
 	float       fSETree_SLumi;
+	float       fSETree_xsec;
 	std::string fSETree_SName;
 	int         fSETree_SType; // DoubleMu(0), DoubleEle(1), MuEG(2), MC(10)
 	int         fSETree_Run;
@@ -1014,20 +1013,14 @@ public:
 	float       fSETree_MET;
 	int         fSETree_NM; // number of tight muons
 	int         fSETree_NE; // number of tight electrons
-	int         fSETree_NMus; // number of muons
-	int         fSETree_NEls; // number of electrons
 	int         fSETree_NJ;
 	float       fSETree_Jet0Pt;
 	float       fSETree_Jet1Pt;
 	float       fSETree_Jet2Pt;
+	float       fSETree_Jet0PtB;
+	float       fSETree_Jet1PtB;
 	int         fSETree_NbJ;
 	int         fSETree_NbJmed;
-	float       fSETree_M3;
-	float       fSETree_MT2;
-	float       fSETree_MT1;
-	float       fSETree_dPhiML1;
-	float       fSETree_dPhiMLs;
-	float       fSETree_BDTVal;
 	float       fSETree_Mll;
 	float       fSETree_pT1;
 	float       fSETree_pT2;
@@ -1040,15 +1033,13 @@ public:
     float       fSETree_Rho;
 	float		fSETree_MTLep1;
 	float		fSETree_MTLep2;
+	float		fSETree_dRbJl1;
+	float		fSETree_dRbJl2;
 	float       fSETree_BetaStar1;
 	float       fSETree_BetaStar2;
 	float       fSETree_BetaStar3;
 	float       fSETree_BetaStar4;
 	float       fSETree_BetaStar5;
-	float		fSETree_MVAID1;
-	float		fSETree_MVAID2;
-	float		fSETree_medWP1;
-	float		fSETree_medWP2;
 	int			fSETree_NVrtx;
 	int			fSETree_NTrue;
 //	float		fSETree_Ml1l3; // invariant mass of 3rd lepton pair
