@@ -51,7 +51,7 @@ static       bool  gSmearMET     = false;
 
 bool gDPS = false;
 
-float gSigSupJetPt = 65.;
+float gSigSupJetPt = 40.;
 bool ttbarSigSup = true;
 bool gDoSystStudies;
 static const bool gDoSyncExercise = false;
@@ -366,7 +366,6 @@ void SSDLDumper::init(){
 //BDT. 	fReader->AddVariable("pT2"    , &fpT2_bdt     ); 
 //BDT. 	fReader->AddVariable("NJ"     , &fNJ_bdt      ); 
 //BDT. 	fReader->AddVariable("Mll"    , &fMll_bdt     ); 
-//BDT. 	fReader->AddVariable("MT1"    , &fMT1_bdt     );
 //BDT. 	fReader->AddVariable("MET"    , &fMET_bdt     );
 //BDT. 	fReader->AddVariable("Jet0Pt" , &fJet0Pt_bdt  );
 //BDT. 	fReader->AddVariable("eta1"   , &feta1_bdt    );
@@ -1804,12 +1803,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	gApplyZVeto   = false;
 
 	fSETree_SystFlag = flag;
-//	fSETree_PUWeight = PUWeight;
 	fSETree_PUWeight = fPUWeight->weight(PUnumTrueInteractions);
-	//	fSETree_HLTSF    = gHLTSF;
-	fSETree_BtagSF1  = gBtagSF1;
-	fSETree_BtagSF2  = gBtagSF2;
 	fSETree_SLumi    = S->getLumi();
+	fSETree_xsec     = S->xsec;
 	fSETree_SName    = S->sname.Data();
 	fSETree_SType    = getSampleType(S);
 	fSETree_Run      = Run;
@@ -1822,8 +1818,6 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	fSETree_NM = getNTightMuons();
 	fSETree_NE = getNTightElectrons();
 
-	fSETree_NMus = NMus;
-	fSETree_NEls = NEls;
 
 	// for testing!!!! fChargeSwitch = 1;
 	
@@ -1844,16 +1838,14 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// MUMU CHANNEL:  //////////////////////////////////////////////////////////////////////////////////////
 	if(mumuSignalTrigger() && isSSLLMuEvent(ind1, ind2)){ // trigger && select loose mu/mu pair
-		fSETree_M3      = getM3();
-		fSETree_MT2     = getMT2(ind1, ind2, Muon);
-		fSETree_MT1     = getMT(ind1, Muon);
-		fSETree_dPhiML1 = Util::DeltaPhi(getMETPhi(), MuPhi[ind1]);
-		fSETree_dPhiMLs = getDPhiMLs(ind1, ind2, Muon);
 		fSETree_Mll     = getMll(ind1, ind2, Muon);
 		fSETree_HT      = getHT();
 		fSETree_NJ      = getNJets();
 		fSETree_Jet0Pt  = getNthJetPt(0);
 		fSETree_Jet1Pt  = getNthJetPt(1);
+		fSETree_Jet2Pt  = getNthJetPt(2);
+		fSETree_Jet0PtB = getNthJetPt(0, true);
+		fSETree_Jet1PtB = getNthJetPt(1, true);
 		fSETree_NbJ     = getNBTags();
 		fSETree_NbJmed  = getNBTagsMed();
 		fSETree_Flavor  = 0;
@@ -1876,6 +1868,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_Rho     = Rho;
 		fSETree_MTLep1  = getMT(ind1, Muon);
 		fSETree_MTLep2  = getMT(ind2, Muon);
+		fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true);
+		fSETree_dRbJl2  = getClosestJetDR(ind2, Muon, gMinJetPt, true);
 		fSETree_BetaStar1 = getBetaStar(1);
 		fSETree_BetaStar2 = getBetaStar(2);
 		fSETree_BetaStar3 = getBetaStar(3);
@@ -1915,11 +1909,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			fpT1_bdt     = fSETree_pT1;
 			fpT2_bdt     = fSETree_pT2;
 			fMll_bdt     = fSETree_Mll;
-			fMT1_bdt     = fSETree_MT1;
 			feta1_bdt    = fSETree_eta1;
-			fMT2_bdt     = fSETree_MT2;
-			fdPhiMLs_bdt = fSETree_dPhiMLs;
-			fNMus_bdt    = NMus;
 			fPFIso1_bdt  = fSETree_PFIso1;
 			fPFIso2_bdt  = fSETree_PFIso2;
 			fCharge_bdt  = fSETree_Charge;
@@ -1933,7 +1923,6 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		if( Event==gDEBUG_EVENTNUMBER_ && Run==gDEBUG_RUNNUMBER_ ) {
 			std::cout << " -> This is a mu-mu event." << std::endl;
 			std::cout << "SystFlag :" << fSETree_SystFlag << std::endl;
-			std::cout << "MT2      :" << fSETree_MT2    << std::endl;
 			std::cout << "Mll      :" << fSETree_Mll    << std::endl;
 			std::cout << "HT       :" << fSETree_HT     << std::endl;
 			std::cout << "NJ       :" << fSETree_NJ     << std::endl;
@@ -1953,16 +1942,14 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// EMU CHANNEL:  ///////////////////////////////////////////////////////////////////////////////////////
 	else if(elmuSignalTrigger() && isSSLLElMuEvent(ind1, ind2)){ // trigger && select loose e/mu pair
-		fSETree_M3     = getM3();
-		fSETree_MT2    = getMT2(ind1, ind2, ElMu);
-		fSETree_MT1    = getMT(ind1, Muon);
-		fSETree_dPhiML1 = Util::DeltaPhi(getMETPhi(), MuPhi[ind1]);
-		fSETree_dPhiMLs = getDPhiMLs(ind1, ind2, ElMu);
 		fSETree_Mll    = getMll(ind1, ind2, ElMu);
 		fSETree_HT     = getHT();
 		fSETree_NJ     = getNJets();
 		fSETree_Jet0Pt = getNthJetPt(0);
 		fSETree_Jet1Pt = getNthJetPt(1);
+		fSETree_Jet2Pt = getNthJetPt(2);
+		fSETree_Jet0PtB = getNthJetPt(0, true);
+		fSETree_Jet1PtB = getNthJetPt(1, true);
 		fSETree_NbJ    = getNBTags();
 		fSETree_NbJmed = getNBTagsMed();
 		fSETree_Flavor = 1;
@@ -1984,15 +1971,13 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_Rho     = Rho;
 		fSETree_MTLep1  = getMT(ind1, Muon);
 		fSETree_MTLep2  = getMT(ind2, Elec);
+		fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true);
+		fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
 		fSETree_BetaStar1 = getBetaStar(1);
 		fSETree_BetaStar2 = getBetaStar(2);
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		// fSETree_MVAID1  = ElMVAIDTrig[ind1];
-		fSETree_MVAID2  = ElMVAIDTrig[ind2];
-		// fSETree_medWP1  = ElIsGoodElId_MediumWP[ind1];
-		fSETree_medWP2  = ElIsGoodElId_MediumWP[ind2];
 		if( isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2015,11 +2000,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			fpT1_bdt     = fSETree_pT1;
 			fpT2_bdt     = fSETree_pT2;
 			fMll_bdt     = fSETree_Mll;
-			fMT1_bdt     = fSETree_MT1;
 			feta1_bdt    = fSETree_eta1;
-			fMT2_bdt     = fSETree_MT2;
-			fdPhiMLs_bdt = fSETree_dPhiMLs;
-			fNMus_bdt    = NMus;
 			fPFIso1_bdt  = fSETree_PFIso1;
 			fPFIso2_bdt  = fSETree_PFIso2;
 			fCharge_bdt  = fSETree_Charge;
@@ -2034,7 +2015,6 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		if( Event==gDEBUG_EVENTNUMBER_ && Run==gDEBUG_RUNNUMBER_ ) {
 			std::cout << " -> This is a mu-ele event." << std::endl;
 			std::cout << "SystFlag :" << fSETree_SystFlag << std::endl;
-			std::cout << "MT2      :" << fSETree_MT2    << std::endl;
 			std::cout << "Mll      :" << fSETree_Mll    << std::endl;
 			std::cout << "HT       :" << fSETree_HT     << std::endl;
 			std::cout << "NJ       :" << fSETree_NJ     << std::endl;
@@ -2054,16 +2034,14 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// EE CHANNEL:  ////////////////////////////////////////////////////////////////////////////////////////
 	else if(elelSignalTrigger() && isSSLLElEvent(ind1, ind2)){ // trigger && select loose e/e pair
-		fSETree_M3     = getM3();
-		fSETree_MT2    = getMT2(ind1, ind2, Elec);
-		fSETree_MT1    = getMT(ind1, Elec);
-		fSETree_dPhiML1 = Util::DeltaPhi(getMETPhi(), ElPhi[ind1]);
-		fSETree_dPhiMLs = getDPhiMLs(ind1, ind2, Elec);
 		fSETree_Mll    = getMll(ind1, ind2, Elec);
 		fSETree_HT     = getHT();
 		fSETree_NJ     = getNJets();
 		fSETree_Jet0Pt = getNthJetPt(0);
 		fSETree_Jet1Pt = getNthJetPt(1);
+		fSETree_Jet2Pt = getNthJetPt(2);
+		fSETree_Jet0PtB = getNthJetPt(0, true);
+		fSETree_Jet1PtB = getNthJetPt(1, true);
 		fSETree_NbJ    = getNBTags();
 		fSETree_NbJmed = getNBTagsMed();
 		fSETree_Flavor = 2;
@@ -2085,15 +2063,13 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_Rho     = Rho;
 		fSETree_MTLep1  = getMT(ind1, Elec);
 		fSETree_MTLep2  = getMT(ind2, Elec);
+		fSETree_dRbJl1  = getClosestJetDR(ind1, Elec, gMinJetPt, true);
+		fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
 		fSETree_BetaStar1 = getBetaStar(1);
 		fSETree_BetaStar2 = getBetaStar(2);
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		fSETree_MVAID1  = ElMVAIDTrig[ind1];
-		fSETree_MVAID2  = ElMVAIDTrig[ind2];
-		fSETree_medWP1  = ElIsGoodElId_MediumWP[ind1];
-		fSETree_medWP2  = ElIsGoodElId_MediumWP[ind2];
 		if( isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightElectron(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2116,11 +2092,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			fpT1_bdt     = fSETree_pT1;
 			fpT2_bdt     = fSETree_pT2;
 			fMll_bdt     = fSETree_Mll;
-			fMT1_bdt     = fSETree_MT1;
 			feta1_bdt    = fSETree_eta1;
-			fMT2_bdt     = fSETree_MT2;
-			fdPhiMLs_bdt = fSETree_dPhiMLs;
-			fNMus_bdt    = NMus;
 			fPFIso1_bdt  = fSETree_PFIso1;
 			fPFIso2_bdt  = fSETree_PFIso2;
 			fCharge_bdt  = fSETree_Charge;
@@ -2134,7 +2106,6 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		if( Event==gDEBUG_EVENTNUMBER_ && Run==gDEBUG_RUNNUMBER_ ) {
 			std::cout << " -> This is an ele-ele event." << std::endl;
 			std::cout << "SystFlag :" << fSETree_SystFlag << std::endl;
-			std::cout << "MT2      :" << fSETree_MT2    << std::endl;
 			std::cout << "Mll      :" << fSETree_Mll    << std::endl;
 			std::cout << "HT       :" << fSETree_HT     << std::endl;
 			std::cout << "NJ       :" << fSETree_NJ     << std::endl;
@@ -2152,16 +2123,16 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	}
 
 	gApplyZVeto   = true;
-	/// OS YIELDS only for data:
-	if (S->datamc == 0) {
+	// OS YIELDS only for data:
+	// if (S->datamc == 0) 
+	// OS YIELDS for all but DYJets
+	if (S->sname.Data() != "DYJets") {
 		fChargeSwitch = 1;
 		
 //		////////////////////////////////////////////////////////////////////////////////////////////////////////
 //		// MM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
 //		if (mumuSignalTrigger() && isSSLLMuEvent(ind1, ind2)){ // trigger && select loose mu/mu pair
 //			if ( isTightMuon(ind1) && isTightMuon(ind2)) {
-//				fSETree_M3      = getM3();
-//				fSETree_MT2     = getMT2(ind1, ind2, Muon);
 //				fSETree_Mll     = getMll(ind1, ind2, Muon);
 //				fSETree_HT      = getHT();
 //				fSETree_NJ      = getNJets();
@@ -2202,16 +2173,14 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		// EM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
 		if (elmuSignalTrigger() && isSSLLElMuEvent(ind1, ind2)){ // trigger && select loose e/mu pair
 			if ( isTightMuon(ind1) && isTightElectron(ind2)) {
-				fSETree_M3      = getM3();
-				fSETree_MT2     = getMT2(ind1, ind2, ElMu);
-				fSETree_MT1     = getMT(ind1, Elec);
-				fSETree_dPhiML1 = Util::DeltaPhi(getMETPhi(), MuPhi[ind1]);
-				fSETree_dPhiMLs = getDPhiMLs(ind1, ind2, ElMu);
 				fSETree_Mll     = getMll(ind1, ind2, ElMu);
 				fSETree_HT      = getHT();
 				fSETree_NJ      = getNJets();
 				fSETree_Jet0Pt  = getNthJetPt(0);
 				fSETree_Jet1Pt  = getNthJetPt(1);
+				fSETree_Jet2Pt  = getNthJetPt(2);
+				fSETree_Jet0PtB = getNthJetPt(0, true);
+				fSETree_Jet1PtB = getNthJetPt(1, true);
 				fSETree_NbJ     = getNBTags();
 				fSETree_NbJmed  = getNBTagsMed();
 				fSETree_Flavor  = 4;
@@ -2232,6 +2201,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
                 fSETree_Rho     = Rho;
 				fSETree_MTLep1  = getMT(ind1, Muon);
 				fSETree_MTLep2  = getMT(ind2, Elec);
+				fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true);
+				fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
 				fSETree_BetaStar1 = getBetaStar(1);
 				fSETree_BetaStar2 = getBetaStar(2);
 				fSETree_BetaStar3 = getBetaStar(3);
@@ -2249,16 +2220,14 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		// EE CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
 		if (elelSignalTrigger() && isSSLLElEvent(ind1, ind2)){ // trigger && select loose e/e pair
 			if ( isTightElectron(ind1) && isTightElectron(ind2)) {
-				fSETree_M3      = getM3();
-				fSETree_MT2     = getMT2(ind1, ind2, Elec);
-				fSETree_MT1     = getMT(ind1, Elec);
-				fSETree_dPhiML1 = Util::DeltaPhi(getMETPhi(), ElPhi[ind1]);
-				fSETree_dPhiMLs = getDPhiMLs(ind1, ind2, Elec);
 				fSETree_Mll     = getMll(ind1, ind2, Elec);
 				fSETree_HT      = getHT();
 				fSETree_NJ      = getNJets();
 				fSETree_Jet0Pt  = getNthJetPt(0);
 				fSETree_Jet1Pt  = getNthJetPt(1);
+				fSETree_Jet2Pt  = getNthJetPt(2);
+				fSETree_Jet0PtB = getNthJetPt(0, true);
+				fSETree_Jet1PtB = getNthJetPt(1, true);
 				fSETree_NbJ     = getNBTags();
 				fSETree_NbJmed  = getNBTagsMed();
 				fSETree_Flavor  = 5;
@@ -2279,6 +2248,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
                 fSETree_Rho     = Rho;
 				fSETree_MTLep1  = getMT(ind1, Elec);
 				fSETree_MTLep2  = getMT(ind2, Elec);
+				fSETree_dRbJl1  = getClosestJetDR(ind1, Elec, gMinJetPt, true);
+				fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
 				fSETree_BetaStar1 = getBetaStar(1);
 				fSETree_BetaStar2 = getBetaStar(2);
 				fSETree_BetaStar3 = getBetaStar(3);
@@ -3171,9 +3142,8 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("PUWeight",    &fSETree_PUWeight, "PUWeight/F");
 	fSigEv_Tree->Branch("SystFlag",    &fSETree_SystFlag, "SystFlag/I");
 	fSigEv_Tree->Branch("HLTSF",       &fSETree_HLTSF   , "HLTSF/F");
-	fSigEv_Tree->Branch("BtagSF1",      &fSETree_BtagSF1  , "BtagSF1/F");
-	fSigEv_Tree->Branch("BtagSF2",      &fSETree_BtagSF2  , "BtagSF2/F");
 	fSigEv_Tree->Branch("SLumi",       &fSETree_SLumi   , "SLumi/F");
+	fSigEv_Tree->Branch("xsec",        &fSETree_xsec    , "xsec/F");
 	fSigEv_Tree->Branch("SName",       &fSETree_SName);
 	fSigEv_Tree->Branch("SType",       &fSETree_SType   , "SType/I");
 	fSigEv_Tree->Branch("Run",         &fSETree_Run     , "Run/I");
@@ -3191,19 +3161,14 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("MET",         &fSETree_MET     , "MET/F");
 	fSigEv_Tree->Branch("NM",          &fSETree_NM      , "NM/I");
 	fSigEv_Tree->Branch("NE",          &fSETree_NE      , "NE/I");
-	fSigEv_Tree->Branch("NMus",        &fSETree_NMus    , "NMus/I");
-	fSigEv_Tree->Branch("NEls",        &fSETree_NEls    , "NEls/I");
 	fSigEv_Tree->Branch("NJ",          &fSETree_NJ      , "NJ/I");
 	fSigEv_Tree->Branch("Jet0Pt",      &fSETree_Jet0Pt  , "Jet0Pt/F");
 	fSigEv_Tree->Branch("Jet1Pt",      &fSETree_Jet1Pt  , "Jet1Pt/F");
+	fSigEv_Tree->Branch("Jet2Pt",      &fSETree_Jet2Pt  , "Jet2Pt/F");
+	fSigEv_Tree->Branch("Jet0PtB",     &fSETree_Jet0PtB , "Jet0PtB/F");
+	fSigEv_Tree->Branch("Jet1PtB",     &fSETree_Jet1PtB , "Jet1PtB/F");
 	fSigEv_Tree->Branch("NbJ",         &fSETree_NbJ     , "NbJ/I");
 	fSigEv_Tree->Branch("NbJmed",      &fSETree_NbJmed  , "NbJmed/I");
-	fSigEv_Tree->Branch("M3",          &fSETree_M3      , "M3/F");
-	fSigEv_Tree->Branch("MT2",         &fSETree_MT2     , "MT2/F");
-	fSigEv_Tree->Branch("MT1",         &fSETree_MT1     , "MT1/F");
-	fSigEv_Tree->Branch("dPhiML1",     &fSETree_dPhiML1 , "dPhiML1/F");
-	fSigEv_Tree->Branch("dPhiMLs",     &fSETree_dPhiMLs , "dPhiMLs/F");
-	fSigEv_Tree->Branch("BDTVal",      &fSETree_BDTVal  , "BDTVal/F");
 	fSigEv_Tree->Branch("Mll",         &fSETree_Mll     , "Mll/F");
 	fSigEv_Tree->Branch("pT1",         &fSETree_pT1     , "pT1/F");
 	fSigEv_Tree->Branch("pT2",         &fSETree_pT2     , "pT2/F");
@@ -3216,31 +3181,23 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("Rho",         &fSETree_Rho     , "Rho/F");
 	fSigEv_Tree->Branch("MTLep1",         &fSETree_MTLep1     , "MTLep1/F");
 	fSigEv_Tree->Branch("MTLep2",         &fSETree_MTLep2     , "MTLep1/F");
+	fSigEv_Tree->Branch("dRbJl1",         &fSETree_dRbJl1     , "dRbJl1/F");
+	fSigEv_Tree->Branch("dRbJl2",         &fSETree_dRbJl2     , "dRbJl1/F");
 	fSigEv_Tree->Branch("BetaStar1",   &fSETree_BetaStar1, "BetaStar1/F");
 	fSigEv_Tree->Branch("BetaStar2",   &fSETree_BetaStar2, "BetaStar2/F");
 	fSigEv_Tree->Branch("BetaStar3",   &fSETree_BetaStar3, "BetaStar3/F");
 	fSigEv_Tree->Branch("BetaStar4",   &fSETree_BetaStar4, "BetaStar4/F");
 	fSigEv_Tree->Branch("BetaStar5",   &fSETree_BetaStar5, "BetaStar5/F");
-	fSigEv_Tree->Branch("MVAID1",      &fSETree_MVAID1  , "MVAID1/F");
-	fSigEv_Tree->Branch("MVAID2",      &fSETree_MVAID2  , "MVAID2/F");
-	fSigEv_Tree->Branch("medWP1",      &fSETree_medWP1  , "medWP1/F");
-	fSigEv_Tree->Branch("medWP2",      &fSETree_medWP2  , "medWP2/F");
 	fSigEv_Tree->Branch("NVrtx",       &fSETree_NVrtx   , "NVrtx/I");
 	fSigEv_Tree->Branch("NTrue",       &fSETree_NTrue   , "NTrue/I");
-//	fSigEv_Tree->Branch("Ml1l3",             &fSETree_Ml1l3         , "Ml1l3/F");
-//	fSigEv_Tree->Branch("Ml2l3",             &fSETree_Ml2l3         , "Ml2l3/F");
-//	fSigEv_Tree->Branch("Charge3rdLep",      &fSETree_Charge3rdLep  , "Charge3rdLep/I");
-//	fSigEv_Tree->Branch("Flavor3rdLep",      &fSETree_Flavor3rdLep  , "Flavor3rdLep/I");
-//	fSigEv_Tree->Branch("PassTauVeto", &fSETree_TauVeto , "PassTauVeto/I");
 	
 }
 void SSDLDumper::resetSigEventTree(){
 	fSETree_SystFlag = -1;
 	fSETree_PUWeight = -1.;
 	fSETree_HLTSF    = -1.;
-	fSETree_BtagSF1   = -1.;
-	fSETree_BtagSF2   = -1.;
 	fSETree_SLumi    = -1.;
+	fSETree_xsec     = -1.;
 	fSETree_SName    = "?";
 	fSETree_SType    = -1;
 	fSETree_Run      = -1;
@@ -3258,19 +3215,14 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_MET      = -1.;
 	fSETree_NM       = -1;
 	fSETree_NE       = -1;
-	fSETree_NMus     = -1;
-	fSETree_NEls     = -1;
 	fSETree_NJ       = -1;
 	fSETree_Jet0Pt   = -1.;
 	fSETree_Jet1Pt   = -1.;
+	fSETree_Jet2Pt   = -1.;
+	fSETree_Jet0PtB  = -1.;
+	fSETree_Jet1PtB  = -1.;
 	fSETree_NbJ      = -1;
 	fSETree_NbJmed   = -1;
-	fSETree_M3       = -1.;
-	fSETree_MT2      = -1.;
-	fSETree_MT1      = -1.;
-	fSETree_dPhiML1  = -1.;
-	fSETree_dPhiMLs  = -1.;
-	fSETree_BDTVal   = -999.;
 	fSETree_Mll      = -1.;
 	fSETree_pT1      = -1.;
 	fSETree_pT2      = -1.;
@@ -3283,22 +3235,15 @@ void SSDLDumper::resetSigEventTree(){
     fSETree_Rho      = -1.;
 	fSETree_MTLep1   = -999.;
 	fSETree_MTLep2   = -999.;
+	fSETree_dRbJl1   = -999.;
+	fSETree_dRbJl2   = -999.;
 	fSETree_BetaStar1= -999.;
 	fSETree_BetaStar2= -999.;
 	fSETree_BetaStar3= -999.;
 	fSETree_BetaStar4= -999.;
 	fSETree_BetaStar5= -999.;
-	fSETree_MVAID1   = -999.;
-	fSETree_MVAID2   = -999.;
-	fSETree_medWP1   = -1.;
-	fSETree_medWP2   = -1.;
 	fSETree_NVrtx    = -1.;
 	fSETree_NTrue    = -1.;
-//	fSETree_Ml1l3	 = -1.;
-//	fSETree_Ml2l3	 = -1.;
-//	fSETree_Charge3rdLep = -99;
-//	fSETree_Flavor3rdLep = -1;
-//	fSETree_TauVeto		 = -1;
 }
 void SSDLDumper::writeSigEvTree(TFile *pFile){
 	pFile->cd();
@@ -3551,8 +3496,8 @@ void SSDLDumper::bookHistos(Sample *S){
 	        gChannel c = channels_begin;
 		if      (l == 0) c = Muon; 
 		else if (l == 1) c = Elec; 
-	        TString rootname = S->sname + "_" + gChanLabel[c];
-	        S->tlratios[l].fntight  = new TH2D(rootname + "_fNTight",  "fNTight",  getNFPtBins(c), getFPtBins(c), getNEtaBins(c), getEtaBins(c)); S->tlratios[l].fntight ->Sumw2();
+		TString rootname = S->sname + "_" + gChanLabel[c];
+		S->tlratios[l].fntight  = new TH2D(rootname + "_fNTight",  "fNTight",  getNFPtBins(c), getFPtBins(c), getNEtaBins(c), getEtaBins(c)); S->tlratios[l].fntight ->Sumw2();
 		S->tlratios[l].fnloose  = new TH2D(rootname + "_fNLoose",  "fNLoose",  getNFPtBins(c), getFPtBins(c), getNEtaBins(c), getEtaBins(c)); S->tlratios[l].fnloose ->Sumw2();
 		S->tlratios[l].pntight  = new TH2D(rootname + "_pNTight",  "pNTight",  getNPPtBins(c), getPPtBins(c), getNEtaBins(c), getEtaBins(c)); S->tlratios[l].pntight ->Sumw2();
 		S->tlratios[l].pnloose  = new TH2D(rootname + "_pNLoose",  "pNLoose",  getNPPtBins(c), getPPtBins(c), getNEtaBins(c), getEtaBins(c)); S->tlratios[l].pnloose ->Sumw2();
@@ -5068,9 +5013,10 @@ float SSDLDumper::getM3(){
 	}	
 	return m3;
 }
-float SSDLDumper::getNthJetPt(int n){
+float SSDLDumper::getNthJetPt(int n, bool bJet){
 	std::vector< ValueAndIndex> sorted;
 	for(size_t i = 0; i < NJets; ++i) {
+		if(bJet && JetCSVBTag[i] < 0.679) continue;
 		if(isGoodJet(i)) {
 			ValueAndIndex tmp;
 			tmp.val = JetPt[i];
@@ -5090,7 +5036,7 @@ float SSDLDumper::getNthJetPt(int n){
 	// if (sorted.size() > 4){
 	// 	cout << " returning: " << sorted[n].val << endl;
 	// }
-	if (sorted.size() < n+2) return -0.;
+	if (sorted.size() < n+1) return -0.;
 	return sorted[n].val;
 }
 int SSDLDumper::getNJets(float pt){
@@ -5233,7 +5179,7 @@ float SSDLDumper::getMll(int ind1, int ind2, gChannel chan){
 	float mass = (pl1+pl2).M();
 	return mass;
 }
-int   SSDLDumper::getClosestJet(int ind, gChannel chan, float jetPtCut){
+int   SSDLDumper::getClosestJet(int ind, gChannel chan, float jetPtCut, bool bJet){
 // Get index of the closest jet
 	float lepeta = (chan==Muon)?MuEta[ind]:ElEta[ind];
 	float lepphi = (chan==Muon)?MuPhi[ind]:ElPhi[ind];
@@ -5242,6 +5188,7 @@ int   SSDLDumper::getClosestJet(int ind, gChannel chan, float jetPtCut){
 	int cljetindex = -1;
 	for(size_t i = 0; i < NJets; ++i){
 		if(isGoodJet(i, jetPtCut) == false) continue;
+		if(bJet && JetCSVBTag[i] < 0.679)   continue;
 		float dr = Util::GetDeltaR(lepeta, JetEta[i], lepphi, JetPhi[i]);
 		if(dr > mindr) continue;
 		mindr = dr;
@@ -5255,11 +5202,11 @@ float SSDLDumper::getClosestJetPt(int ind, gChannel chan, float jetPtCut){
 	if(jind > -1) return getJetPt(jind);
 	return -1;
 }
-float SSDLDumper::getClosestJetDR(int ind, gChannel chan, float jetPtCut){
+float SSDLDumper::getClosestJetDR(int ind, gChannel chan, float jetPtCut, bool bJet){
 // Get delta R to the closest jet
 	float lepeta = (chan==Muon)?MuEta[ind]:ElEta[ind];
 	float lepphi = (chan==Muon)?MuPhi[ind]:ElPhi[ind];
-	int jind = getClosestJet(ind, chan, jetPtCut);
+	int jind = getClosestJet(ind, chan, jetPtCut, bJet);
 	if(jind > -1) return Util::GetDeltaR(lepeta, JetEta[jind], lepphi, JetPhi[jind]);
 	return -1;
 }
