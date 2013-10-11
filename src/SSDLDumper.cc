@@ -149,10 +149,10 @@ TString SSDLDumper::DiffPredYields::axis_label[SSDLDumper::gNDiffVars] = {"H_{T}
                                                                           "b-Jet Multiplicity (medium)"};
 
 //////////////////////////////////////////////////////////////////////////////////
-TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT", "MET_noMTCut",  "MT_MET30", "LepPt", "LepEta", "LepIso"};
-int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      10 ,         5  ,        10  ,        10  ,       3 ,   20 ,   10 ,           20 ,         20 ,     56 ,    12 ,     20 };
-float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      30.,         5. ,        30. ,        50. ,       0.,    0.,    0.,            0.,          0.,     10.,     0.,      0.};
-float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     300.,        25. ,       150. ,       150. ,       3.,  100.,  100.,          100.,        200.,    150.,    2.4,      1.};
+TString SSDLDumper::FRatioPlots::var_name[SSDLDumper::gNRatioVars] = {"NJets",  "HT", "MaxJPt", "NVertices", "ClosJetPt", "AwayJetPt", "NBJets", "MET",  "MT", "MET_noMTCut",  "MT_MET30", "LepPt", "LepEta", "LepIso","ClosJetDR","AwayJetDR"};
+int     SSDLDumper::FRatioPlots::nbins[SSDLDumper::gNRatioVars]    = {     5 ,   10 ,      13 ,         5  ,        13  ,        13  ,       3 ,   20 ,   10 ,           20 ,         20 ,     56 ,    12 ,     20 ,            30,         30};
+float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,   50.,      20.,         5. ,        20. ,        20. ,       0.,    0.,    0.,            0.,          0.,     10.,     0.,      0.,            0.,         0.};
+float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     150.,        25. ,       150. ,       150. ,       3.,  100.,  100.,          100.,        200.,    150.,    2.4,      1.,            6.,         6.};
 
 //////////////////////////////////////////////////////////////////////////////////
 TString SSDLDumper::IsoPlots::sel_name[SSDLDumper::gNSels] = {"Base", "SigSup"};
@@ -1365,28 +1365,32 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 					&& !(l == 3 && !(MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu24_eta2p1
 					){
 				if( isTightMuon(looseMuInd) ){
-					RP->ntight[0] ->Fill(getNJets(),                        gEventWeight);
-					RP->ntight[1] ->Fill(getHT(),                           gEventWeight);
-					RP->ntight[2] ->Fill(getMaxJPt(),                       gEventWeight);
-					RP->ntight[3] ->Fill(NVrtx,                             gEventWeight);
-					RP->ntight[4] ->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
-					RP->ntight[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
-					RP->ntight[6] ->Fill(getNBTags(),                       gEventWeight);
-					RP->ntight[11]->Fill(MuPt   [looseMuInd],               gEventWeight);
-					RP->ntight[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
-					RP->ntight[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
+				  RP->ntight[0] ->Fill(getNJets(20.,false),               gEventWeight);
+				  RP->ntight[1] ->Fill(getHT(),                           gEventWeight);
+				  RP->ntight[2] ->Fill(getMaxJPt(),                       gEventWeight);
+				  RP->ntight[3] ->Fill(NVrtx,                             gEventWeight);
+				  RP->ntight[4] ->Fill(getClosestJetPt(looseMuInd, Muon,20.,false), gEventWeight);
+				  RP->ntight[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
+				  RP->ntight[6] ->Fill(getNBTags(20.,false),              gEventWeight);
+				  RP->ntight[11]->Fill(MuPt   [looseMuInd],               gEventWeight);
+				  RP->ntight[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
+				  RP->ntight[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
+				  RP->ntight[14]->Fill(getClosestJetDR(looseMuInd, Muon,20.,false), gEventWeight);
+				  RP->ntight[15]->Fill(getAwayJetDR(looseMuInd, Muon),    gEventWeight);
 				}
 				if( isLooseMuon(looseMuInd) ){
-					RP->nloose[0] ->Fill(getNJets(),                        gEventWeight);
-					RP->nloose[1] ->Fill(getHT(),                           gEventWeight);
-					RP->nloose[2] ->Fill(getMaxJPt(),                       gEventWeight);
-					RP->nloose[3] ->Fill(NVrtx,                             gEventWeight);
-					RP->nloose[4] ->Fill(getClosestJetPt(looseMuInd, Muon), gEventWeight);
-					RP->nloose[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
-					RP->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
-					RP->nloose[11]->Fill(MuPt   [looseMuInd],               gEventWeight);
-					RP->nloose[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
-					RP->nloose[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
+				  RP->nloose[0] ->Fill(getNJets(20.,false),               gEventWeight);
+				  RP->nloose[1] ->Fill(getHT(),                           gEventWeight);
+				  RP->nloose[2] ->Fill(getMaxJPt(),                       gEventWeight);
+				  RP->nloose[3] ->Fill(NVrtx,                             gEventWeight);
+				  RP->nloose[4] ->Fill(getClosestJetPt(looseMuInd, Muon,20.,false), gEventWeight);
+				  RP->nloose[5] ->Fill(getAwayJetPt(looseMuInd, Muon),    gEventWeight);
+				  RP->nloose[6] ->Fill(getNBTags(20.,false),              gEventWeight);
+				  RP->nloose[11]->Fill(MuPt   [looseMuInd],               gEventWeight);
+				  RP->nloose[12]->Fill(MuEta  [looseMuInd],               gEventWeight);
+				  RP->nloose[13]->Fill(MuPFIso[looseMuInd],               gEventWeight);
+				  RP->nloose[14]->Fill(getClosestJetDR(looseMuInd, Muon,20.,false), gEventWeight);
+				  RP->nloose[15]->Fill(getAwayJetDR(looseMuInd, Muon),    gEventWeight);
 				}
 			}
 			float tmp_metC = fC_maxMet_Control;
@@ -1462,28 +1466,33 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 		int looseElInd(-1);
 		if(isSigSupElEvent(looseElInd)){
 			if( isTightElectron(looseElInd) ){
-				RP1->ntight[0] ->Fill(getNJets(),                        gEventWeight);
+				RP1->ntight[0] ->Fill(getNJets(20.,false),               gEventWeight);
 				RP1->ntight[1] ->Fill(getHT(),                           gEventWeight);
 				RP1->ntight[2] ->Fill(getMaxJPt(),                       gEventWeight);
 				RP1->ntight[3] ->Fill(NVrtx,                             gEventWeight);
-				RP1->ntight[4] ->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
+				RP1->ntight[4] ->Fill(getClosestJetPt(looseElInd, Elec,20.,false), gEventWeight);
 				RP1->ntight[5] ->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
-				RP1->ntight[6] ->Fill(getNBTags(),                       gEventWeight);
+				RP1->ntight[6] ->Fill(getNBTags(20.,false),              gEventWeight);
 				RP1->ntight[11]->Fill(ElPt   [looseElInd],               gEventWeight);
 				RP1->ntight[12]->Fill(ElEta  [looseElInd],               gEventWeight);
 				RP1->ntight[13]->Fill(ElPFIso[looseElInd],               gEventWeight);
+				RP1->ntight[14]->Fill(getClosestJetDR(looseElInd, Elec,20.,false), gEventWeight);
+				RP1->ntight[15]->Fill(getAwayJetDR(looseElInd, Elec),    gEventWeight);
 			}
 			if( isLooseElectron(looseElInd) ){
-				RP1->nloose[0] ->Fill(getNJets(),                        gEventWeight);
+				RP1->nloose[0] ->Fill(getNJets(20.,false),               gEventWeight);
 				RP1->nloose[1] ->Fill(getHT(),                           gEventWeight);
 				RP1->nloose[2] ->Fill(getMaxJPt(),                       gEventWeight);
 				RP1->nloose[3] ->Fill(NVrtx,                             gEventWeight);
-				RP1->nloose[4] ->Fill(getClosestJetPt(looseElInd, Elec), gEventWeight);
+				RP1->nloose[4] ->Fill(getClosestJetPt(looseElInd, Elec,20.,false), gEventWeight);
 				RP1->nloose[5] ->Fill(getAwayJetPt(looseElInd, Elec),    gEventWeight);
-				RP1->nloose[6] ->Fill(getNBTags(),                       gEventWeight);
+				RP1->nloose[6] ->Fill(getNBTags(20.,false),              gEventWeight);
 				RP1->nloose[11]->Fill(ElPt   [looseElInd],               gEventWeight);
 				RP1->nloose[12]->Fill(ElEta  [looseElInd],               gEventWeight);
 				RP1->nloose[13]->Fill(ElPFIso[looseElInd],               gEventWeight);
+				RP1->nloose[14]->Fill(getClosestJetDR(looseElInd, Elec,20.,false), gEventWeight);
+				RP1->nloose[15]->Fill(getAwayJetDR(looseElInd, Elec),    gEventWeight);
+
 			}
 		}
 		float tmp_metC = fC_maxMet_Control;
@@ -1553,49 +1562,51 @@ void SSDLDumper::fillTLRatios(Sample *S){
 	// QCD Control Region
 	int looseMuInd(-1);
 	if(singleMuTrigger() && isSigSupMuEvent(looseMuInd)){
+	  /*TODO: define the splitting between mu17 and mu24 on the base of the value of the bin's edge, instead then on the binIndex. 
+	   In this way the code would remain correct even if one change the histogram booking  */
 		if (!(S->chansel == 0 &&  MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2] ) &&
 		    !(S->chansel == 5 && (MuPt[looseMuInd] <  SSDLDumper::gMuFPtBins[1] || fabs(MuEta[looseMuInd]) >= SSDLDumper::gMuEtabins[2]))  // be careful with the bins here!
-) {
-			if( isTightMuon(looseMuInd) ){
-				S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	
-				S->tlratios[0].fntight_nv->Fill(NVrtx,                                     gEventWeight);
-				if(S->datamc > 0) S->tlratios[0].sst_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
-			}
-			if( isLooseMuon(looseMuInd) ){
-				S->tlratios[0].fratio_pt ->Fill(isTightMuon(looseMuInd), MuPt[looseMuInd]);
-				S->tlratios[0].fratio_eta->Fill(isTightMuon(looseMuInd), fabs(MuEta[looseMuInd]));
-				S->tlratios[0].fratio_nv ->Fill(isTightMuon(looseMuInd), NVrtx);
-
-				S->tlratios[0].fnloose   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);
-				S->tlratios[0].fnloose_nv->Fill(NVrtx,                                     gEventWeight);
-				if(S->datamc > 0) S->tlratios[0].ssl_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
-				
-				if (S->datamc > 0) {
-					if (fabs(MuGenMID[looseMuInd]) == 24)         S->tlratios[0].sigSup_MID24_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
-					if ((int)fabs(MuGenMID[looseMuInd])/100 == 5) S->tlratios[0].sigSup_MID500_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
-					if ((int)fabs(MuGenMID[looseMuInd])/100 == 4) S->tlratios[0].sigSup_MID400_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
-					if (fabs(MuGenMID[looseMuInd]) == 15)         S->tlratios[0].sigSup_MID15_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
-				}
-				float dPhiLooseJet(-1.);
-				dPhiLooseJet = fabs(getClosestJetDPhi(looseMuInd, Muon, 50.)); 	if (dPhiLooseJet > TMath::Pi()) dPhiLooseJet =- TMath::Pi();
-				S->tlratios[0].sigSup_dPhiLooseJet->Fill(dPhiLooseJet , gEventWeight);
-				S->tlratios[0].sigSup_nJets       ->Fill(getNJets(50.), gEventWeight);
-			}
-			
-			// signal suppressed region with at least one veto muon
-			int mu1(-1), mu2(-1);
-			isSigSupMuEvent(mu1, mu2);
-			if (mu2 > 0) {
-				float dRVetoLoose(-1.), dRVetoJet(-1);
-				dRVetoLoose	= Util::GetDeltaR(MuEta[mu1], MuEta[mu2], MuPhi[mu1], MuPhi[mu2]);	if (fabs(dRVetoLoose) > TMath::Pi()) dRVetoLoose = fabs(dRVetoLoose) - TMath::Pi();
-				dRVetoJet	= getClosestJetDR(mu2, Muon, 50.);									if (fabs(dRVetoJet  ) > TMath::Pi()) dRVetoJet   = fabs(dRVetoJet  ) - TMath::Pi();
-				S->tlratios[0].sigSup_mll           ->Fill(getMll(mu1, mu2, Muon), gEventWeight);
-				S->tlratios[0].sigSup_dRVetoLoose   ->Fill(dRVetoLoose           , gEventWeight);
-				S->tlratios[0].sigSup_dRVetoJet     ->Fill(dRVetoJet             , gEventWeight);
-				S->tlratios[0].sigSup_mllDRVetoLoose->Fill(getMll(mu1, mu2, Muon), dRVetoLoose, gEventWeight);
-				S->tlratios[0].sigSup_jetptDRVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.), dRVetoJet, gEventWeight);
-				S->tlratios[0].sigSup_deltaPtVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.) - MuPt[mu2]);
-			}
+		    ) {
+		  if( isTightMuon(looseMuInd) ){
+		    S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	
+		    S->tlratios[0].fntight_nv->Fill(NVrtx,                                     gEventWeight);
+		    if(S->datamc > 0) S->tlratios[0].sst_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
+		  }
+		  if( isLooseMuon(looseMuInd) ){
+		    S->tlratios[0].fratio_pt ->Fill(isTightMuon(looseMuInd), MuPt[looseMuInd]);
+		    S->tlratios[0].fratio_eta->Fill(isTightMuon(looseMuInd), fabs(MuEta[looseMuInd]));
+		    S->tlratios[0].fratio_nv ->Fill(isTightMuon(looseMuInd), NVrtx);
+		    
+		    S->tlratios[0].fnloose   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);
+		    S->tlratios[0].fnloose_nv->Fill(NVrtx,                                     gEventWeight);
+		    if(S->datamc > 0) S->tlratios[0].ssl_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
+		    
+		    if (S->datamc > 0) {
+		      if (fabs(MuGenMID[looseMuInd]) == 24)         S->tlratios[0].sigSup_MID24_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
+		      if ((int)fabs(MuGenMID[looseMuInd])/100 == 5) S->tlratios[0].sigSup_MID500_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
+		      if ((int)fabs(MuGenMID[looseMuInd])/100 == 4) S->tlratios[0].sigSup_MID400_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
+		      if (fabs(MuGenMID[looseMuInd]) == 15)         S->tlratios[0].sigSup_MID15_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
+		    }
+		    float dPhiLooseJet(-1.);
+		    dPhiLooseJet = fabs(getClosestJetDPhi(looseMuInd, Muon, 50.)); 	if (dPhiLooseJet > TMath::Pi()) dPhiLooseJet =- TMath::Pi();
+		    S->tlratios[0].sigSup_dPhiLooseJet->Fill(dPhiLooseJet , gEventWeight);
+		    S->tlratios[0].sigSup_nJets       ->Fill(getNJets(50.), gEventWeight);
+		  }
+		  
+		  // signal suppressed region with at least one veto muon
+		  int mu1(-1), mu2(-1);
+		  isSigSupMuEvent(mu1, mu2);
+		  if (mu2 > 0) {
+		    float dRVetoLoose(-1.), dRVetoJet(-1);
+		    dRVetoLoose	= Util::GetDeltaR(MuEta[mu1], MuEta[mu2], MuPhi[mu1], MuPhi[mu2]);	if (fabs(dRVetoLoose) > TMath::Pi()) dRVetoLoose = fabs(dRVetoLoose) - TMath::Pi();
+		    dRVetoJet	= getClosestJetDR(mu2, Muon, 50.);									if (fabs(dRVetoJet  ) > TMath::Pi()) dRVetoJet   = fabs(dRVetoJet  ) - TMath::Pi();
+		    S->tlratios[0].sigSup_mll           ->Fill(getMll(mu1, mu2, Muon), gEventWeight);
+		    S->tlratios[0].sigSup_dRVetoLoose   ->Fill(dRVetoLoose           , gEventWeight);
+		    S->tlratios[0].sigSup_dRVetoJet     ->Fill(dRVetoJet             , gEventWeight);
+		    S->tlratios[0].sigSup_mllDRVetoLoose->Fill(getMll(mu1, mu2, Muon), dRVetoLoose, gEventWeight);
+		    S->tlratios[0].sigSup_jetptDRVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.), dRVetoJet, gEventWeight);
+		    S->tlratios[0].sigSup_deltaPtVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.) - MuPt[mu2]);
+		  }
 		}
 	}
 	// ZMuMu Control Region
@@ -1868,8 +1879,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_Rho     = Rho;
 		fSETree_MTLep1  = getMT(ind1, Muon);
 		fSETree_MTLep2  = getMT(ind2, Muon);
-		fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true);
-		fSETree_dRbJl2  = getClosestJetDR(ind2, Muon, gMinJetPt, true);
+		fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true, true);
+		fSETree_dRbJl2  = getClosestJetDR(ind2, Muon, gMinJetPt, true, true);
 		fSETree_BetaStar1 = getBetaStar(1);
 		fSETree_BetaStar2 = getBetaStar(2);
 		fSETree_BetaStar3 = getBetaStar(3);
@@ -1971,8 +1982,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_Rho     = Rho;
 		fSETree_MTLep1  = getMT(ind1, Muon);
 		fSETree_MTLep2  = getMT(ind2, Elec);
-		fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true);
-		fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
+		fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true, true);
+		fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true, true);
 		fSETree_BetaStar1 = getBetaStar(1);
 		fSETree_BetaStar2 = getBetaStar(2);
 		fSETree_BetaStar3 = getBetaStar(3);
@@ -2063,8 +2074,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_Rho     = Rho;
 		fSETree_MTLep1  = getMT(ind1, Elec);
 		fSETree_MTLep2  = getMT(ind2, Elec);
-		fSETree_dRbJl1  = getClosestJetDR(ind1, Elec, gMinJetPt, true);
-		fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
+		fSETree_dRbJl1  = getClosestJetDR(ind1, Elec, gMinJetPt, true, true);
+		fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true, true);
 		fSETree_BetaStar1 = getBetaStar(1);
 		fSETree_BetaStar2 = getBetaStar(2);
 		fSETree_BetaStar3 = getBetaStar(3);
@@ -2201,8 +2212,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
                 fSETree_Rho     = Rho;
 				fSETree_MTLep1  = getMT(ind1, Muon);
 				fSETree_MTLep2  = getMT(ind2, Elec);
-				fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true);
-				fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
+				fSETree_dRbJl1  = getClosestJetDR(ind1, Muon, gMinJetPt, true, true);
+				fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true, true);
 				fSETree_BetaStar1 = getBetaStar(1);
 				fSETree_BetaStar2 = getBetaStar(2);
 				fSETree_BetaStar3 = getBetaStar(3);
@@ -2248,8 +2259,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
                 fSETree_Rho     = Rho;
 				fSETree_MTLep1  = getMT(ind1, Elec);
 				fSETree_MTLep2  = getMT(ind2, Elec);
-				fSETree_dRbJl1  = getClosestJetDR(ind1, Elec, gMinJetPt, true);
-				fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true);
+				fSETree_dRbJl1  = getClosestJetDR(ind1, Elec, gMinJetPt, true, true);
+				fSETree_dRbJl2  = getClosestJetDR(ind2, Elec, gMinJetPt, true, true);
 				fSETree_BetaStar1 = getBetaStar(1);
 				fSETree_BetaStar2 = getBetaStar(2);
 				fSETree_BetaStar3 = getBetaStar(3);
@@ -5017,7 +5028,7 @@ float SSDLDumper::getNthJetPt(int n, bool bJet){
 	std::vector< ValueAndIndex> sorted;
 	for(size_t i = 0; i < NJets; ++i) {
 		if(bJet && JetCSVBTag[i] < 0.679) continue;
-		if(isGoodJet(i)) {
+		if(isGoodJetNoPtCut(i)) {
 			ValueAndIndex tmp;
 			tmp.val = JetPt[i];
 			tmp.ind = i;
@@ -5039,14 +5050,14 @@ float SSDLDumper::getNthJetPt(int n, bool bJet){
 	if (sorted.size() < n+1) return -0.;
 	return sorted[n].val;
 }
-int SSDLDumper::getNJets(float pt){
+int SSDLDumper::getNJets(float pt, bool doLepCleaning){
 	int njets(0);
-	for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i, pt)) njets++;
+	for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i, pt, doLepCleaning)) njets++;
 	return njets;
 }
-int SSDLDumper::getNBTags(){
+int SSDLDumper::getNBTags(float pt, bool doLepCleaning){
 	int ntags(0);
-	for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i) && JetCSVBTag[i] > 0.244) ntags++;
+	for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i, pt, doLepCleaning) && JetCSVBTag[i] > 0.244) ntags++;
 	return ntags;
 }
 int SSDLDumper::getNBTagsMed(){
@@ -5179,7 +5190,7 @@ float SSDLDumper::getMll(int ind1, int ind2, gChannel chan){
 	float mass = (pl1+pl2).M();
 	return mass;
 }
-int   SSDLDumper::getClosestJet(int ind, gChannel chan, float jetPtCut, bool bJet){
+int   SSDLDumper::getClosestJet(int ind, gChannel chan, float jetPtCut, bool doLepCleaning, bool bJet){
 // Get index of the closest jet
 	float lepeta = (chan==Muon)?MuEta[ind]:ElEta[ind];
 	float lepphi = (chan==Muon)?MuPhi[ind]:ElPhi[ind];
@@ -5187,8 +5198,8 @@ int   SSDLDumper::getClosestJet(int ind, gChannel chan, float jetPtCut, bool bJe
 	float mindr = 999.;
 	int cljetindex = -1;
 	for(size_t i = 0; i < NJets; ++i){
-		if(isGoodJet(i, jetPtCut) == false) continue;
 		if(bJet && JetCSVBTag[i] < 0.679)   continue;
+		if(isGoodJet(i, jetPtCut,doLepCleaning) == false) continue;
 		float dr = Util::GetDeltaR(lepeta, JetEta[i], lepphi, JetPhi[i]);
 		if(dr > mindr) continue;
 		mindr = dr;
@@ -5196,24 +5207,24 @@ int   SSDLDumper::getClosestJet(int ind, gChannel chan, float jetPtCut, bool bJe
 	}
 	return cljetindex;
 }
-float SSDLDumper::getClosestJetPt(int ind, gChannel chan, float jetPtCut){
+float SSDLDumper::getClosestJetPt(int ind, gChannel chan, float jetPtCut, bool doLepCleaning){
 // Get the pt of the closest jet
-	int jind = getClosestJet(ind, chan, jetPtCut);
+  int jind = getClosestJet(ind, chan, jetPtCut,doLepCleaning);
 	if(jind > -1) return getJetPt(jind);
 	return -1;
 }
-float SSDLDumper::getClosestJetDR(int ind, gChannel chan, float jetPtCut, bool bJet){
+float SSDLDumper::getClosestJetDR(int ind, gChannel chan, float jetPtCut, bool doLepCleaning, bool bJet){
 // Get delta R to the closest jet
 	float lepeta = (chan==Muon)?MuEta[ind]:ElEta[ind];
 	float lepphi = (chan==Muon)?MuPhi[ind]:ElPhi[ind];
-	int jind = getClosestJet(ind, chan, jetPtCut, bJet);
+	int jind = getClosestJet(ind, chan, jetPtCut,doLepCleaning, bJet);
 	if(jind > -1) return Util::GetDeltaR(lepeta, JetEta[jind], lepphi, JetPhi[jind]);
 	return -1;
 }
-float SSDLDumper::getClosestJetDPhi(int ind, gChannel chan, float jetPtCut){
+float SSDLDumper::getClosestJetDPhi(int ind, gChannel chan, float jetPtCut, bool doLepCleaning){
 	// Get delta phi to the closest jet
 	float lepphi = (chan==Muon)?MuPhi[ind]:ElPhi[ind];
-	int jind = getClosestJet(ind, chan, jetPtCut);
+	int jind = getClosestJet(ind, chan, jetPtCut,doLepCleaning);
 	if(jind > -1) return fabs(lepphi - JetPhi[jind]);
 	return -1;
 }
@@ -5254,22 +5265,42 @@ int   SSDLDumper::getFarestJet(int ind, gChannel chan, float jetPtCut){
 	}
 	return cljetindex;
 }
-float SSDLDumper::getAwayJetPt(int ind, gChannel chan){
-// Get the pt of away jet
-// DR > 0.1, choose hardest
+
+
+
+//---------
+int   SSDLDumper::getAwayJet(int ind, gChannel chan){
 	float lepeta = (chan==Muon)?MuEta[ind]:ElEta[ind];
 	float lepphi = (chan==Muon)?MuPhi[ind]:ElPhi[ind];
 	
-	if(NJets < 1) return 0.;
+	if(NJets < 1) return -1.;
 	
-	float mindr  = 888.;
+	//float mindr  = 888.;
 	for(size_t i = 0; i < NJets; ++i){
 		if(Util::GetDeltaR(lepeta, JetEta[i], lepphi, JetPhi[i]) < 1.0) continue;
 		if(!isGoodJet(i)) continue;
-		return getJetPt(i); // assume sorted by pt, so this will return the hardest one
+		return i; // assume sorted by pt, so this will return the hardest one
 	}
-	return 0.;
+	return -1;
 }
+float SSDLDumper::getAwayJetPt(int ind, gChannel chan){
+// Get the pt of the closest jet
+  int jind = getAwayJet(ind, chan);
+	if(jind > -1) return getJetPt(jind);
+	return -1;
+}
+
+
+float SSDLDumper::getAwayJetDR(int ind, gChannel chan){
+// Get delta R to the closest jet
+	float lepeta = (chan==Muon)?MuEta[ind]:ElEta[ind];
+	float lepphi = (chan==Muon)?MuPhi[ind]:ElPhi[ind];
+	int jind = getAwayJet(ind, chan);
+	if(jind > -1) return Util::GetDeltaR(lepeta, JetEta[jind], lepphi, JetPhi[jind]);
+	return -1;
+}
+// ----
+
 float SSDLDumper::getMaxJPt(){
 	float maxpt(0.);
 	for(size_t i = 0; i < NJets; ++i){
@@ -5649,29 +5680,20 @@ bool SSDLDumper::passesJet50CutdPhi(int ind, gChannel chan){
 	// Return true if event contains one good jet with pt > 50 and dPhi > 2.0 from hyp lepton
 	std::vector< int > jetinds;
 	for(size_t i = 0; i < NJets; ++i) {
-		if(isGoodJet(i, gSigSupJetPt) ) {
-			jetinds.push_back(i);
-		}
+	  if(isGoodJet(i, gSigSupJetPt,true) ) {
+	    jetinds.push_back(i);
+	  }
 	}
-	if (jetinds.size() != 1) return false;
-	// check type of lepton
+	/* This requires di-jet events: one jet is the one cointaining the loose-lepton 
+	   (which is removed by the lepton-cleaning); the other is the away jet, on which
+	   we apply the dphi and away-jet-pt cuts.
+	*/
+	if (jetinds.size() != 1) return false; 
+
 	float lepphi = (chan == Muon) ? MuPhi[ind] : ElPhi[ind];
-	// float lepeta = (chan == Muon) ? MuEta[ind] : ElEta[ind];
-	// float leppt  = (chan == Muon) ? MuPt[ind]  : ElPt[ind];
-	// float lepm   = (chan == Muon) ? gMMU       : gMEL;
-	// get dphi to only jet with pt > 50
-	float dphi = fabs(JetPhi[jetinds[0]] - lepphi);
-	// TLorentzVector lep, jet;
-	// lep.SetPtEtaPhiM(leppt, lepeta, lepphi, lepm);
-	// jet.SetPtEtaPhiE(JetPt[jetinds[0]], JetEta[jetinds[0]], JetPhi[jetinds[0]], JetEnergy[jetinds[0]]);
-	// float realdphi = Util::DeltaPhi(lepphi, JetPhi[jetinds[0]]);
-	// cout << Form("lepphi: %.2f   -    jetphi: %.2f", lepphi, JetPhi[jetinds[0]]) << endl;
-	// cout << "-----------------------" << endl;
-	// cout << "our    deltaphi: "  << dphi << endl;
-	// cout << "vactor deltaphi: " << lep.DeltaPhi(jet) << endl;
-	// cout << "util   deltaphi: " << realdphi << endl;
-	// cout << "-----------------------" << endl;
+	float dphi = Util::DeltaPhi(lepphi, JetPhi[jetinds[0]]);
 	if (fabs(dphi) > 2.) return true;
+
 	return false;
 }
 bool SSDLDumper::passesJet50Cut(){
@@ -6920,14 +6942,21 @@ bool SSDLDumper::isGoodTau(int tau){
 //////////////////////////////////////////////////////////////////////////////
 // Jets
 //____________________________________________________________________________
-bool SSDLDumper::isGoodJet(int jet, float pt){
-	if(jet >= NJets) return false; // Sanity check
-	// JET - LEPTON CLEANING PARAMETER!! should switch to 0.5!!!
-	float minDR = 0.4;
 
-	if(getJetPt(jet) < fC_minJetPt) return false;
-	if(getJetPt(jet) < pt) return false;
-	
+bool SSDLDumper::isGoodJet(int jet, float pt, bool doLepCleaning){
+
+  if(!isGoodJetNoPtCut(jet,pt,doLepCleaning)) return false;
+
+  if(getJetPt(jet) < fC_minJetPt) return false;
+  if(getJetPt(jet) < pt) return false;
+  return true;
+
+}
+
+
+bool SSDLDumper::isGoodJetNoPtCut(int jet, float pt, bool doLepCleaning){
+	if(jet >= NJets) return false; // Sanity check
+
 	if(fabs(JetEta[jet]) > gMaxJetEta) return false; // btagging only up to 2.4
 	
 //	if (gDoPileUpID && JetBetaStar[jet] > gBetaStarMax) return false;
@@ -6940,25 +6969,34 @@ bool SSDLDumper::isGoodJet(int jet, float pt){
 			if (JetBetaStar[jet] > 0.3*TMath::Log(NVrtx-0.67)) return false;
 		}
 	}
-	
-	// Remove jets close to hypothesis leptons
-	if(fHypLepton1.index > -1) if(Util::GetDeltaR(fHypLepton1.p.Eta(), JetEta[jet], fHypLepton1.p.Phi(), JetPhi[jet]) < minDR) return false;
-	if(fHypLepton2.index > -1) if(Util::GetDeltaR(fHypLepton2.p.Eta(), JetEta[jet], fHypLepton2.p.Phi(), JetPhi[jet]) < minDR) return false;
-	if(fHypLepton3.index > -1) if(Util::GetDeltaR(fHypLepton3.p.Eta(), JetEta[jet], fHypLepton3.p.Phi(), JetPhi[jet]) < minDR) return false;
 
-	// Remove jets close to all tight leptons
-	for(size_t imu = 0; imu < NMus; ++imu){
-		if(!isTightMuon(imu)) continue;
-		if(!isGoodSecMuon(imu)) continue; // pt  > 10
-		if(Util::GetDeltaR(MuEta[imu], JetEta[jet], MuPhi[imu], JetPhi[jet]) > minDR ) continue;
-		return false;
+	
+	// ----- here is the lepton cleaning ---------
+	if(doLepCleaning){
+	  // JET - LEPTON CLEANING PARAMETER!! should switch to 0.5!!!
+	  float minDR = 0.4;
+	  // Remove jets close to hypothesis leptons
+	  if(fHypLepton1.index > -1) if(Util::GetDeltaR(fHypLepton1.p.Eta(), JetEta[jet], fHypLepton1.p.Phi(), JetPhi[jet]) < minDR) return false;
+	  if(fHypLepton2.index > -1) if(Util::GetDeltaR(fHypLepton2.p.Eta(), JetEta[jet], fHypLepton2.p.Phi(), JetPhi[jet]) < minDR) return false;
+	  if(fHypLepton3.index > -1) if(Util::GetDeltaR(fHypLepton3.p.Eta(), JetEta[jet], fHypLepton3.p.Phi(), JetPhi[jet]) < minDR) return false;
+	  
+	  // Remove jets close to all tight leptons
+	  for(size_t imu = 0; imu < NMus; ++imu){
+	    if(!isTightMuon(imu)) continue;
+	    if(!isGoodSecMuon(imu)) continue; // pt  > 10
+	    if(Util::GetDeltaR(MuEta[imu], JetEta[jet], MuPhi[imu], JetPhi[jet]) > minDR ) continue;
+	    return false;
+	  }
+	  for(size_t iel = 0; iel < NEls; ++iel){
+	    if(!isTightElectron(iel)) continue;
+	    if(!isGoodSecElectron(iel)) continue;
+	    if(Util::GetDeltaR(ElEta[iel], JetEta[jet], ElPhi[iel], JetPhi[jet]) > minDR ) continue;
+	    return false;
+	  }
 	}
-	for(size_t iel = 0; iel < NEls; ++iel){
-		if(!isTightElectron(iel)) continue;
-		if(!isGoodSecElectron(iel)) continue;
-		if(Util::GetDeltaR(ElEta[iel], JetEta[jet], ElPhi[iel], JetPhi[jet]) > minDR ) continue;
-		return false;
-	}
+	// ------
+
+
 	return true;
 }
 float SSDLDumper::getJERScale(int jet){

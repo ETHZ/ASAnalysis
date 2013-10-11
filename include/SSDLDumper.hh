@@ -371,7 +371,7 @@ public:
     	        TEfficiency *chmid_B_pt;
 	};
 	// static const int gNRatioVars = 8;
-	static const int gNRatioVars = 14;
+	static const int gNRatioVars = 16;
 	struct FRatioPlots{
 		static TString var_name[gNRatioVars];
 		static int nbins[gNRatioVars];
@@ -774,9 +774,9 @@ public:
 	virtual void  setMET(float );
 	virtual float getMET();
 	virtual float getMETPhi();
-	virtual int getNJets(float = 0.);
+	virtual int getNJets(float = 0., bool doLepCleaning=true);
 	virtual float getNthJetPt(int = 0, bool = false);
-	virtual int getNBTags();
+	virtual int getNBTags(float = 0., bool doLepCleaning=true);
 	virtual int getNBTagsMed();
 	virtual float getBetaStar(int);
 	virtual std::vector< int > getNBTagsMedIndices();
@@ -786,13 +786,15 @@ public:
 	virtual float getDPhiMLs(int, int, gChannel);
 	virtual float getMT2(int, int, gChannel);
 	virtual float getMll(int, int, gChannel);
-	virtual int   getClosestJet(int, gChannel, float = 20., bool = false);
-	virtual float getClosestJetPt(int, gChannel, float = 20.);
-	virtual float getClosestJetDR(int, gChannel, float = 20., bool = false);
-	virtual float getClosestJetDPhi(int, gChannel, float = 20.);
+	virtual int   getClosestJet(int, gChannel, float = 20., bool doLepCleaning=true, bool bJet = false);
+	virtual float getClosestJetPt(int, gChannel, float = 20.,bool doLepCleaning=true);
+	virtual float getClosestJetDR(int, gChannel, float = 20.,bool doLepCleaning=true, bool bJet = false);
+	virtual float getClosestJetDPhi(int, gChannel, float = 20.,bool doLepCleaning=true);
 	virtual float getSecondClosestJetDR(int, gChannel);
 	virtual int   getFarestJet(int, gChannel, float = 20.);
+	virtual int   getAwayJet(int, gChannel);
 	virtual float getAwayJetPt(int, gChannel);
+	virtual float getAwayJetDR(int, gChannel);
 	virtual float getMaxJPt();
 	virtual int getNTightMuons();
 	virtual int getNTightElectrons();
@@ -891,7 +893,8 @@ public:
 
 	virtual bool isGoodTau(int);
 
-	virtual bool isGoodJet(int, float = 20.);
+        virtual bool isGoodJet(int, float = 20., bool doLepCleaning=true);
+        virtual bool isGoodJetNoPtCut(int, float = 20., bool doLepCleaning=true);
 	virtual float getJERScale(int);
 	virtual float getErrPt(float, float);
 	

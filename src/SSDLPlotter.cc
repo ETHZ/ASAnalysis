@@ -40,7 +40,8 @@ static const bool gRatiosFromTTbar = false;
 static const bool gFullDataBlind = false;
 static const bool gTTHBG = true;
 static const bool gTTWZ = true;
-static const bool gEWKCorrection = true;
+//static const bool gEWKCorrection = true;
+bool gEWKCorrection = true;
 
 static const float gMMU = 0.1057;
 static const float gMEL = 0.0005;
@@ -476,16 +477,49 @@ void SSDLPlotter::doAnalysis(){
 	// sandBox();  
        
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
-        if(readHistos(fOutputFileName) != 0) return;
-	makeRatioControlPlots(0, true, false); // Mu
-	makeRatioControlPlots(1, true, false); // El
-	makeRatioControlPlots(2, true, false); // Mu17
-	makeRatioControlPlots(3, true, false); // Mu24_eta2p1
-	fillRatios(fMuTotData,    fEGData,    0);
-	fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1);
-	storeWeightedPred(gRegion[gBaseRegion]);
-	ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
-	
+
+
+  cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
+  if(readHistos(fOutputFileName) != 0) return;
+
+  /* Here I calculate the EWK MC scale factors, but I don't use 
+     them in producing any of the fakerate control plots   */
+  //makeRatioControlPlots(0, true, true); // Mu
+  bool saveRatioControlPlots = false;
+  makeRatioControlPlots(1, true, saveRatioControlPlots); // El
+  makeRatioControlPlots(2, true, saveRatioControlPlots); // Mu17
+  makeRatioControlPlots(3, true, saveRatioControlPlots); // Mu24_eta2p1
+
+  /* Here I produce the control plots without re-calculating the
+     EWK MC scale factors, but instead using the numbers obtained above. 
+     NB: without the previous calls, a SF=1 would be used (FIXME: this is bad design)*/
+  makeRatioControlPlots(1, false, saveRatioControlPlots); // El
+  makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
+  makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
+
+
+  bool saveRatioPlots = true;
+  bool gEWKCorrection_tmp = gEWKCorrection;
+  gEWKCorrection = false; fillRatios(fMuTotData,    fEGData,    0, saveRatioPlots);
+  gEWKCorrection = true; fillRatios(fMuTotData,    fEGData,    0, saveRatioPlots);
+  gEWKCorrection = gEWKCorrection_tmp;
+
+  //fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, saveRatioPlots);
+  //storeWeightedPred(gRegion[gBaseRegion]);
+  //ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
+
+  /*
+  makeRatioPlots(Muon);
+  makeRatioPlots(Elec);
+  make2DRatioPlots(Muon);
+  make2DRatioPlots(Elec);
+  makeFRvsPtPlots(Muon, SigSup);
+  makeFRvsPtPlots(Elec, SigSup);
+  makeFRvsEtaPlots(Muon);
+  makeFRvsEtaPlots(Elec);
+  */
+  cout << "...done ====" << endl;
+
 	// fill fake ratios to run closure tests
 //	fillRatios(fMuData, fEGData, 0);
 //	fillRatios(fMuEnr, fEMEnr, fDYJets, fDYJets, 1);
@@ -565,7 +599,18 @@ void SSDLPlotter::doAnalysis(){
 	//  makeTTWIntPredictionsSigEvent();
 	
  	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
-	
+  
+  // BM to speed up plots for FR
+  //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+  //makeTTWDiffPredictionsSigEvent();
+  //cout << "...done ===" << endl;
+//	makeTTWKinPlotsSigEvent();
+
+  //BM
+  //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;  
+  //makeTTWIntPredictionsSigEvent();
+  //cout << "...done ===" << endl;
+  //
 	// presel
 //	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20., 0, true);
 //	makeTTWIntPredictionsSigEvent(0., 8000., 0., 8000., 3, 0, 0, 20., 20.,-1, true);
@@ -6164,7 +6209,7 @@ void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF, bool plot){
 	if(chan == 3) name = "Mu24";
 
 	fOutputSubDir = "RatioControlPlots/";
-	if (calcSF) fOutputSubDir = fOutputSubDir + "woSF/";
+	if (calcSF) fOutputSubDir = fOutputSubDir + "withoutSF/";
 	fOutputSubDir = fOutputSubDir + name + "/";
 	char cmd[100];
     sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
@@ -6179,7 +6224,7 @@ void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF, bool plot){
 	zjets_samples.push_back(DYJets);
 
 	// Customization
-	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "p_{T} (GeV)", "#eta", "Lepton PF Iso" };
+	TString axis_name[gNRatioVars] = {"N_{Jets}",  "H_{T} (GeV)", "P_{T}(Hardest Jet) (GeV)", "N_{Vertices}", "p_{T}(Closest Jet) (GeV)", "p_{T}(Away Jet) (GeV)", "N_{BJets}", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "E_{T}^{miss} (GeV)", "m_{T} (GeV)", "p_{T} (GeV)", "#eta", "Lepton PF Iso","DR (Closest Jet)","DR (Away Jet)" };
 
 	for(size_t ratiovar = 0; ratiovar < gNRatioVars; ++ratiovar){
 		TH1D *ntight_data  = new TH1D("h_NTight_Data" ,  "NTight Data" ,  FRatioPlots::nbins[ratiovar], FRatioPlots::xmin[ratiovar], FRatioPlots::xmax[ratiovar]);
@@ -7946,50 +7991,51 @@ void SSDLPlotter::makeIsoVsMETPlot(gSample sample){
 }
 
 //____________________________________________________________________________
-void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples, int datamc){
+void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples, int datamc, bool printOutput){
 	if(datamc == 0){
-	  cout << "Filling ratios for Data... " << endl;
-		fH1D_MufRatio = fillRatioPt(Muon, musamples, SigSup, false);
-		fH1D_MupRatio = fillRatioPt(Muon, musamples, ZDecay, false);
-		fH1D_ElfRatio = fillRatioPt(Elec, elsamples, SigSup, false);
-		fH1D_ElpRatio = fillRatioPt(Elec, elsamples, ZDecay, false);
-		fH2D_MufRatio = fillRatio(  Muon, musamples, SigSup, false);
-		fH2D_MupRatio = fillRatio(  Muon, musamples, ZDecay, false);
-		fH2D_ElfRatio = fillRatio(  Elec, elsamples, SigSup, false);
-		fH2D_ElpRatio = fillRatio(  Elec, elsamples, ZDecay, false);
+	  cout << "Filling ratios for Data... " << endl; 
+		fH1D_MufRatio = fillRatioPt(Muon, musamples, SigSup, printOutput);
+		fH1D_MupRatio = fillRatioPt(Muon, musamples, ZDecay, printOutput);
+		fH1D_ElfRatio = fillRatioPt(Elec, elsamples, SigSup, printOutput);
+		fH1D_ElpRatio = fillRatioPt(Elec, elsamples, ZDecay, printOutput);
+		fH2D_MufRatio = fillRatio(  Muon, musamples, SigSup, printOutput);
+		fH2D_MupRatio = fillRatio(  Muon, musamples, ZDecay, printOutput);
+		fH2D_ElfRatio = fillRatio(  Elec, elsamples, SigSup, printOutput);
+		fH2D_ElpRatio = fillRatio(  Elec, elsamples, ZDecay, printOutput);
 	}
 	if(datamc == 1){
 	  cout << "Filling ratios for MC... " << endl;
-		fH1D_MufRatio_MC = fillRatioPt(Muon, musamples, SigSup, false);
-		fH1D_MupRatio_MC = fillRatioPt(Muon, musamples, ZDecay, false);
-		fH1D_ElfRatio_MC = fillRatioPt(Elec, elsamples, SigSup, false);
-		fH1D_ElpRatio_MC = fillRatioPt(Elec, elsamples, ZDecay, false);
-		fH2D_MufRatio_MC = fillRatio(  Muon, musamples, SigSup, false);
-		fH2D_MupRatio_MC = fillRatio(  Muon, musamples, ZDecay, false);
-		fH2D_ElfRatio_MC = fillRatio(  Elec, elsamples, SigSup, false);
-		fH2D_ElpRatio_MC = fillRatio(  Elec, elsamples, ZDecay, false);
+		fH1D_MufRatio_MC = fillRatioPt(Muon, musamples, SigSup, printOutput);
+		fH1D_MupRatio_MC = fillRatioPt(Muon, musamples, ZDecay, printOutput);
+		fH1D_ElfRatio_MC = fillRatioPt(Elec, elsamples, SigSup, printOutput);
+		fH1D_ElpRatio_MC = fillRatioPt(Elec, elsamples, ZDecay, printOutput);
+		fH2D_MufRatio_MC = fillRatio(  Muon, musamples, SigSup, printOutput);
+		fH2D_MupRatio_MC = fillRatio(  Muon, musamples, ZDecay, printOutput);
+		fH2D_ElfRatio_MC = fillRatio(  Elec, elsamples, SigSup, printOutput);
+		fH2D_ElpRatio_MC = fillRatio(  Elec, elsamples, ZDecay, printOutput);
 	}
 }
-void SSDLPlotter::fillRatios(vector<int> frmusamples, vector<int> frelsamples, vector<int> prmusamples, vector<int> prelsamples, int datamc){
+void SSDLPlotter::fillRatios(vector<int> frmusamples, vector<int> frelsamples, vector<int> prmusamples, vector<int> prelsamples, 
+			     int datamc,  bool printOutput){
 	if(datamc == 0){
-		fH1D_MufRatio = fillRatioPt(Muon, frmusamples, SigSup, false);
-		fH1D_MupRatio = fillRatioPt(Muon, prmusamples, ZDecay, false);
-		fH1D_ElfRatio = fillRatioPt(Elec, frelsamples, SigSup, false);
-		fH1D_ElpRatio = fillRatioPt(Elec, prelsamples, ZDecay, false);
-		fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, false);
-		fH2D_MupRatio = fillRatio(  Muon, prmusamples, ZDecay, false);
-		fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, false);
-		fH2D_ElpRatio = fillRatio(  Elec, prelsamples, ZDecay, false);
+		fH1D_MufRatio = fillRatioPt(Muon, frmusamples, SigSup, printOutput);
+		fH1D_MupRatio = fillRatioPt(Muon, prmusamples, ZDecay, printOutput);
+		fH1D_ElfRatio = fillRatioPt(Elec, frelsamples, SigSup, printOutput);
+		fH1D_ElpRatio = fillRatioPt(Elec, prelsamples, ZDecay, printOutput);
+		fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, printOutput);
+		fH2D_MupRatio = fillRatio(  Muon, prmusamples, ZDecay, printOutput);
+		fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, printOutput);
+		fH2D_ElpRatio = fillRatio(  Elec, prelsamples, ZDecay, printOutput);
 	}
 	if(datamc == 1){
-		fH1D_MufRatio_MC = fillRatioPt(Muon, frmusamples, SigSup, false);
-		fH1D_MupRatio_MC = fillRatioPt(Muon, prmusamples, ZDecay, false);
-		fH1D_ElfRatio_MC = fillRatioPt(Elec, frelsamples, SigSup, false);
-		fH1D_ElpRatio_MC = fillRatioPt(Elec, prelsamples, ZDecay, false);
-		fH2D_MufRatio_MC = fillRatio(  Muon, frmusamples, SigSup, false);
-		fH2D_MupRatio_MC = fillRatio(  Muon, prmusamples, ZDecay, false);
-		fH2D_ElfRatio_MC = fillRatio(  Elec, frelsamples, SigSup, false);
-		fH2D_ElpRatio_MC = fillRatio(  Elec, prelsamples, ZDecay, false);
+		fH1D_MufRatio_MC = fillRatioPt(Muon, frmusamples, SigSup, printOutput);
+		fH1D_MupRatio_MC = fillRatioPt(Muon, prmusamples, ZDecay, printOutput);
+		fH1D_ElfRatio_MC = fillRatioPt(Elec, frelsamples, SigSup, printOutput);
+		fH1D_ElpRatio_MC = fillRatioPt(Elec, prelsamples, ZDecay, printOutput);
+		fH2D_MufRatio_MC = fillRatio(  Muon, frmusamples, SigSup, printOutput);
+		fH2D_MupRatio_MC = fillRatio(  Muon, prmusamples, ZDecay, printOutput);
+		fH2D_ElfRatio_MC = fillRatio(  Elec, frelsamples, SigSup, printOutput);
+		fH2D_ElpRatio_MC = fillRatio(  Elec, prelsamples, ZDecay, printOutput);
 	}
 }
 TH1D* SSDLPlotter::fillRatioPt(gChannel chan, int sample, gFPSwitch fp, bool output){
@@ -8111,7 +8157,7 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 	}
 	if (fp == SigSup && gEWKCorrection) {
 		float lumi(1.);
-		if (chan == Muon) lumi = fLumiNormHLTMu17      * fEWKMuSF;
+		//if (chan == Muon) lumi = fLumiNormHLTMu17      * fEWKMuSF; //Can we remove this line ?? BM
 		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30 * fEWKElSF;
 		// mc samples are scaled to fLumiNorm. now scale to prescaled triggers.
 		float scale_vjets = lumi / fLumiNorm;
@@ -8154,11 +8200,17 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 	if (fp == SigSup) name += "F";
 	if (fp == ZDecay) name += "P";
 	name += h_2d->GetName();
+
+	/*
 	for(size_t i = 0; i < samples.size(); ++i){
 		int sample = samples[i];
 		name += "_";
 		name += fSamples[sample]->sname;
 	}
+	*/
+	//FIXME: add something to distinguish between data and mc plots
+	//if() name += "_data";
+
 	if (gEWKCorrection) name += "_EWKCorrected";
 	if(output){
 //	if (fp == SigSup) {
@@ -8408,10 +8460,12 @@ void SSDLPlotter::getPassedTotal(vector<int> samples, gChannel chan, gFPSwitch f
 		if(i > 0) name += "_";
 		name += fSamples[sample]->sname;
 	}
+	/*
 	if(output){
 		printObject(h_passed, TString("Passed") + name, "colz");
 		printObject(h_total,  TString("Total")  + name, "colz");
-	}	
+	}
+	*/	
 }
 void SSDLPlotter::getPassedTotalTTbar(vector<int> samples, gChannel chan, gFPSwitch fp, TH2D*& h_passed, TH2D*& h_total, bool output){
 	if(fVerbose>2) cout << "---------------" << endl;
@@ -13149,14 +13203,14 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
 	// 2 J   0 bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
 //	// 3 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
 //	// 1 J   0 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
@@ -13169,14 +13223,14 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
 	// 3 J   1 bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 	// >=2 J   ==0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
 //	// final sel
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
