@@ -55,6 +55,11 @@ bool gDPS = false;
 //float gSigSupJetPt = 50.;
 float gSigSupJetPt = 40.;
 //float gSigSupJetPt = 30.;
+
+// 0,1 and 2 mean 'none', 'one' and 'any'
+static const int gSigSupBJetRequirement = 1;
+
+
 bool ttbarSigSup = true;
 bool gDoSystStudies;
 static const bool gDoSyncExercise = false;
@@ -85,15 +90,24 @@ static const float gMEL = 0.0005;
 static const float gMZ  = 91.;
 
 // Muon Binning //////////////////////////////////////////////////////////////////
+double SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1., 2.1, 2.5};
 double SSDLDumper::gMuFPtBins[gNMuFPtBins+1] = {20., 25., 30., 40., 60.}; // fake ratios
 double SSDLDumper::gMuPPtbins[gNMuPPtbins+1] = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
-double SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1., 2.1, 2.5};
+
+/*
+if(gSigSupJetPt==40.){
+  SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1., 2.1, 2.5};
+  SSDLDumper::gMuFPtBins[gNMuFPtBins+1] = {20., 25., 30., 40., 60.}; // fake ratios
+ }
+*/
 
 // Electron Binning //////////////////////////////////////////////////////////////
+double SSDLDumper::gElCMIdbins[gNElCMIdbins+1] = {0., 1.479, 2.5};
+
+double SSDLDumper::gElEtabins[gNElEtabins+1]   = {0., 1.479, 2.5};
 double SSDLDumper::gElFPtBins[gNElFPtBins+1]   = {20., 25., 30., 40., 50., 60., 70., 80., 100.}; // fake ratios
 double SSDLDumper::gElPPtbins[gNElPPtbins+1]   = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
-double SSDLDumper::gElEtabins[gNElEtabins+1]   = {0., 1.479, 2.5};
-double SSDLDumper::gElCMIdbins[gNElCMIdbins+1] = {0., 1.479, 2.5};
+
 //////////////////////////////////////////////////////////////////////////////////
 
 // NVrtx Binning /////////////////////////////////////////////////////////////////
@@ -1566,52 +1580,61 @@ void SSDLDumper::fillTLRatios(Sample *S){
 	// QCD Control Region
 	int looseMuInd(-1);
 	if(singleMuTrigger() && isSigSupMuEvent(looseMuInd)){
+
 	  /*TODO: define the splitting between mu17 and mu24 on the base of the value of the bin's edge, instead then on the binIndex. 
 	   In this way the code would remain correct even if one change the histogram booking  */
-		if (!(S->chansel == 0 &&  MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2] ) &&
-		    !(S->chansel == 5 && (MuPt[looseMuInd] <  SSDLDumper::gMuFPtBins[1] || fabs(MuEta[looseMuInd]) >= SSDLDumper::gMuEtabins[2]))  // be careful with the bins here!
-		    ) {
-		  if( isTightMuon(looseMuInd) ){
-		    S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	
-		    S->tlratios[0].fntight_nv->Fill(NVrtx,                                     gEventWeight);
-		    if(S->datamc > 0) S->tlratios[0].sst_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
-		  }
-		  if( isLooseMuon(looseMuInd) ){
-		    S->tlratios[0].fratio_pt ->Fill(isTightMuon(looseMuInd), MuPt[looseMuInd]);
-		    S->tlratios[0].fratio_eta->Fill(isTightMuon(looseMuInd), fabs(MuEta[looseMuInd]));
-		    S->tlratios[0].fratio_nv ->Fill(isTightMuon(looseMuInd), NVrtx);
-		    
-		    S->tlratios[0].fnloose   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);
-		    S->tlratios[0].fnloose_nv->Fill(NVrtx,                                     gEventWeight);
-		    if(S->datamc > 0) S->tlratios[0].ssl_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
-		    
-		    if (S->datamc > 0) {
-		      if (fabs(MuGenMID[looseMuInd]) == 24)         S->tlratios[0].sigSup_MID24_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
-		      if ((int)fabs(MuGenMID[looseMuInd])/100 == 5) S->tlratios[0].sigSup_MID500_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
-		      if ((int)fabs(MuGenMID[looseMuInd])/100 == 4) S->tlratios[0].sigSup_MID400_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
-		      if (fabs(MuGenMID[looseMuInd]) == 15)         S->tlratios[0].sigSup_MID15_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
-		    }
-		    float dPhiLooseJet(-1.);
-		    dPhiLooseJet = fabs(getClosestJetDPhi(looseMuInd, Muon, 50.)); 	if (dPhiLooseJet > TMath::Pi()) dPhiLooseJet =- TMath::Pi();
-		    S->tlratios[0].sigSup_dPhiLooseJet->Fill(dPhiLooseJet , gEventWeight);
-		    S->tlratios[0].sigSup_nJets       ->Fill(getNJets(50.), gEventWeight);
-		  }
-		  
-		  // signal suppressed region with at least one veto muon
-		  int mu1(-1), mu2(-1);
-		  isSigSupMuEvent(mu1, mu2);
-		  if (mu2 > 0) {
-		    float dRVetoLoose(-1.), dRVetoJet(-1);
-		    dRVetoLoose	= Util::GetDeltaR(MuEta[mu1], MuEta[mu2], MuPhi[mu1], MuPhi[mu2]);	if (fabs(dRVetoLoose) > TMath::Pi()) dRVetoLoose = fabs(dRVetoLoose) - TMath::Pi();
-		    dRVetoJet	= getClosestJetDR(mu2, Muon, 50.);									if (fabs(dRVetoJet  ) > TMath::Pi()) dRVetoJet   = fabs(dRVetoJet  ) - TMath::Pi();
-		    S->tlratios[0].sigSup_mll           ->Fill(getMll(mu1, mu2, Muon), gEventWeight);
-		    S->tlratios[0].sigSup_dRVetoLoose   ->Fill(dRVetoLoose           , gEventWeight);
-		    S->tlratios[0].sigSup_dRVetoJet     ->Fill(dRVetoJet             , gEventWeight);
-		    S->tlratios[0].sigSup_mllDRVetoLoose->Fill(getMll(mu1, mu2, Muon), dRVetoLoose, gEventWeight);
-		    S->tlratios[0].sigSup_jetptDRVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.), dRVetoJet, gEventWeight);
-		    S->tlratios[0].sigSup_deltaPtVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.) - MuPt[mu2]);
-		  }
-		}
+	  //if (!(S->chansel == 0 &&  MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2] ) &&
+	  //  !(S->chansel == 5 && (MuPt[looseMuInd] <  SSDLDumper::gMuFPtBins[1] || fabs(MuEta[looseMuInd]) >= SSDLDumper::gMuEtabins[2]))
+
+	  /* 
+	     In this way the code should not break when we change the binning of the FakeRate 2D map 
+	   */
+	  if( !(S->chansel == 0 &&  MuPt[looseMuInd] >=25.0 && fabs(MuEta[looseMuInd]) < 2.1) &&
+	      !(S->chansel == 5 && (MuPt[looseMuInd] <  25.0 || fabs(MuEta[looseMuInd]) >= 2.1))
+	      ) {
+	    if( isTightMuon(looseMuInd) ){
+	      S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	
+	      S->tlratios[0].fntight_nv->Fill(NVrtx,                                     gEventWeight);
+	      if(S->datamc > 0) S->tlratios[0].sst_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
+	    }
+	    if( isLooseMuon(looseMuInd) ){
+	      S->tlratios[0].fratio_pt ->Fill(isTightMuon(looseMuInd), MuPt[looseMuInd]);
+	      S->tlratios[0].fratio_eta->Fill(isTightMuon(looseMuInd), fabs(MuEta[looseMuInd]));
+	      S->tlratios[0].fratio_nv ->Fill(isTightMuon(looseMuInd), NVrtx);
+	      
+	      S->tlratios[0].fnloose   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);
+	      S->tlratios[0].fnloose_nv->Fill(NVrtx,                                     gEventWeight);
+	      if(S->datamc > 0) S->tlratios[0].ssl_origin->Fill(muIndexToBin(0)-0.5,     gEventWeight);
+	      
+	      if (S->datamc > 0) {
+		if (fabs(MuGenMID[looseMuInd]) == 24)         S->tlratios[0].sigSup_MID24_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
+		if ((int)fabs(MuGenMID[looseMuInd])/100 == 5) S->tlratios[0].sigSup_MID500_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
+		if ((int)fabs(MuGenMID[looseMuInd])/100 == 4) S->tlratios[0].sigSup_MID400_Iso->Fill(MuPFIso[looseMuInd], gEventWeight);
+		if (fabs(MuGenMID[looseMuInd]) == 15)         S->tlratios[0].sigSup_MID15_Iso ->Fill(MuPFIso[looseMuInd], gEventWeight);
+	      }
+	      float dPhiLooseJet(-1.);
+	      dPhiLooseJet = fabs(getClosestJetDPhi(looseMuInd, Muon, 50.)); 	if (dPhiLooseJet > TMath::Pi()) dPhiLooseJet =- TMath::Pi();
+	      S->tlratios[0].sigSup_dPhiLooseJet->Fill(dPhiLooseJet , gEventWeight);
+	      S->tlratios[0].sigSup_nJets       ->Fill(getNJets(50.), gEventWeight);
+	    }
+	    
+	    // signal suppressed region with at least one veto muon
+	    int mu1(-1), mu2(-1);
+	    isSigSupMuEvent(mu1, mu2);
+	    if (mu2 > 0) {
+	      float dRVetoLoose(-1.), dRVetoJet(-1);
+	      dRVetoLoose	= Util::GetDeltaR(MuEta[mu1], MuEta[mu2], MuPhi[mu1], MuPhi[mu2]);	
+	      if (fabs(dRVetoLoose) > TMath::Pi()) dRVetoLoose = fabs(dRVetoLoose) - TMath::Pi();
+	      dRVetoJet	= getClosestJetDR(mu2, Muon, 50.);									
+	      if (fabs(dRVetoJet  ) > TMath::Pi()) dRVetoJet   = fabs(dRVetoJet  ) - TMath::Pi();
+	      S->tlratios[0].sigSup_mll           ->Fill(getMll(mu1, mu2, Muon), gEventWeight);
+	      S->tlratios[0].sigSup_dRVetoLoose   ->Fill(dRVetoLoose           , gEventWeight);
+	      S->tlratios[0].sigSup_dRVetoJet     ->Fill(dRVetoJet             , gEventWeight);
+	      S->tlratios[0].sigSup_mllDRVetoLoose->Fill(getMll(mu1, mu2, Muon), dRVetoLoose, gEventWeight);
+	      S->tlratios[0].sigSup_jetptDRVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.), dRVetoJet, gEventWeight);
+	      S->tlratios[0].sigSup_deltaPtVetoJet->Fill(getClosestJetPt(mu2, Muon, 50.) - MuPt[mu2]);
+	    }
+	  }
 	}
 	// ZMuMu Control Region
 	int mu1(-1), mu2(-1);
@@ -5752,6 +5775,8 @@ bool SSDLDumper::passesJet50CutdPhi(int ind, gChannel chan){
 	   we apply the dphi and away-jet-pt cuts.
 	*/
 	if (jetinds.size() != 1) return false; 
+	
+	//TO DO: apply btag requirement on jetinds[0]
 
 	float lepphi = (chan == Muon) ? MuPhi[ind] : ElPhi[ind];
 	float dphi = Util::DeltaPhi(lepphi, JetPhi[jetinds[0]]);

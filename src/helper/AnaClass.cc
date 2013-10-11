@@ -2507,6 +2507,7 @@ void AnaClass::printObject(TObject* o, TString name, Option_t *drawopt, bool log
 	gPad->RedrawAxis();
 	if(logy) gPad->SetLogy(1);
 	Util::PrintNoEPS(col, name, fOutputDir + fOutputSubDir, fOutputFile);
+	delete col;
 }
 
 //____________________________________________________________________________
