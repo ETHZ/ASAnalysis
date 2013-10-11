@@ -501,15 +501,15 @@ void SSDLPlotter::doAnalysis(){
   fillRatios(fMuTotData,    fEGData,    0, true,  saveRatioPlots);  //make the same applying the EWK subtraction
 
 
-  //BM fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, saveRatioPlots);
+  fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, false, false);
   storeWeightedPred(gRegion[gBaseRegion]);
   ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
   cout << "...done ====" << endl;
 
 
-  //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-  //makeTTWDiffPredictionsSigEvent();
-  //cout << "...done ===" << endl;
+  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+  makeTTWDiffPredictionsSigEvent();
+  cout << "...done ===" << endl;
 
 
   //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;  
@@ -517,9 +517,11 @@ void SSDLPlotter::doAnalysis(){
   //cout << "...done ===" << endl;
 
 
-  //	makeTTWKinPlotsSigEvent(); // BM: what is this for ??
+  //makeTTWKinPlotsSigEvent(); // BM: what is this for ??
   
-
+  //-- Perhaps Marc needs this
+  //makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
+  //makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
 
 
 
@@ -622,7 +624,7 @@ void SSDLPlotter::doAnalysis(){
 
 	//  makeTTWIntPredictionsSigEvent();
 	
- 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
+ 	
   
   // BM to speed up plots for FR
   //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
@@ -714,7 +716,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeFakeGenIDTables();
 //	makeMIDIsolationPlots(Muon, SigSup);
 //	makeMIDIsolationPlots(Muon, Sig);
-	makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
+  //makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
 }
 void SSDLPlotter::showStatusBar(int nEvent, int nEvents, int updateIntervall, bool show, bool makeNewLine) {
 	if (nEvent+1 >= nEvents) nEvent++;
@@ -820,7 +822,7 @@ void SSDLPlotter::pythiaMadgraph(bool pythia){
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET, SLumi;
 	float eta1, eta2, mll;
 	int   event, run;
 
@@ -839,7 +841,7 @@ void SSDLPlotter::pythiaMadgraph(bool pythia){
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -1075,7 +1077,7 @@ void SSDLPlotter::makeROCCurve(){
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET,  SLumi;
 	float eta1, eta2, mll, mvaid1, mvaid2, medwp1, medwp2;
 	float pfiso1, pfiso2;
 
@@ -1092,7 +1094,7 @@ void SSDLPlotter::makeROCCurve(){
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -6366,7 +6368,7 @@ void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF, bool plot){
 //		delete nloose_zjets;
 //		delete hs_tight ;
 //		delete hs_loose ;
-		delete c_temp;
+//		delete c_temp;
 
 		fLumiNorm = tmp_fLumiNorm;
 	}
@@ -7238,7 +7240,7 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET, SLumi;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -7261,7 +7263,7 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -7569,7 +7571,7 @@ float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float min
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -7592,7 +7594,7 @@ float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float min
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -12200,7 +12202,7 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF;
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
@@ -13624,7 +13626,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	string *sname = 0;
 	int flag(0);
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed, NVrtx;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
@@ -13650,7 +13652,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -15140,7 +15142,7 @@ void SSDLPlotter::makeKinematicPlotsPaper(){
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET, SLumi;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -15162,7 +15164,7 @@ void SSDLPlotter::makeKinematicPlotsPaper(){
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -16405,7 +16407,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF;
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
@@ -16428,7 +16430,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -17579,7 +17581,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	string *sname = 0;
 	int flag(0);
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed, NVrtx;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -17604,7 +17606,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -22745,7 +22747,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 	int flag;
 	int   stype, flav, cat, njets, nbjets, nbjetsmed;
 	int   passZVeto, pass3rdVeto;
-	float puweight, slumi, pT1, pT2, HT, MET, MT2;
+	float puweight, slumi, pT1, pT2, HT, MET;
 	float eta1, eta2;
 	int event, run;
 	signed int charge;
@@ -22766,7 +22768,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 	sigtree->SetBranchAddress("TLCat",       &cat);
 	sigtree->SetBranchAddress("HT",          &HT);
 	sigtree->SetBranchAddress("MET",         &MET);
-	sigtree->SetBranchAddress("MT2",         &MT2);
+	//sigtree->SetBranchAddress("MT2",         &MT2);
 	sigtree->SetBranchAddress("NJ",          &njets);
 	sigtree->SetBranchAddress("NbJ",         &nbjets);
 	sigtree->SetBranchAddress("NbJmed",      &nbjetsmed);
@@ -22800,6 +22802,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 		tree_opt->Branch( "HT",          &HT,          "HT/F" );
 		tree_opt->Branch( "MET",         &MET,         "MET/F" );
 	}
+
 
 	ofstream debugOUTSTREAM;
 	debugOUTSTREAM.open("debugOUTSTREAM.txt", ios::trunc);
@@ -22868,7 +22871,6 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 //			  cout << "[DEBUG]: npf-> " << S->numbers[r][chan].npf + S->numbers[r][chan].nfp << endl;
 //			  cout << "[DEBUG]: nff-> " << S->numbers[r][chan].nff << endl;
 //			}
-
 		}
 		
 		// Differential predictions
@@ -22924,11 +22926,13 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 			fillWithoutOF(S->diffyields[chan].hnfp[1], MET, puweight * nfp);
 			fillWithoutOF(S->diffyields[chan].hnff[1], MET, puweight * nff);
 			
+			/*
 			fillWithoutOF(S->diffyields[chan].hnpp[3], MT2, puweight * npp);
 			fillWithoutOF(S->diffyields[chan].hnpf[3], MT2, puweight * npf);
 			fillWithoutOF(S->diffyields[chan].hnfp[3], MT2, puweight * nfp);
 			fillWithoutOF(S->diffyields[chan].hnff[3], MT2, puweight * nff);
-			
+			*/
+
 			fillWithoutOF(S->diffyields[chan].hnpp[4], std::max(pT1,pT2), puweight * npp);
 			fillWithoutOF(S->diffyields[chan].hnpf[4], std::max(pT1,pT2), puweight * npf);
 			fillWithoutOF(S->diffyields[chan].hnfp[4], std::max(pT1,pT2), puweight * nfp);
@@ -22960,7 +22964,6 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 			fillWithoutOF(S->diffyields[chan].hnff[10], nbjetsmed+0.5, puweight * nff);
 		   }
 		}
-
 		if( fDO_OPT && flav<3 && flag == 0){
 			float lumi_pb = 9000.;
 			eventWeight = lumi_pb*puweight/slumi;
@@ -23003,7 +23006,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 		TH1D *histo          = fH1D_MufRatio;
 		if(datamc > 0) histo = fH1D_MufRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= mu_flatout){
@@ -23017,7 +23020,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 		TH1D *histo          = fH1D_ElfRatio;
 		if(datamc > 0) histo = fH1D_ElfRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= el_flatout){
@@ -23042,7 +23045,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, float eta, int datamc){
 		TH2D *histo          = fH2D_MufRatio;
 		if(datamc > 0) histo = fH2D_MufRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= mu_flatout){
@@ -23056,7 +23059,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, float eta, int datamc){
 		TH2D *histo          = fH2D_ElfRatio;
 		if(datamc > 0) histo = fH2D_ElfRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= el_flatout){
@@ -23485,7 +23488,7 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, int reg){
 	string *sname = 0;
 	int flag;
 	int   stype, flav, cat, njets, nbjets;
-	float puweight, pT1, pT2, HT, MET, MT2;
+	float puweight, pT1, pT2, HT, MET;
 
 	sigtree->SetBranchAddress("SystFlag",    &flag);
 	sigtree->SetBranchAddress("SName",    &sname);
@@ -23497,7 +23500,7 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, int reg){
 	sigtree->SetBranchAddress("TLCat",    &cat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &njets);
 	sigtree->SetBranchAddress("NbJ",      &nbjets);
 	
