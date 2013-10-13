@@ -45,20 +45,7 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////
 // Global parameters:
-
-static const bool  gApplyTauVeto = true;
-static       bool  gSmearMET     = false;
-
-bool gDPS = false;
-
-float gSigSupJetPt = 40.;
-
-// 0,1 and 2 mean 'none', 'one' and 'any'
-const int gSigSupBJetRequirement = 1;
-
-bool ttbarSigSup = true;
 bool gDoSystStudies;
-static const bool gDoSyncExercise = false;
 float gMuMaxIso     ;
 float gElMaxIso     ;
 float gMinJetPt     ;
@@ -71,8 +58,6 @@ TString tmp_gBaseRegion  ;
 TString gJSONfile        ;
 bool  tmp_gDoWZValidation;
 bool  gMETType1          ;
-bool  gDoPileUpID = false;
-float gBetaStarMax = 0.3;
 
 // std::vector< SSDLDumper::Region* > gRegions;
 // std::vector< SSDLDumper::Region* >::iterator regIt;
@@ -85,17 +70,12 @@ static const float gMMU = 0.1057;
 static const float gMEL = 0.0005;
 static const float gMZ  = 91.;
 
+/* BM
 // Muon Binning //////////////////////////////////////////////////////////////////
 double SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1., 2.1, 2.5};
 double SSDLDumper::gMuFPtBins[gNMuFPtBins+1] = {20., 25., 30., 40., 60.}; // fake ratios
 double SSDLDumper::gMuPPtbins[gNMuPPtbins+1] = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
 
-/*
-if(gSigSupJetPt==40.){
-  SSDLDumper::gMuEtabins[gNMuEtabins+1] = {0., 1., 2.1, 2.5};
-  SSDLDumper::gMuFPtBins[gNMuFPtBins+1] = {20., 25., 30., 40., 60.}; // fake ratios
- }
-*/
 
 // Electron Binning //////////////////////////////////////////////////////////////
 double SSDLDumper::gElCMIdbins[gNElCMIdbins+1] = {0., 1.479, 2.5};
@@ -103,6 +83,8 @@ double SSDLDumper::gElCMIdbins[gNElCMIdbins+1] = {0., 1.479, 2.5};
 double SSDLDumper::gElEtabins[gNElEtabins+1]   = {0., 1.479, 2.5};
 double SSDLDumper::gElFPtBins[gNElFPtBins+1]   = {20., 25., 30., 40., 50., 60., 70., 80., 100.}; // fake ratios
 double SSDLDumper::gElPPtbins[gNElPPtbins+1]   = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
+*/
+
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -168,8 +150,11 @@ float   SSDLDumper::FRatioPlots::xmin[SSDLDumper::gNRatioVars]     = {     1.,  
 float   SSDLDumper::FRatioPlots::xmax[SSDLDumper::gNRatioVars]     = {     6.,  500.,     150.,        25. ,       150. ,       150. ,       3.,  100.,  100.,          100.,        200.,    150.,    2.4,      1.,            6.,         6.};
 
 //////////////////////////////////////////////////////////////////////////////////
+/* FIXME BM
 TString SSDLDumper::IsoPlots::sel_name[SSDLDumper::gNSels] = {"Base", "SigSup"};
 int     SSDLDumper::IsoPlots::nbins[SSDLDumper::gNSels]    = {12, 12};
+*/
+
 TString SSDLDumper::IdPlots::sel_name[SSDLDumper::gNSels] = {"Base", "SigSup"};
 int     SSDLDumper::IdPlots::nbins[SSDLDumper::gNSels]    = {20, 20};
 
@@ -177,7 +162,7 @@ TString SSDLDumper::gEMULabel[4] = {"mu", "el", "mu17", "mu24"};
 TString SSDLDumper::gChanLabel[3] = {"MM", "EM", "EE"}; // make SURE this is the same order as gChannel enum!
 TString SSDLDumper::gHiLoLabel[3] = {"HighPt", "LowPt", "TauChan"};
 
-void setVariables(char buffer[1000]){
+void SSDLDumper::setVariables(char buffer[1000]){
 	char va[1], t[100], n[100], val[100];
 	TString v, type, name, value;
 	if( sscanf(buffer, "%s\t%s\t%s\t%s", va, t, n, val) > 3){
@@ -206,6 +191,68 @@ void setVariables(char buffer[1000]){
 }
 //____________________________________________________________________________
 SSDLDumper::SSDLDumper(TString configfile){
+
+  // ==============================================================================
+  /* Move here the inizialization of some of the stuff that, because was  
+     set as global const variables, couldn't be changed at run time. 
+     FIXME: Most of the parameters are left as they were in the old logic because 
+     it would take very long to adapt all the code.
+  */	
+  gApplyTauVeto = true;
+  gSmearMET     = false;
+  gDPS = false;
+  
+  gSigSupJetPt = 40.;
+  
+  // 0,1 and 2 mean 'none', 'one' and 'any'
+  //const int gSigSupBJetRequirement = 1;
+  
+  ttbarSigSup = true;
+  gDoSyncExercise = false;
+  
+  gDoPileUpID = false;
+  gBetaStarMax = 0.3;
+  
+ 
+  if(gSigSupJetPt==40){
+    //Muon Binning
+    gNMuEtabins = 3;
+    gNMuFPtBins = 4;
+    gNMuPPtbins = 10;
+    gMuEtabins = {0., 1., 2.1, 2.5};
+    gMuFPtBins = {20., 25., 30., 40., 60.}; // fake ratios
+    gMuPPtbins = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
+    
+    //Electron Binning	  
+    gNElCMIdbins = 2; 
+    gNElEtabins = 2; 
+    gNElFPtBins = 8;
+    gNElPPtbins = 10;
+    gElCMIdbins = {0., 1.479, 2.5};
+    gElEtabins   = {0., 1.479, 2.5};
+    gElFPtBins   = {20., 25., 30., 40., 50., 60., 70., 80., 100.}; // fake ratios
+    gElPPtbins   = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
+  }else{
+    //Muon Binning
+    gNMuEtabins = 3;
+    gNMuFPtBins = 4;
+    gNMuPPtbins = 10;
+    gMuEtabins = {0., 1., 2.1, 2.5};
+    gMuFPtBins = {20., 25., 30., 40., 60.}; // fake ratios
+    gMuPPtbins = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
+    
+    //Electron Binning	  
+    gNElCMIdbins = 2; 
+    gNElEtabins = 2; 
+    gNElFPtBins = 8;
+    gNElPPtbins = 10;
+    gElCMIdbins = {0., 1.479, 2.5};
+    gElEtabins   = {0., 1.479, 2.5};
+    gElFPtBins   = {20., 25., 30., 40., 50., 60., 70., 80., 100.}; // fake ratios
+    gElPPtbins   = {20., 25., 30., 35., 40., 50., 60., 70., 80., 90., 100.}; // prompt ratios
+  }
+  // ==============================================================================
+
 	char buffer[1000];
 	ifstream IN(configfile);
 	if ( !(IN.is_open()) ) {
@@ -313,6 +360,7 @@ SSDLDumper::SSDLDumper(TString configfile){
 	gSystematics["LepDown"]  = 7;
 	gSystematics["METUp"]    = 8;
 	gSystematics["METDown"]  = 9;
+
 
 }
 
@@ -454,24 +502,24 @@ const int     SSDLDumper::getNFPtBins(gChannel chan){ // fake ratios
 	if(chan == Elec) return gNElFPtBins;
 }
 const double *SSDLDumper::getFPtBins (gChannel chan){
-	if(chan == Muon || chan == ElMu) return gMuFPtBins;
-	if(chan == Elec) return gElFPtBins;
+	if(chan == Muon || chan == ElMu) return &gMuFPtBins[0];
+	if(chan == Elec) return &gElFPtBins[0];
 }
 const int     SSDLDumper::getNPPtBins(gChannel chan){ // prompt ratios
 	if(chan == Muon || chan == ElMu) return gNMuPPtbins;
 	if(chan == Elec) return gNElPPtbins;
 }
 const double *SSDLDumper::getPPtBins (gChannel chan){
-	if(chan == Muon || chan == ElMu) return gMuPPtbins;
-	if(chan == Elec) return gElPPtbins;
+	if(chan == Muon || chan == ElMu) return &gMuPPtbins[0];
+	if(chan == Elec) return &gElPPtbins[0];
 }
 const int     SSDLDumper::getNEtaBins(gChannel chan){
 	if(chan == Muon || chan == ElMu) return gNMuEtabins;
 	if(chan == Elec)            return gNElEtabins;
 }
 const double *SSDLDumper::getEtaBins (gChannel chan){
-	if(chan == Muon || chan == ElMu) return gMuEtabins;
-	if(chan == Elec)            return gElEtabins;
+	if(chan == Muon || chan == ElMu) return &gMuEtabins[0];
+	if(chan == Elec)            return &gElEtabins[0];
 }
 //____________________________________________________________________________
 void SSDLDumper::loop(){
@@ -608,8 +656,11 @@ void SSDLDumper::loopEvents(Sample *S){
 		fillTLRatios(S);
 		fillChMisIDProb(S);
 		
+		//FIXME BM
+		/*
 		fillMuIsoPlots(S);
 		fillElIsoPlots(S);
+		*/
 		fillElIdPlots(S);
 		
 
@@ -2486,6 +2537,9 @@ void SSDLDumper::fillKinPlots(Sample *S, int reg){
 	setRegionCuts(gRegion[gBaseRegion]);
 	return;
 }
+
+//FIXME BM
+/*
 void SSDLDumper::fillMuIsoPlots(Sample *S){
 	resetHypLeptons();
 	fDoCounting = false;
@@ -2546,6 +2600,7 @@ void SSDLDumper::fillMuIsoPlots(Sample *S){
 	setRegionCuts(gRegion[gBaseRegion]);
 	return;
 }
+*/
 void SSDLDumper::fillElIdPlots(Sample *S){
 	resetHypLeptons();
 	fDoCounting = false;
@@ -2617,6 +2672,9 @@ void SSDLDumper::fillElIdPlots(Sample *S){
 	setRegionCuts(gRegion[gBaseRegion]);
 	return;
 }
+
+//FIXME BM
+/*
 void SSDLDumper::fillElIsoPlots(Sample *S){
 	resetHypLeptons();
 	fDoCounting = false;
@@ -2678,6 +2736,8 @@ void SSDLDumper::fillElIsoPlots(Sample *S){
 	setRegionCuts(gRegion[gBaseRegion]);
 	return;
 }
+*/
+
 void SSDLDumper::fillPileUpPlots(Sample *S){
    
 	// setRegionCuts(gRegion["Baseline"]);
@@ -3430,7 +3490,10 @@ void SSDLDumper::bookHistos(Sample *S){
 		S->idplots.hmedwp[j]->SetXTitle("medium WP");
 		S->idplots.hmedwp[j]->Sumw2();
 	}
-	// isolation histos for electrons
+	
+	//FIXME BM
+	/*
+	// isolation histos for electrons	
 	for(size_t j = 0; j < gNSels; ++j){
 		TString name = Form("%s_%s_%siso", S->sname.Data(), IsoPlots::sel_name[j].Data(), gEMULabel[1].Data());
 		S->isoplots[1].hiso[j] = new TH1D(name, Form("%siso", gEMULabel[1].Data()), IsoPlots::nbins[j], 0., 0.6);
@@ -3474,7 +3537,7 @@ void SSDLDumper::bookHistos(Sample *S){
 			S->isoplots[0].hiso_nv[j][k]->Sumw2();
 		}
 	}
-
+	*/
 
 	// pile-up plots
 	for (size_t l = 0; l < 2; ++l){
@@ -3755,6 +3818,8 @@ void SSDLDumper::deleteHistos(Sample *S){
 	}
 
 	for(size_t l = 0; l < 2; ++l){
+	  //FIXME BM
+	  /*
 		// Isolation histos
 		for(size_t j = 0; j < gNSels; ++j){
 			delete S->isoplots[l].hiso[j];
@@ -3765,6 +3830,7 @@ void SSDLDumper::deleteHistos(Sample *S){
 				delete S->isoplots[l].hiso_nv[j][k];
 			}
 		}
+	  */
 
 		// Pileup histos
 		delete S->puplots[l].hdtrig;
@@ -4005,7 +4071,9 @@ void SSDLDumper::writeHistos(Sample *S, TFile *pFile){
 		idp->hmedwp [j]->Write(idp->hmedwp [j]->GetName(), TObject::kWriteDelete);
 	}
 
-	// Isolation histos
+	//FIXME BM
+	/*
+	// Isolation histos	
 	temp = S->sname + "/IsoPlots/";
 	rdir = Util::FindOrCreate(temp, pFile);
 	rdir->cd();
@@ -4017,6 +4085,7 @@ void SSDLDumper::writeHistos(Sample *S, TFile *pFile){
 			for(int k = 0; k < gNNVrtxBins; ++k) ip->hiso_nv[j][k]->Write(ip->hiso_nv[j][k]->GetName(), TObject::kWriteDelete);
 		}
 	}
+	*/
 
 	// Pile-up histos
 	temp = S->sname + "/PuPlots/";
@@ -4357,6 +4426,8 @@ int  SSDLDumper::readHistos(TString filename){
 		}
 
 		for(size_t lep = 0; lep < 2; ++lep){ // e-mu loop
+		        //FIXME BM
+		        /*
 			// Isolation histos
 			IsoPlots *ip = &S->isoplots[lep];
 			for(size_t j = 0; j < gNSels; ++j){
@@ -4374,6 +4445,7 @@ int  SSDLDumper::readHistos(TString filename){
 					ip->hiso_nv[j][k]->SetFillColor(S->color);
 				}
 			}
+			*/
 
 			// Pile-up plots
 			PuPlots *pu = &S->puplots[lep];

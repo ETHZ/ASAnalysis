@@ -2294,6 +2294,10 @@ void SSDLPlotter::makeNT012Plots(gChannel chan, vector<int> mcsamples, bool(SSDL
 // 	Util::PrintPDF(el_temp, "ElIso" , fOutputDir + fOutputSubDir);
 // }
 
+
+
+//FIXME BM
+/*
 //____________________________________________________________________________
 void SSDLPlotter::makeMuIsolationPlots(bool dottbar){
 	char cmd[100];
@@ -2571,7 +2575,8 @@ void SSDLPlotter::makeMuIsolationPlots(bool dottbar){
 //		cout << "Apply weights to MC histos" << endl;
 		for(size_t j = 0; j < gNSAMPLES; ++j){
 			Sample *S = fSamples[j];
-//			cout << "at sample: " << setw(20) << S->sname << "\txsec: " << setw(12) << S->xsec << "\tget lumi of this sample: " << setw(12) << S->getLumi()/* << "\tintegral of the iso histo: " << S->isoplots[0].hiso[i]->Integral()*/ << endl;
+//			cout << "at sample: " << setw(20) << S->sname << "\txsec: " << setw(12) << S->xsec << "\tget lumi of this sample: " << setw(12) << S->getLumi()
+// << "\tintegral of the iso histo: " << S->isoplots[0].hiso[i]->Integral() << endl;
 
 			float lumiscale = fLumiNorm / S->getLumi();
 			if(S->datamc == 0) continue;
@@ -3385,6 +3390,7 @@ void SSDLPlotter::makeElIsolationPlots(bool dottbar){
 		}
 	}
 }
+*/
 
 void SSDLPlotter::makeElIdPlots(){
 	char cmd[100];
