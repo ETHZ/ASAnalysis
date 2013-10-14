@@ -372,21 +372,22 @@ public:
 	float getFRatio(gChannel, float, float, int = 0); // diff in pt/eta
 	float getPRatio(gChannel, float, int = 0);
 	
-	//////////////////////////////
-	// Fake ratios
-	// Calculate from pre stored numbers, with fixed selections:
-  void fillRatios(vector<int>, vector<int>, int = 0,  bool printOutput=false);
-  void fillRatios(vector<int>, vector<int>, vector<int>, vector<int>, int = 0,  bool printOutput=false);
-	TH1D* fillRatioPt(gChannel, int, gFPSwitch, bool = false);
-	TH1D* fillRatioPt(gChannel, vector<int>, gFPSwitch, bool = false);
-	TH2D* fillRatio(gChannel, int, gFPSwitch, bool = false);
-	TH2D* fillRatio(gChannel, vector<int>, gFPSwitch, bool = false);
+  //////////////////////////////
+  // Fake ratios
+  // Calculate from pre stored numbers, with fixed selections:
+  void fillRatios(vector<int>, vector<int>, int = 0, bool applyEwkSubtr=false, bool printOutput=false);
+  void fillRatios(vector<int>, vector<int>, vector<int>, vector<int>, int = 0, bool applyEwkSubtr=false,  bool printOutput=false);
+  TH1D* fillRatioPt(gChannel, int, gFPSwitch, bool applyEwkSubtr=false, bool printOutput=false);
+  TH1D* fillRatioPt(gChannel, vector<int>, gFPSwitch, bool applyEwkSubtr=false, bool printOutput=false);
+  TH2D* fillRatio(gChannel, int, gFPSwitch, bool applyEwkSubtr=false, bool printOutput=false);
+  TH2D* fillRatio(gChannel, vector<int>, gFPSwitch, bool applyEwkSubtr=false, bool printOutput=false);
 
-	void calculateRatio(vector<int>, gChannel, gFPSwitch, TH2D*&, bool = false, bool = false);
-	void calculateRatio(vector<int>, gChannel, gFPSwitch, TH2D*&, TH1D*&, TH1D*&, bool = false, bool = false);
-	void calculateRatio(vector<int>, gChannel, gFPSwitch, TH2D*&, TH1D*&, TH1D*&, TH1D*&, bool = false, bool = false);
-	void calculateRatio(vector<int>, gChannel, gFPSwitch, float&, float&);
-	void calculateRatio(vector<int>, gChannel, gFPSwitch, float&, float&, float&);
+  void calculateRatio(vector<int>, gChannel, gFPSwitch, TH2D*&, bool applyEwkSubtr=false, bool printOutput=false, bool = false);
+  void calculateRatio(vector<int>, gChannel, gFPSwitch, TH2D*&, TH1D*&, TH1D*&, bool applyEwkSubtr=false, bool printOutput=false, bool = false);
+  void calculateRatio(vector<int>, gChannel, gFPSwitch, TH2D*&, TH1D*&, TH1D*&, TH1D*&, 
+		      bool applyEwkSubtr=false, bool printOutput=false, bool = false);
+  void calculateRatio(vector<int>, gChannel, gFPSwitch, float&, float&);
+  void calculateRatio(vector<int>, gChannel, gFPSwitch, float&, float&, float&);
         
 	void calculateChMisIdProb(vector<int>, gChMisIdReg, float&, float&);
 

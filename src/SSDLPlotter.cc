@@ -474,8 +474,7 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 	scanModelGeneric(file , gRegion[region], model, lowpt);
 }
 void SSDLPlotter::doAnalysis(){
-	// sandBox();  
-       
+  // sandBox();         
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
 
 
@@ -484,8 +483,7 @@ void SSDLPlotter::doAnalysis(){
 
   /* Here I calculate the EWK MC scale factors, but I don't use 
      them in producing any of the fakerate control plots   */
-  //makeRatioControlPlots(0, true, true); // Mu
-  bool saveRatioControlPlots = false;
+  bool saveRatioControlPlots = true;
   makeRatioControlPlots(1, true, saveRatioControlPlots); // El
   makeRatioControlPlots(2, true, saveRatioControlPlots); // Mu17
   makeRatioControlPlots(3, true, saveRatioControlPlots); // Mu24_eta2p1
@@ -499,16 +497,43 @@ void SSDLPlotter::doAnalysis(){
 
 
   bool saveRatioPlots = true;
-  bool gEWKCorrection_tmp = gEWKCorrection;
-  gEWKCorrection = false; fillRatios(fMuTotData,    fEGData,    0, saveRatioPlots);
-  gEWKCorrection = true; fillRatios(fMuTotData,    fEGData,    0, saveRatioPlots);
-  gEWKCorrection = gEWKCorrection_tmp;
+  fillRatios(fMuTotData,    fEGData,    0, false, saveRatioPlots);  //make FR plots without applying EWK subtraction
+  fillRatios(fMuTotData,    fEGData,    0, true,  saveRatioPlots);  //make the same applying the EWK subtraction
 
-  fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, saveRatioPlots);
+
+  fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, false, false);
   storeWeightedPred(gRegion[gBaseRegion]);
-  // ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
+  ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
+  cout << "...done ====" << endl;
 
+
+  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+  makeTTWDiffPredictionsSigEvent();
+  cout << "...done ===" << endl;
+
+
+  //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;  
+  //makeTTWIntPredictionsSigEvent();
+  //cout << "...done ===" << endl;
+
+
+  //makeTTWKinPlotsSigEvent(); // BM: what is this for ??
   
+  //-- Perhaps Marc needs this
+  //makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
+  //makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
+
+
+
+
+
+
+
+
+
+  // ---------------- FIXME: Can we clean up all these lines below ??? -----------------
+  /*
+>>>>>>> 679afad2c3a1a80a1d336d4ef905b87b9be68675
   makeRatioPlots(Muon);
   makeRatioPlots(Elec);
   make2DRatioPlots(Muon);
@@ -517,8 +542,12 @@ void SSDLPlotter::doAnalysis(){
   makeFRvsPtPlots(Elec, SigSup);
   makeFRvsEtaPlots(Muon);
   makeFRvsEtaPlots(Elec);
+<<<<<<< HEAD
   
   cout << "...done ====" << endl;
+=======
+  */
+
 
 	// fill fake ratios to run closure tests
 //	fillRatios(fMuData, fEGData, 0);
@@ -598,7 +627,6 @@ void SSDLPlotter::doAnalysis(){
 
 	//  makeTTWIntPredictionsSigEvent();
 	
- // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
   
   // BM to speed up plots for FR
   //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
@@ -796,7 +824,7 @@ void SSDLPlotter::pythiaMadgraph(bool pythia){
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET, SLumi;
 	float eta1, eta2, mll;
 	int   event, run;
 
@@ -815,7 +843,7 @@ void SSDLPlotter::pythiaMadgraph(bool pythia){
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -1051,7 +1079,7 @@ void SSDLPlotter::makeROCCurve(){
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET,  SLumi;
 	float eta1, eta2, mll, mvaid1, mvaid2, medwp1, medwp2;
 	float pfiso1, pfiso2;
 
@@ -1068,7 +1096,7 @@ void SSDLPlotter::makeROCCurve(){
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -2268,6 +2296,10 @@ void SSDLPlotter::makeNT012Plots(gChannel chan, vector<int> mcsamples, bool(SSDL
 // 	Util::PrintPDF(el_temp, "ElIso" , fOutputDir + fOutputSubDir);
 // }
 
+
+
+//FIXME BM
+/*
 //____________________________________________________________________________
 void SSDLPlotter::makeMuIsolationPlots(bool dottbar){
 	char cmd[100];
@@ -2545,7 +2577,8 @@ void SSDLPlotter::makeMuIsolationPlots(bool dottbar){
 //		cout << "Apply weights to MC histos" << endl;
 		for(size_t j = 0; j < gNSAMPLES; ++j){
 			Sample *S = fSamples[j];
-//			cout << "at sample: " << setw(20) << S->sname << "\txsec: " << setw(12) << S->xsec << "\tget lumi of this sample: " << setw(12) << S->getLumi()/* << "\tintegral of the iso histo: " << S->isoplots[0].hiso[i]->Integral()*/ << endl;
+//			cout << "at sample: " << setw(20) << S->sname << "\txsec: " << setw(12) << S->xsec << "\tget lumi of this sample: " << setw(12) << S->getLumi()
+// << "\tintegral of the iso histo: " << S->isoplots[0].hiso[i]->Integral() << endl;
 
 			float lumiscale = fLumiNorm / S->getLumi();
 			if(S->datamc == 0) continue;
@@ -3359,6 +3392,7 @@ void SSDLPlotter::makeElIsolationPlots(bool dottbar){
 		}
 	}
 }
+*/
 
 void SSDLPlotter::makeElIdPlots(){
 	char cmd[100];
@@ -6333,7 +6367,7 @@ void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF, bool plot){
 		if (plot) Util::PrintPDF(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
 		if (plot) Util::PrintPNG(  c_temp, "NLoose_" + name + "_" + FRatioPlots::var_name[ratiovar], fOutputDir + fOutputSubDir);
 
-//		delete c_temp, leg, lat;
+		delete c_temp, leg, lat;
 //		delete ntight_data ;
 //		delete ntight_wjets;
 //		delete ntight_zjets;
@@ -6342,7 +6376,7 @@ void SSDLPlotter::makeRatioControlPlots(int chan, bool calcSF, bool plot){
 //		delete nloose_zjets;
 //		delete hs_tight ;
 //		delete hs_loose ;
-		delete c_temp;
+//		delete c_temp;
 
 		fLumiNorm = tmp_fLumiNorm;
 	}
@@ -7214,7 +7248,7 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET, SLumi;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -7237,7 +7271,7 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -7545,7 +7579,7 @@ float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float min
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -7568,7 +7602,7 @@ float SSDLPlotter::getTTWGeneratorSystematic(float minHT, float maxHT, float min
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -7991,58 +8025,59 @@ void SSDLPlotter::makeIsoVsMETPlot(gSample sample){
 }
 
 //____________________________________________________________________________
-void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples, int datamc, bool printOutput){
+void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples,
+			     int datamc, bool applyEwkSubtr, bool printOutput){
 	if(datamc == 0){
 	  cout << "Filling ratios for Data... " << endl; 
-		fH1D_MufRatio = fillRatioPt(Muon, musamples, SigSup, printOutput);
-		fH1D_MupRatio = fillRatioPt(Muon, musamples, ZDecay, printOutput);
-		fH1D_ElfRatio = fillRatioPt(Elec, elsamples, SigSup, printOutput);
-		fH1D_ElpRatio = fillRatioPt(Elec, elsamples, ZDecay, printOutput);
-		fH2D_MufRatio = fillRatio(  Muon, musamples, SigSup, printOutput);
-		fH2D_MupRatio = fillRatio(  Muon, musamples, ZDecay, printOutput);
-		fH2D_ElfRatio = fillRatio(  Elec, elsamples, SigSup, printOutput);
-		fH2D_ElpRatio = fillRatio(  Elec, elsamples, ZDecay, printOutput);
+	  fH1D_MufRatio = fillRatioPt(Muon, musamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_MupRatio = fillRatioPt(Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH1D_ElfRatio = fillRatioPt(Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_ElpRatio = fillRatioPt(Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_MufRatio = fillRatio(  Muon, musamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_MupRatio = fillRatio(  Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_ElfRatio = fillRatio(  Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_ElpRatio = fillRatio(  Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
 	}
 	if(datamc == 1){
 	  cout << "Filling ratios for MC... " << endl;
-		fH1D_MufRatio_MC = fillRatioPt(Muon, musamples, SigSup, printOutput);
-		fH1D_MupRatio_MC = fillRatioPt(Muon, musamples, ZDecay, printOutput);
-		fH1D_ElfRatio_MC = fillRatioPt(Elec, elsamples, SigSup, printOutput);
-		fH1D_ElpRatio_MC = fillRatioPt(Elec, elsamples, ZDecay, printOutput);
-		fH2D_MufRatio_MC = fillRatio(  Muon, musamples, SigSup, printOutput);
-		fH2D_MupRatio_MC = fillRatio(  Muon, musamples, ZDecay, printOutput);
-		fH2D_ElfRatio_MC = fillRatio(  Elec, elsamples, SigSup, printOutput);
-		fH2D_ElpRatio_MC = fillRatio(  Elec, elsamples, ZDecay, printOutput);
+	  fH1D_MufRatio_MC = fillRatioPt(Muon, musamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_MupRatio_MC = fillRatioPt(Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH1D_ElfRatio_MC = fillRatioPt(Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_ElpRatio_MC = fillRatioPt(Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_MufRatio_MC = fillRatio(  Muon, musamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_MupRatio_MC = fillRatio(  Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_ElfRatio_MC = fillRatio(  Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_ElpRatio_MC = fillRatio(  Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
 	}
 }
 void SSDLPlotter::fillRatios(vector<int> frmusamples, vector<int> frelsamples, vector<int> prmusamples, vector<int> prelsamples, 
-			     int datamc,  bool printOutput){
+			     int datamc,   bool applyEwkSubtr, bool printOutput){
 	if(datamc == 0){
-		fH1D_MufRatio = fillRatioPt(Muon, frmusamples, SigSup, printOutput);
-		fH1D_MupRatio = fillRatioPt(Muon, prmusamples, ZDecay, printOutput);
-		fH1D_ElfRatio = fillRatioPt(Elec, frelsamples, SigSup, printOutput);
-		fH1D_ElpRatio = fillRatioPt(Elec, prelsamples, ZDecay, printOutput);
-		fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, printOutput);
-		fH2D_MupRatio = fillRatio(  Muon, prmusamples, ZDecay, printOutput);
-		fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, printOutput);
-		fH2D_ElpRatio = fillRatio(  Elec, prelsamples, ZDecay, printOutput);
+	  fH1D_MufRatio = fillRatioPt(Muon, frmusamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_MupRatio = fillRatioPt(Muon, prmusamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH1D_ElfRatio = fillRatioPt(Elec, frelsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_ElpRatio = fillRatioPt(Elec, prelsamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_MufRatio = fillRatio(  Muon, frmusamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_MupRatio = fillRatio(  Muon, prmusamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_ElfRatio = fillRatio(  Elec, frelsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_ElpRatio = fillRatio(  Elec, prelsamples, ZDecay, applyEwkSubtr, printOutput);
 	}
 	if(datamc == 1){
-		fH1D_MufRatio_MC = fillRatioPt(Muon, frmusamples, SigSup, printOutput);
-		fH1D_MupRatio_MC = fillRatioPt(Muon, prmusamples, ZDecay, printOutput);
-		fH1D_ElfRatio_MC = fillRatioPt(Elec, frelsamples, SigSup, printOutput);
-		fH1D_ElpRatio_MC = fillRatioPt(Elec, prelsamples, ZDecay, printOutput);
-		fH2D_MufRatio_MC = fillRatio(  Muon, frmusamples, SigSup, printOutput);
-		fH2D_MupRatio_MC = fillRatio(  Muon, prmusamples, ZDecay, printOutput);
-		fH2D_ElfRatio_MC = fillRatio(  Elec, frelsamples, SigSup, printOutput);
-		fH2D_ElpRatio_MC = fillRatio(  Elec, prelsamples, ZDecay, printOutput);
+	  fH1D_MufRatio_MC = fillRatioPt(Muon, frmusamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_MupRatio_MC = fillRatioPt(Muon, prmusamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH1D_ElfRatio_MC = fillRatioPt(Elec, frelsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH1D_ElpRatio_MC = fillRatioPt(Elec, prelsamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_MufRatio_MC = fillRatio(  Muon, frmusamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_MupRatio_MC = fillRatio(  Muon, prmusamples, ZDecay, applyEwkSubtr, printOutput);
+	  fH2D_ElfRatio_MC = fillRatio(  Elec, frelsamples, SigSup, applyEwkSubtr, printOutput);
+	  fH2D_ElpRatio_MC = fillRatio(  Elec, prelsamples, ZDecay, applyEwkSubtr, printOutput);
 	}
 }
-TH1D* SSDLPlotter::fillRatioPt(gChannel chan, int sample, gFPSwitch fp, bool output){
+TH1D* SSDLPlotter::fillRatioPt(gChannel chan, int sample, gFPSwitch fp, bool applyEwkSubtr, bool output){
 	vector<int> samples; samples.push_back(sample);
-	return fillRatioPt(chan, samples, fp);
+	return fillRatioPt(chan, samples, fp, applyEwkSubtr, output);
 }
-TH1D* SSDLPlotter::fillRatioPt(gChannel chan, vector<int> samples, gFPSwitch fp, bool output){
+TH1D* SSDLPlotter::fillRatioPt(gChannel chan, vector<int> samples, gFPSwitch fp, bool applyEwkSubtr, bool output){
 	gStyle->SetOptStat(0);
 	TString shortname[2] = {"Mu", "El"};
 	TString longname[2] = {"Muons", "Electrons"};
@@ -8066,15 +8101,15 @@ TH1D* SSDLPlotter::fillRatioPt(gChannel chan, vector<int> samples, gFPSwitch fp,
 	h_pt->SetYTitle("# Tight / # Loose");
 	h_pt->GetYaxis()->SetTitleOffset(1.2);
 
-	calculateRatio(samples, chan, fp, h_2d, h_pt, h_eta, output);
+	calculateRatio(samples, chan, fp, h_2d, h_pt, h_eta, applyEwkSubtr, output);
 	delete h_2d, h_eta;
 	return h_pt;
 }
-TH2D* SSDLPlotter::fillRatio(gChannel chan, int sample, gFPSwitch fp, bool output){
+TH2D* SSDLPlotter::fillRatio(gChannel chan, int sample, gFPSwitch fp, bool applyEwkSubtr, bool output){
 	vector<int> samples; samples.push_back(sample);
-	return fillRatio(chan, samples, fp);
+	return fillRatio(chan, samples, fp, applyEwkSubtr, output);
 }
-TH2D* SSDLPlotter::fillRatio(gChannel chan, vector<int> samples, gFPSwitch fp, bool output){
+TH2D* SSDLPlotter::fillRatio(gChannel chan, vector<int> samples, gFPSwitch fp, bool applyEwkSubtr, bool output){
 	gStyle->SetOptStat(0);
 	TString shortname[2] = {"Mu", "El"};
 	TString longname[2] = {"Muons", "Electrons"};
@@ -8098,24 +8133,28 @@ TH2D* SSDLPlotter::fillRatio(gChannel chan, vector<int> samples, gFPSwitch fp, b
 	h_2d->SetYTitle("#eta");
 	h_2d->SetZTitle("# Tight / # Loose");
 
-	calculateRatio(samples, chan, fp, h_2d, h_pt, h_eta, output);
+	calculateRatio(samples, chan, fp, h_2d, h_pt, h_eta, applyEwkSubtr, output);
 	delete h_pt, h_eta;
 	return h_2d;
 }
 
 //____________________________________________________________________________
-void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, TH2D*& h_2d, bool output, bool ttbarMatched){
+void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, TH2D*& h_2d, 
+				 bool applyEwkSubtr, bool output, bool ttbarMatched){
 	TH1D *h_dummy1 = new TH1D("dummy1", "dummy1", 1, 0.,1.);
 	TH1D *h_dummy2 = new TH1D("dummy2", "dummy2", 1, 0.,1.);
-	calculateRatio(samples, chan, fp, h_2d, h_dummy1, h_dummy2, output, ttbarMatched);
+	calculateRatio(samples, chan, fp, h_2d, h_dummy1, h_dummy2, applyEwkSubtr, output, ttbarMatched);
 	delete h_dummy1, h_dummy2;
 }
-void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, TH2D*& h_2d, TH1D*& h_pt, TH1D*& h_eta, bool output, bool ttbarMatched){
+void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, TH2D*& h_2d, TH1D*& h_pt, TH1D*& h_eta, 
+				 bool applyEwkSubtr, bool output, bool ttbarMatched){
 	TH1D *h_dummy1 = new TH1D("rat_dummy1", "rat_dummy1", 18, 0.,36.);
-	calculateRatio(samples, chan, fp, h_2d, h_pt, h_eta, h_dummy1, output, ttbarMatched);
+	calculateRatio(samples, chan, fp, h_2d, h_pt, h_eta, h_dummy1, applyEwkSubtr, output, ttbarMatched);
 	delete h_dummy1;
 }
-void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, TH2D*& h_2d, TH1D*& h_pt, TH1D*& h_eta, TH1D*& h_nv, bool output, bool ttbarMatched){
+void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, 
+				 TH2D*& h_2d, TH1D*& h_pt, TH1D*& h_eta, TH1D*& h_nv, 
+				 bool applyEwkSubtr, bool output, bool ttbarMatched){
 /*
 TODO Fix treatment of statistical errors and luminosity scaling here!
 */
@@ -8155,7 +8194,8 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 		getPassedTotal(wjets_samples, chan, fp, H_ntight_wjets, H_nloose_wjets, H_ntight_nv_wjets, H_nloose_nv_wjets, output);
 		getPassedTotal(zjets_samples, chan, fp, H_ntight_zjets, H_nloose_zjets, H_ntight_nv_zjets, H_nloose_nv_zjets, output);
 	}
-	if (fp == SigSup && gEWKCorrection) {
+	//if (fp == SigSup && gEWKCorrection) {
+	if (fp == SigSup && applyEwkSubtr) {
 		float lumi(1.);
 		//if (chan == Muon) lumi = fLumiNormHLTMu17      * fEWKMuSF; //Can we remove this line ?? BM
 		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30 * fEWKElSF;
@@ -8175,7 +8215,9 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 			for (int ptbin = 1; ptbin < gNMuFPtBins+1; ptbin++) {
 				for (int etabin = 1; etabin < gNMuEtabins+1; etabin++) {
 					int bin = H_nloose->GetBin(ptbin, etabin);
-					if (ptbin > 1 && etabin < 3) lumi = fLumiNormHLTMu24Eta2p1 * fEWKMu24SF;
+					//if (ptbin > 1 && etabin < 3) lumi = fLumiNormHLTMu24Eta2p1 * fEWKMu24SF;
+					if(H_nloose->GetXaxis()->GetBinLowEdge(ptbin)>=25.0 && 
+					   H_nloose->GetYaxis()->GetBinUpEdge(etabin)<=2.1 ) lumi = fLumiNormHLTMu24Eta2p1 * fEWKMu24SF;
 					else                         lumi = fLumiNormHLTMu17       * fEWKMu17SF;
 					float scale = lumi / fLumiNorm;
 					H_ntight   ->AddBinContent(bin, (-1.) * scale * H_ntight_wjets->GetBinContent(bin));
@@ -8211,7 +8253,7 @@ TODO Fix treatment of statistical errors and luminosity scaling here!
 	//FIXME: add something to distinguish between data and mc plots
 	//if() name += "_data";
 
-	if (gEWKCorrection) name += "_EWKCorrected";
+	if (applyEwkSubtr) name += "_EWKCorrected";
 	if(output){
 //	if (fp == SigSup) {
 		fOutputSubDir = "Ratios/";
@@ -12186,7 +12228,7 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF;
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
@@ -13674,7 +13716,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	string *sname = 0;
 	int flag(0);
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed, NVrtx;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
@@ -13700,7 +13742,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -15190,7 +15232,7 @@ void SSDLPlotter::makeKinematicPlotsPaper(){
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi;
+	float puweight, pT1, pT2, HT, MET, SLumi;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -15212,7 +15254,7 @@ void SSDLPlotter::makeKinematicPlotsPaper(){
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -16455,7 +16497,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF;
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
@@ -16478,7 +16520,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -17629,7 +17671,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	string *sname = 0;
 	int flag(0);
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed, NVrtx;
-	float puweight, pT1, pT2, HT, MET, MT2, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -17654,7 +17696,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	sigtree->SetBranchAddress("TLCat",    &TLCat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &NJ);
 	sigtree->SetBranchAddress("NbJ",      &NbJ);
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
@@ -22795,7 +22837,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 	int flag;
 	int   stype, flav, cat, njets, nbjets, nbjetsmed;
 	int   passZVeto, pass3rdVeto;
-	float puweight, slumi, pT1, pT2, HT, MET, MT2;
+	float puweight, slumi, pT1, pT2, HT, MET;
 	float eta1, eta2;
 	int event, run;
 	signed int charge;
@@ -22816,7 +22858,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 	sigtree->SetBranchAddress("TLCat",       &cat);
 	sigtree->SetBranchAddress("HT",          &HT);
 	sigtree->SetBranchAddress("MET",         &MET);
-	sigtree->SetBranchAddress("MT2",         &MT2);
+	//sigtree->SetBranchAddress("MT2",         &MT2);
 	sigtree->SetBranchAddress("NJ",          &njets);
 	sigtree->SetBranchAddress("NbJ",         &nbjets);
 	sigtree->SetBranchAddress("NbJmed",      &nbjetsmed);
@@ -22850,6 +22892,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 		tree_opt->Branch( "HT",          &HT,          "HT/F" );
 		tree_opt->Branch( "MET",         &MET,         "MET/F" );
 	}
+
 
 	ofstream debugOUTSTREAM;
 	debugOUTSTREAM.open("debugOUTSTREAM.txt", ios::trunc);
@@ -22918,7 +22961,6 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 //			  cout << "[DEBUG]: npf-> " << S->numbers[r][chan].npf + S->numbers[r][chan].nfp << endl;
 //			  cout << "[DEBUG]: nff-> " << S->numbers[r][chan].nff << endl;
 //			}
-
 		}
 		
 		// Differential predictions
@@ -22974,11 +23016,13 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 			fillWithoutOF(S->diffyields[chan].hnfp[1], MET, puweight * nfp);
 			fillWithoutOF(S->diffyields[chan].hnff[1], MET, puweight * nff);
 			
+			/*
 			fillWithoutOF(S->diffyields[chan].hnpp[3], MT2, puweight * npp);
 			fillWithoutOF(S->diffyields[chan].hnpf[3], MT2, puweight * npf);
 			fillWithoutOF(S->diffyields[chan].hnfp[3], MT2, puweight * nfp);
 			fillWithoutOF(S->diffyields[chan].hnff[3], MT2, puweight * nff);
-			
+			*/
+
 			fillWithoutOF(S->diffyields[chan].hnpp[4], std::max(pT1,pT2), puweight * npp);
 			fillWithoutOF(S->diffyields[chan].hnpf[4], std::max(pT1,pT2), puweight * npf);
 			fillWithoutOF(S->diffyields[chan].hnfp[4], std::max(pT1,pT2), puweight * nfp);
@@ -23010,7 +23054,6 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 			fillWithoutOF(S->diffyields[chan].hnff[10], nbjetsmed+0.5, puweight * nff);
 		   }
 		}
-
 		if( fDO_OPT && flav<3 && flag == 0){
 			float lumi_pb = 9000.;
 			eventWeight = lumi_pb*puweight/slumi;
@@ -23053,7 +23096,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 		TH1D *histo          = fH1D_MufRatio;
 		if(datamc > 0) histo = fH1D_MufRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= mu_flatout){
@@ -23067,7 +23110,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, int datamc){
 		TH1D *histo          = fH1D_ElfRatio;
 		if(datamc > 0) histo = fH1D_ElfRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= el_flatout){
@@ -23092,7 +23135,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, float eta, int datamc){
 		TH2D *histo          = fH2D_MufRatio;
 		if(datamc > 0) histo = fH2D_MufRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= mu_flatout){
@@ -23106,7 +23149,7 @@ float SSDLPlotter::getFRatio(gChannel chan, float pt, float eta, int datamc){
 		TH2D *histo          = fH2D_ElfRatio;
 		if(datamc > 0) histo = fH2D_ElfRatio_MC;
 		if(!histo){
-			cerr << "SSDLPlotter::getPRatio ==> Warning: ratio histo not filled, exiting" << endl;
+			cerr << "SSDLPlotter::getFRatio ==> Warning: ratio histo not filled, exiting" << endl;
 			exit(-1);
 		}
 		if(pt >= el_flatout){
@@ -23535,7 +23578,7 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, int reg){
 	string *sname = 0;
 	int flag;
 	int   stype, flav, cat, njets, nbjets;
-	float puweight, pT1, pT2, HT, MET, MT2;
+	float puweight, pT1, pT2, HT, MET;
 
 	sigtree->SetBranchAddress("SystFlag",    &flag);
 	sigtree->SetBranchAddress("SName",    &sname);
@@ -23547,7 +23590,7 @@ TGraph* SSDLPlotter::getSigEventGraph(gChannel chan, int reg){
 	sigtree->SetBranchAddress("TLCat",    &cat);
 	sigtree->SetBranchAddress("HT",       &HT);
 	sigtree->SetBranchAddress("MET",      &MET);
-	sigtree->SetBranchAddress("MT2",      &MT2);
+	//sigtree->SetBranchAddress("MT2",      &MT2);
 	sigtree->SetBranchAddress("NJ",       &njets);
 	sigtree->SetBranchAddress("NbJ",      &nbjets);
 	

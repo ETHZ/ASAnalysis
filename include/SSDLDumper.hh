@@ -28,28 +28,54 @@ using namespace std;
 
 class SSDLDumper : public AnaClass{
 
+
+  //set these datamembers as protected so that they can be accessed by the Plotter. 
+  //Better would be to have them private and access them with getter functions. 
+protected:
+  bool  gApplyTauVeto ;
+  bool  gSmearMET     ;
+
+  bool gDPS;
+  float gSigSupJetPt;
+
+  // 0,1 and 2 mean 'none', 'one' and 'any'
+  //int gSigSupBJetRequirement ;
+
+  bool ttbarSigSup ;
+  bool gDoSyncExercise ;
+
+  bool  gDoPileUpID  ;
+  float gBetaStarMax ;
+
+  int gNMuEtabins ;
+  int gNMuFPtBins ;
+  int gNMuPPtbins ;
+
+  int gNElCMIdbins ;
+  int gNElEtabins ;
+  int gNElFPtBins ;
+  int gNElPPtbins ;
+
+
+  std::vector<double> gMuEtabins;
+  std::vector<double> gMuPPtbins;
+  std::vector<double> gMuFPtBins;
+
+  std::vector<double> gElCMIdbins;
+  std::vector<double> gElEtabins;
+  std::vector<double> gElPPtbins;
+  std::vector<double> gElFPtBins;
+
+
+  
+
+
 public:
 	// Binning
-	static const int gNMuFPtBins = 4;
-	static const int gNMuPPtbins = 10;
-	static const int gNMuEtabins = 3;
-	static const int gNElFPtBins = 8;
-	static const int gNElPPtbins = 10;
-	static const int gNElEtabins = 2;
-        static const int gNElCMIdbins = 2;
-
         static const int gNNVrtxBins = 10;
 
 	static double gNVrtxBins[gNNVrtxBins+1];
 
-	static double gMuPPtbins[gNMuPPtbins+1];
-	static double gMuFPtBins[gNMuFPtBins+1];
-	static double gMuEtabins[gNMuEtabins+1];
-
-	static double gElPPtbins[gNElPPtbins+1];
-	static double gElFPtBins[gNElFPtBins+1];
-	static double gElEtabins[gNElEtabins+1];
-        static double gElCMIdbins[gNElCMIdbins+1];
 
 	static const int gNDiffHTBins   = 6;
 	static const int gNDiffMETBins  = 6;
@@ -392,13 +418,15 @@ public:
 	};
 	
 	static const int gNSels = 2;
-	struct IsoPlots{
+  /* FIXME BM
+  struct IsoPlots{
 		static TString sel_name[gNSels];
 		static int nbins[gNSels];
 		TH1D *hiso[gNSels];
 		TH1D *hiso_pt[gNSels][gNMuFPtBins];
 		TH1D *hiso_nv[gNSels][gNNVrtxBins];
 	};
+  */
 
 	struct PuPlots{
 		TH1D *hdtrig;
@@ -509,7 +537,8 @@ public:
 		KinPlots    kinplots[gNKinSels][2]; // tt and ll and signal for both low and high pt analysis
 	        KinPlots    kinplots_wz[gNKinSels];
 	        KinPlots    kinplots_wz2l[gNKinSels];
-	        IsoPlots    isoplots[2]; // e and mu
+	  //FIXME BM
+	  //IsoPlots    isoplots[2]; // e and mu
  	        IdPlots     idplots; // only for electrons
 		FRatioPlots ratioplots[4]; // e, mu, mu17, mu24
 	        TLRatios    tlratios[2]; //e and mu   ///SAVING ALL RATIO INFORMATION HERE INSTEAD ON EACH REGION
@@ -682,6 +711,8 @@ public:
 	virtual void init(TString); // samples read from a datacard
 	virtual void init(TString, TString, int, float, int = -1); // running on single sample
 
+        void setVariables(char buffer[1000]);
+
 	virtual void readDatacard(TString); // read in a datacard
 
 	virtual void loop();              // loop on all samples if several
@@ -712,8 +743,9 @@ public:
 	void fillRatioPlots(Sample*);
         void fillTLRatios(Sample*);
         void fillChMisIDProb(Sample*);
-	void fillMuIsoPlots(Sample*);
-	void fillElIsoPlots(Sample*);
+  //FIXME BM
+  //void fillMuIsoPlots(Sample*);
+  //	void fillElIsoPlots(Sample*);
 	void fillElIdPlots (Sample*);
 	void fillPileUpPlots(Sample*);
         void fillKinPlots(Sample*, int);
@@ -968,7 +1000,7 @@ public:
 	const int     getNEtaBins(gChannel);
 	const double *getEtaBins (gChannel);
         const int     getNCMidbins() { return gNElCMIdbins; };
-        const double *getCMIdbins()  { return gElCMIdbins;  };
+        const double *getCMIdbins()  { return &gElCMIdbins[0];  };
 	const double *getDiffPredBins(int);
 	
 	Monitor fCounters[gNSAMPLES][3];
