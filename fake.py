@@ -27,16 +27,18 @@ def predOF(p1, f1, p2, f2, ntt, ntl, nlt, nll):
 ## fe, pe = 0.1    , 0.845
 ## fm, pm = 0.06 , 0.92
 ## fe, pe = 0.076    , 0.85
-fm, pm = 0.0764 , 0.916
-fe, pe = 0.0885 , 0.82
+fm, pm = 0.023 , 0.80
+fe, pe = 0.040 , 0.76
 
-mmntt, mmntl       , mmnll = 2, 14     , 2
-emntt, emntl, emnlt, emnll = 5, 51,  12, 10
-eentt, eentl       , eenll = 4, 32     , 6
+## preselection
+mmntt, mmntl       , mmnll = 3.553 , 478.511         , 128.565
+emntt, emntl, emnlt, emnll = 14.877, 446.092, 477.401, 242.697
+eentt, eentl       , eenll = 8.660 , 401.683, 119.905
 
-## mmntt, mmntl       , mmnll = 111,  1005    , 226
-## emntt, emntl, emnlt, emnll = 220,  807, 852, 610
-## eentt, eentl       , eenll = 146,  634     , 395
+## ## selection
+## mmntt, mmntl       , mmnll = 0.000, 66.836         , 12.657
+## emntt, emntl, emnlt, emnll = 1.998, 107.915, 71.055, 31.975
+## eentt, eentl       , eenll = 1.110, 104.362, 27.756
 
 mmpred = pred  (pm, fm        , mmntt, mmntl       , mmnll)
 empred = predOF(pm, fm, pe, fe, emntt, emntl, emnlt, emnll)
@@ -70,3 +72,7 @@ print '%4s | %4s | %4s' %('mumu' , 'emu'  , 'ee')
 print '%4.2f | %4.2f | %4.2f' %(mmfakes, emfakes, eefakes)
 print '----------------'
 print 'Sum: %4.2f' %(tot)
+print '----------------'
+print 'Ntt for all channels:'
+print '%4.2f | %4.2f | %4.2f' %(mmntt, emntt, eentt)
+print 'Sum of Ntt: %.2f' %(mmntt+emntt+eentt)

@@ -504,11 +504,11 @@ void SSDLPlotter::doAnalysis(){
   gEWKCorrection = true; fillRatios(fMuTotData,    fEGData,    0, saveRatioPlots);
   gEWKCorrection = gEWKCorrection_tmp;
 
-  //fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, saveRatioPlots);
-  //storeWeightedPred(gRegion[gBaseRegion]);
-  //ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
+  fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, saveRatioPlots);
+  storeWeightedPred(gRegion[gBaseRegion]);
+  // ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
 
-  /*
+  
   makeRatioPlots(Muon);
   makeRatioPlots(Elec);
   make2DRatioPlots(Muon);
@@ -517,7 +517,7 @@ void SSDLPlotter::doAnalysis(){
   makeFRvsPtPlots(Elec, SigSup);
   makeFRvsEtaPlots(Muon);
   makeFRvsEtaPlots(Elec);
-  */
+  
   cout << "...done ====" << endl;
 
 	// fill fake ratios to run closure tests
@@ -583,9 +583,9 @@ void SSDLPlotter::doAnalysis(){
 //	makeFRvsEtaPlots(Elec);
 //	makeChMidvsPtPlots();
 //
-//	makeAllClosureTestsTTW();
+	makeAllClosureTestsTTW();
 //	makeAllIntPredictions();
-//	makeAllClosureTests();
+	makeAllClosureTests();
 //
 	// makeDiffPrediction();
 //	makeTTWDiffPredictions();
@@ -598,7 +598,7 @@ void SSDLPlotter::doAnalysis(){
 
 	//  makeTTWIntPredictionsSigEvent();
 	
- 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
+ // 	makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
   
   // BM to speed up plots for FR
   //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
@@ -690,7 +690,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeFakeGenIDTables();
 //	makeMIDIsolationPlots(Muon, SigSup);
 //	makeMIDIsolationPlots(Muon, Sig);
-	makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
+//	makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
 }
 void SSDLPlotter::showStatusBar(int nEvent, int nEvents, int updateIntervall, bool show, bool makeNewLine) {
 	if (nEvent+1 >= nEvents) nEvent++;
@@ -12108,6 +12108,10 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	bool dataRatio = false;
 
 	cout << Form("fRatioHistoMu nbinsx: %d xmin: %.2f xmax: %.2f nbinsy: %d ymin: %.2f ymax: %.2f", fRatioHistoMu->GetNbinsX(), fRatioHistoMu->GetXaxis()->GetXmin(), fRatioHistoMu->GetXaxis()->GetXmax(), fRatioHistoMu->GetNbinsY(), fRatioHistoMu->GetYaxis()->GetXmin(), fRatioHistoMu->GetYaxis()->GetXmax() ) << endl;
+
+	//==================================
+	// GET THE RATIOS
+	//==================================
 	
 	if (dataRatio){
 		// ratio from data:
@@ -12121,24 +12125,24 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	else {
 		// ratio from MC:
 		//===========================
-		std::vector<int> mcSamples;
-		mcSamples.push_back(QCD50);
-		mcSamples.push_back(QCD80);
-		mcSamples.push_back(QCD120);
-		mcSamples.push_back(QCD170);
-		mcSamples.push_back(QCD300);
-		mcSamples.push_back(QCD470);
-		mcSamples.push_back(QCD600);
-		mcSamples.push_back(QCD800);
+		std::vector<int> ratioSamples;
+		ratioSamples.push_back(QCD50);
+		ratioSamples.push_back(QCD80);
+		ratioSamples.push_back(QCD120);
+		ratioSamples.push_back(QCD170);
+		ratioSamples.push_back(QCD300);
+		ratioSamples.push_back(QCD470);
+		ratioSamples.push_back(QCD600);
+		ratioSamples.push_back(QCD800);
 	
-		mcSamples.push_back(QCDEM30);
-		mcSamples.push_back(QCDEM80);
-		mcSamples.push_back(QCDEM250);
-		mcSamples.push_back(QCDMuEnr15);
+		ratioSamples.push_back(QCDEM30);
+		ratioSamples.push_back(QCDEM80);
+		ratioSamples.push_back(QCDEM250);
+		ratioSamples.push_back(QCDMuEnr15);
 	
-		calculateRatio(mcSamples , Muon, SigSup, fRatioHistoMu);
+		calculateRatio(ratioSamples , Muon, SigSup, fRatioHistoMu);
 	 	// calculateRatio(fMCBGMuEnr, Muon, ZDecay, pRatioHistoMu);
-	 	// calculateRatio(mcSamples , Elec, SigSup, fRatioHistoEl);
+	 	// calculateRatio(ratioSamples , Elec, SigSup, fRatioHistoEl);
 	 	// calculateRatio(fMCBGEMEnr, Elec, ZDecay, pRatioHistoEl);
 	}
 
@@ -12148,6 +12152,18 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	for (int i=1; i <= getNFPtBins(Muon)*getNFPtBins(Muon); ++i){
 		fOUTSTREAM << Form("%d: %.4f", i, fRatioHistoMu->GetBinContent(i)) << endl;
 	}
+
+	//==================================
+	// DEFINE THE SAMPLES ON WHICH TO RUN THE CLOSURE TEST
+	//==================================
+	// std::vector<int> mcSamples;
+	// mcSamples.push_back(TTJets);
+	// mcSamples.push_back(TTJets_v1);
+	// mcSamples.push_back(TTJets_madgraph_v1);
+	// mcSamples.push_back(TTJets_madgraph_v2);
+	// mcSamples.push_back(WJets);
+	// mcSamples.push_back(WJets2);
+	// mcSamples.push_back(WbbJets);
 
 	///////////////////////////////////////////////////////////////////////////////////
 	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
@@ -12160,6 +12176,8 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	float npp_mm(0.), npf_mm(0.), nfp_mm(0.), nff_mm(0.);
 	float npp_em(0.), npf_em(0.), nfp_em(0.), nff_em(0.);
 	float npp_ee(0.), npf_ee(0.), nfp_ee(0.), nff_ee(0.);
+
+	FakeRatios *FR = new FakeRatios();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	TFile *pFile = TFile::Open(fOutputFileName);
@@ -12197,7 +12215,71 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
 	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
 
-	FakeRatios *FR = new FakeRatios();
+	for( int i = 0; i < sigtree->GetEntries(); i++ ){
+		showStatusBar(i, sigtree->GetEntries(), 10000);
+		sigtree->GetEntry(i);
+
+		if ( flag != 0)    continue; // only get non-messed up events..
+		if ( Flavor > 2)   continue; // only SS events
+		if ( SType != 10)  continue; // only MC events that are not rare etc.
+		if ( mll < 8.)     continue; // apply selection
+		if ( HT  < minHT ) continue; // apply selection
+		if ( MET < minMET) continue; // apply selection
+		if ( NJ  < minNJ ) continue; // apply selection
+		if ( NbJ < minNbJ) continue; // apply selection
+
+		// pt selection
+		gChannel chan = gChannel(Flavor);
+		if(chan == ElMu){
+			if(pT1 > pT2){
+				if(pT1 < minPt1) continue;
+				if(pT2 < minPt2) continue;
+			}
+			if(pT1 < pT2){
+				if(pT1 < minPt2) continue;
+				if(pT2 < minPt1) continue;
+			}
+		}
+		else{
+			if(pT1 < minPt1) continue;
+			if(pT2 < minPt2) continue;
+		}
+		if (gApplyZVeto && Flavor < 3 && passZVeto == 0)  continue; // do not apply Z veto on OS
+
+		Sample *S = fSampleMap[*sname];
+		float scale = fLumiNorm / S->getLumi();
+		float weight = puweight*HLTSF*scale;
+
+		if( Flavor == 0 ) {
+			if      ( TLCat == 0 ) nt2_mm += weight;
+			else if ( TLCat == 1 ) nt10_mm+= weight;
+			else if ( TLCat == 2 ) nt01_mm+= weight;
+			else if ( TLCat == 3 ) nt0_mm += weight;
+		}
+		if( Flavor == 1 ) {
+			if      ( TLCat == 0 ) nt2_em += weight;
+			else if ( TLCat == 1 ) nt10_em+= weight;
+			else if ( TLCat == 2 ) nt01_em+= weight;
+			else if ( TLCat == 3 ) nt0_em += weight;
+		}
+		if( Flavor == 2 ) {
+			if      ( TLCat == 0 ) nt2_ee += weight;
+			else if ( TLCat == 1 ) nt10_ee+= weight;
+			else if ( TLCat == 2 ) nt01_ee+= weight;
+			else if ( TLCat == 3 ) nt0_ee += weight;
+		}
+	}
+
+	fOUTSTREAM <<      " =================================================" << endl;
+	fOUTSTREAM <<      " ======  OBSERVATIONS IN MONTE CARLO  ============" << endl;
+	fOUTSTREAM <<      " =================================================" << endl;
+	fOUTSTREAM <<      " |         MuMu              |           ElMu            |           ElEl            |" << endl;
+	fOUTSTREAM <<      " |---------------------------|---------------------------|-------------------------- |" << endl;
+	fOUTSTREAM <<      " | ntt    ntl    nlt    nll  | ntt    ntl    nlt    nll  |  ntt    ntl    nlt    nll |" << endl;
+	fOUTSTREAM <<      " |---------------------------|---------------------------|-------------------------- |" << endl;
+	fOUTSTREAM << Form(" | %.2f   %.2f   %.2f  %.2f  |  %.2f   %.2f   %.2f  %.2f |  %.2f   %.2f   %.2f  %.2f |", 
+
+	) << endl;
 
 	fOUTSTREAM.close();
 }
