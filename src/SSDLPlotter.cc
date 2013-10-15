@@ -12274,17 +12274,17 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 		gChannel chan = gChannel(Flavor);
 		if(chan == ElMu){
 			if(pT1 > pT2){
-				if(pT1 < minPt1) continue;
-				if(pT2 < minPt2) continue;
+				if(pT1 < minPT1) continue;
+				if(pT2 < minPT2) continue;
 			}
 			if(pT1 < pT2){
-				if(pT1 < minPt2) continue;
-				if(pT2 < minPt1) continue;
+				if(pT1 < minPT2) continue;
+				if(pT2 < minPT1) continue;
 			}
 		}
 		else{
-			if(pT1 < minPt1) continue;
-			if(pT2 < minPt2) continue;
+			if(pT1 < minPT1) continue;
+			if(pT2 < minPT2) continue;
 		}
 		if (gApplyZVeto && Flavor < 3 && passZVeto == 0)  continue; // do not apply Z veto on OS
 
@@ -12319,9 +12319,9 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	fOUTSTREAM <<      " |---------------------------|---------------------------|-------------------------- |" << endl;
 	fOUTSTREAM <<      " | ntt    ntl    nlt    nll  | ntt    ntl    nlt    nll  |  ntt    ntl    nlt    nll |" << endl;
 	fOUTSTREAM <<      " |---------------------------|---------------------------|-------------------------- |" << endl;
-	fOUTSTREAM << Form(" | %.2f   %.2f   %.2f  %.2f  |  %.2f   %.2f   %.2f  %.2f |  %.2f   %.2f   %.2f  %.2f |", 
-
-	) << endl;
+//	fOUTSTREAM << Form(" | %.2f   %.2f   %.2f  %.2f  |  %.2f   %.2f   %.2f  %.2f |  %.2f   %.2f   %.2f  %.2f |", 
+//
+//	) << endl;
 
 	fOUTSTREAM.close();
 }
