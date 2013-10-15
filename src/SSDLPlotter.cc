@@ -612,9 +612,9 @@ void SSDLPlotter::doAnalysis(){
 //	makeFRvsEtaPlots(Elec);
 //	makeChMidvsPtPlots();
 //
-	makeAllClosureTestsTTW();
+//	makeAllClosureTestsTTW();
 //	makeAllIntPredictions();
-	makeAllClosureTests();
+//	makeAllClosureTests();
 //
 	// makeDiffPrediction();
 //	makeTTWDiffPredictions();
@@ -13350,6 +13350,13 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+	// 3 J   2 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9, +1);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9, -1);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  9,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  9,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  9,  0);
 	// >=2 J   ==0 bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
@@ -13428,6 +13435,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	if (region_sel == 6)  fOutputSubDir = "DiffPredictionSigEventTree/0J0bJ/";
 	if (region_sel == 7)  fOutputSubDir = "DiffPredictionSigEventTree/3J1bJ/";
 	if (region_sel == 8)  fOutputSubDir = "DiffPredictionSigEventTree/2JnobJ/";
+	if (region_sel == 9)  fOutputSubDir = "DiffPredictionSigEventTree/3J2bJ/";
 
 //	gApplyZVeto = true;
 //	if (gApplyZVeto) {
@@ -13575,6 +13583,17 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		minNjets   =   2 , maxNjets   =    99 ;
 		minNbjetsL =   0 , maxNbjetsL =    99 ;
 		minNbjetsM =   0 , maxNbjetsM =     0 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 9) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   3 , maxNjets   =    99 ;
+		minNbjetsL =   2 , maxNbjetsL =    99 ;
+		minNbjetsM =   2 , maxNbjetsM =    99 ;
 		minPt1     =  20., maxPt1     =  8000.;
 		minPt2     =  20., maxPt2     =  8000.;
 		minMll     =   8.; // 8.
