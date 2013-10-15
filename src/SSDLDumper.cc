@@ -1425,8 +1425,8 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 			FRatioPlots *RP = &S->ratioplots[l];
 			int looseMuInd(-1);
 			if(isSigSupMuEvent(looseMuInd)
-					&& !(l == 2 &&  (MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu17
-					&& !(l == 3 && !(MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu24_eta2p1
+					&& !(l == 2 &&  (MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu17
+					&& !(l == 3 && !(MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu24_eta2p1
 					){
 				if( isTightMuon(looseMuInd) ){
 				  RP->ntight[0] ->Fill(getNJets(20.,false),               gEventWeight);
@@ -1462,8 +1462,8 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 			fC_maxMet_Control = 1000.;
 			looseMuInd = -1;
 			if(isSigSupMuEvent(looseMuInd)
-					&& !(l == 2 &&  (MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu17
-					&& !(l == 3 && !(MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu24_eta2p1
+					&& !(l == 2 &&  (MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu17
+					&& !(l == 3 && !(MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu24_eta2p1
 					){
 				if( isTightMuon(looseMuInd) ){
 					RP->ntight[7]->Fill(getMET(),                    gEventWeight);
@@ -1476,8 +1476,8 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 			fC_maxMt_Control = 1000.;
 			looseMuInd = -1;
 			if(isSigSupMuEvent(looseMuInd)
-					&& !(l == 2 &&  (MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu17
-					&& !(l == 3 && !(MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu24_eta2p1
+					&& !(l == 2 &&  (MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu17
+					&& !(l == 3 && !(MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu24_eta2p1
 					){
 				if( isTightMuon(looseMuInd) ){
 					RP->ntight[8]->Fill(MuMT[looseMuInd],                  gEventWeight);
@@ -1496,8 +1496,8 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 			fC_maxMt_Control  = 1000.;
 			looseMuInd = -1;
 			if(isSigSupMuEvent(looseMuInd)
-					&& !(l == 2 &&  (MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu17
-					&& !(l == 3 && !(MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu24_eta2p1
+					&& !(l == 2 &&  (MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu17
+					&& !(l == 3 && !(MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu24_eta2p1
 					){
 				if( isTightMuon(looseMuInd) ){
 					RP->ntight[9]->Fill(getMET(),                    gEventWeight);
@@ -1509,8 +1509,8 @@ void SSDLDumper::fillRatioPlots(Sample *S){
 			fC_minMet_Control = 30.;
 			looseMuInd = -1;
 			if(isSigSupMuEvent(looseMuInd)
-					&& !(l == 2 &&  (MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu17
-					&& !(l == 3 && !(MuPt[looseMuInd] >= SSDLDumper::gMuFPtBins[1] && fabs(MuEta[looseMuInd]) <  SSDLDumper::gMuEtabins[2]))  // HLT_Mu24_eta2p1
+					&& !(l == 2 &&  (MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu17
+					&& !(l == 3 && !(MuPt[looseMuInd] >= 25. && fabs(MuEta[looseMuInd]) <  2.1))  // HLT_Mu24_eta2p1
 					){
 				if( isTightMuon(looseMuInd) ){
 					RP->ntight[10]->Fill(MuMT[looseMuInd],                  gEventWeight);
@@ -1635,8 +1635,8 @@ void SSDLDumper::fillTLRatios(Sample *S){
 	  /* 
 	     In this way the code should not break when we change the binning of the FakeRate 2D map 
 	   */
-	  if( !(S->chansel == 0 &&  MuPt[looseMuInd] >=25.0 && fabs(MuEta[looseMuInd]) < 2.1) &&
-	      !(S->chansel == 5 && (MuPt[looseMuInd] <  25.0 || fabs(MuEta[looseMuInd]) >= 2.1))
+	  if( !(S->chansel == 0 &&  MuPt[looseMuInd] >= 25.0 && fabs(MuEta[looseMuInd]) <  2.1) &&	// DoubleMu
+	      !(S->chansel == 5 && (MuPt[looseMuInd] <  25.0 || fabs(MuEta[looseMuInd]) >= 2.1))	// SingleMu
 	      ) {
 	    if( isTightMuon(looseMuInd) ){
 	      S->tlratios[0].fntight   ->Fill(MuPt[looseMuInd], fabs(MuEta[looseMuInd]), gEventWeight);	

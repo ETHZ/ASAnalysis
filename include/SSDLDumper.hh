@@ -578,7 +578,9 @@ public:
 			    (sname.Contains("TTJets"))  ) return 2;
 			if( (sname.Contains("DYJets")) ||
 			    (sname.Contains("GJets"))  ||
-			    (sname) == "WJets" )   return 3;
+			    (sname) == "WJets"  ||
+				(sname) == "WJets2" ||
+				(sname) == "WbbJets" )   return 3;
 			if( (sname) == "HWW"    ||
 			    (sname) == "HZZ"    ||
 			    (sname) == "HTauTau"   ||
