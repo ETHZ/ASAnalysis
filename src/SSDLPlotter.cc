@@ -71,20 +71,20 @@ static const float gMinPt1_ttWPresel     =  20.;
 static const float gMinPt2_ttWPresel     =  20.;
 
 // ttW final selection
-static const float gMinHT_ttWSel_pp      = 150.;
+static const float gMinHT_ttWSel_pp      = 400.;
 static const float gMinMET_ttWSel_pp     =   0.;
 static const int   gMinNjets_ttWSel_pp   =   3 ;
 static const int   gMinNbjetsL_ttWSel_pp =   1 ;
 static const int   gMinNbjetsM_ttWSel_pp =   1 ;
-static const float gMinPt1_ttWSel_pp     =  33.;
-static const float gMinPt2_ttWSel_pp     =  33.;
-static const float gMinHT_ttWSel_mm      = 150.;
+static const float gMinPt1_ttWSel_pp     =  31.;
+static const float gMinPt2_ttWSel_pp     =  31.;
+static const float gMinHT_ttWSel_mm      = 275.;
 static const float gMinMET_ttWSel_mm     =   0.;
 static const int   gMinNjets_ttWSel_mm   =   3 ;
 static const int   gMinNbjetsL_ttWSel_mm =   1 ;
 static const int   gMinNbjetsM_ttWSel_mm =   1 ;
-static const float gMinPt1_ttWSel_mm     =  33.;
-static const float gMinPt2_ttWSel_mm     =  33.;
+static const float gMinPt1_ttWSel_mm     =  35.;
+static const float gMinPt2_ttWSel_mm     =  35.;
 
 ttGpred ttG_SR0;
 
@@ -507,14 +507,14 @@ void SSDLPlotter::doAnalysis(){
   cout << "...done ====" << endl;
 
 
-  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-  makeTTWDiffPredictionsSigEvent();
+//  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+//  makeTTWDiffPredictionsSigEvent();
+//  cout << "...done ===" << endl;
+
+
+  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+  makeTTWIntPredictionsSigEvent();
   cout << "...done ===" << endl;
-
-
-  //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;  
-  //makeTTWIntPredictionsSigEvent();
-  //cout << "...done ===" << endl;
 
 
   //makeTTWKinPlotsSigEvent(); // BM: what is this for ??

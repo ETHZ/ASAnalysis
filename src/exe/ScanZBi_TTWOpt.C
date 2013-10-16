@@ -127,13 +127,14 @@ int main( int argc, char* argv[] ) {
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Aug29-JetPt30-Iso5-fake-binning-test";
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep05-JetPt30-Iso5-ChMisID-1J";
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep08-JetPt30-Iso5-ChMisID-1J-allTTJets";
-  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep22-JetPt30-Iso5-ChMisID-1J-EWKControlPlots-HLT_Mu24_eta2p1";
+//  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep22-JetPt30-Iso5-ChMisID-1J-EWKControlPlots-HLT_Mu24_eta2p1";
+  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct15-AwayJet40";
   std::string config = dir + "/dumperconfig.cfg";
 
   SSDLPlotter* plotter = new SSDLPlotter(config);
   //std::string outputdir = "/shome/pandolf/CMSSW_4_2_8/src/DiLeptonAnalysis/NTupleProducer/macros/" + selectionType;
 //  std::string outputdir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/" + selectionType + "_" + charge;
-  std::string outputdir = "plots/Sep22-JetPt30-Iso5-ChMisID-1J-EWKControlPlots-HLT_Mu24_eta2p1";
+  std::string outputdir = "plots/Oct15-AwayJet40";
   plotter->setVerbose(1);
   plotter->fDO_OPT = false;
   plotter->setOutputDir(outputdir);
