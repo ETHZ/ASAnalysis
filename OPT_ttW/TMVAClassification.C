@@ -233,16 +233,17 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep08-JetPt30-Iso5-ChMisID-1J-allTTJets/YieldsFiles/";
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep22-JetPt30-Iso5-ChMisID-1J-EWKControlPlots-HLT_Mu24_eta2p1/YieldsFiles/";
 		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct15-AwayJet40/YieldsFiles/";
+		TString tree_looseIso_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct17-AwayJet40-ttbar-Iso0.35/YieldsFiles/";
 
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul27-OSYields-JetPt20-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/TTbarW_Yields.root");      
       TFile* signalFile = TFile::Open(tree_dir+"TTbarW_Yields.root");      
-      TFile* backgroundFile_ttbar             = TFile::Open(tree_dir+"TTJets_Yields.root");      
-      TFile* backgroundFile_ttbar_v1          = TFile::Open(tree_dir+"TTJets_v1_Yields.root");
-      TFile* backgroundFile_ttbar_madgraph_v1 = TFile::Open(tree_dir+"TTJets_madgraph_v1_Yields.root");
-      TFile* backgroundFile_ttbar_madgraph_v2 = TFile::Open(tree_dir+"TTJets_madgraph_v2_Yields.root");
+      TFile* backgroundFile_ttbar             = TFile::Open(tree_looseIso_dir+"TTJets_Yields.root");      
+      TFile* backgroundFile_ttbar_v1          = TFile::Open(tree_looseIso_dir+"TTJets_v1_Yields.root");
+      TFile* backgroundFile_ttbar_madgraph_v1 = TFile::Open(tree_looseIso_dir+"TTJets_madgraph_v1_Yields.root");
+      TFile* backgroundFile_ttbar_madgraph_v2 = TFile::Open(tree_looseIso_dir+"TTJets_madgraph_v2_Yields.root");
       TFile* backgroundFile_wz    = TFile::Open(tree_dir+"WZTo3LNu_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jun12-woSyst/TTbarW_Yields.root");      
       TTree *signal     = (TTree*)signalFile->Get("SigEvents");
@@ -433,10 +434,26 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       factory->BookMethod( TMVA::Types::kCuts, "CutsPCA", 
                            "!H:!V:FitMethod=MC:EffSel:SampleSize=200000:VarProp=FSmart:VarTransform=PCA" );
 
-   if (Use["CutsGA"])
-      factory->BookMethod( TMVA::Types::kCuts, "CutsGA",
-                           //"H:!V:FitMethod=GA:CutRangeMin[0]=-10:CutRangeMax[0]=10:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
-                           "H:!V:FitMethod=GA:CutRangeMin[1]=20:CutRangeMax[1]=8000:VarProp[0]=FMax:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
+   if (Use["CutsGA"]) {
+      std::string bookConditions;
+      bookConditions =  "H:!V:FitMethod=GA";
+      bookConditions += ":CutRangeMin[1]=20";
+      bookConditions += ":CutRangeMax[1]=8000";
+      bookConditions += ":VarProp[0]=FMax"; // HT
+      bookConditions += ":VarProp[1]=FMax"; // pT
+      //bookConditions += ":VarProp[2]=FMax"; // NbJmed
+      bookConditions += ":EffSel";
+      bookConditions += ":Steps=30";
+      bookConditions += ":Cycles=3";
+      bookConditions += ":PopSize=400";
+      bookConditions += ":SC_steps=10";
+      bookConditions += ":SC_rate=5";
+      bookConditions += ":SC_factor=0.95";
+      factory->BookMethod( TMVA::Types::kCuts, "CutsGA", bookConditions.c_str() );
+      //factory->BookMethod( TMVA::Types::kCuts, "CutsGA",
+      //                     //"H:!V:FitMethod=GA:CutRangeMin[0]=-10:CutRangeMax[0]=10:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
+      //                     "H:!V:FitMethod=GA:CutRangeMin[1]=20:CutRangeMax[1]=8000:VarProp[0]=FMax:VarProp[1]=FMax:EffSel:Steps=30:Cycles=3:PopSize=400:SC_steps=10:SC_rate=5:SC_factor=0.95" );
+   }
    
    if (Use["CutsSA"])
       factory->BookMethod( TMVA::Types::kCuts, "CutsSA",
