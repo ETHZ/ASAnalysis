@@ -71,20 +71,20 @@ static const float gMinPt1_ttWPresel     =  20.;
 static const float gMinPt2_ttWPresel     =  20.;
 
 // ttW final selection
-static const float gMinHT_ttWSel_pp      = 400.;
+static const float gMinHT_ttWSel_pp      = 155.;
 static const float gMinMET_ttWSel_pp     =   0.;
 static const int   gMinNjets_ttWSel_pp   =   3 ;
 static const int   gMinNbjetsL_ttWSel_pp =   1 ;
 static const int   gMinNbjetsM_ttWSel_pp =   1 ;
-static const float gMinPt1_ttWSel_pp     =  31.;
-static const float gMinPt2_ttWSel_pp     =  31.;
-static const float gMinHT_ttWSel_mm      = 275.;
+static const float gMinPt1_ttWSel_pp     =  40.;
+static const float gMinPt2_ttWSel_pp     =  40.;
+static const float gMinHT_ttWSel_mm      = 155.;
 static const float gMinMET_ttWSel_mm     =   0.;
 static const int   gMinNjets_ttWSel_mm   =   3 ;
 static const int   gMinNbjetsL_ttWSel_mm =   1 ;
 static const int   gMinNbjetsM_ttWSel_mm =   1 ;
-static const float gMinPt1_ttWSel_mm     =  35.;
-static const float gMinPt2_ttWSel_mm     =  35.;
+static const float gMinPt1_ttWSel_mm     =  40.;
+static const float gMinPt2_ttWSel_mm     =  40.;
 
 ttGpred ttG_SR0;
 
