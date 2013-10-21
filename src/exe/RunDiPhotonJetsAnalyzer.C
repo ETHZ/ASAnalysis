@@ -3,9 +3,9 @@
 #include <fstream>
 #include <string>
 #include <stdio.h>
-#include <boost/functional/hash.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/trim.hpp>
+//#include <boost/functional/hash.hpp>
+//#include <boost/algorithm/string.hpp>
+//#include <boost/algorithm/string/trim.hpp>
 
 // ROOT includes
 #include <TROOT.h>
@@ -14,6 +14,8 @@
 #include "TUUID.h"
 #include "TChainElement.h"
 #include "TString.h"
+
+#include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 
 #include "DiPhotonJetsAnalyzer.hh"
 
@@ -37,6 +39,9 @@ void usage( int status = 0 ) {
 
 //________________________________________________________________________________________
 int main(int argc, char* argv[]) {
+
+  AutoLibraryLoader::enable();
+
 // Default options
 	bool isList = false;
 	TString outputdir = "./";
@@ -97,55 +102,53 @@ int main(int argc, char* argv[]) {
 		usage(-1);
 	}
 
-	UInt_t uuid = 0;
-
-	TChain *theChain = new TChain("analyze/Analysis");
+	std::vector<std::string> fileList;
 	for(int i = 0; i < argc; i++){
-		if( !isList ){
-			theChain->Add(argv[i]);
-			printf(" Adding file: %s\n",argv[i]);
-		} else {
-			TString rootFile;
-			ifstream is(argv[i]);
-			while(rootFile.ReadLine(is) && (!rootFile.IsNull())){
-				if(rootFile[0] == '#') continue;
-				theChain->Add(rootFile);
-				printf(" Adding file: %s\n", rootFile.Data());
-			}
-		}
+	  if( !isList ){
+	    fileList.push_back(argv[i]);
+	    printf(" Adding file: %s\n",argv[i]);
+	  } else {
+	    TString rootFile;
+	    ifstream is(argv[i]);
+	    while(rootFile.ReadLine(is) && (!rootFile.IsNull())){
+	      if(rootFile[0] == '#') continue;
+	      fileList.push_back(rootFile.Data());
+	      printf(" Adding file: %s\n", rootFile.Data());
+	    }
+	  }
 	}
+	
+	UInt_t uuid = 0; // TOFIX
 
-
-	{
-	TObjArray *fileElements=theChain->GetListOfFiles();
-	TIter next(fileElements);
-	TChainElement *chEl=0;
-	while (( chEl=(TChainElement*)next() )) {
-	  cout << chEl->GetTitle() << endl;
-	  TFile *f = TFile::Open(chEl->GetTitle(),"read");
-	  TString uuidstring(chEl->GetTitle());
-	  string uuidstdstring(uuidstring.Data());
-	  boost::trim(uuidstdstring);
-	  boost::erase_all(uuidstdstring,".root");
-	  boost::replace_all(uuidstdstring,"//","/");
-	  std::vector<std::string> strs;
-	  boost::split(strs, uuidstdstring, boost::is_any_of("/."));
-	  uuidstring="";
-	  for (int k=strs.size()-4; k<strs.size() && k>=0; k++) uuidstring+=strs.at(k);
-	  cout << uuidstring << endl;
-	  boost::hash<std::string> string_hash;
-	  UInt_t hashed = string_hash(string(uuidstring.Data()));
-	  uuid=hashed;
-	  cout << "UUID_number " << uuidstring.Data() << " " << string_hash(string(uuidstring.Data())) << " " << uuid << endl;
-	  f->Close();
-		  }
-	}
-
+//	{
+//	TObjArray *fileElements=theChain->GetListOfFiles();
+//	TIter next(fileElements);
+//	TChainElement *chEl=0;
+//	while (( chEl=(TChainElement*)next() )) {
+//	  cout << chEl->GetTitle() << endl;
+//	  TFile *f = TFile::Open(chEl->GetTitle(),"read");
+//	  TString uuidstring(chEl->GetTitle());
+//	  string uuidstdstring(uuidstring.Data());
+//	  boost::trim(uuidstdstring);
+//	  boost::erase_all(uuidstdstring,".root");
+//	  boost::replace_all(uuidstdstring,"//","/");
+//	  std::vector<std::string> strs;
+//	  boost::split(strs, uuidstdstring, boost::is_any_of("/."));
+//	  uuidstring="";
+//	  for (int k=strs.size()-4; k<strs.size() && k>=0; k++) uuidstring+=strs.at(k);
+//	  cout << uuidstring << endl;
+//	  boost::hash<std::string> string_hash;
+//	  UInt_t hashed = string_hash(string(uuidstring.Data()));
+//	  uuid=hashed;
+//	  cout << "UUID_number " << uuidstring.Data() << " " << string_hash(string(uuidstring.Data())) << " " << uuid << endl;
+//	  f->Close();
+//		  }
+//	}
+//
 	cout << "--------------" << endl;
 	cout << "OutputDir is:     " << outputdir << endl;
 	cout << "OutputFile is:    " << outputfile << endl;
 	cout << "Verbose level is: " << verbose << endl;
-	cout << "Number of events: " << theChain->GetEntries() << endl;
 	cout << "Events to process: " << maxEvents << endl;
 	cout << "Input cross section: " << xsec << " pb" << endl;
 	cout << "Lumi to normalize to: " << nlumi << " /fb" << endl;
@@ -169,7 +172,7 @@ int main(int argc, char* argv[]) {
 
 	if (verbose) cout << "Reweighting factor for luminosity rescaling: " << AddWeight << endl;
 
-	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(theChain,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename,uuid);
+	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(fileList,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename,uuid);
 	tA->SetOutputDir(outputdir);
 	tA->SetOutputFile(outputfile);
 	tA->SetVerbose(verbose);

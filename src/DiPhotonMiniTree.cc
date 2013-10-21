@@ -182,32 +182,12 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("pholead_sigmaEta",&pholead_sigmaEta,"pholead_sigmaEta/F");
   OutputTree[i]->Branch("photrail_sigmaEta",&photrail_sigmaEta,"photrail_sigmaEta/F");
 
-  OutputTree[i]->Branch("pholead_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx",&pholead_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx,"pholead_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx/F");
-  OutputTree[i]->Branch("photrail_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx",&photrail_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx,"photrail_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx/F");
-  OutputTree[i]->Branch("pholead_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx",&pholead_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx,"pholead_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx/F");
-  OutputTree[i]->Branch("photrail_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx",&photrail_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx,"photrail_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx/F");
-  OutputTree[i]->Branch("pholead_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx",&pholead_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx,"pholead_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx/F");
-  OutputTree[i]->Branch("photrail_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx",&photrail_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx,"photrail_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx/F");
   OutputTree[i]->Branch("pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx",&pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx,"pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx/F");
   OutputTree[i]->Branch("photrail_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx",&photrail_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx,"photrail_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx/F");
-  OutputTree[i]->Branch("pholead_pho_Cone01NeutralHadronIso_mvVtx",&pholead_pho_Cone01NeutralHadronIso_mvVtx,"pholead_pho_Cone01NeutralHadronIso_mvVtx/F");
-  OutputTree[i]->Branch("photrail_pho_Cone01NeutralHadronIso_mvVtx",&photrail_pho_Cone01NeutralHadronIso_mvVtx,"photrail_pho_Cone01NeutralHadronIso_mvVtx/F");
-  OutputTree[i]->Branch("pholead_pho_Cone02NeutralHadronIso_mvVtx",&pholead_pho_Cone02NeutralHadronIso_mvVtx,"pholead_pho_Cone02NeutralHadronIso_mvVtx/F");
-  OutputTree[i]->Branch("photrail_pho_Cone02NeutralHadronIso_mvVtx",&photrail_pho_Cone02NeutralHadronIso_mvVtx,"photrail_pho_Cone02NeutralHadronIso_mvVtx/F");
-  OutputTree[i]->Branch("pholead_pho_Cone03NeutralHadronIso_mvVtx",&pholead_pho_Cone03NeutralHadronIso_mvVtx,"pholead_pho_Cone03NeutralHadronIso_mvVtx/F");
-  OutputTree[i]->Branch("photrail_pho_Cone03NeutralHadronIso_mvVtx",&photrail_pho_Cone03NeutralHadronIso_mvVtx,"photrail_pho_Cone03NeutralHadronIso_mvVtx/F");
   OutputTree[i]->Branch("pholead_pho_Cone04NeutralHadronIso_mvVtx",&pholead_pho_Cone04NeutralHadronIso_mvVtx,"pholead_pho_Cone04NeutralHadronIso_mvVtx/F");
   OutputTree[i]->Branch("photrail_pho_Cone04NeutralHadronIso_mvVtx",&photrail_pho_Cone04NeutralHadronIso_mvVtx,"photrail_pho_Cone04NeutralHadronIso_mvVtx/F");
-  OutputTree[i]->Branch("pholead_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01",&pholead_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01,"pholead_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01/F");
-  OutputTree[i]->Branch("photrail_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01",&photrail_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01,"photrail_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01/F");
-  OutputTree[i]->Branch("pholead_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01",&pholead_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01,"pholead_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01/F");
-  OutputTree[i]->Branch("photrail_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01",&photrail_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01,"photrail_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01/F");
-  OutputTree[i]->Branch("pholead_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01",&pholead_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01,"pholead_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01/F");
-  OutputTree[i]->Branch("photrail_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01",&photrail_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01,"photrail_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01/F");
   OutputTree[i]->Branch("pholead_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01",&pholead_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01,"pholead_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01/F");
   OutputTree[i]->Branch("photrail_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01",&photrail_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01,"photrail_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01/F");
-  OutputTree[i]->Branch("pholead_pho_Cone03PFCombinedIso",&pholead_pho_Cone03PFCombinedIso,"pholead_pho_Cone03PFCombinedIso/F");
-  OutputTree[i]->Branch("photrail_pho_Cone03PFCombinedIso",&photrail_pho_Cone03PFCombinedIso,"photrail_pho_Cone03PFCombinedIso/F");
   OutputTree[i]->Branch("pholead_pho_Cone04PFCombinedIso",&pholead_pho_Cone04PFCombinedIso,"pholead_pho_Cone04PFCombinedIso/F");
   OutputTree[i]->Branch("photrail_pho_Cone04PFCombinedIso",&photrail_pho_Cone04PFCombinedIso,"photrail_pho_Cone04PFCombinedIso/F");
 
@@ -256,11 +236,7 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("pholead_PhoIso03nTrksHollow",&pholead_PhoIso03nTrksHollow,"pholead_PhoIso03nTrksHollow/I");
   OutputTree[i]->Branch("pholead_PhoIso04nTrksSolid",&pholead_PhoIso04nTrksSolid,"pholead_PhoIso04nTrksSolid/I");
   OutputTree[i]->Branch("pholead_PhoIso04nTrksHollow",&pholead_PhoIso04nTrksHollow,"pholead_PhoIso04nTrksHollow/I");
-  OutputTree[i]->Branch("pholead_Pho_ChargedHadronIso",&pholead_Pho_ChargedHadronIso,"pholead_Pho_ChargedHadronIso/F");
-  OutputTree[i]->Branch("pholead_Pho_NeutralHadronIso",&pholead_Pho_NeutralHadronIso,"pholead_Pho_NeutralHadronIso/F");
-  OutputTree[i]->Branch("pholead_Pho_PhotonIso",&pholead_Pho_PhotonIso,"pholead_Pho_PhotonIso/F");
   OutputTree[i]->Branch("pholead_PhoisPFPhoton",&pholead_PhoisPFPhoton,"pholead_PhoisPFPhoton/I");
-  OutputTree[i]->Branch("pholead_Pho_isPFElectron",&pholead_Pho_isPFElectron,"pholead_Pho_isPFElectron/I");
 
   OutputTree[i]->Branch("photrail_PhoS4OverS1",&photrail_PhoS4OverS1,"photrail_PhoS4OverS1/F");
   OutputTree[i]->Branch("photrail_PhoSigmaEtaEta",&photrail_PhoSigmaEtaEta,"photrail_PhoSigmaEtaEta/F");
@@ -277,11 +253,7 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("photrail_PhoIso03nTrksHollow",&photrail_PhoIso03nTrksHollow,"photrail_PhoIso03nTrksHollow/I");
   OutputTree[i]->Branch("photrail_PhoIso04nTrksSolid",&photrail_PhoIso04nTrksSolid,"photrail_PhoIso04nTrksSolid/I");
   OutputTree[i]->Branch("photrail_PhoIso04nTrksHollow",&photrail_PhoIso04nTrksHollow,"photrail_PhoIso04nTrksHollow/I");
-  OutputTree[i]->Branch("photrail_Pho_ChargedHadronIso",&photrail_Pho_ChargedHadronIso,"photrail_Pho_ChargedHadronIso/F");
-  OutputTree[i]->Branch("photrail_Pho_NeutralHadronIso",&photrail_Pho_NeutralHadronIso,"photrail_Pho_NeutralHadronIso/F");
-  OutputTree[i]->Branch("photrail_Pho_PhotonIso",&photrail_Pho_PhotonIso,"photrail_Pho_PhotonIso/F");
   OutputTree[i]->Branch("photrail_PhoisPFPhoton",&photrail_PhoisPFPhoton,"photrail_PhoisPFPhoton/I");
-  OutputTree[i]->Branch("photrail_Pho_isPFElectron",&photrail_Pho_isPFElectron,"photrail_Pho_isPFElectron/I");
 
   OutputTree[i]->Branch("pholead_PhoMCmatchindex",&pholead_PhoMCmatchindex,"pholead_PhoMCmatchindex/I");
   OutputTree[i]->Branch("pholead_PhoMCmatchexitcode",&pholead_PhoMCmatchexitcode,"pholead_PhoMCmatchexitcode/I");
@@ -993,7 +965,7 @@ void DiPhotonMiniTree::Analyze(){
       int sizegenphotonsbefore = passing_gen.size();
       std::vector<OrderPair> passing_gen_ordered;
       for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); it++){
-	passing_gen_ordered.push_back(make_pair<int,float>(*it,fTR->GenPhotonPt[*it]));
+	passing_gen_ordered.push_back(make_pair<int,float>(int(*it),float(fTR->GenPhotonPt[*it])));
       }
       std::sort(passing_gen_ordered.begin(),passing_gen_ordered.end(),indexComparator);
       passing_gen.clear();
@@ -1144,7 +1116,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	      pfcands1->PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	    }
 	    std::vector<std::pair<float,float> > obj0;
-	    for (int k=0; k<input_vetoobjects_count; k++) obj0.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
+	    for (int k=0; k<input_vetoobjects_count; k++) obj0.push_back(std::make_pair<float,float>(float(input_vetoobjects_eta[k]),float(input_vetoobjects_phi[k])));
 
 //	      cout << "1_match " << input_pholead_SCeta << " " << input_pholead_SCphi << endl;
 //	      cout << "vetoing around " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCeta << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]+input_pholead_SCphi << endl;
@@ -1184,7 +1156,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	      pfcands2->PfCandVz.push_back(input_allphotonpfcand_vz[k]);
 	    }
 	    std::vector<std::pair<float,float> > obj1;
-	    for (int k=0; k<input_vetoobjects_count; k++) obj1.push_back(std::make_pair<float,float>(input_vetoobjects_eta[k],input_vetoobjects_phi[k]));
+	    for (int k=0; k<input_vetoobjects_count; k++) obj1.push_back(std::make_pair<float,float>(float(input_vetoobjects_eta[k]),float(input_vetoobjects_phi[k])));
 
 //	      cout << "2_match " << input_pholead_SCeta << " " << input_pholead_SCphi << endl;
 //	      cout << "vetoing around " << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]]-fTR->SCEta[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCeta << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]]-fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]]+input_pholead_SCphi << endl;
@@ -1798,7 +1770,7 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 
     for (int j=0; j<nxtals; j++){
       
-      TVector3 xtal_position = TVector3(fTR->XtalX[scindex][j],fTR->XtalY[scindex][j],fTR->XtalZ[scindex][j]);
+      TVector3 xtal_position = TVector3(fTR->XtalX[fTR->SCXtalListStart[scindex]+j],fTR->XtalY[fTR->SCXtalListStart[scindex]+j],fTR->XtalZ[fTR->SCXtalListStart[scindex]+j]);
 
       if (rotation_phi!=0) {
 	TRotation r; r.RotateZ(rotation_phi);
@@ -1808,14 +1780,17 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
       TVector3 ecalpfhit = PropagatePFCandToEcal(fTR,i,isbarrel ? xtal_position.Perp() : xtal_position.z(), isbarrel); // this would be the most correct
 
       if (isbarrel){
-	float xtalEtaWidth = fTR->XtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
-	float xtalPhiWidth = fTR->XtalPhiWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	float xtalEtaWidth = fTR->XtalEtaWidth[fTR->SCXtalListStart[scindex]+j]*(1+global_linkbyrechit_enlargement);
+	float xtalPhiWidth = fTR->XtalPhiWidth[fTR->SCXtalListStart[scindex]+j]*(1+global_linkbyrechit_enlargement);
 	if (fabs(ecalpfhit.Eta()-xtal_position.Eta())<xtalEtaWidth/2 && Util::DeltaPhi(ecalpfhit.Phi(),xtal_position.Phi())<xtalPhiWidth/2) inside=true;
       }
       else { // EE
 	if (ecalpfhit.z()*xtal_position.z()>0){
 	  TVector3 xtal_corners[4];
-	  for (int k=0; k<4; k++) xtal_corners[k] = TVector3(fTR->XtalfrontX[scindex][j][k],fTR->XtalfrontY[scindex][j][k],fTR->XtalfrontZ[scindex][j][k]);
+	  xtal_corners[0]=TVector3(fTR->XtalFront1X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront1Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront1Z[fTR->SCXtalListStart[scindex]+j]);
+	  xtal_corners[1]=TVector3(fTR->XtalFront2X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront2Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront2Z[fTR->SCXtalListStart[scindex]+j]);
+	  xtal_corners[2]=TVector3(fTR->XtalFront3X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront3Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront3Z[fTR->SCXtalListStart[scindex]+j]);
+	  xtal_corners[3]=TVector3(fTR->XtalFront4X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront4Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront4Z[fTR->SCXtalListStart[scindex]+j]);
 	  if (rotation_phi!=0) {
 	    TRotation r; r.RotateZ(rotation_phi);
 	    for (int k=0; k<4; k++) xtal_corners[k] *= r;
@@ -1878,19 +1853,22 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 
     for (int j=0; j<nxtals; j++){
       
-      TVector3 xtal_position = TVector3(fTR->XtalX[scindex][j],fTR->XtalY[scindex][j],fTR->XtalZ[scindex][j]);
+      TVector3 xtal_position = TVector3(fTR->XtalX[fTR->SCXtalListStart[scindex]+j],fTR->XtalY[fTR->SCXtalListStart[scindex]+j],fTR->XtalZ[fTR->SCXtalListStart[scindex]+j]);
 
       TVector3 ecalpfhit = PropagatePFCandToEcal(pfcands,i,isbarrel ? xtal_position.Perp() : xtal_position.z(), isbarrel); // this would be the most correct
 
       if (isbarrel){
-	float xtalEtaWidth = fTR->XtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
-	float xtalPhiWidth = fTR->XtalPhiWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	float xtalEtaWidth = fTR->XtalEtaWidth[fTR->SCXtalListStart[scindex]+j]*(1+global_linkbyrechit_enlargement);
+	float xtalPhiWidth = fTR->XtalPhiWidth[fTR->SCXtalListStart[scindex]+j]*(1+global_linkbyrechit_enlargement);
 	if (fabs(ecalpfhit.Eta()-xtal_position.Eta())<xtalEtaWidth/2 && Util::DeltaPhi(ecalpfhit.Phi(),xtal_position.Phi())<xtalPhiWidth/2) inside=true;
       }
       else { // EE
 	if (ecalpfhit.z()*xtal_position.z()>0){
 	  TVector3 xtal_corners[4];
-	  for (int k=0; k<4; k++) xtal_corners[k] = TVector3(fTR->XtalfrontX[scindex][j][k],fTR->XtalfrontY[scindex][j][k],fTR->XtalfrontZ[scindex][j][k]);
+	  xtal_corners[0]=TVector3(fTR->XtalFront1X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront1Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront1Z[fTR->SCXtalListStart[scindex]+j]);
+	  xtal_corners[1]=TVector3(fTR->XtalFront2X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront2Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront2Z[fTR->SCXtalListStart[scindex]+j]);
+	  xtal_corners[2]=TVector3(fTR->XtalFront3X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront3Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront3Z[fTR->SCXtalListStart[scindex]+j]);
+	  xtal_corners[3]=TVector3(fTR->XtalFront4X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront4Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront4Z[fTR->SCXtalListStart[scindex]+j]);
 	  float hitx = ecalpfhit.x();
 	  float hity = ecalpfhit.y();
 	  float polx[5];
@@ -1928,7 +1906,8 @@ TVector3 DiPhotonMiniTree::PropagatePFCandToEcal(TreeReader *fTR, int pfcandinde
   }
 
   TVector3 pfvertex(fTR->PfCandVx[i],fTR->PfCandVy[i],fTR->PfCandVz[i]);
-  TVector3 pfmomentum(fTR->PfCandPx[i],fTR->PfCandPy[i],fTR->PfCandPz[i]);
+  TVector3 pfmomentum;
+  pfmomentum.SetPtEtaPhi(fTR->PfCandPt[i],fTR->PfCandEta[i],fTR->PfCandPhi[i]);
   pfmomentum = pfmomentum.Unit();
   TVector3 ecalpfhit(0,0,0);
   if (isbarrel){
@@ -2051,7 +2030,7 @@ std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi
   } // end pf cand loop
 
 
-  return std::make_pair<float,float>(result1,result2);
+  return std::make_pair<float,float>(float(result1),float(result2));
 
 };
 
@@ -2136,22 +2115,22 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
       double dxy;
       double dz;
 
-      if (type==1){
-	
-	TVector3 vtxmom(fTR->PfCandTrackRefPx[i],fTR->PfCandTrackRefPy[i],fTR->PfCandTrackRefPz[i]);
-
-	if (vtxmom.x()==-999 || vtxmom.y()==-999 || vtxmom.z()==-999) {
-	  std::cout << "Something wrong with vtxmom from trackref, fallback" << std::endl;
-	  vtxmom = TVector3(fTR->PfCandPx[i],fTR->PfCandPy[i],fTR->PfCandPz[i]);
-	}
-      
-	dxy = ( -(pfvertex.x()-phovtx.x())*vtxmom.y() +(pfvertex.y()-phovtx.y())*vtxmom.x() ) / vtxmom.Perp();
-	dz = (pfvertex.z()-phovtx.z()) - ( (pfvertex.x()-phovtx.x())*vtxmom.x() + (pfvertex.y()-phovtx.y())*vtxmom.y() ) / vtxmom.Perp() * vtxmom.z() / vtxmom.Perp();
-	dxy=fabs(dxy);
-	dz=fabs(dz);
-
-      }
-
+//      if (type==1){
+//	
+//	TVector3 vtxmom(fTR->PfCandTrackRefPx[i],fTR->PfCandTrackRefPy[i],fTR->PfCandTrackRefPz[i]);
+//
+//	if (vtxmom.x()==-999 || vtxmom.y()==-999 || vtxmom.z()==-999) {
+//	  std::cout << "Something wrong with vtxmom from trackref, fallback" << std::endl;
+//	  vtxmom = TVector3(fTR->PfCandPx[i],fTR->PfCandPy[i],fTR->PfCandPz[i]);
+//	}
+//      
+//	dxy = ( -(pfvertex.x()-phovtx.x())*vtxmom.y() +(pfvertex.y()-phovtx.y())*vtxmom.x() ) / vtxmom.Perp();
+//	dz = (pfvertex.z()-phovtx.z()) - ( (pfvertex.x()-phovtx.x())*vtxmom.x() + (pfvertex.y()-phovtx.y())*vtxmom.y() ) / vtxmom.Perp() * vtxmom.z() / vtxmom.Perp();
+//	dxy=fabs(dxy);
+//	dz=fabs(dz);
+//
+//      }
+//
 
       dEta = fTR->PfCandEta[i] - sceta;
       dPhi = DeltaPhiSigned(fTR->PfCandPhi[i],scphi);
@@ -2288,7 +2267,8 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
   }
 
   TVector3 pfvertex(fTR->PfCandVx[i],fTR->PfCandVy[i],fTR->PfCandVz[i]);
-  TVector3 pfmomentum(fTR->PfCandPx[i],fTR->PfCandPy[i],fTR->PfCandPz[i]);
+  TVector3 pfmomentum;
+  pfmomentum.SetPtEtaPhi(fTR->PfCandPt[i],fTR->PfCandEta[i],fTR->PfCandPhi[i]);
   pfmomentum = pfmomentum.Unit();
 
   TVector3 ecalpfhit = PropagatePFCandToEcal(fTR,i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel);
@@ -2393,24 +2373,14 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_brem = fTR->SCBrem[fTR->PhotSCindex[index]];
   pholead_sigmaPhi = fTR->SCPhiWidth[fTR->PhotSCindex[index]];
   pholead_sigmaEta = fTR->SCEtaWidth[fTR->PhotSCindex[index]];
-  pholead_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx[index];
-  pholead_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx[index];
-  pholead_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx[index];
   //pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx[index];
   isolations_struct isos = PFConeIsolation(fTR,index);
   pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx=isos.photon;
   //  std::cout << "debug lead PFPhotonIso " << isos.photon << " " << std::endl;
-  pholead_pho_Cone01NeutralHadronIso_mvVtx=fTR->pho_Cone01NeutralHadronIso_mvVtx[index];
-  pholead_pho_Cone02NeutralHadronIso_mvVtx=fTR->pho_Cone02NeutralHadronIso_mvVtx[index];
-  pholead_pho_Cone03NeutralHadronIso_mvVtx=fTR->pho_Cone03NeutralHadronIso_mvVtx[index];
   //  pholead_pho_Cone04NeutralHadronIso_mvVtx=fTR->pho_Cone04NeutralHadronIso_mvVtx[index];
   pholead_pho_Cone04NeutralHadronIso_mvVtx=isos.neutral;
-  pholead_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone01ChargedHadronIso_dR02_dz02_dxy01[index];
-  pholead_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone02ChargedHadronIso_dR02_dz02_dxy01[index];
-  pholead_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone03ChargedHadronIso_dR02_dz02_dxy01[index];
   //  pholead_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone04ChargedHadronIso_dR02_dz02_dxy01[index];
   pholead_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01=isos.charged;
-  pholead_pho_Cone03PFCombinedIso=fTR->pho_Cone03PFCombinedIso[index];
   //  pholead_pho_Cone04PFCombinedIso=fTR->pho_Cone04PFCombinedIso[index];
   pholead_pho_Cone04PFCombinedIso=pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx+pholead_pho_Cone04NeutralHadronIso_mvVtx+pholead_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01;
   pholead_Npfcandphotonincone = isos.nphotoncand;
@@ -2457,11 +2427,7 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_PhoIso03nTrksHollow=fTR->PhoIso03nTrksHollow[index];
   pholead_PhoIso04nTrksSolid=fTR->PhoIso04nTrksSolid[index];
   pholead_PhoIso04nTrksHollow=fTR->PhoIso04nTrksHollow[index];
-  pholead_Pho_ChargedHadronIso=fTR->Pho_ChargedHadronIso[index];
-  pholead_Pho_NeutralHadronIso=fTR->Pho_NeutralHadronIso[index];
-  pholead_Pho_PhotonIso=fTR->Pho_PhotonIso[index];
   pholead_PhoisPFPhoton=fTR->PhoisPFPhoton[index];
-  pholead_Pho_isPFElectron=fTR->Pho_isPFElectron[index];
   pholead_PhoMCmatchindex=fTR->PhoMCmatchindex[index];
   pholead_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
   int a;
@@ -2505,23 +2471,13 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_brem = fTR->SCBrem[fTR->PhotSCindex[index]];
   photrail_sigmaPhi = fTR->SCPhiWidth[fTR->PhotSCindex[index]];
   photrail_sigmaEta = fTR->SCEtaWidth[fTR->PhotSCindex[index]];
-  photrail_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx[index];
-  photrail_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx[index];
-  photrail_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx[index];
   //  photrail_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx=fTR->pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx[index];
   isolations_struct isos = PFConeIsolation(fTR,index);
   photrail_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx=isos.photon;
-  photrail_pho_Cone01NeutralHadronIso_mvVtx=fTR->pho_Cone01NeutralHadronIso_mvVtx[index];
-  photrail_pho_Cone02NeutralHadronIso_mvVtx=fTR->pho_Cone02NeutralHadronIso_mvVtx[index];
-  photrail_pho_Cone03NeutralHadronIso_mvVtx=fTR->pho_Cone03NeutralHadronIso_mvVtx[index];
   //  photrail_pho_Cone04NeutralHadronIso_mvVtx=fTR->pho_Cone04NeutralHadronIso_mvVtx[index];
   photrail_pho_Cone04NeutralHadronIso_mvVtx=isos.neutral;
-  photrail_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone01ChargedHadronIso_dR02_dz02_dxy01[index];
-  photrail_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone02ChargedHadronIso_dR02_dz02_dxy01[index];
-  photrail_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone03ChargedHadronIso_dR02_dz02_dxy01[index];
   //  photrail_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01=fTR->pho_Cone04ChargedHadronIso_dR02_dz02_dxy01[index];
   photrail_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01=isos.charged;
-  photrail_pho_Cone03PFCombinedIso=fTR->pho_Cone03PFCombinedIso[index];
   //  photrail_pho_Cone04PFCombinedIso=fTR->pho_Cone04PFCombinedIso[index];
   photrail_pho_Cone04PFCombinedIso=photrail_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx+photrail_pho_Cone04NeutralHadronIso_mvVtx+photrail_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01;
   photrail_Npfcandphotonincone = isos.nphotoncand;
@@ -2567,11 +2523,7 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_PhoIso03nTrksHollow=fTR->PhoIso03nTrksHollow[index];
   photrail_PhoIso04nTrksSolid=fTR->PhoIso04nTrksSolid[index];
   photrail_PhoIso04nTrksHollow=fTR->PhoIso04nTrksHollow[index];
-  photrail_Pho_ChargedHadronIso=fTR->Pho_ChargedHadronIso[index];
-  photrail_Pho_NeutralHadronIso=fTR->Pho_NeutralHadronIso[index];
-  photrail_Pho_PhotonIso=fTR->Pho_PhotonIso[index];
   photrail_PhoisPFPhoton=fTR->PhoisPFPhoton[index];
-  photrail_Pho_isPFElectron=fTR->Pho_isPFElectron[index];
   photrail_PhoMCmatchindex=fTR->PhoMCmatchindex[index];
   photrail_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
   int a;
@@ -2654,32 +2606,12 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_sigmaPhi = -999;
   pholead_sigmaEta = -999;
   photrail_sigmaEta = -999;
-  pholead_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
-  photrail_pho_Cone01PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
-  pholead_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
-  photrail_pho_Cone02PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
-  pholead_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
-  photrail_pho_Cone03PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
   pholead_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
   photrail_pho_Cone04PhotonIso_dEta015EB_dR070EE_mvVtx = -999;
-  pholead_pho_Cone01NeutralHadronIso_mvVtx = -999;
-  photrail_pho_Cone01NeutralHadronIso_mvVtx = -999;
-  pholead_pho_Cone02NeutralHadronIso_mvVtx = -999;
-  photrail_pho_Cone02NeutralHadronIso_mvVtx = -999;
-  pholead_pho_Cone03NeutralHadronIso_mvVtx = -999;
-  photrail_pho_Cone03NeutralHadronIso_mvVtx = -999;
   pholead_pho_Cone04NeutralHadronIso_mvVtx = -999;
   photrail_pho_Cone04NeutralHadronIso_mvVtx = -999;
-  pholead_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01 = -999;
-  photrail_pho_Cone01ChargedHadronIso_dR02_dz02_dxy01 = -999;
-  pholead_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01 = -999;
-  photrail_pho_Cone02ChargedHadronIso_dR02_dz02_dxy01 = -999;
-  pholead_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01 = -999;
-  photrail_pho_Cone03ChargedHadronIso_dR02_dz02_dxy01 = -999;
   pholead_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01 = -999;
   photrail_pho_Cone04ChargedHadronIso_dR02_dz02_dxy01 = -999;
-  pholead_pho_Cone03PFCombinedIso = -999;
-  photrail_pho_Cone03PFCombinedIso = -999;
   pholead_pho_Cone04PFCombinedIso = -999;
   photrail_pho_Cone04PFCombinedIso = -999;
   pholead_PhoPassConversionVeto = -999;
@@ -2721,11 +2653,7 @@ void DiPhotonMiniTree::ResetVars(){
   pholead_PhoIso03nTrksHollow = -999;
   pholead_PhoIso04nTrksSolid = -999;
   pholead_PhoIso04nTrksHollow = -999;
-  pholead_Pho_ChargedHadronIso = -999;
-  pholead_Pho_NeutralHadronIso = -999;
-  pholead_Pho_PhotonIso = -999;
   pholead_PhoisPFPhoton = -999;
-  pholead_Pho_isPFElectron = -999;
   photrail_PhoS4OverS1 = -999;
   photrail_PhoSigmaEtaEta = -999;
   photrail_PhoE1x5 = -999;
@@ -2741,11 +2669,7 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_PhoIso03nTrksHollow = -999;
   photrail_PhoIso04nTrksSolid = -999;
   photrail_PhoIso04nTrksHollow = -999;
-  photrail_Pho_ChargedHadronIso = -999;
-  photrail_Pho_NeutralHadronIso = -999;
-  photrail_Pho_PhotonIso = -999;
   photrail_PhoisPFPhoton = -999;
-  photrail_Pho_isPFElectron = -999;
   pholead_PhoMCmatchindex = -999;
   pholead_PhoMCmatchexitcode = -999;
   photrail_PhoMCmatchindex = -999;
@@ -2862,7 +2786,7 @@ float DiPhotonMiniTree::CalculateSCArea(TreeReader *fTR, int scindex){
   //  std::cout << "call scarea " << scindex << " " << fTR->SCNXtals[scindex] << std::endl; // DEBUUUUG
   if (scindex>=fTR->NSuperClusters) return -999;
   float area=0;
-  for (int i=0; i<fTR->SCNXtals[scindex]; i++) area+=fTR->XtalEtaWidth[scindex][i]*fTR->XtalPhiWidth[scindex][i];
+  for (int i=0; i<fTR->SCNXtals[scindex]; i++) area+=fTR->XtalEtaWidth[fTR->SCXtalListStart[scindex]+i]*fTR->XtalPhiWidth[fTR->SCXtalListStart[scindex]+i];
   return area;
 };
 
