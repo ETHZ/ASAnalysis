@@ -11850,7 +11850,7 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	float nlo_syst = 1.13; // old numbers for the moment
 //	if (chVeto == +1) nlo_syst = nlo_syst_plpl;
 //	if (chVeto == -1) nlo_syst = nlo_syst_mimi;
-	TString lumiError = "1.044";
+	TString lumiError = "1.026";
 	datacard = outputdir + "datacard_ssdl_3channels_ttW_plpl_mimi.txt";
 	fOUTSTREAM.open(datacard.Data(), ios::trunc);
 	fOUTSTREAM <<      "#=========================================================================================" << endl;
@@ -12466,7 +12466,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	const float nlo_syst_plpl = 1.038;
 	const float nlo_syst_mimi = 1.270;
 	float nlo_syst = (ttwzpreds["Normal"].ttw_aMCatNLO / ttwzpreds["Normal"].ttw_aMCatNLO_gen) / (ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw_gen);
-	TString lumiError = "1.044";
+	TString lumiError = "1.026";
 	
 	datacard = outputdir + "datacard_TTWZ" + chargeString + ".txt";
 	fOUTSTREAM.open(datacard.Data(), ios::trunc);
