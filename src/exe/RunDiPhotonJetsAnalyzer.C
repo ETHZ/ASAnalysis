@@ -3,11 +3,17 @@
 #include <fstream>
 #include <string>
 #include <stdio.h>
+#include <boost/functional/hash.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 // ROOT includes
 #include <TROOT.h>
 #include <TTree.h>
 #include <TChain.h>
+#include "TUUID.h"
+#include "TChainElement.h"
+#include "TString.h"
 
 #include "DiPhotonJetsAnalyzer.hh"
 
@@ -16,7 +22,7 @@ using namespace std;
 //________________________________________________________________________________________
 // Print out usage
 void usage( int status = 0 ) {
-	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-l] file1 [... filen]" << endl;
+	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-Y minthrpfphotoncandEB] [-y minthrpfphotoncandEE] [-s step] [-S input_directory_matchingtree_step2] [-l] file1 [... filen]" << endl;
 	cout << "  where:" << endl;
 	cout << "     dir      is the output directory               " << endl;
 	cout << "               default is current directory               " << endl;
@@ -45,12 +51,16 @@ int main(int argc, char* argv[]) {
 	Float_t xsec=-1;
 	Float_t nlumi=-1;
 	Int_t nevtsindset=-1;
+	Float_t minthrpfphotoncandEB = 0;
+	Float_t minthrpfphotoncandEE = 0;
+	bool isstep2 = false;
+	TString input_filename = "";
 
 	Float_t kfactors[3]={1,1,1};
-	
+
 	// Parse options
 	char ch;
-	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:lh?")) != -1 ) {
+	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:Y:y:s:S:lh?")) != -1 ) {
 	  switch (ch) {
 	  case 'N': nevtsindset = atoi(optarg); break;
 	  case 'G': kfactors[0] = atof(optarg); break;
@@ -69,6 +79,10 @@ int main(int argc, char* argv[]) {
 	  case 'j': jsonFileName = string(optarg); break;
 	  case 'x': xsec = atof(optarg); break;
 	  case 'L': nlumi = atof(optarg); break;
+	  case 'Y': minthrpfphotoncandEB = atof(optarg); break;
+	  case 'y': minthrpfphotoncandEE = atof(optarg); break;
+	  case 's': atoi(optarg)==2 ? isstep2=true : isstep2=false; break;
+	  case 'S': input_filename=TString(optarg); break;
 	  default:
 	    cerr << "*** Error: unknown option " << optarg << std::endl;
 	    usage(-1);
@@ -82,6 +96,8 @@ int main(int argc, char* argv[]) {
 	if( argc<1 ) {
 		usage(-1);
 	}
+
+	UInt_t uuid = 0;
 
 	TChain *theChain = new TChain("analyze/Analysis");
 	for(int i = 0; i < argc; i++){
@@ -99,6 +115,32 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+
+	{
+	TObjArray *fileElements=theChain->GetListOfFiles();
+	TIter next(fileElements);
+	TChainElement *chEl=0;
+	while (( chEl=(TChainElement*)next() )) {
+	  cout << chEl->GetTitle() << endl;
+	  TFile *f = TFile::Open(chEl->GetTitle(),"read");
+	  TString uuidstring(chEl->GetTitle());
+	  string uuidstdstring(uuidstring.Data());
+	  boost::trim(uuidstdstring);
+	  boost::erase_all(uuidstdstring,".root");
+	  boost::replace_all(uuidstdstring,"//","/");
+	  std::vector<std::string> strs;
+	  boost::split(strs, uuidstdstring, boost::is_any_of("/."));
+	  uuidstring="";
+	  for (int k=strs.size()-4; k<strs.size() && k>=0; k++) uuidstring+=strs.at(k);
+	  cout << uuidstring << endl;
+	  boost::hash<std::string> string_hash;
+	  UInt_t hashed = string_hash(string(uuidstring.Data()));
+	  uuid=hashed;
+	  cout << "UUID_number " << uuidstring.Data() << " " << string_hash(string(uuidstring.Data())) << " " << uuid << endl;
+	  f->Close();
+		  }
+	}
+
 	cout << "--------------" << endl;
 	cout << "OutputDir is:     " << outputdir << endl;
 	cout << "OutputFile is:    " << outputfile << endl;
@@ -113,6 +155,11 @@ int main(int argc, char* argv[]) {
 	cout << "MC_PileUp file:                 " << (mc_PileUp.length()>0?mc_PileUp:"empty") << endl;
 	cout << "Data_PileUp file:               " << (data_PileUp.length()>0?data_PileUp:"empty") << endl;
 	cout << "gg,gj,jj k-factors:  " << kfactors[0] << " " << kfactors[1] << " " << kfactors[2] << endl;
+	cout << "minthrpfphotoncandEB = " << minthrpfphotoncandEB << endl;
+	cout << "minthrpfphotoncandEE = " << minthrpfphotoncandEE << endl;
+	cout << "step2 = " << isstep2 << endl;
+	cout << "input_filename = " << input_filename.Data() << endl;
+	cout << "UUID = " << uuid << endl;
 	cout << "--------------" << endl;
 
 	Float_t AddWeight;
@@ -122,7 +169,7 @@ int main(int argc, char* argv[]) {
 
 	if (verbose) cout << "Reweighting factor for luminosity rescaling: " << AddWeight << endl;
 
-	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(theChain,dataType,AddWeight,kfactors);
+	DiPhotonJetsAnalyzer *tA = new DiPhotonJetsAnalyzer(theChain,dataType,AddWeight,kfactors,minthrpfphotoncandEB,minthrpfphotoncandEE,isstep2,input_filename,uuid);
 	tA->SetOutputDir(outputdir);
 	tA->SetOutputFile(outputfile);
 	tA->SetVerbose(verbose);
