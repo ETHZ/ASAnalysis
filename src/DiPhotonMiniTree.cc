@@ -163,11 +163,9 @@ void DiPhotonMiniTree::Begin(){
   
   OutputTree[i]->Branch("pholead_PhoHasPixSeed",&pholead_PhoHasPixSeed,"pholead_PhoHasPixSeed/I");
   OutputTree[i]->Branch("pholead_PhoHasConvTrks",&pholead_PhoHasConvTrks,"pholead_PhoHasConvTrks/I");
-  OutputTree[i]->Branch("pholead_PhoScSeedSeverity",&pholead_PhoScSeedSeverity,"pholead_PhoScSeedSeverity/I");
   
   OutputTree[i]->Branch("photrail_PhoHasPixSeed",&photrail_PhoHasPixSeed,"photrail_PhoHasPixSeed/I");
   OutputTree[i]->Branch("photrail_PhoHasConvTrks",&photrail_PhoHasConvTrks,"photrail_PhoHasConvTrks/I");
-  OutputTree[i]->Branch("photrail_PhoScSeedSeverity",&photrail_PhoScSeedSeverity,"photrail_PhoScSeedSeverity/I");
 
   OutputTree[i]->Branch("pholead_r9",&pholead_r9,"pholead_r9/F");
   OutputTree[i]->Branch("photrail_r9",&photrail_r9,"photrail_r9/F");
@@ -447,7 +445,7 @@ void DiPhotonMiniTree::Analyze(){
   // scraping veto done at ntuplizer level
   if (!PassPrimaryVertexFilter()) return;
   if (!fTR->HBHENoiseFilterResult) return;
-  if (fTR->CSCTightHaloID) return;
+  if (!fTR->CSCTightHaloID) return;
   //  if (!fTR->EcalDeadTPFilterFlag) return;
   //  if (!fTR->RA2TrackingFailureFilterFlag) return;
 
@@ -2363,7 +2361,6 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_SCphi = fTR->SCPhi[fTR->PhotSCindex[index]];
   pholead_PhoHasPixSeed=fTR->PhoHasPixSeed[index];
   pholead_PhoHasConvTrks=fTR->PhoHasConvTrks[index];
-  pholead_PhoScSeedSeverity=fTR->PhoScSeedSeverity[index];
   pholead_energySCdefault = CorrPhoton(fTR,index,0).E();
   pholead_energyNewCorr = CorrPhoton(fTR,index,5).E();
   pholead_energyNewCorrLocal = CorrPhoton(fTR,index,6).E();
@@ -2411,14 +2408,7 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_PhoIso04TrkSolid=fTR->PhoIso04TrkSolid[index];
   pholead_PhoIso04TrkHollow=fTR->PhoIso04TrkHollow[index];
   pholead_PhoIso04=fTR->PhoIso04[index];
-  pholead_PhoE1OverE9=fTR->PhoE1OverE9[index];
-  pholead_PhoS4OverS1=fTR->PhoS4OverS1[index];
   pholead_PhoSigmaEtaEta=fTR->PhoSigmaEtaEta[index];
-  pholead_PhoE1x5=fTR->PhoE1x5[index];
-  pholead_PhoE2x5=fTR->PhoE2x5[index];
-  pholead_PhoE3x3=fTR->PhoE3x3[index];
-  pholead_PhoE5x5=fTR->PhoE5x5[index];
-  pholead_PhomaxEnergyXtal=fTR->PhomaxEnergyXtal[index];
   pholead_PhoIso03HcalDepth1=fTR->PhoIso03HcalDepth1[index];
   pholead_PhoIso03HcalDepth2=fTR->PhoIso03HcalDepth2[index];
   pholead_PhoIso04HcalDepth1=fTR->PhoIso04HcalDepth1[index];
@@ -2461,7 +2451,6 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_SCphi = fTR->SCPhi[fTR->PhotSCindex[index]];
   photrail_PhoHasPixSeed=fTR->PhoHasPixSeed[index];
   photrail_PhoHasConvTrks=fTR->PhoHasConvTrks[index];
-  photrail_PhoScSeedSeverity=fTR->PhoScSeedSeverity[index];
   photrail_energySCdefault = CorrPhoton(fTR,index,0).E();
   photrail_energyNewCorr = CorrPhoton(fTR,index,5).E();
   photrail_energyNewCorrLocal = CorrPhoton(fTR,index,6).E();
@@ -2507,14 +2496,6 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_PhoIso04TrkSolid=fTR->PhoIso04TrkSolid[index];
   photrail_PhoIso04TrkHollow=fTR->PhoIso04TrkHollow[index];
   photrail_PhoIso04=fTR->PhoIso04[index];
-  photrail_PhoE1OverE9=fTR->PhoE1OverE9[index];
-  photrail_PhoS4OverS1=fTR->PhoS4OverS1[index];
-  photrail_PhoSigmaEtaEta=fTR->PhoSigmaEtaEta[index];
-  photrail_PhoE1x5=fTR->PhoE1x5[index];
-  photrail_PhoE2x5=fTR->PhoE2x5[index];
-  photrail_PhoE3x3=fTR->PhoE3x3[index];
-  photrail_PhoE5x5=fTR->PhoE5x5[index];
-  photrail_PhomaxEnergyXtal=fTR->PhomaxEnergyXtal[index];
   photrail_PhoIso03HcalDepth1=fTR->PhoIso03HcalDepth1[index];
   photrail_PhoIso03HcalDepth2=fTR->PhoIso03HcalDepth2[index];
   photrail_PhoIso04HcalDepth1=fTR->PhoIso04HcalDepth1[index];
@@ -2590,10 +2571,8 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_SCphi = -999;
   pholead_PhoHasPixSeed = -999;
   pholead_PhoHasConvTrks = -999;
-  pholead_PhoScSeedSeverity = -999;
   photrail_PhoHasPixSeed = -999;
   photrail_PhoHasConvTrks = -999;
-  photrail_PhoScSeedSeverity = -999;
   pholead_r9 = -999;
   photrail_r9 = -999;
   pholead_sieie = -999;
