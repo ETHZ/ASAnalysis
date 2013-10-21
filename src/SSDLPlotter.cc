@@ -11883,7 +11883,7 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 					   ttwzpreds_mimi["Normal"].ttw_ee, ttwzpreds_mimi["Normal"].ttz_ee, ttwzpreds_mimi["Normal"].fake_ee, ttwzpreds_mimi["Normal"].cmid_ee, ttwzpreds_mimi["Normal"].wz_ee, ttwzpreds_mimi["Normal"].rare_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-",
 					   1.0+ttwzpreds_plpl["Normal"].ttz_err_mm/ttwzpreds_plpl["Normal"].ttz_mm,
 					   1.0+ttwzpreds_plpl["Normal"].ttz_err_em/ttwzpreds_plpl["Normal"].ttz_em,
@@ -12493,7 +12493,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw, ttwzpreds["Normal"].ttz) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err/ttwzpreds["Normal"].fake) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err/ttwzpreds["Normal"].cmid) << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err  /ttwzpreds["Normal"].wz)   << endl;
@@ -12556,7 +12556,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   ttwzpreds["Normal"].ttw, ttwzpreds["Normal"].ttz, ttwzpreds["Normal"].fake, ttwzpreds["Normal"].cmid, ttwzpreds["Normal"].wz, ttwzpreds["Normal"].rare) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].ttz_err/ttwzpreds["Normal"].ttz)   << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err/ttwzpreds["Normal"].fake) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err/ttwzpreds["Normal"].cmid) << endl;
@@ -12630,7 +12630,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw_mm, ttwzpreds["Normal"].ttz_mm) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err_mm/ttwzpreds["Normal"].fake_mm) << endl;
 	fOUTSTREAM <<      "bgUnccmi lnN\t-\t\t-\t\t-\t\t-\t\t-" << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err_mm  /ttwzpreds["Normal"].wz_mm)   << endl;
@@ -12694,7 +12694,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw_em, ttwzpreds["Normal"].ttz_em) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err_em/ttwzpreds["Normal"].fake_em) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err_em/ttwzpreds["Normal"].cmid_em) << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err_em  /ttwzpreds["Normal"].wz_em)   << endl;
@@ -12758,7 +12758,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttz_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err_ee/ttwzpreds["Normal"].fake_ee) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err_ee/ttwzpreds["Normal"].cmid_ee) << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err_ee  /ttwzpreds["Normal"].wz_ee)   << endl;
@@ -12827,7 +12827,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttz_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-",
 					   1.0+ttwzpreds["Normal"].fake_err_mm/ttwzpreds["Normal"].fake_mm,
 					   1.0+ttwzpreds["Normal"].fake_err_em/ttwzpreds["Normal"].fake_em,
@@ -12948,7 +12948,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttz_ee, ttwzpreds["Normal"].fake_ee, ttwzpreds["Normal"].cmid_ee, ttwzpreds["Normal"].wz_ee, ttwzpreds["Normal"].rare_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-",
 					   1.0+ttwzpreds["Normal"].ttz_err_mm/ttwzpreds["Normal"].ttz_mm,
 					   1.0+ttwzpreds["Normal"].ttz_err_em/ttwzpreds["Normal"].ttz_em,
