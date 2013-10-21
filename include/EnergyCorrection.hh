@@ -61,8 +61,8 @@ private:
   double f5x5( double iEta );
 
 
-  static const Double_t etaCrackMin = 1.4442; 
-  static const Double_t etaCrackMax = 1.56;
+  static constexpr double etaCrackMin = 1.4442; 
+  static constexpr double etaCrackMax = 1.56;
   static const Int_t    nBinsEta              = 16; 
   Double_t       leftEta  [nBinsEta];
   Double_t       rightEta [nBinsEta];

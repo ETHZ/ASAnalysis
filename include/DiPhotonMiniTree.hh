@@ -16,11 +16,15 @@
 
 #include "EnergyCorrection.hh"
 
+#include <map>
+#include <utility> 
 #include <vector>
 
 #include "TRandom3.h"
 #include "helper/Utilities.hh"
 
+#include "TTree.h"
+#include "TFile.h"
 #include "Math/Vector3D.h"
 #include "TVector3.h"
 
@@ -299,8 +303,8 @@ private:
   Float_t photrail_pho_Cone03PFCombinedIso;
   Float_t pholead_pho_Cone04PFCombinedIso;
   Float_t photrail_pho_Cone04PFCombinedIso;
-  Int_t pholead_PhoPassConvSafeElectronVeto;
-  Int_t photrail_PhoPassConvSafeElectronVeto;
+  Int_t pholead_PhoPassConversionVeto;
+  Int_t photrail_PhoPassConversionVeto;
   Float_t pholead_GenPhotonIsoDR04;
   Float_t photrail_GenPhotonIsoDR04;
  
@@ -335,7 +339,7 @@ private:
   Float_t pholead_Pho_ChargedHadronIso, photrail_Pho_ChargedHadronIso;
   Float_t pholead_Pho_NeutralHadronIso, photrail_Pho_NeutralHadronIso;
   Float_t pholead_Pho_PhotonIso, photrail_Pho_PhotonIso;
-  Int_t pholead_Pho_isPFPhoton, photrail_Pho_isPFPhoton;
+  Int_t pholead_PhoisPFPhoton, photrail_PhoisPFPhoton;
   Int_t pholead_Pho_isPFElectron, photrail_Pho_isPFElectron;
 
   Int_t pholead_hasimpingingtrack, photrail_hasimpingingtrack;

@@ -6,13 +6,12 @@
 
 #include "base/TreeAnalyzerBase.hh"
 #include "base/TreeReader.hh"
-#include "DiPhotonPurity.hh"
 #include "DiPhotonMiniTree.hh"
 #include <string>
 
 class DiPhotonJetsAnalyzer : public TreeAnalyzerBase {
 public:
-  DiPhotonJetsAnalyzer(TTree *tree = 0, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t minthrpfphotoncandEB=0, Float_t minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid = 0);
+  DiPhotonJetsAnalyzer(std::vector<std::string>& fileList, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t minthrpfphotoncandEB=0, Float_t minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid = 0);
 	virtual ~DiPhotonJetsAnalyzer();
 	void BeginJob(string data_PileUp, string mc_PileUp);
 	void EndJob();
@@ -20,7 +19,6 @@ public:
   void SetMaxEvents(int a){fMaxEvents=a;}
 
 private:
-  DiPhotonPurity *fDiPhotonPurity;
   DiPhotonMiniTree *fDiPhotonMiniTree;
   int fMaxEvents;
   Float_t AddWeight;

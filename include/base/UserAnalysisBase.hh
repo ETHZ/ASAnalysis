@@ -101,9 +101,9 @@ public:
     virtual float ElRadIso(int);
 	virtual float Aeff(float);
 
-	// Tau selector
-	virtual bool IsLooseTau(int);
-
+//	// Tau selector
+//	virtual bool IsLooseTau(int);
+//
     // Photon Selectors
     virtual bool IsGoodBasicPho(int);
 
@@ -117,7 +117,7 @@ public:
     virtual vector<int> ElectronSelection(bool(UserAnalysisBase::*eleSelector)(int) = NULL);
     virtual vector<int> PhotonSelection(  bool(UserAnalysisBase::*phoSelector)(int) = NULL);
     virtual vector<int> JetSelection(     bool(UserAnalysisBase::*jetSelector)(int) = NULL);
-    virtual vector<int> TauSelection(    bool(UserAnalysisBase::*tauSelector)(int) = NULL);
+  //    virtual vector<int> TauSelection(    bool(UserAnalysisBase::*tauSelector)(int) = NULL);
     virtual vector<int> PFJetSelection(double ptcut = 30., double absetacut = 2.5,   bool(UserAnalysisBase::*pfjetSelector)(int, double, double) = NULL);
     virtual bool SingleMuonSelection(int&);
     virtual bool DiMuonSelection(int&, int&, int = 0);

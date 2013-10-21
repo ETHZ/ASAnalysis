@@ -1,9 +1,6 @@
 #include "helper/Utilities.hh"
 #include "DiPhotonMiniTree.hh"
 
-#include "DiPhotonPurity.hh"
-
-
 #include <iostream>
 #include <fstream>
 #include <assert.h>
@@ -122,7 +119,6 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
 
   OutputTree[i]->Branch("event_weight",&event_weight,"event_weight/F");
-  OutputTree[i]->Branch("event_weight3D",&event_weight3D,"event_weight3D/F");
   OutputTree[i]->Branch("event_rho",&event_rho,"event_rho/F");
   OutputTree[i]->Branch("event_sigma",&event_sigma,"event_sigma/F");
   OutputTree[i]->Branch("event_nPU",&event_nPU,"event_nPU/I");
@@ -215,8 +211,8 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("pholead_pho_Cone04PFCombinedIso",&pholead_pho_Cone04PFCombinedIso,"pholead_pho_Cone04PFCombinedIso/F");
   OutputTree[i]->Branch("photrail_pho_Cone04PFCombinedIso",&photrail_pho_Cone04PFCombinedIso,"photrail_pho_Cone04PFCombinedIso/F");
 
-  OutputTree[i]->Branch("pholead_PhoPassConvSafeElectronVeto",&pholead_PhoPassConvSafeElectronVeto,"pholead_PhoPassConvSafeElectronVeto/I");
-  OutputTree[i]->Branch("photrail_PhoPassConvSafeElectronVeto",&photrail_PhoPassConvSafeElectronVeto,"photrail_PhoPassConvSafeElectronVeto/I");
+  OutputTree[i]->Branch("pholead_PhoPassConversionVeto",&pholead_PhoPassConversionVeto,"pholead_PhoPassConversionVeto/I");
+  OutputTree[i]->Branch("photrail_PhoPassConversionVeto",&photrail_PhoPassConversionVeto,"photrail_PhoPassConversionVeto/I");
 
   OutputTree[i]->Branch("pholead_GenPhotonIsoDR04",&pholead_GenPhotonIsoDR04,"pholead_GenPhotonIsoDR04/F");
   OutputTree[i]->Branch("photrail_GenPhotonIsoDR04",&photrail_GenPhotonIsoDR04,"photrail_GenPhotonIsoDR04/F");
@@ -263,7 +259,7 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("pholead_Pho_ChargedHadronIso",&pholead_Pho_ChargedHadronIso,"pholead_Pho_ChargedHadronIso/F");
   OutputTree[i]->Branch("pholead_Pho_NeutralHadronIso",&pholead_Pho_NeutralHadronIso,"pholead_Pho_NeutralHadronIso/F");
   OutputTree[i]->Branch("pholead_Pho_PhotonIso",&pholead_Pho_PhotonIso,"pholead_Pho_PhotonIso/F");
-  OutputTree[i]->Branch("pholead_Pho_isPFPhoton",&pholead_Pho_isPFPhoton,"pholead_Pho_isPFPhoton/I");
+  OutputTree[i]->Branch("pholead_PhoisPFPhoton",&pholead_PhoisPFPhoton,"pholead_PhoisPFPhoton/I");
   OutputTree[i]->Branch("pholead_Pho_isPFElectron",&pholead_Pho_isPFElectron,"pholead_Pho_isPFElectron/I");
 
   OutputTree[i]->Branch("photrail_PhoS4OverS1",&photrail_PhoS4OverS1,"photrail_PhoS4OverS1/F");
@@ -284,7 +280,7 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("photrail_Pho_ChargedHadronIso",&photrail_Pho_ChargedHadronIso,"photrail_Pho_ChargedHadronIso/F");
   OutputTree[i]->Branch("photrail_Pho_NeutralHadronIso",&photrail_Pho_NeutralHadronIso,"photrail_Pho_NeutralHadronIso/F");
   OutputTree[i]->Branch("photrail_Pho_PhotonIso",&photrail_Pho_PhotonIso,"photrail_Pho_PhotonIso/F");
-  OutputTree[i]->Branch("photrail_Pho_isPFPhoton",&photrail_Pho_isPFPhoton,"photrail_Pho_isPFPhoton/I");
+  OutputTree[i]->Branch("photrail_PhoisPFPhoton",&photrail_PhoisPFPhoton,"photrail_PhoisPFPhoton/I");
   OutputTree[i]->Branch("photrail_Pho_isPFElectron",&photrail_Pho_isPFElectron,"photrail_Pho_isPFElectron/I");
 
   OutputTree[i]->Branch("pholead_PhoMCmatchindex",&pholead_PhoMCmatchindex,"pholead_PhoMCmatchindex/I");
@@ -455,9 +451,6 @@ void DiPhotonMiniTree::Analyze(){
   float weight;
   if (!isdata) weight = GetPUWeight(fTR->PUnumInteractions);
   else weight=1;
-  float weight3D;
-  if (!isdata) weight3D = GetPUWeight3D(fTR->PUOOTnumInteractionsEarly,fTR->PUnumInteractions,fTR->PUOOTnumInteractionsLate);
-  else weight3D=1;
   
   event_luminormfactor=AddWeight;
 
@@ -481,7 +474,7 @@ void DiPhotonMiniTree::Analyze(){
   // FILTERS
   // scraping veto done at ntuplizer level
   if (!PassPrimaryVertexFilter()) return;
-  if (!fTR->HBHENoiseFlagIso) return;
+  if (!fTR->HBHENoiseFilterResult) return;
   if (fTR->CSCTightHaloID) return;
   //  if (!fTR->EcalDeadTPFilterFlag) return;
   //  if (!fTR->RA2TrackingFailureFilterFlag) return;
@@ -490,7 +483,6 @@ void DiPhotonMiniTree::Analyze(){
 
 
   event_weight = weight;
-  event_weight3D = weight3D;
   event_rho = fTR->Rho;
   event_sigma = fTR->Sigma;
   if (!isdata) {
@@ -831,7 +823,7 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.56) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->Pho_isPFPhoton[passing.at(!pass12_whoissiglike)] && fTR->pho_matchedPFPhotonCand[passing.at(!pass12_whoissiglike)]==k) continue;	
+	  if (fTR->PhoisPFPhoton[passing.at(!pass12_whoissiglike)] && fTR->PhoMatchedPFPhotonCand[passing.at(!pass12_whoissiglike)]==k) continue;	
 	  bool removed = false;
 	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
 	  if (removed) continue;
@@ -908,7 +900,7 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.56) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->Pho_isPFPhoton[passing.at(i)] && fTR->pho_matchedPFPhotonCand[passing.at(i)]==k) continue;	
+	  if (fTR->PhoisPFPhoton[passing.at(i)] && fTR->PhoMatchedPFPhotonCand[passing.at(i)]==k) continue;	
 	  bool removed = false;
 	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
 	  if (removed) continue;
@@ -1306,7 +1298,7 @@ std::vector<int> DiPhotonMiniTree::ApplyPixelVeto(TreeReader *fTR, vector<int> p
     int wantpixelseed;
     if (forelectron) wantpixelseed=1; else wantpixelseed=0; 
     if (fTR->PhoHasPixSeed[*it]!=wantpixelseed) it=passing.erase(it); else it++;
-    //    if (fTR->PhoPassConvSafeElectronVeto[*it]==wantpixelseed) it=passing.erase(it); else it++;
+    //    if (fTR->PhoPassConversionVeto[*it]==wantpixelseed) it=passing.erase(it); else it++;
   }
 
   return passing;
@@ -1652,7 +1644,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl; return true;}
 
-  TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
   if (rotation_phi!=0) {
     TRotation r; r.RotateZ(rotation_phi);
     photon_position *= r;
@@ -1718,7 +1710,7 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
   if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl;}
 
-  TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   double eta = photon_position.Eta();
   double phi = photon_position.Phi();
@@ -1752,7 +1744,7 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
 std::vector<int> DiPhotonMiniTree::GetPFCandIDedRemovals(TreeReader *fTR, int phoqi){
   std::vector<int> out;
-  if (fTR->Pho_isPFPhoton[phoqi]) out.push_back(fTR->pho_matchedPFPhotonCand[phoqi]);
+  if (fTR->PhoisPFPhoton[phoqi]) out.push_back(fTR->PhoMatchedPFPhotonCand[phoqi]);
   return out;
 };
 
@@ -1798,15 +1790,15 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
     if (component=="charged" && type!=1) continue;
     if (component=="photon" && type!=2) continue;
 
-    TVector3 sc_position = TVector3(fTR->SCx[scindex],fTR->SCy[scindex],fTR->SCz[scindex]);
+    TVector3 sc_position = TVector3(fTR->SCY[scindex],fTR->SCY[scindex],fTR->SCZ[scindex]);
 
     bool inside=false;
 
-    if (fTR->Pho_isPFPhoton[phoqi] && fTR->pho_matchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
 
     for (int j=0; j<nxtals; j++){
       
-      TVector3 xtal_position = TVector3(fTR->SCxtalX[scindex][j],fTR->SCxtalY[scindex][j],fTR->SCxtalZ[scindex][j]);
+      TVector3 xtal_position = TVector3(fTR->XtalX[scindex][j],fTR->XtalY[scindex][j],fTR->XtalZ[scindex][j]);
 
       if (rotation_phi!=0) {
 	TRotation r; r.RotateZ(rotation_phi);
@@ -1816,14 +1808,14 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
       TVector3 ecalpfhit = PropagatePFCandToEcal(fTR,i,isbarrel ? xtal_position.Perp() : xtal_position.z(), isbarrel); // this would be the most correct
 
       if (isbarrel){
-	float xtalEtaWidth = fTR->SCxtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
-	float xtalPhiWidth = fTR->SCxtalPhiWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	float xtalEtaWidth = fTR->XtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	float xtalPhiWidth = fTR->XtalPhiWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
 	if (fabs(ecalpfhit.Eta()-xtal_position.Eta())<xtalEtaWidth/2 && Util::DeltaPhi(ecalpfhit.Phi(),xtal_position.Phi())<xtalPhiWidth/2) inside=true;
       }
       else { // EE
 	if (ecalpfhit.z()*xtal_position.z()>0){
 	  TVector3 xtal_corners[4];
-	  for (int k=0; k<4; k++) xtal_corners[k] = TVector3(fTR->SCxtalfrontX[scindex][j][k],fTR->SCxtalfrontY[scindex][j][k],fTR->SCxtalfrontZ[scindex][j][k]);
+	  for (int k=0; k<4; k++) xtal_corners[k] = TVector3(fTR->XtalfrontX[scindex][j][k],fTR->XtalfrontY[scindex][j][k],fTR->XtalfrontZ[scindex][j][k]);
 	  if (rotation_phi!=0) {
 	    TRotation r; r.RotateZ(rotation_phi);
 	    for (int k=0; k<4; k++) xtal_corners[k] *= r;
@@ -1880,25 +1872,25 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 
   for (int i=0; i<pfcands->PfCandPt.size(); i++){
 
-    TVector3 sc_position = TVector3(fTR->SCx[scindex],fTR->SCy[scindex],fTR->SCz[scindex]);
+    TVector3 sc_position = TVector3(fTR->SCY[scindex],fTR->SCY[scindex],fTR->SCZ[scindex]);
 
     bool inside=false;
 
     for (int j=0; j<nxtals; j++){
       
-      TVector3 xtal_position = TVector3(fTR->SCxtalX[scindex][j],fTR->SCxtalY[scindex][j],fTR->SCxtalZ[scindex][j]);
+      TVector3 xtal_position = TVector3(fTR->XtalX[scindex][j],fTR->XtalY[scindex][j],fTR->XtalZ[scindex][j]);
 
       TVector3 ecalpfhit = PropagatePFCandToEcal(pfcands,i,isbarrel ? xtal_position.Perp() : xtal_position.z(), isbarrel); // this would be the most correct
 
       if (isbarrel){
-	float xtalEtaWidth = fTR->SCxtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
-	float xtalPhiWidth = fTR->SCxtalPhiWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	float xtalEtaWidth = fTR->XtalEtaWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
+	float xtalPhiWidth = fTR->XtalPhiWidth[scindex][j]*(1+global_linkbyrechit_enlargement);
 	if (fabs(ecalpfhit.Eta()-xtal_position.Eta())<xtalEtaWidth/2 && Util::DeltaPhi(ecalpfhit.Phi(),xtal_position.Phi())<xtalPhiWidth/2) inside=true;
       }
       else { // EE
 	if (ecalpfhit.z()*xtal_position.z()>0){
 	  TVector3 xtal_corners[4];
-	  for (int k=0; k<4; k++) xtal_corners[k] = TVector3(fTR->SCxtalfrontX[scindex][j][k],fTR->SCxtalfrontY[scindex][j][k],fTR->SCxtalfrontZ[scindex][j][k]);
+	  for (int k=0; k<4; k++) xtal_corners[k] = TVector3(fTR->XtalfrontX[scindex][j][k],fTR->XtalfrontY[scindex][j][k],fTR->XtalfrontZ[scindex][j][k]);
 	  float hitx = ecalpfhit.x();
 	  float hity = ecalpfhit.y();
 	  float polx[5];
@@ -2079,7 +2071,7 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
   float result=0;
   float scaleresult=1;
   
-  TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   bool isbarrel = (fabs(photon_position.Eta())<1.4442);
 
@@ -2104,7 +2096,7 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
     if (isbarrel && fabs(pfeta)>1.4442) continue;
     if (!isbarrel && fabs(pfeta)<1.56) continue;
 
-    if (fTR->Pho_isPFPhoton[phoqi] && fTR->pho_matchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
  
     int type = FindPFCandType(fTR->PfCandPdgId[i]);
 
@@ -2288,7 +2280,7 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
 
   bool isbarrel = fTR->PhoisEB[phoqi];
 
-  TVector3 sc_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+  TVector3 sc_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   if (rotation_phi!=0) {
     TRotation r; r.RotateZ(rotation_phi);
@@ -2334,7 +2326,7 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
 
   bool isbarrel = fTR->PhoisEB[phoqi];
 
-  TVector3 sc_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+  TVector3 sc_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   TVector3 pfvertex(pfcands->PfCandVx[i],pfcands->PfCandVy[i],pfcands->PfCandVz[i]);
   TVector3 pfmomentum; pfmomentum.SetPtEtaPhi(pfcands->PfCandPt[i],pfcands->PfCandEta[i],pfcands->PfCandPhi[i]);
@@ -2437,7 +2429,7 @@ void DiPhotonMiniTree::FillLead(int index){
   for (int i=0; i<pholead_Npfcandchargedincone && i<global_size_pfcandarrays; i++) pholead_chargedpfcanddphis[i] = isos.chargedcanddphis.at(i);
   for (int i=0; i<pholead_Npfcandneutralincone && i<global_size_pfcandarrays; i++) pholead_neutralpfcanddphis[i] = isos.neutralcanddphis.at(i);
   //  std::cout << "debug PFCombinedIso " << PFIsolation(index) << " " << pholead_pho_Cone04PFCombinedIso*pholead_pt << std::endl;
-  pholead_PhoPassConvSafeElectronVeto=fTR->PhoPassConvSafeElectronVeto[index];
+  pholead_PhoPassConversionVeto=fTR->PhoPassConversionVeto[index];
   if (fTR->PhoMCmatchindex[index]>=0) pholead_GenPhotonIsoDR04=fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[index]];
   pholead_PhoIso03Ecal=fTR->PhoIso03Ecal[index];
   pholead_PhoIso03Hcal=fTR->PhoIso03Hcal[index];
@@ -2468,7 +2460,7 @@ void DiPhotonMiniTree::FillLead(int index){
   pholead_Pho_ChargedHadronIso=fTR->Pho_ChargedHadronIso[index];
   pholead_Pho_NeutralHadronIso=fTR->Pho_NeutralHadronIso[index];
   pholead_Pho_PhotonIso=fTR->Pho_PhotonIso[index];
-  pholead_Pho_isPFPhoton=fTR->Pho_isPFPhoton[index];
+  pholead_PhoisPFPhoton=fTR->PhoisPFPhoton[index];
   pholead_Pho_isPFElectron=fTR->Pho_isPFElectron[index];
   pholead_PhoMCmatchindex=fTR->PhoMCmatchindex[index];
   pholead_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
@@ -2547,7 +2539,7 @@ void DiPhotonMiniTree::FillTrail(int index){
   for (int i=0; i<photrail_Npfcandphotonincone && i<global_size_pfcandarrays; i++) photrail_photonpfcanddphis[i] = isos.photoncanddphis.at(i);
   for (int i=0; i<photrail_Npfcandchargedincone && i<global_size_pfcandarrays; i++) photrail_chargedpfcanddphis[i] = isos.chargedcanddphis.at(i);
   for (int i=0; i<photrail_Npfcandneutralincone && i<global_size_pfcandarrays; i++) photrail_neutralpfcanddphis[i] = isos.neutralcanddphis.at(i);
-  photrail_PhoPassConvSafeElectronVeto=fTR->PhoPassConvSafeElectronVeto[index];
+  photrail_PhoPassConversionVeto=fTR->PhoPassConversionVeto[index];
   if (fTR->PhoMCmatchindex[index]>=0) photrail_GenPhotonIsoDR04=fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[index]];
   photrail_PhoIso03Ecal=fTR->PhoIso03Ecal[index];
   photrail_PhoIso03Hcal=fTR->PhoIso03Hcal[index];
@@ -2578,7 +2570,7 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_Pho_ChargedHadronIso=fTR->Pho_ChargedHadronIso[index];
   photrail_Pho_NeutralHadronIso=fTR->Pho_NeutralHadronIso[index];
   photrail_Pho_PhotonIso=fTR->Pho_PhotonIso[index];
-  photrail_Pho_isPFPhoton=fTR->Pho_isPFPhoton[index];
+  photrail_PhoisPFPhoton=fTR->PhoisPFPhoton[index];
   photrail_Pho_isPFElectron=fTR->Pho_isPFElectron[index];
   photrail_PhoMCmatchindex=fTR->PhoMCmatchindex[index];
   photrail_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
@@ -2690,8 +2682,8 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_pho_Cone03PFCombinedIso = -999;
   pholead_pho_Cone04PFCombinedIso = -999;
   photrail_pho_Cone04PFCombinedIso = -999;
-  pholead_PhoPassConvSafeElectronVeto = -999;
-  photrail_PhoPassConvSafeElectronVeto = -999;
+  pholead_PhoPassConversionVeto = -999;
+  photrail_PhoPassConversionVeto = -999;
   pholead_GenPhotonIsoDR04 = -999;
   photrail_GenPhotonIsoDR04 = -999;
   pholead_PhoIso03Ecal = -999;
@@ -2732,7 +2724,7 @@ void DiPhotonMiniTree::ResetVars(){
   pholead_Pho_ChargedHadronIso = -999;
   pholead_Pho_NeutralHadronIso = -999;
   pholead_Pho_PhotonIso = -999;
-  pholead_Pho_isPFPhoton = -999;
+  pholead_PhoisPFPhoton = -999;
   pholead_Pho_isPFElectron = -999;
   photrail_PhoS4OverS1 = -999;
   photrail_PhoSigmaEtaEta = -999;
@@ -2752,7 +2744,7 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_Pho_ChargedHadronIso = -999;
   photrail_Pho_NeutralHadronIso = -999;
   photrail_Pho_PhotonIso = -999;
-  photrail_Pho_isPFPhoton = -999;
+  photrail_PhoisPFPhoton = -999;
   photrail_Pho_isPFElectron = -999;
   pholead_PhoMCmatchindex = -999;
   pholead_PhoMCmatchexitcode = -999;
@@ -2870,7 +2862,7 @@ float DiPhotonMiniTree::CalculateSCArea(TreeReader *fTR, int scindex){
   //  std::cout << "call scarea " << scindex << " " << fTR->SCNXtals[scindex] << std::endl; // DEBUUUUG
   if (scindex>=fTR->NSuperClusters) return -999;
   float area=0;
-  for (int i=0; i<fTR->SCNXtals[scindex]; i++) area+=fTR->SCxtalEtaWidth[scindex][i]*fTR->SCxtalPhiWidth[scindex][i];
+  for (int i=0; i<fTR->SCNXtals[scindex]; i++) area+=fTR->XtalEtaWidth[scindex][i]*fTR->XtalPhiWidth[scindex][i];
   return area;
 };
 
@@ -3011,7 +3003,7 @@ bool DiPhotonMiniTree::FindImpingingTrack(TreeReader *fTR, int phoqi, int &refer
   // WARNING THE FOLLOWING IS NOT UP TO DATE!!!
 //  bool found = false;
 //
-//  TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+//  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 //
 //  if (dofootprintremoval){
 //    std::vector<int> footprint = GetPFCandInsideFootprint(fTR,phoqi,0,"charged");
@@ -3020,7 +3012,7 @@ bool DiPhotonMiniTree::FindImpingingTrack(TreeReader *fTR, int phoqi, int &refer
 //
 //  for (int i=0; i<fTR->NPfCand; i++){
 //
-//    if (fTR->Pho_isPFPhoton[phoqi] && fTR->pho_matchedPFPhotonCand[phoqi]==i) continue;
+//    if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
 //
 //    int type = FindPFCandType(fTR->PfCandPdgId[i]);
 //    if (type!=1) continue;
@@ -3102,7 +3094,7 @@ int DiPhotonMiniTree::CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std:
 
 //  int found = 0;
 //  
-//  TVector3 photon_position = TVector3(fTR->SCx[fTR->PhotSCindex[phoqi]],fTR->SCy[fTR->PhotSCindex[phoqi]],fTR->SCz[fTR->PhotSCindex[phoqi]]);
+//  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 //  TVector3 phovtx(fTR->PhoVx[phoqi],fTR->PhoVy[phoqi],fTR->PhoVz[phoqi]);
 //    
 //  for (int i=0; i<fTR->NPfCand; i++){
