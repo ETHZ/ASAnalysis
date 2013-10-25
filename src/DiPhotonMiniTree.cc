@@ -1614,7 +1614,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl; return true;}
 
-  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
+  TVector3 photon_position = TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
   if (rotation_phi!=0) {
     TRotation r; r.RotateZ(rotation_phi);
     photon_position *= r;
@@ -1680,7 +1680,7 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
   if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl;}
 
-  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
+  TVector3 photon_position = TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   double eta = photon_position.Eta();
   double phi = photon_position.Phi();
@@ -1760,7 +1760,7 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
     if (component=="charged" && type!=1) continue;
     if (component=="photon" && type!=2) continue;
 
-    TVector3 sc_position = TVector3(fTR->SCY[scindex],fTR->SCY[scindex],fTR->SCZ[scindex]);
+    TVector3 sc_position = TVector3(fTR->SCX[scindex],fTR->SCY[scindex],fTR->SCZ[scindex]);
 
     bool inside=false;
 
@@ -1845,7 +1845,7 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 
   for (int i=0; i<pfcands->PfCandPt.size(); i++){
 
-    TVector3 sc_position = TVector3(fTR->SCY[scindex],fTR->SCY[scindex],fTR->SCZ[scindex]);
+    TVector3 sc_position = TVector3(fTR->SCX[scindex],fTR->SCY[scindex],fTR->SCZ[scindex]);
 
     bool inside=false;
 
@@ -2048,7 +2048,7 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
   float result=0;
   float scaleresult=1;
   
-  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
+  TVector3 photon_position = TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   bool isbarrel = (fabs(photon_position.Eta())<1.4442);
 
@@ -2257,7 +2257,7 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
 
   bool isbarrel = fTR->PhoisEB[phoqi];
 
-  TVector3 sc_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
+  TVector3 sc_position = TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   if (rotation_phi!=0) {
     TRotation r; r.RotateZ(rotation_phi);
@@ -2304,7 +2304,7 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
 
   bool isbarrel = fTR->PhoisEB[phoqi];
 
-  TVector3 sc_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
+  TVector3 sc_position = TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 
   TVector3 pfvertex(pfcands->PfCandVx[i],pfcands->PfCandVy[i],pfcands->PfCandVz[i]);
   TVector3 pfmomentum; pfmomentum.SetPtEtaPhi(pfcands->PfCandPt[i],pfcands->PfCandEta[i],pfcands->PfCandPhi[i]);
@@ -2906,7 +2906,7 @@ bool DiPhotonMiniTree::FindImpingingTrack(TreeReader *fTR, int phoqi, int &refer
   // WARNING THE FOLLOWING IS NOT UP TO DATE!!!
 //  bool found = false;
 //
-//  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
+//  TVector3 photon_position = TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 //
 //  if (dofootprintremoval){
 //    std::vector<int> footprint = GetPFCandInsideFootprint(fTR,phoqi,0,"charged");
@@ -2997,7 +2997,7 @@ int DiPhotonMiniTree::CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std:
 
 //  int found = 0;
 //  
-//  TVector3 photon_position = TVector3(fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
+//  TVector3 photon_position = TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]);
 //  TVector3 phovtx(fTR->PhoVx[phoqi],fTR->PhoVy[phoqi],fTR->PhoVz[phoqi]);
 //    
 //  for (int i=0; i<fTR->NPfCand; i++){
