@@ -39,7 +39,7 @@ float secondLeptonPtCut = 10.0;
 TMinuit *minuit;
 
 /*
-$Id: JZBAnalysis.cc,v 1.70.2.132 2013/06/20 06:59:05 buchmann Exp $
+  $Id: JZBAnalysis.cc,v 1.70.2.132 2013/06/20 06:59:05 buchmann Exp $
 */
 
 
@@ -408,7 +408,7 @@ public:
   
   float fact;
   
- //Trilepton variables
+  //Trilepton variables
   float tri_pt1;
   float tri_pt2;
   float tri_pt3;
@@ -1021,28 +1021,28 @@ nanoEvent nEvent;
   
 
 Double_t JZBAnalysis::CalcMT2(double testmass, bool massive, TLorentzVector visible1, TLorentzVector visible2, TLorentzVector MET ){
- double pa[3];
- double pb[3];
- double pmiss[3];
+  double pa[3];
+  double pb[3];
+  double pmiss[3];
 
- pmiss[0] = 0;
- pmiss[1] = MET.Px();
- pmiss[2] = MET.Py();
+  pmiss[0] = 0;
+  pmiss[1] = MET.Px();
+  pmiss[2] = MET.Py();
 
- pa[0] = massive ? visible1.M() : 0;
- pa[1] = visible1.Px();
- pa[2] = visible1.Py();
+  pa[0] = massive ? visible1.M() : 0;
+  pa[1] = visible1.Px();
+  pa[2] = visible1.Py();
 
- pb[0] = massive ? visible2.M() : 0;
- pb[1] = visible2.Px();
- pb[2] = visible2.Py();
+  pb[0] = massive ? visible2.M() : 0;
+  pb[1] = visible2.Px();
+  pb[2] = visible2.Py();
 
- Davismt2 *mt2 = new Davismt2();
- mt2->set_momenta(pa, pb, pmiss);
- mt2->set_mn(testmass);
- Double_t MT2=mt2->get_mt2();
- delete mt2;
- return MT2;
+  Davismt2 *mt2 = new Davismt2();
+  mt2->set_momenta(pa, pb, pmiss);
+  mt2->set_mn(testmass);
+  Double_t MT2=mt2->get_mt2();
+  delete mt2;
+  return MT2;
 
 }
 
@@ -1066,39 +1066,39 @@ double JZBAnalysis::getD2(SolveTTbarNew *solver, TLorentzVector b1, TLorentzVect
 }
 
 void JZBAnalysis::ComputeD2MT2(float &FinalD2,float &FinalMT2) {
-      TLorentzVector b1(0,0,0,0);
-      TLorentzVector bj1(0,0,0,0);
-      TLorentzVector bj2(0,0,0,0);
-      TLorentzVector bj3(0,0,0,0);
-      TLorentzVector l1(0,0,0,0);
-      TLorentzVector l2(0,0,0,0);
-      TLorentzVector MET(0,0,0,0);
-      MET.SetPtEtaPhiM(nEvent.met[4], 0, nEvent.metPhi[4], 0);
-      b1.SetPtEtaPhiE(nEvent.pfJetGoodPtBtag[0], nEvent.pfJetGoodEtaBtag[0], nEvent.pfJetGoodPhiBtag[0], nEvent.pfJetGoodEBtag[0]);
-      bj1.SetPtEtaPhiE(nEvent.pfJetGoodPt[0], nEvent.pfJetGoodEta[0], nEvent.pfJetGoodPhi[0], nEvent.pfJetGoodE[0]);
-      bj2.SetPtEtaPhiE(nEvent.pfJetGoodPt[1], nEvent.pfJetGoodEta[1], nEvent.pfJetGoodPhi[1], nEvent.pfJetGoodE[1]);
-      bj3.SetPtEtaPhiE(nEvent.pfJetGoodPt[2], nEvent.pfJetGoodEta[2], nEvent.pfJetGoodPhi[2], nEvent.pfJetGoodE[2]);
-      double d1 = -1, d2 = -1, d3 = -1;
-      nEvent.id1 ? l1.SetPtEtaPhiM(nEvent.pt1, nEvent.eta1, nEvent.phi1, 0.151) : l1.SetPtEtaPhiM(nEvent.pt1, nEvent.eta1, nEvent.phi1, 0.00051);
-      nEvent.id2 ? l2.SetPtEtaPhiM(nEvent.pt2, nEvent.eta2, nEvent.phi2, 0.151) : l2.SetPtEtaPhiM(nEvent.pt2, nEvent.eta2, nEvent.phi2, 0.00051);
-      if(b1 != bj1) d1 = getD2(solver, b1, bj1, l1, l2, nEvent.met[4], nEvent.metPhi[4]);
-      if(b1 != bj2) d2 = getD2(solver, b1, bj2, l1, l2, nEvent.met[4], nEvent.metPhi[4]);
-      if(b1 != bj3) d3 = getD2(solver, b1, bj3, l1, l2, nEvent.met[4], nEvent.metPhi[4]);
-      if(d1 == -1 && d2 == -1 && d3 == -1) d2 = -1; 
-      if(d1 == -1 && d2 == -1 && d3 != -1) d2 = d3; 
-      if(d1 == -1 && d2 != -1 && d3 == -1) d2 = d2; 
-      if(d1 != -1 && d2 == -1 && d3 == -1) d2 = d1; 
-      if(d1 != -1 && d2 != -1 && d3 == -1) d2 = TMath::Min(d1, d2);
-      if(d1 != -1 && d2 == -1 && d3 != -1) d2 = TMath::Min(d1, d3);
-      if(d1 == -1 && d2 != -1 && d3 != -1) d2 = TMath::Min(d2, d3);
-      if(d1 != -1 && d2 != -1 && d3 != -1) {
-        double auxiliar = TMath::Min(d1, d2);
-        d2 = TMath::Min(auxiliar, d3);
-      }
+  TLorentzVector b1(0,0,0,0);
+  TLorentzVector bj1(0,0,0,0);
+  TLorentzVector bj2(0,0,0,0);
+  TLorentzVector bj3(0,0,0,0);
+  TLorentzVector l1(0,0,0,0);
+  TLorentzVector l2(0,0,0,0);
+  TLorentzVector MET(0,0,0,0);
+  MET.SetPtEtaPhiM(nEvent.met[4], 0, nEvent.metPhi[4], 0);
+  b1.SetPtEtaPhiE(nEvent.pfJetGoodPtBtag[0], nEvent.pfJetGoodEtaBtag[0], nEvent.pfJetGoodPhiBtag[0], nEvent.pfJetGoodEBtag[0]);
+  bj1.SetPtEtaPhiE(nEvent.pfJetGoodPt[0], nEvent.pfJetGoodEta[0], nEvent.pfJetGoodPhi[0], nEvent.pfJetGoodE[0]);
+  bj2.SetPtEtaPhiE(nEvent.pfJetGoodPt[1], nEvent.pfJetGoodEta[1], nEvent.pfJetGoodPhi[1], nEvent.pfJetGoodE[1]);
+  bj3.SetPtEtaPhiE(nEvent.pfJetGoodPt[2], nEvent.pfJetGoodEta[2], nEvent.pfJetGoodPhi[2], nEvent.pfJetGoodE[2]);
+  double d1 = -1, d2 = -1, d3 = -1;
+  nEvent.id1 ? l1.SetPtEtaPhiM(nEvent.pt1, nEvent.eta1, nEvent.phi1, 0.151) : l1.SetPtEtaPhiM(nEvent.pt1, nEvent.eta1, nEvent.phi1, 0.00051);
+  nEvent.id2 ? l2.SetPtEtaPhiM(nEvent.pt2, nEvent.eta2, nEvent.phi2, 0.151) : l2.SetPtEtaPhiM(nEvent.pt2, nEvent.eta2, nEvent.phi2, 0.00051);
+  if(b1 != bj1) d1 = getD2(solver, b1, bj1, l1, l2, nEvent.met[4], nEvent.metPhi[4]);
+  if(b1 != bj2) d2 = getD2(solver, b1, bj2, l1, l2, nEvent.met[4], nEvent.metPhi[4]);
+  if(b1 != bj3) d3 = getD2(solver, b1, bj3, l1, l2, nEvent.met[4], nEvent.metPhi[4]);
+  if(d1 == -1 && d2 == -1 && d3 == -1) d2 = -1; 
+  if(d1 == -1 && d2 == -1 && d3 != -1) d2 = d3; 
+  if(d1 == -1 && d2 != -1 && d3 == -1) d2 = d2; 
+  if(d1 != -1 && d2 == -1 && d3 == -1) d2 = d1; 
+  if(d1 != -1 && d2 != -1 && d3 == -1) d2 = TMath::Min(d1, d2);
+  if(d1 != -1 && d2 == -1 && d3 != -1) d2 = TMath::Min(d1, d3);
+  if(d1 == -1 && d2 != -1 && d3 != -1) d2 = TMath::Min(d2, d3);
+  if(d1 != -1 && d2 != -1 && d3 != -1) {
+    double auxiliar = TMath::Min(d1, d2);
+    d2 = TMath::Min(auxiliar, d3);
+  }
       
-      double mt2 = CalcMT2(0., 0, l1, l2,  MET);
-      FinalMT2=mt2;
-      FinalD2=d2;
+  double mt2 = CalcMT2(0., 0, l1, l2,  MET);
+  FinalMT2=mt2;
+  FinalD2=d2;
   
 }
 
@@ -1237,24 +1237,24 @@ int JZBAnalysis::ExtractFileNumber(string pathname) {
 }
 
 bool JZBAnalysis::IsThisDY(vector<string> fileList) {
-    bool isDY=false;
-    for(int ifile=0;ifile<fileList.size();ifile++) {
-        if((int)fileList[ifile].find("/DY")>-1) isDY=true;
-    }
-    if(isDY) return true;
-    else return false;
+  bool isDY=false;
+  for(int ifile=0;ifile<fileList.size();ifile++) {
+    if((int)fileList[ifile].find("/DY")>-1) isDY=true;
+  }
+  if(isDY) return true;
+  else return false;
 }
 
 
-bool JZBAnalysis::IsThisTTbar(vector<string> fileList) {
-    bool isTTbar=false;
-    for(int ifile=0;ifile<fileList.size();ifile++) {
-        if((int)fileList[ifile].find("/TTJets")>-1) isTTbar=true;
-        if((int)fileList[ifile].find("/TT_CT10")>-1) isTTbar=true;
-        if((int)fileList[ifile].find("/TT_8TeV-mcatnlo")>-1) isTTbar=true;
-    }
-    if(isTTbar) return true;
-    else return false;
+int JZBAnalysis::IsThisTTbar(vector<string> fileList) {
+  string firstFile = fileList[0]; 
+  if((int)firstFile.find("/TTJets_FullLept")>-1) return 3;
+  if((int)firstFile.find("/TTJets_SemiLept")>-1) return 2;
+  if((int)firstFile.find("/TTJets")>-1) return 1;
+  if((int)firstFile.find("/TT_CT10")>-1) return 1;
+  if((int)firstFile.find("/TT_8TeV-mcatnlo")>-1) return 1;
+
+  return 0;
 }
 
 //________________________________________________________________________________________
@@ -1268,6 +1268,8 @@ JZBAnalysis::JZBAnalysis(TreeReader *tr, std::string dataType, std::string globa
   else fFile=-1;
   fIsDY=IsThisDY(fileList);
   fIsTTbar=IsThisTTbar(fileList);
+  std::cout << "firstFile = " << fileList[0] << ", fIsTTbar = " << fIsTTbar << std::endl;
+
   // Define trigger paths to check
   addPath(elTriggerPaths,"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL",10,30);
 
@@ -1516,14 +1518,14 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("type1metUncertainty",&nEvent.type1metUncertainty,"type1metUncertainty/F");
 
   myTree->Branch("pfJetGoodNum40CHS",&nEvent.pfJetGoodNum40CHS,"pfJetGoodNum40CHS/I");
-//  myTree->Branch("pfJetGoodNum30Fwd",&nEvent.pfJetGoodNum30Fwd,"pfJetGoodNum30Fwd/I");
-//  myTree->Branch("pfJetGoodNum40Fwd",&nEvent.pfJetGoodNum40Fwd,"pfJetGoodNum40Fwd/I");
-//  myTree->Branch("pfJetGoodNum50Fwd",&nEvent.pfJetGoodNum50Fwd,"pfJetGoodNum50Fwd/I");
-//  myTree->Branch("pfJetGoodNum60Fwd",&nEvent.pfJetGoodNum60Fwd,"pfJetGoodNum60Fwd/I");
+  //  myTree->Branch("pfJetGoodNum30Fwd",&nEvent.pfJetGoodNum30Fwd,"pfJetGoodNum30Fwd/I");
+  //  myTree->Branch("pfJetGoodNum40Fwd",&nEvent.pfJetGoodNum40Fwd,"pfJetGoodNum40Fwd/I");
+  //  myTree->Branch("pfJetGoodNum50Fwd",&nEvent.pfJetGoodNum50Fwd,"pfJetGoodNum50Fwd/I");
+  //  myTree->Branch("pfJetGoodNum60Fwd",&nEvent.pfJetGoodNum60Fwd,"pfJetGoodNum60Fwd/I");
   myTree->Branch("pfJetGoodNum30",&nEvent.pfJetGoodNum30,"pfJetGoodNum30/I");
   myTree->Branch("pfJetGoodNum40",&nEvent.pfJetGoodNum40,"pfJetGoodNum40/I");
   myTree->Branch("pfJetGoodNum50",&nEvent.pfJetGoodNum50,"pfJetGoodNum50/I");
-//  myTree->Branch("pfJetGoodNum60",&nEvent.pfJetGoodNum60,"pfJetGoodNum60/I");
+  //  myTree->Branch("pfJetGoodNum60",&nEvent.pfJetGoodNum60,"pfJetGoodNum60/I");
   myTree->Branch("pfJetGoodNumBtag30",&nEvent.pfJetGoodNumBtag30,"pfJetGoodNumBtag30/I");
   myTree->Branch("pfJetGoodNumBtag40",&nEvent.pfJetGoodNumBtag40,"pfJetGoodNumBtag40/I");
   myTree->Branch("pfJetGoodNumBtag40CSVBPLoose",&nEvent.pfJetGoodNumBtag40CSVBPLoose,"pfJetGoodNumBtag40CSVBPLoose/I");
@@ -1540,8 +1542,8 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("pfJetGoodNumBtag40_Loose",&nEvent.pfJetGoodNumBtag40_Loose,"pfJetGoodNumBtag40_Loose/I");
   myTree->Branch("pfJetGoodNumIDBtag",&nEvent.pfJetGoodNumIDBtag,"pfJetGoodNumIDBtag/I");
   myTree->Branch("pfJetGoodNumID",&nEvent.pfJetGoodNumID,"pfJetGoodNumID/I");
-//  myTree->Branch("pfJetGoodNump1sigma",&nEvent.pfJetGoodNump1sigma,"pfJetGoodNump1sigma/I");
-//  myTree->Branch("pfJetGoodNumn1sigma",&nEvent.pfJetGoodNumn1sigma,"pfJetGoodNumn1sigma/I");
+  //  myTree->Branch("pfJetGoodNump1sigma",&nEvent.pfJetGoodNump1sigma,"pfJetGoodNump1sigma/I");
+  //  myTree->Branch("pfJetGoodNumn1sigma",&nEvent.pfJetGoodNumn1sigma,"pfJetGoodNumn1sigma/I");
   myTree->Branch("pfJetGoodNum40p1sigma",&nEvent.pfJetGoodNum40p1sigma,"pfJetGoodNum40p1sigma/I");
   myTree->Branch("pfJetGoodNum40n1sigma",&nEvent.pfJetGoodNum40n1sigma,"pfJetGoodNum40n1sigma/I");
   myTree->Branch("pfJetGoodNum50p1sigma",&nEvent.pfJetGoodNum50p1sigma,"pfJetGoodNum50p1sigma/I");
@@ -1598,68 +1600,68 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("weightEffUp",&nEvent.weightEffUp,"weightEffUp/F");
 
   if(UseForZPlusB) {
-	myTree->Branch("ZbCHS3010_LeadingJetIsPu",&nEvent.ZbCHS3010_LeadingJetIsPu,"ZbCHS3010_LeadingJetIsPu/O");
-	myTree->Branch("ZbCHS3010_SubLeadingJetIsPu",&nEvent.ZbCHS3010_SubLeadingJetIsPu,"ZbCHS3010_SubLeadingJetIsPu/O");
+    myTree->Branch("ZbCHS3010_LeadingJetIsPu",&nEvent.ZbCHS3010_LeadingJetIsPu,"ZbCHS3010_LeadingJetIsPu/O");
+    myTree->Branch("ZbCHS3010_SubLeadingJetIsPu",&nEvent.ZbCHS3010_SubLeadingJetIsPu,"ZbCHS3010_SubLeadingJetIsPu/O");
 
-	myTree->Branch("ZbCHS1010_LeadingJetIsPu",&nEvent.ZbCHS1010_LeadingJetIsPu,"ZbCHS1010_LeadingJetIsPu/O");
-	myTree->Branch("ZbCHS1010_SubLeadingJetIsPu",&nEvent.ZbCHS1010_SubLeadingJetIsPu,"ZbCHS1010_SubLeadingJetIsPu/O");
+    myTree->Branch("ZbCHS1010_LeadingJetIsPu",&nEvent.ZbCHS1010_LeadingJetIsPu,"ZbCHS1010_LeadingJetIsPu/O");
+    myTree->Branch("ZbCHS1010_SubLeadingJetIsPu",&nEvent.ZbCHS1010_SubLeadingJetIsPu,"ZbCHS1010_SubLeadingJetIsPu/O");
 
-	myTree->Branch("ZbCHS3010_BTagWgtT",&nEvent.ZbCHS3010_BTagWgtT,"ZbCHS3010_BTagWgtT/F");
-	myTree->Branch("ZbCHS1010_BTagWgtT",&nEvent.ZbCHS1010_BTagWgtT,"ZbCHS1010_BTagWgtT/F");
+    myTree->Branch("ZbCHS3010_BTagWgtT",&nEvent.ZbCHS3010_BTagWgtT,"ZbCHS3010_BTagWgtT/F");
+    myTree->Branch("ZbCHS1010_BTagWgtT",&nEvent.ZbCHS1010_BTagWgtT,"ZbCHS1010_BTagWgtT/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtTUp",&nEvent.ZbCHS3010_BTagWgtTUp,"ZbCHS3010_BTagWgtTUp/F");
-	myTree->Branch("ZbCHS1010_BTagWgtTUp",&nEvent.ZbCHS1010_BTagWgtTUp,"ZbCHS1010_BTagWgtTUp/F");
+    myTree->Branch("ZbCHS3010_BTagWgtTUp",&nEvent.ZbCHS3010_BTagWgtTUp,"ZbCHS3010_BTagWgtTUp/F");
+    myTree->Branch("ZbCHS1010_BTagWgtTUp",&nEvent.ZbCHS1010_BTagWgtTUp,"ZbCHS1010_BTagWgtTUp/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtTDown",&nEvent.ZbCHS3010_BTagWgtTDown,"ZbCHS3010_BTagWgtTDown/F");
-	myTree->Branch("ZbCHS1010_BTagWgtTDown",&nEvent.ZbCHS1010_BTagWgtTDown,"ZbCHS1010_BTagWgtTDown/F");
+    myTree->Branch("ZbCHS3010_BTagWgtTDown",&nEvent.ZbCHS3010_BTagWgtTDown,"ZbCHS3010_BTagWgtTDown/F");
+    myTree->Branch("ZbCHS1010_BTagWgtTDown",&nEvent.ZbCHS1010_BTagWgtTDown,"ZbCHS1010_BTagWgtTDown/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtM",&nEvent.ZbCHS3010_BTagWgtM,"ZbCHS3010_BTagWgtM/F");
-	myTree->Branch("ZbCHS1010_BTagWgtM",&nEvent.ZbCHS1010_BTagWgtM,"ZbCHS1010_BTagWgtM/F");
+    myTree->Branch("ZbCHS3010_BTagWgtM",&nEvent.ZbCHS3010_BTagWgtM,"ZbCHS3010_BTagWgtM/F");
+    myTree->Branch("ZbCHS1010_BTagWgtM",&nEvent.ZbCHS1010_BTagWgtM,"ZbCHS1010_BTagWgtM/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtMUp",&nEvent.ZbCHS3010_BTagWgtMUp,"ZbCHS3010_BTagWgtMUp/F");
-	myTree->Branch("ZbCHS1010_BTagWgtMUp",&nEvent.ZbCHS1010_BTagWgtMUp,"ZbCHS1010_BTagWgtMUp/F");
+    myTree->Branch("ZbCHS3010_BTagWgtMUp",&nEvent.ZbCHS3010_BTagWgtMUp,"ZbCHS3010_BTagWgtMUp/F");
+    myTree->Branch("ZbCHS1010_BTagWgtMUp",&nEvent.ZbCHS1010_BTagWgtMUp,"ZbCHS1010_BTagWgtMUp/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtM",&nEvent.ZbCHS3010_BTagWgtMDown,"ZbCHS3010_BTagWgtMDown/F");
-	myTree->Branch("ZbCHS1010_BTagWgtM",&nEvent.ZbCHS1010_BTagWgtMDown,"ZbCHS1010_BTagWgtMDown/F");
+    myTree->Branch("ZbCHS3010_BTagWgtM",&nEvent.ZbCHS3010_BTagWgtMDown,"ZbCHS3010_BTagWgtMDown/F");
+    myTree->Branch("ZbCHS1010_BTagWgtM",&nEvent.ZbCHS1010_BTagWgtMDown,"ZbCHS1010_BTagWgtMDown/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtL",&nEvent.ZbCHS3010_BTagWgtL,"ZbCHS3010_BTagWgtL/F");
-	myTree->Branch("ZbCHS1010_BTagWgtL",&nEvent.ZbCHS1010_BTagWgtL,"ZbCHS1010_BTagWgtL/F");
+    myTree->Branch("ZbCHS3010_BTagWgtL",&nEvent.ZbCHS3010_BTagWgtL,"ZbCHS3010_BTagWgtL/F");
+    myTree->Branch("ZbCHS1010_BTagWgtL",&nEvent.ZbCHS1010_BTagWgtL,"ZbCHS1010_BTagWgtL/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtLUp",&nEvent.ZbCHS3010_BTagWgtLUp,"ZbCHS3010_BTagWgtLUp/F");
-	myTree->Branch("ZbCHS1010_BTagWgtLUp",&nEvent.ZbCHS1010_BTagWgtLUp,"ZbCHS1010_BTagWgtLUp/F");
+    myTree->Branch("ZbCHS3010_BTagWgtLUp",&nEvent.ZbCHS3010_BTagWgtLUp,"ZbCHS3010_BTagWgtLUp/F");
+    myTree->Branch("ZbCHS1010_BTagWgtLUp",&nEvent.ZbCHS1010_BTagWgtLUp,"ZbCHS1010_BTagWgtLUp/F");
 
-	myTree->Branch("ZbCHS3010_BTagWgtL",&nEvent.ZbCHS3010_BTagWgtLDown,"ZbCHS3010_BTagWgtLDown/F");
-	myTree->Branch("ZbCHS1010_BTagWgtL",&nEvent.ZbCHS1010_BTagWgtLDown,"ZbCHS1010_BTagWgtLDown/F");
+    myTree->Branch("ZbCHS3010_BTagWgtL",&nEvent.ZbCHS3010_BTagWgtLDown,"ZbCHS3010_BTagWgtLDown/F");
+    myTree->Branch("ZbCHS1010_BTagWgtL",&nEvent.ZbCHS1010_BTagWgtLDown,"ZbCHS1010_BTagWgtLDown/F");
 
-	myTree->Branch("ZbCHS3010_pfJetGoodNum",&nEvent.ZbCHS3010_pfJetGoodNum,"ZbCHS3010_pfJetGoodNum/I");
-	myTree->Branch("ZbCHS3010_pfJetGoodNumBtag",&nEvent.ZbCHS3010_pfJetGoodNumBtag,"ZbCHS3010_pfJetGoodNumBtag/I");
-	myTree->Branch("ZbCHS3010_bTagProbCSVBP",nEvent.ZbCHS3010_bTagProbCSVBP,"ZbCHS3010_bTagProbCSVBP[ZbCHS3010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS3010_pfJetGoodEta",nEvent.ZbCHS3010_pfJetGoodEta,"ZbCHS3010_pfJetGoodEta[ZbCHS3010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS3010_pfJetDphiZ",nEvent.ZbCHS3010_pfJetDphiZ,"ZbCHS3010_pfJetDphiZ[ZbCHS3010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS3010_pfJetGoodPt",nEvent.ZbCHS3010_pfJetGoodPt,"ZbCHS3010_pfJetGoodPt[ZbCHS3010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS3010_pfBJetDphiZ",nEvent.ZbCHS3010_pfBJetDphiZ,"ZbCHS3010_pfBJetDphiZ[ZbCHS3010_pfJetGoodNumBtag]/F");
+    myTree->Branch("ZbCHS3010_pfJetGoodNum",&nEvent.ZbCHS3010_pfJetGoodNum,"ZbCHS3010_pfJetGoodNum/I");
+    myTree->Branch("ZbCHS3010_pfJetGoodNumBtag",&nEvent.ZbCHS3010_pfJetGoodNumBtag,"ZbCHS3010_pfJetGoodNumBtag/I");
+    myTree->Branch("ZbCHS3010_bTagProbCSVBP",nEvent.ZbCHS3010_bTagProbCSVBP,"ZbCHS3010_bTagProbCSVBP[ZbCHS3010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS3010_pfJetGoodEta",nEvent.ZbCHS3010_pfJetGoodEta,"ZbCHS3010_pfJetGoodEta[ZbCHS3010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS3010_pfJetDphiZ",nEvent.ZbCHS3010_pfJetDphiZ,"ZbCHS3010_pfJetDphiZ[ZbCHS3010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS3010_pfJetGoodPt",nEvent.ZbCHS3010_pfJetGoodPt,"ZbCHS3010_pfJetGoodPt[ZbCHS3010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS3010_pfBJetDphiZ",nEvent.ZbCHS3010_pfBJetDphiZ,"ZbCHS3010_pfBJetDphiZ[ZbCHS3010_pfJetGoodNumBtag]/F");
 
-	myTree->Branch("ZbCHS1010_pfJetGoodNum",&nEvent.ZbCHS1010_pfJetGoodNum,"ZbCHS1010_pfJetGoodNum/I");
-	myTree->Branch("ZbCHS1010_pfJetGoodNumBtag",&nEvent.ZbCHS1010_pfJetGoodNumBtag,"ZbCHS1010_pfJetGoodNumBtag/I");
-	myTree->Branch("ZbCHS1010_bTagProbCSVBP",nEvent.ZbCHS1010_bTagProbCSVBP,"ZbCHS1010_bTagProbCSVBP[ZbCHS1010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS1010_pfJetGoodEta",nEvent.ZbCHS1010_pfJetGoodEta,"ZbCHS1010_pfJetGoodEta[ZbCHS1010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS1010_pfJetDphiZ",nEvent.ZbCHS1010_pfJetDphiZ,"ZbCHS1010_pfJetDphiZ[ZbCHS1010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS1010_pfJetGoodPt",nEvent.ZbCHS1010_pfJetGoodPt,"ZbCHS1010_pfJetGoodPt[ZbCHS1010_pfJetGoodNum]/F");
-	myTree->Branch("ZbCHS1010_pfBJetDphiZ",nEvent.ZbCHS1010_pfBJetDphiZ,"ZbCHS1010_pfBJetDphiZ[ZbCHS1010_pfJetGoodNumBtag]/F");
+    myTree->Branch("ZbCHS1010_pfJetGoodNum",&nEvent.ZbCHS1010_pfJetGoodNum,"ZbCHS1010_pfJetGoodNum/I");
+    myTree->Branch("ZbCHS1010_pfJetGoodNumBtag",&nEvent.ZbCHS1010_pfJetGoodNumBtag,"ZbCHS1010_pfJetGoodNumBtag/I");
+    myTree->Branch("ZbCHS1010_bTagProbCSVBP",nEvent.ZbCHS1010_bTagProbCSVBP,"ZbCHS1010_bTagProbCSVBP[ZbCHS1010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS1010_pfJetGoodEta",nEvent.ZbCHS1010_pfJetGoodEta,"ZbCHS1010_pfJetGoodEta[ZbCHS1010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS1010_pfJetDphiZ",nEvent.ZbCHS1010_pfJetDphiZ,"ZbCHS1010_pfJetDphiZ[ZbCHS1010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS1010_pfJetGoodPt",nEvent.ZbCHS1010_pfJetGoodPt,"ZbCHS1010_pfJetGoodPt[ZbCHS1010_pfJetGoodNum]/F");
+    myTree->Branch("ZbCHS1010_pfBJetDphiZ",nEvent.ZbCHS1010_pfBJetDphiZ,"ZbCHS1010_pfBJetDphiZ[ZbCHS1010_pfJetGoodNumBtag]/F");
 
-	//Z+b variables
-	myTree->Branch("ZbCHS3010_alpha",&nEvent.ZbCHS3010_alpha,"ZbCHS3010_alpha/F");
-	myTree->Branch("ZbCHS3010_alphaL5",&nEvent.ZbCHS3010_alphaL5,"ZbCHS3010_alphaL5/F");
-	myTree->Branch("ZbCHS3010_L5corr",&nEvent.ZbCHS3010_L5corr,"ZbCHS3010_L5corr/F");
-	myTree->Branch("ZbCHS1010_alpha",&nEvent.ZbCHS1010_alpha,"ZbCHS1010_alpha/F");
-	myTree->Branch("ZbCHS3010_alphaUp",&nEvent.ZbCHS3010_alphaUp,"ZbCHS3010_alphaUp/F");
-	myTree->Branch("ZbCHS1010_alphaUp",&nEvent.ZbCHS1010_alphaUp,"ZbCHS1010_alphaUp/F");
-	myTree->Branch("ZbCHS3010_alphaDown",&nEvent.ZbCHS3010_alphaDown,"ZbCHS3010_alphaDown/F");
-	myTree->Branch("ZbCHS1010_alphaDown",&nEvent.ZbCHS1010_alphaDown,"ZbCHS1010_alphaDown/F");
-	myTree->Branch("mpf",&nEvent.mpf,"mpf/F");
-	myTree->Branch("fake_mpf",&nEvent.fake_mpf,"fake_mpf/F");
+    //Z+b variables
+    myTree->Branch("ZbCHS3010_alpha",&nEvent.ZbCHS3010_alpha,"ZbCHS3010_alpha/F");
+    myTree->Branch("ZbCHS3010_alphaL5",&nEvent.ZbCHS3010_alphaL5,"ZbCHS3010_alphaL5/F");
+    myTree->Branch("ZbCHS3010_L5corr",&nEvent.ZbCHS3010_L5corr,"ZbCHS3010_L5corr/F");
+    myTree->Branch("ZbCHS1010_alpha",&nEvent.ZbCHS1010_alpha,"ZbCHS1010_alpha/F");
+    myTree->Branch("ZbCHS3010_alphaUp",&nEvent.ZbCHS3010_alphaUp,"ZbCHS3010_alphaUp/F");
+    myTree->Branch("ZbCHS1010_alphaUp",&nEvent.ZbCHS1010_alphaUp,"ZbCHS1010_alphaUp/F");
+    myTree->Branch("ZbCHS3010_alphaDown",&nEvent.ZbCHS3010_alphaDown,"ZbCHS3010_alphaDown/F");
+    myTree->Branch("ZbCHS1010_alphaDown",&nEvent.ZbCHS1010_alphaDown,"ZbCHS1010_alphaDown/F");
+    myTree->Branch("mpf",&nEvent.mpf,"mpf/F");
+    myTree->Branch("fake_mpf",&nEvent.fake_mpf,"fake_mpf/F");
 
-	myTree->Branch("HasSoftLepton",&nEvent.HasSoftLepton,"HasSoftLepton/O");
+    myTree->Branch("HasSoftLepton",&nEvent.HasSoftLepton,"HasSoftLepton/O");
     myTree->Branch("SoftLeptonPt",&nEvent.SoftLeptonPt,"SoftLeptonPt/F");
 
   }
@@ -1670,20 +1672,20 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("filter_bit", &nEvent.filter_bit,"filter_bit/I");
 
   if(fisModelScan) {
-	myTree->Branch("realx",&nEvent.realx,"realx/F");
-	myTree->Branch("imposedx",&nEvent.imposedx,"imposedx/F");
-	myTree->Branch("process",&nEvent.process,"process/I");
-	myTree->Branch("MassGlu",&nEvent.mGlu,"MassGlu/F");
-	myTree->Branch("MassChi",&nEvent.mChi,"MassChi/F");
-	myTree->Branch("MassLSP",&nEvent.mLSP,"MassLSP/F");
-	myTree->Branch("xSMS",&nEvent.xSMS,"xSMS/F");
-	myTree->Branch("xbarSMS",&nEvent.xbarSMS,"xbarSMS/F");
-	myTree->Branch("MassGMSBGlu",&nEvent.mGMSBGlu,"MassGlu/F");
-	myTree->Branch("MassGMSBChi",&nEvent.mGMSBChi,"MassChi/F");
-	myTree->Branch("MassGMSBLSP",&nEvent.mGMSBLSP,"MassLSP/F");
-	myTree->Branch("NPdfs",&nEvent.NPdfs,"NPdfs/I");
-	myTree->Branch("pdfW",nEvent.pdfW,"pdfW[NPdfs]/F");
-	myTree->Branch("pdfWsum",&nEvent.pdfWsum,"pdfWsum/F");
+    myTree->Branch("realx",&nEvent.realx,"realx/F");
+    myTree->Branch("imposedx",&nEvent.imposedx,"imposedx/F");
+    myTree->Branch("process",&nEvent.process,"process/I");
+    myTree->Branch("MassGlu",&nEvent.mGlu,"MassGlu/F");
+    myTree->Branch("MassChi",&nEvent.mChi,"MassChi/F");
+    myTree->Branch("MassLSP",&nEvent.mLSP,"MassLSP/F");
+    myTree->Branch("xSMS",&nEvent.xSMS,"xSMS/F");
+    myTree->Branch("xbarSMS",&nEvent.xbarSMS,"xbarSMS/F");
+    myTree->Branch("MassGMSBGlu",&nEvent.mGMSBGlu,"MassGlu/F");
+    myTree->Branch("MassGMSBChi",&nEvent.mGMSBChi,"MassChi/F");
+    myTree->Branch("MassGMSBLSP",&nEvent.mGMSBLSP,"MassLSP/F");
+    myTree->Branch("NPdfs",&nEvent.NPdfs,"NPdfs/I");
+    myTree->Branch("pdfW",nEvent.pdfW,"pdfW[NPdfs]/F");
+    myTree->Branch("pdfWsum",&nEvent.pdfWsum,"pdfWsum/F");
   }
 
   myTree->Branch("EventFlavor",&nEvent.EventFlavor,"EventFlavor/I");
@@ -1805,45 +1807,45 @@ void JZBAnalysis::Begin(TFile *f){
   
   
   if(fdoGenInfo) {
-	myTree->Branch("nZ",&nEvent.nZ,"nZ/I");
-	myTree->Branch("SourceOfZ",&nEvent.SourceOfZ,"SourceOfZ[nZ]/I");
-	myTree->Branch("DecayCode",&nEvent.DecayCode,"DecayCode/I");
-	myTree->Branch("pureGeneratorJZB",&nEvent.pureGeneratorJZB,"pureGeneratorJZB/F");
-	myTree->Branch("pureGeneratorZpt",&nEvent.pureGeneratorZpt,"pureGeneratorZpt/F");
-	myTree->Branch("pureGeneratorZM",&nEvent.pureGeneratorZM,"pureGeneratorZM/F");
-	myTree->Branch("pureGeneratorZeta",&nEvent.pureGeneratorZeta,"pureGeneratorZeta/F");
-	myTree->Branch("pureGeneratorZphi",&nEvent.pureGeneratorZphi,"pureGeneratorZphi/F");
-	myTree->Branch("pure2ndGeneratorJZB",&nEvent.pure2ndGeneratorJZB,"pure2ndGeneratorJZB/F");
-	myTree->Branch("pure2ndGeneratorZpt",&nEvent.pure2ndGeneratorZpt,"pure2ndGeneratorZpt/F");
-	myTree->Branch("LSPPromptnessLevel",&nEvent.LSPPromptnessLevel,"LSPPromptnessLevel[2]/I");
-	myTree->Branch("ZPromptnessLevel",&nEvent.ZPromptnessLevel,"ZPromptnessLevel[2]/I");
-	myTree->Branch("LSP1pt",&nEvent.LSP1pt,"LSP1pt/F");
-	myTree->Branch("LSP2pt",&nEvent.LSP2pt,"LSP2pt/F");
+    myTree->Branch("nZ",&nEvent.nZ,"nZ/I");
+    myTree->Branch("SourceOfZ",&nEvent.SourceOfZ,"SourceOfZ[nZ]/I");
+    myTree->Branch("DecayCode",&nEvent.DecayCode,"DecayCode/I");
+    myTree->Branch("pureGeneratorJZB",&nEvent.pureGeneratorJZB,"pureGeneratorJZB/F");
+    myTree->Branch("pureGeneratorZpt",&nEvent.pureGeneratorZpt,"pureGeneratorZpt/F");
+    myTree->Branch("pureGeneratorZM",&nEvent.pureGeneratorZM,"pureGeneratorZM/F");
+    myTree->Branch("pureGeneratorZeta",&nEvent.pureGeneratorZeta,"pureGeneratorZeta/F");
+    myTree->Branch("pureGeneratorZphi",&nEvent.pureGeneratorZphi,"pureGeneratorZphi/F");
+    myTree->Branch("pure2ndGeneratorJZB",&nEvent.pure2ndGeneratorJZB,"pure2ndGeneratorJZB/F");
+    myTree->Branch("pure2ndGeneratorZpt",&nEvent.pure2ndGeneratorZpt,"pure2ndGeneratorZpt/F");
+    myTree->Branch("LSPPromptnessLevel",&nEvent.LSPPromptnessLevel,"LSPPromptnessLevel[2]/I");
+    myTree->Branch("ZPromptnessLevel",&nEvent.ZPromptnessLevel,"ZPromptnessLevel[2]/I");
+    myTree->Branch("LSP1pt",&nEvent.LSP1pt,"LSP1pt/F");
+    myTree->Branch("LSP2pt",&nEvent.LSP2pt,"LSP2pt/F");
 
-	myTree->Branch("pureGeneratorMet",&nEvent.pureGeneratorMet,"pureGeneratorMet/F");
-	myTree->Branch("pureGeneratorMetPhi",&nEvent.pureGeneratorMetPhi,"pureGeneratorMetPhi/F");
-	myTree->Branch("pureGeneratorSumJetPt",&nEvent.pureGeneratorSumJetPt,"pureGeneratorSumJetPt/F");
-	myTree->Branch("pureGeneratorSumJetEta",&nEvent.pureGeneratorSumJetEta,"pureGeneratorSumJetEta/F");
-	myTree->Branch("pureGeneratorSumJetPhi",&nEvent.pureGeneratorSumJetPhi,"pureGeneratorSumJetPhi/F");
+    myTree->Branch("pureGeneratorMet",&nEvent.pureGeneratorMet,"pureGeneratorMet/F");
+    myTree->Branch("pureGeneratorMetPhi",&nEvent.pureGeneratorMetPhi,"pureGeneratorMetPhi/F");
+    myTree->Branch("pureGeneratorSumJetPt",&nEvent.pureGeneratorSumJetPt,"pureGeneratorSumJetPt/F");
+    myTree->Branch("pureGeneratorSumJetEta",&nEvent.pureGeneratorSumJetEta,"pureGeneratorSumJetEta/F");
+    myTree->Branch("pureGeneratorSumJetPhi",&nEvent.pureGeneratorSumJetPhi,"pureGeneratorSumJetPhi/F");
 
-	myTree->Branch("LSP1Mo",&nEvent.LSP1Mo,"LSP1Mo/I");
-	myTree->Branch("LSP2Mo",&nEvent.LSP2Mo,"LSP2Mo/I");
-	myTree->Branch("LSP1Mopt",&nEvent.LSP1Mopt,"LSP1Mopt/F");
-	myTree->Branch("LSP2Mopt",&nEvent.LSP2Mopt,"LSP2Mopt/F");
+    myTree->Branch("LSP1Mo",&nEvent.LSP1Mo,"LSP1Mo/I");
+    myTree->Branch("LSP2Mo",&nEvent.LSP2Mo,"LSP2Mo/I");
+    myTree->Branch("LSP1Mopt",&nEvent.LSP1Mopt,"LSP1Mopt/F");
+    myTree->Branch("LSP2Mopt",&nEvent.LSP2Mopt,"LSP2Mopt/F");
 
-	myTree->Branch("nLSPs",&nEvent.nLSPs,"nLSPs/I");
-	myTree->Branch("angleLSPLSP",&nEvent.angleLSPLSP,"angleLSPLSP/F");
-	myTree->Branch("angleLSPLSP2d",&nEvent.angleLSPLSP2d,"angleLSPLSP2d/F");
+    myTree->Branch("nLSPs",&nEvent.nLSPs,"nLSPs/I");
+    myTree->Branch("angleLSPLSP",&nEvent.angleLSPLSP,"angleLSPLSP/F");
+    myTree->Branch("angleLSPLSP2d",&nEvent.angleLSPLSP2d,"angleLSPLSP2d/F");
 	
-	myTree->Branch("angleLSPZ2d",&nEvent.angleLSPZ2d,"angleLSPZ2d/F");
-	myTree->Branch("angleChi2Z2d",&nEvent.angleChi2Z2d,"angleChi2Z2d/F");
-	myTree->Branch("angleChi2Z",&nEvent.angleChi2Z,"angleChi2Z/F");
-	myTree->Branch("angleLSPZ",&nEvent.angleLSPZ,"angleLSPZ/F");
-	myTree->Branch("dphiSumLSPgenMET",&nEvent.dphiSumLSPgenMET,"dphiSumLSPgenMET/F");
-	myTree->Branch("absvalSumLSP",&nEvent.absvalSumLSP,"absvalSumLSP/F");
-	myTree->Branch("dphigenZgenMet",&nEvent.dphigenZgenMet,"dphigenZgenMet/F");
-	myTree->Branch("SumLSPEta",&nEvent.SumLSPEta,"SumLSPEta/F");
-	myTree->Branch("SumLSPPhi",&nEvent.SumLSPPhi,"SumLSPPhi/F");
+    myTree->Branch("angleLSPZ2d",&nEvent.angleLSPZ2d,"angleLSPZ2d/F");
+    myTree->Branch("angleChi2Z2d",&nEvent.angleChi2Z2d,"angleChi2Z2d/F");
+    myTree->Branch("angleChi2Z",&nEvent.angleChi2Z,"angleChi2Z/F");
+    myTree->Branch("angleLSPZ",&nEvent.angleLSPZ,"angleLSPZ/F");
+    myTree->Branch("dphiSumLSPgenMET",&nEvent.dphiSumLSPgenMET,"dphiSumLSPgenMET/F");
+    myTree->Branch("absvalSumLSP",&nEvent.absvalSumLSP,"absvalSumLSP/F");
+    myTree->Branch("dphigenZgenMet",&nEvent.dphigenZgenMet,"dphigenZgenMet/F");
+    myTree->Branch("SumLSPEta",&nEvent.SumLSPEta,"SumLSPEta/F");
+    myTree->Branch("SumLSPPhi",&nEvent.SumLSPPhi,"SumLSPPhi/F");
   }
 
   
@@ -1987,7 +1989,7 @@ const bool JZBAnalysis::passTriggers( std::vector<std::string>& triggerPaths ) {
   }
 
   // Check if found unprescaled trigger...
-//  assert(foundUnprescaled);
+  //  assert(foundUnprescaled);
 
   return passed;
 
@@ -2020,28 +2022,28 @@ void JZBAnalysis::FillLHEInfo() {
   TLorentzVector l,lbar,vl,vlbar,V_tlv;
   
   for(unsigned int i=0; i<fTR->LHEEventID.size(); ++i) {
-	    int id=fTR->LHEEventID[i]; //pdgId
-	    int status = fTR->LHEEventStatus[i];
-	    int idabs=TMath::Abs(id); 
-	    if( status == 1 && ( ( idabs == 21 ) || (idabs > 0 && idabs < 7) ) ){ // gluons and quarks
-	      lheHT += TMath::Sqrt( pow(fTR->LHEEventPx[i],2) + pow(fTR->LHEEventPy[i],2) ); // first entry is px, second py
-	      lheNj++;
-	    }	    
+    int id=fTR->LHEEventID[i]; //pdgId
+    int status = fTR->LHEEventStatus[i];
+    int idabs=TMath::Abs(id); 
+    if( status == 1 && ( ( idabs == 21 ) || (idabs > 0 && idabs < 7) ) ){ // gluons and quarks
+      lheHT += TMath::Sqrt( pow(fTR->LHEEventPx[i],2) + pow(fTR->LHEEventPy[i],2) ); // first entry is px, second py
+      lheNj++;
+    }	    
 	    
-	    if(id==11){ l.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lCheck=true;}
-	    if(id==-11){ lbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lbarCheck=true;}
-	    if(id==12){ vl.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlCheck=true;}
-	    if(id==-12){ vlbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlbarCheck=true;}
+    if(id==11){ l.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lCheck=true;}
+    if(id==-11){ lbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lbarCheck=true;}
+    if(id==12){ vl.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlCheck=true;}
+    if(id==-12){ vlbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlbarCheck=true;}
 	    
-	    if(id==13){ l.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lCheck=true;}
-	    if(id==-13){ lbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lbarCheck=true;}
-	    if(id==14){ vl.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlCheck=true;}
-	    if(id==-14){ vlbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlbarCheck=true;}
+    if(id==13){ l.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lCheck=true;}
+    if(id==-13){ lbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lbarCheck=true;}
+    if(id==14){ vl.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlCheck=true;}
+    if(id==-14){ vlbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlbarCheck=true;}
 	    
-	    if(id==15){ l.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lCheck=true;}
-	    if(id==-15){ lbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lbarCheck=true;}
-	    if(id==16){ vl.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlCheck=true;}
-	    if(id==-16){ vlbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlbarCheck=true;}
+    if(id==15){ l.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lCheck=true;}
+    if(id==-15){ lbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); lbarCheck=true;}
+    if(id==16){ vl.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlCheck=true;}
+    if(id==-16){ vlbar.SetPxPyPzE(fTR->LHEEventPx[i],fTR->LHEEventPy[i],fTR->LHEEventPz[i],fTR->LHEEventE[i]); vlbarCheck=true;}
   }
   
   if( lCheck && lbarCheck ) V_tlv = l + lbar; // ZtoLL
@@ -2057,25 +2059,31 @@ void JZBAnalysis::FillLHEInfo() {
 }
 
 float BenWeight(float topPt) {
-    if( topPt<0 ) return 1;
+  if( topPt<0 ) return 1;
     
-    double p0 = 1.18246e+00;
-    double p1 = 4.63312e+02;
-    double p2 = 2.10061e-06;
+  double p0 = 1.18246e+00;
+  double p1 = 4.63312e+02;
+  double p2 = 2.10061e-06;
     
-    if( topPt>p1 ) topPt = p1;
+  if( topPt>p1 ) topPt = p1;
     
-    double result = p0 + p2 * topPt * ( topPt - 2 * p1 );
-    return result;
+  double result = p0 + p2 * topPt * ( topPt - 2 * p1 );
+  return result;
 }
 
-float topRW_f(float pt) {
-    return exp(0.156 - 0.00137*pt);
+float topRW_f(float pt,int sample) {
+  float a = 1.0, b = 0.0;
+  switch(sample) {
+  case 1: a = 0.156; b = -0.00137; break; // combined
+  case 2: a = 0.159; b = -0.00141; break; // semi-lept
+  case 3: a = 0.148; b = -0.00129; break; // fully-lept
+  }
+  return exp(a + b*pt);
 }
 
-void GetTopWeights() {
-    nEvent.benWeight=BenWeight(nEvent.genTopPt);
-    nEvent.topWeight=sqrt(topRW_f(nEvent.genTopPt) * topRW_f(nEvent.genAntiTopPt));
+void GetTopWeights(int sample) {
+  nEvent.benWeight=BenWeight(nEvent.genTopPt);
+  nEvent.topWeight=sqrt(topRW_f(nEvent.genTopPt,sample) * topRW_f(nEvent.genAntiTopPt,sample));
 }
 
 //______________________________________________________________________________
@@ -2096,7 +2104,7 @@ void JZBAnalysis::Analyze() {
  
   if(fDataType_ == "mc") // only do this for MC; for data nEvent.reset() has already set both weights to 1
     {
-     if(fisModelScan) {
+      if(fisModelScan) {
         nEvent.process=fTR->process;
         nEvent.mGlu=fTR->MassGlu;
         nEvent.mChi=fTR->MassChi;
@@ -2109,212 +2117,212 @@ void JZBAnalysis::Analyze() {
         nEvent.NPdfs=fTR->NPdfs;
         for(int i=0;i<fTR->NPdfs;i++) nEvent.pdfW[i]=fTR->pdfW[i];
         nEvent.pdfWsum=fTR->pdfWsum;
-     } else {
-	    //don't attempt to do PURW for model scans
-	    nEvent.PUweight     = GetPUWeight(fTR->PUnumTrueInteractions);
-	    nEvent.PUweightUP   = GetPUWeightUp(fTR->PUnumTrueInteractions);
-	    nEvent.PUweightDOWN = GetPUWeightDown(fTR->PUnumTrueInteractions);
-	    nEvent.weight     = nEvent.PUweight;
-	    weight_histo->Fill(1,nEvent.PUweight);
-     }
+      } else {
+        //don't attempt to do PURW for model scans
+        nEvent.PUweight     = GetPUWeight(fTR->PUnumTrueInteractions);
+        nEvent.PUweightUP   = GetPUWeightUp(fTR->PUnumTrueInteractions);
+        nEvent.PUweightDOWN = GetPUWeightDown(fTR->PUnumTrueInteractions);
+        nEvent.weight     = nEvent.PUweight;
+        weight_histo->Fill(1,nEvent.PUweight);
+      }
      
      
-    FillLHEInfo();
+      FillLHEInfo();
      
-    nEvent.EventFlavor=DetermineFlavor(fdoGenInfo,fTR);
-    nEvent.EventZToTaus=DecaysToTaus(fdoGenInfo,fTR);
+      nEvent.EventFlavor=DetermineFlavor(fdoGenInfo,fTR);
+      nEvent.EventZToTaus=DecaysToTaus(fdoGenInfo,fTR);
       
-     // the following part makes sense for all MC - not only for scans (though for scans imposedx/realx make more sense)
-	float chimass=0;
-	int nchimass=0;
-	float lspmass=0;
-	int nlspmass=0;
-	float glumass=0;
-	int nglumass=0;
+      // the following part makes sense for all MC - not only for scans (though for scans imposedx/realx make more sense)
+      float chimass=0;
+      int nchimass=0;
+      float lspmass=0;
+      int nlspmass=0;
+      float glumass=0;
+      int nglumass=0;
 	
-	float genZpt=0,genZeta=0,genZphi=0,genZM=0;
-	float genZ2pt=0,genZ2eta=0,genZ2phi=0,genZ2M=0;
-	int Zprompt1=0,Zprompt2=0;
-	int Promptness[5];
-	vector<TLorentzVector> LSPvecs;
-	vector<TLorentzVector> LSPMothervecs;
-	vector<int> LSPMother;
-	vector<float> LSPMotherPt;
+      float genZpt=0,genZeta=0,genZphi=0,genZM=0;
+      float genZ2pt=0,genZ2eta=0,genZ2phi=0,genZ2M=0;
+      int Zprompt1=0,Zprompt2=0;
+      int Promptness[5];
+      vector<TLorentzVector> LSPvecs;
+      vector<TLorentzVector> LSPMothervecs;
+      vector<int> LSPMother;
+      vector<float> LSPMotherPt;
 
-	TLorentzVector summedLSPs;
-	int nGenParticles=fTR->nGenParticles;
-	if(nGenParticles<2||nGenParticles>2000) {
-		//this happens if you use an old file or one that doesn't contain the necessary generator information.
-		if(fdoGenInfo) cerr << "WATCH OUT : GENERATOR INFORMATION HAS BEEN DISABLED BECAUSE THE NUMBER OF GEN PARTICLES WAS TOO LOW (" << nGenParticles << ")" << endl;
-		fdoGenInfo=false;
-		nGenParticles=0;
-	}
-
-
-	ContainsSoftLepton();
+      TLorentzVector summedLSPs;
+      int nGenParticles=fTR->nGenParticles;
+      if(nGenParticles<2||nGenParticles>2000) {
+        //this happens if you use an old file or one that doesn't contain the necessary generator information.
+        if(fdoGenInfo) cerr << "WATCH OUT : GENERATOR INFORMATION HAS BEEN DISABLED BECAUSE THE NUMBER OF GEN PARTICLES WAS TOO LOW (" << nGenParticles << ")" << endl;
+        fdoGenInfo=false;
+        nGenParticles=0;
+      }
 
 
-	bool wecare=false;
-	for(int i=0;i<nGenParticles;i++) {
-	  int thisParticleId = fTR->genInfoId[i];
-	  if(abs(fTR->genInfoStatus[i]-3)>0.1) continue;
-      if(thisParticleId==6) nEvent.genTopPt=fTR->genInfoPt[i];
-      if(thisParticleId==-6) nEvent.genAntiTopPt=fTR->genInfoPt[i];
+      ContainsSoftLepton();
+
+
+      bool wecare=false;
+      for(int i=0;i<nGenParticles;i++) {
+        int thisParticleId = fTR->genInfoId[i];
+        if(abs(fTR->genInfoStatus[i]-3)>0.1) continue;
+        if(thisParticleId==6) nEvent.genTopPt=fTR->genInfoPt[i];
+        if(thisParticleId==-6) nEvent.genAntiTopPt=fTR->genInfoPt[i];
         
-	  if(fdoGenInfo&&abs(thisParticleId)==23) {
-	    //dealing with a Z
-	    int motherIndex=fTR->genInfoMo1[i];
-	    if(motherIndex>=0) nEvent.SourceOfZ[nEvent.nZ]=fTR->genInfoId[motherIndex];
-	    if(!(nEvent.nZ<Zmax)) cerr << " *******    TOO MANY Z'S IN THIS EVENT !!!!!!! WILL OVERWRITE THE LAST ONE!!!!" << endl;
-	    else nEvent.nZ++;
+        if(fdoGenInfo&&abs(thisParticleId)==23) {
+          //dealing with a Z
+          int motherIndex=fTR->genInfoMo1[i];
+          if(motherIndex>=0) nEvent.SourceOfZ[nEvent.nZ]=fTR->genInfoId[motherIndex];
+          if(!(nEvent.nZ<Zmax)) cerr << " *******    TOO MANY Z'S IN THIS EVENT !!!!!!! WILL OVERWRITE THE LAST ONE!!!!" << endl;
+          else nEvent.nZ++;
 	    
-	    for(int da=i+1;da<fTR->nGenParticles;da++) {
-	      if(fTR->genInfoMo1[da]==i) {
-		//dealing with a daughter
-		if(abs(fTR->genInfoId[da])<10) nEvent.DecayCode+=100;
-		if(is_neutrino(abs(fTR->genInfoId[da]))) nEvent.DecayCode+=10;
-		if(is_charged_lepton(abs(fTR->genInfoId[da]))) {
-		  nEvent.DecayCode+=1;
-		  if(fTR->genInfoPt[i]>genZpt) {
-		    genZ2pt=genZpt;
-		    genZ2M=genZM;
-		    genZ2eta=genZeta;
-		    genZ2phi=genZphi;
-		    Zprompt2=Zprompt1;
+          for(int da=i+1;da<fTR->nGenParticles;da++) {
+            if(fTR->genInfoMo1[da]==i) {
+              //dealing with a daughter
+              if(abs(fTR->genInfoId[da])<10) nEvent.DecayCode+=100;
+              if(is_neutrino(abs(fTR->genInfoId[da]))) nEvent.DecayCode+=10;
+              if(is_charged_lepton(abs(fTR->genInfoId[da]))) {
+                nEvent.DecayCode+=1;
+                if(fTR->genInfoPt[i]>genZpt) {
+                  genZ2pt=genZpt;
+                  genZ2M=genZM;
+                  genZ2eta=genZeta;
+                  genZ2phi=genZphi;
+                  Zprompt2=Zprompt1;
 		    
-		    genZpt=fTR->genInfoPt[i];
-		    genZM=fTR->genInfoM[i];
-		    genZeta=fTR->genInfoEta[i];
-		    genZphi=fTR->genInfoPhi[i];
-		    Zprompt1=fTR->PromptnessLevel[i];
-		  } else {
-		    if(fTR->genInfoPt[i]>genZ2pt) {
-		      genZ2pt=fTR->genInfoPt[i];
-		      genZ2M=fTR->genInfoM[i];
-		      genZ2eta=fTR->genInfoEta[i];
-		      genZ2phi=fTR->genInfoPhi[i];
-		      Zprompt2=fTR->PromptnessLevel[i];
-		    }
-		  }//end of if fTR->genInfoPt[i]>genZpt)
-		}//end of if leptonic decay
-	      }//end of if daughter
-	    }//end of daughter search
-	  }//end of Z case
+                  genZpt=fTR->genInfoPt[i];
+                  genZM=fTR->genInfoM[i];
+                  genZeta=fTR->genInfoEta[i];
+                  genZphi=fTR->genInfoPhi[i];
+                  Zprompt1=fTR->PromptnessLevel[i];
+                } else {
+                  if(fTR->genInfoPt[i]>genZ2pt) {
+                    genZ2pt=fTR->genInfoPt[i];
+                    genZ2M=fTR->genInfoM[i];
+                    genZ2eta=fTR->genInfoEta[i];
+                    genZ2phi=fTR->genInfoPhi[i];
+                    Zprompt2=fTR->PromptnessLevel[i];
+                  }
+                }//end of if fTR->genInfoPt[i]>genZpt)
+              }//end of if leptonic decay
+            }//end of if daughter
+          }//end of daughter search
+        }//end of Z case
 	  
-	  if(abs(thisParticleId)==1000021) {//mglu
-	    glumass+=fTR->genInfoM[i];
-	    nglumass++;
-	  }
-	  if(abs(thisParticleId)==1000022) {//mlsp
-	    LSPMother.push_back(fTR->genInfoMo1[i]);
-	    LSPMotherPt.push_back(fTR->genInfoPt[fTR->genInfoMo1[i]]);
-	    lspmass+=fTR->genInfoM[i];
-	    nlspmass++;
-	    TLorentzVector newLSP;
-	    newLSP.SetPtEtaPhiM(fTR->genInfoPt[i],fTR->genInfoEta[i],fTR->genInfoPhi[i],fTR->genInfoM[i]);
-	    LSPvecs.push_back(newLSP);
-	    if(LSPvecs.size()==1) summedLSPs.SetPtEtaPhiM(fTR->genInfoPt[i],fTR->genInfoEta[i],fTR->genInfoPhi[i],fTR->genInfoM[i]);
-	    else summedLSPs=summedLSPs+newLSP;
-	    Promptness[nEvent.nLSPs]=fTR->PromptnessLevel[i];
-	    nEvent.nLSPs++;
-	  }
-	  if(abs(thisParticleId)==1000023) {//mchi
-	    chimass+=fTR->genInfoM[i];
-	    nchimass++;
-	    TLorentzVector thismom;
-	    thismom.SetPtEtaPhiM(fTR->genInfoPt[i],fTR->genInfoEta[i],fTR->genInfoPhi[i],fTR->genInfoM[i]);
-	    LSPMothervecs.push_back(thismom);
-	  }
-	}// done with gen info loop
+        if(abs(thisParticleId)==1000021) {//mglu
+          glumass+=fTR->genInfoM[i];
+          nglumass++;
+        }
+        if(abs(thisParticleId)==1000022) {//mlsp
+          LSPMother.push_back(fTR->genInfoMo1[i]);
+          LSPMotherPt.push_back(fTR->genInfoPt[fTR->genInfoMo1[i]]);
+          lspmass+=fTR->genInfoM[i];
+          nlspmass++;
+          TLorentzVector newLSP;
+          newLSP.SetPtEtaPhiM(fTR->genInfoPt[i],fTR->genInfoEta[i],fTR->genInfoPhi[i],fTR->genInfoM[i]);
+          LSPvecs.push_back(newLSP);
+          if(LSPvecs.size()==1) summedLSPs.SetPtEtaPhiM(fTR->genInfoPt[i],fTR->genInfoEta[i],fTR->genInfoPhi[i],fTR->genInfoM[i]);
+          else summedLSPs=summedLSPs+newLSP;
+          Promptness[nEvent.nLSPs]=fTR->PromptnessLevel[i];
+          nEvent.nLSPs++;
+        }
+        if(abs(thisParticleId)==1000023) {//mchi
+          chimass+=fTR->genInfoM[i];
+          nchimass++;
+          TLorentzVector thismom;
+          thismom.SetPtEtaPhiM(fTR->genInfoPt[i],fTR->genInfoEta[i],fTR->genInfoPhi[i],fTR->genInfoM[i]);
+          LSPMothervecs.push_back(thismom);
+        }
+      }// done with gen info loop
         
         
-    if(fIsTTbar) GetTopWeights();
+      if(fIsTTbar>0) GetTopWeights(fIsTTbar);
 
-	if(fdoGenInfo&&fisModelScan) {
-		TLorentzVector pureGenMETvector(fTR->GenMETpx,fTR->GenMETpy,0,0);
+      if(fdoGenInfo&&fisModelScan) {
+        TLorentzVector pureGenMETvector(fTR->GenMETpx,fTR->GenMETpy,0,0);
 
-		if(nEvent.nLSPs==2) nEvent.angleLSPLSP=LSPvecs[0].Angle(LSPvecs[1].Vect());
-		if(nEvent.nLSPs==2) nEvent.angleLSPLSP2d=LSPvecs[0].DeltaPhi(LSPvecs[1]);
+        if(nEvent.nLSPs==2) nEvent.angleLSPLSP=LSPvecs[0].Angle(LSPvecs[1].Vect());
+        if(nEvent.nLSPs==2) nEvent.angleLSPLSP2d=LSPvecs[0].DeltaPhi(LSPvecs[1]);
 		
-		nEvent.dphiSumLSPgenMET=summedLSPs.DeltaPhi(pureGenMETvector);
-		nEvent.SumLSPEta=summedLSPs.Eta();
-		nEvent.SumLSPPhi=summedLSPs.Phi();
-		nEvent.absvalSumLSP=summedLSPs.Pt();
+        nEvent.dphiSumLSPgenMET=summedLSPs.DeltaPhi(pureGenMETvector);
+        nEvent.SumLSPEta=summedLSPs.Eta();
+        nEvent.SumLSPPhi=summedLSPs.Phi();
+        nEvent.absvalSumLSP=summedLSPs.Pt();
 
-		TLorentzVector pureGenZvector;
-		pureGenZvector.SetPtEtaPhiM(genZpt,genZeta,genZphi,genZM);
+        TLorentzVector pureGenZvector;
+        pureGenZvector.SetPtEtaPhiM(genZpt,genZeta,genZphi,genZM);
 
 		
-		float LSPdRa = LSPvecs[0].DeltaR(pureGenZvector);
-		float LSPdRb = LSPvecs[1].DeltaR(pureGenZvector);
-		nEvent.ZPromptnessLevel[0]=Zprompt1;
-		nEvent.ZPromptnessLevel[1]=Zprompt2;
-		if(LSPdRa<LSPdRb) {
-			nEvent.LSPPromptnessLevel[0]=Promptness[0];
-			nEvent.LSPPromptnessLevel[1]=Promptness[1];
-			nEvent.LSP1pt=LSPvecs[0].Pt();
-			nEvent.LSP2pt=LSPvecs[1].Pt();
-			nEvent.LSP1Mo=LSPMother[0];
-			nEvent.LSP2Mo=LSPMother[1];
-			nEvent.LSP1Mopt=LSPMotherPt[0];
-			nEvent.LSP2Mopt=LSPMotherPt[1];
-			nEvent.angleLSPZ=LSPvecs[0].Angle(pureGenZvector.Vect());
-			nEvent.angleLSPZ2d=LSPvecs[0].DeltaPhi(pureGenZvector);
-			if(abs(LSPMotherPt[0]-LSPMothervecs[0].Pt())<abs(LSPMotherPt[0]-LSPMothervecs[1].Pt())) {
-			  nEvent.angleChi2Z2d=LSPMothervecs[0].DeltaPhi(LSPvecs[0]);
-			  nEvent.angleChi2Z=LSPMothervecs[0].Angle(LSPvecs[0].Vect());
-			} else {
-			  nEvent.angleChi2Z2d=LSPMothervecs[1].DeltaPhi(LSPvecs[0]);
-			  nEvent.angleChi2Z=LSPMothervecs[1].Angle(LSPvecs[0].Vect());
-			}
-		} else {
-			nEvent.LSPPromptnessLevel[0]=Promptness[1];
-			nEvent.LSPPromptnessLevel[1]=Promptness[0];
-			nEvent.LSP1pt=LSPvecs[1].Pt();
-			nEvent.LSP2pt=LSPvecs[0].Pt();
-			nEvent.LSP1Mo=LSPMother[1];
-			nEvent.LSP2Mo=LSPMother[0];
-			nEvent.LSP1Mopt=LSPMotherPt[1];
-			nEvent.LSP2Mopt=LSPMotherPt[0];
-			nEvent.angleLSPZ=LSPvecs[1].Angle(pureGenZvector.Vect());
-			nEvent.angleLSPZ2d=LSPvecs[1].DeltaPhi(pureGenZvector);
-			if(abs(LSPMotherPt[1]-LSPMothervecs[0].Pt())<abs(LSPMotherPt[1]-LSPMothervecs[1].Pt())) {
-			  nEvent.angleChi2Z2d=LSPMothervecs[0].DeltaPhi(LSPvecs[1]);
-			  nEvent.angleChi2Z=LSPMothervecs[0].Angle(LSPvecs[1].Vect());
-			} else {
-			  nEvent.angleChi2Z2d=LSPMothervecs[1].DeltaPhi(LSPvecs[1]);
-			  nEvent.angleChi2Z=LSPMothervecs[1].Angle(LSPvecs[1].Vect());
-			}
-		}
+        float LSPdRa = LSPvecs[0].DeltaR(pureGenZvector);
+        float LSPdRb = LSPvecs[1].DeltaR(pureGenZvector);
+        nEvent.ZPromptnessLevel[0]=Zprompt1;
+        nEvent.ZPromptnessLevel[1]=Zprompt2;
+        if(LSPdRa<LSPdRb) {
+          nEvent.LSPPromptnessLevel[0]=Promptness[0];
+          nEvent.LSPPromptnessLevel[1]=Promptness[1];
+          nEvent.LSP1pt=LSPvecs[0].Pt();
+          nEvent.LSP2pt=LSPvecs[1].Pt();
+          nEvent.LSP1Mo=LSPMother[0];
+          nEvent.LSP2Mo=LSPMother[1];
+          nEvent.LSP1Mopt=LSPMotherPt[0];
+          nEvent.LSP2Mopt=LSPMotherPt[1];
+          nEvent.angleLSPZ=LSPvecs[0].Angle(pureGenZvector.Vect());
+          nEvent.angleLSPZ2d=LSPvecs[0].DeltaPhi(pureGenZvector);
+          if(abs(LSPMotherPt[0]-LSPMothervecs[0].Pt())<abs(LSPMotherPt[0]-LSPMothervecs[1].Pt())) {
+            nEvent.angleChi2Z2d=LSPMothervecs[0].DeltaPhi(LSPvecs[0]);
+            nEvent.angleChi2Z=LSPMothervecs[0].Angle(LSPvecs[0].Vect());
+          } else {
+            nEvent.angleChi2Z2d=LSPMothervecs[1].DeltaPhi(LSPvecs[0]);
+            nEvent.angleChi2Z=LSPMothervecs[1].Angle(LSPvecs[0].Vect());
+          }
+        } else {
+          nEvent.LSPPromptnessLevel[0]=Promptness[1];
+          nEvent.LSPPromptnessLevel[1]=Promptness[0];
+          nEvent.LSP1pt=LSPvecs[1].Pt();
+          nEvent.LSP2pt=LSPvecs[0].Pt();
+          nEvent.LSP1Mo=LSPMother[1];
+          nEvent.LSP2Mo=LSPMother[0];
+          nEvent.LSP1Mopt=LSPMotherPt[1];
+          nEvent.LSP2Mopt=LSPMotherPt[0];
+          nEvent.angleLSPZ=LSPvecs[1].Angle(pureGenZvector.Vect());
+          nEvent.angleLSPZ2d=LSPvecs[1].DeltaPhi(pureGenZvector);
+          if(abs(LSPMotherPt[1]-LSPMothervecs[0].Pt())<abs(LSPMotherPt[1]-LSPMothervecs[1].Pt())) {
+            nEvent.angleChi2Z2d=LSPMothervecs[0].DeltaPhi(LSPvecs[1]);
+            nEvent.angleChi2Z=LSPMothervecs[0].Angle(LSPvecs[1].Vect());
+          } else {
+            nEvent.angleChi2Z2d=LSPMothervecs[1].DeltaPhi(LSPvecs[1]);
+            nEvent.angleChi2Z=LSPMothervecs[1].Angle(LSPvecs[1].Vect());
+          }
+        }
 
-		TLorentzVector pureGenZ2vector;
-		pureGenZ2vector.SetPtEtaPhiM(genZ2pt,genZ2eta,genZ2phi,genZ2M);
-		nEvent.pureGeneratorJZB=(-pureGenMETvector-pureGenZvector).Pt() - pureGenZvector.Pt();
-		nEvent.pureGeneratorMet=pureGenMETvector.Pt();
-		nEvent.pureGeneratorMetPhi=pureGenMETvector.Phi();
-		nEvent.pureGeneratorSumJetPt=(-pureGenMETvector-pureGenZvector).Pt();
-		nEvent.pureGeneratorSumJetEta=(-pureGenMETvector-pureGenZvector).Eta();
-		nEvent.pureGeneratorSumJetPhi=(-pureGenMETvector-pureGenZvector).Phi();
+        TLorentzVector pureGenZ2vector;
+        pureGenZ2vector.SetPtEtaPhiM(genZ2pt,genZ2eta,genZ2phi,genZ2M);
+        nEvent.pureGeneratorJZB=(-pureGenMETvector-pureGenZvector).Pt() - pureGenZvector.Pt();
+        nEvent.pureGeneratorMet=pureGenMETvector.Pt();
+        nEvent.pureGeneratorMetPhi=pureGenMETvector.Phi();
+        nEvent.pureGeneratorSumJetPt=(-pureGenMETvector-pureGenZvector).Pt();
+        nEvent.pureGeneratorSumJetEta=(-pureGenMETvector-pureGenZvector).Eta();
+        nEvent.pureGeneratorSumJetPhi=(-pureGenMETvector-pureGenZvector).Phi();
 
 
-		nEvent.pureGeneratorZpt=genZpt;
-		nEvent.pureGeneratorZM=genZM;
-		nEvent.pureGeneratorZphi=genZphi;
-		nEvent.pureGeneratorZeta=genZeta;
-		nEvent.pure2ndGeneratorJZB=(-pureGenMETvector-pureGenZ2vector).Pt() - pureGenZ2vector.Pt();
-		nEvent.pure2ndGeneratorZpt=pureGenZ2vector.Pt();
+        nEvent.pureGeneratorZpt=genZpt;
+        nEvent.pureGeneratorZM=genZM;
+        nEvent.pureGeneratorZphi=genZphi;
+        nEvent.pureGeneratorZeta=genZeta;
+        nEvent.pure2ndGeneratorJZB=(-pureGenMETvector-pureGenZ2vector).Pt() - pureGenZ2vector.Pt();
+        nEvent.pure2ndGeneratorZpt=pureGenZ2vector.Pt();
 
-		if(genZpt<0.01) nEvent.pureGeneratorJZB=0; // in case there is no leptonic Z
-	}//end of if(fdoGenInfo&&fisModelScan)
+        if(genZpt<0.01) nEvent.pureGeneratorJZB=0; // in case there is no leptonic Z
+      }//end of if(fdoGenInfo&&fisModelScan)
 
 	
-	if(nchimass>0&&nlspmass>0&&nglumass>0)  nEvent.realx=(chimass/nchimass - lspmass/nlspmass)/(glumass/nglumass-lspmass/nlspmass);
-	//at this point we use the fact that one of the three bits of information in the LHE event comment is the imposed x - the only question is which one ;-) 
-	//note: the bit of information in the comment is actually xbar, so we need to store 1-xbar to get our definition of x. 
-	if(nEvent.mGlu>0 && nEvent.mGlu<1) nEvent.imposedx=1-nEvent.mGlu;
-	if(nEvent.mChi>0 && nEvent.mChi<1) nEvent.imposedx=1-nEvent.mChi;
-	if(nEvent.mLSP>0 && nEvent.mLSP<1) nEvent.imposedx=1-nEvent.mLSP;
-  } // end of mc if
+      if(nchimass>0&&nlspmass>0&&nglumass>0)  nEvent.realx=(chimass/nchimass - lspmass/nlspmass)/(glumass/nglumass-lspmass/nlspmass);
+      //at this point we use the fact that one of the three bits of information in the LHE event comment is the imposed x - the only question is which one ;-) 
+      //note: the bit of information in the comment is actually xbar, so we need to store 1-xbar to get our definition of x. 
+      if(nEvent.mGlu>0 && nEvent.mGlu<1) nEvent.imposedx=1-nEvent.mGlu;
+      if(nEvent.mChi>0 && nEvent.mChi<1) nEvent.imposedx=1-nEvent.mChi;
+      if(nEvent.mLSP>0 && nEvent.mLSP<1) nEvent.imposedx=1-nEvent.mLSP;
+    } // end of mc if
   
   // Trigger information
   nEvent.passed_triggers=0;
@@ -2462,10 +2470,10 @@ void JZBAnalysis::Analyze() {
   int BadTriLepton2 = 0;
   int BadTriLepton3 = 0;
   
-//  // Check for SS combination
-//  for(; PosLepton2 < sortedGoodgLeptons.size(); PosLepton2++) {
-//    if(sortedGoodgLeptons[0].charge*sortedGoodgLeptons[PosLepton2].charge>0) break;
-//  }
+  //  // Check for SS combination
+  //  for(; PosLepton2 < sortedGoodgLeptons.size(); PosLepton2++) {
+  //    if(sortedGoodgLeptons[0].charge*sortedGoodgLeptons[PosLepton2].charge>0) break;
+  //  }
   
   // Check for OS combination
   for(; PosLepton2 < sortedGoodLeptons.size(); PosLepton2++) {
@@ -2553,7 +2561,7 @@ void JZBAnalysis::Analyze() {
     nEvent.id1 = sortedGoodLeptons[PosLepton1].type; //??????
     nEvent.chid1 = (sortedGoodLeptons[PosLepton1].type+1)*sortedGoodLeptons[PosLepton1].charge;
     nEvent.rho = fTR->RhoForIso; 
-//    nEvent.isConv1 = IsConvertedPhoton(sortedGoodLeptons[PosLepton1].index);
+    //    nEvent.isConv1 = IsConvertedPhoton(sortedGoodLeptons[PosLepton1].index);
       
     nEvent.eta2 = sortedGoodLeptons[PosLepton2].p.Eta();
     nEvent.pt2 = sortedGoodLeptons[PosLepton2].p.Pt();
@@ -2562,7 +2570,7 @@ void JZBAnalysis::Analyze() {
     nEvent.ch2 = sortedGoodLeptons[PosLepton2].charge;
     nEvent.id2 = sortedGoodLeptons[PosLepton2].type; //??????
     nEvent.chid2 = (sortedGoodLeptons[PosLepton2].type+1)*sortedGoodLeptons[PosLepton2].charge;
-//    nEvent.isConv2 = IsConvertedPhoton(sortedGoodLeptons[PosLepton2].index);
+    //    nEvent.isConv2 = IsConvertedPhoton(sortedGoodLeptons[PosLepton2].index);
     
     nEvent.l1l2dR=sortedGoodLeptons[PosLepton1].p.DeltaR(sortedGoodLeptons[PosLepton2].p);
     
@@ -2601,7 +2609,7 @@ void JZBAnalysis::Analyze() {
     }
     
     if (isMC) {
-//      nEvent.weight=nEvent.weight*lepweight;
+      //      nEvent.weight=nEvent.weight*lepweight;
       nEvent.weightEffDown=nEvent.weight*(lepweight-lepweightErr);
       nEvent.weightEffUp=nEvent.weight*(lepweight+lepweightErr);
       nEvent.Efficiencyweightonly=lepweight;
@@ -2648,7 +2656,7 @@ void JZBAnalysis::Analyze() {
   nEvent.ZbCHS3010_pfJetGoodNum=0;
   nEvent.ZbCHS1010_pfJetGoodNum=0;
   nEvent.ZbCHS3010_pfJetGoodNumBtag=0;
-    // #--- PF jet loop (with CHS - not what we usually use)
+  // #--- PF jet loop (with CHS - not what we usually use)
   vector<lepton> pfCHSGoodJets;
   for(int i =0 ; i<fTR->PFCHSNJets;i++) // PF jet loop
     {
@@ -2866,7 +2874,7 @@ void JZBAnalysis::Analyze() {
       
       hemiobjs.index.push_back(i);
       hemiobjs.type.push_back("jet"),
-      hemiobjs.hemisphere.push_back(0);
+        hemiobjs.hemisphere.push_back(0);
       
       // Flag good jets failing ID
       if (!isJetID) { 
@@ -2915,28 +2923,28 @@ void JZBAnalysis::Analyze() {
         nEvent.minc+=jpt;
 
         if(isJetID>0) {
-	        nEvent.pfJetGoodNumID++;
-	        if(nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] > 0.679) nEvent.pfJetGoodNumIDBtag++;
+          nEvent.pfJetGoodNumID++;
+          if(nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] > 0.679) nEvent.pfJetGoodNumIDBtag++;
 	}
 	if(nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] > 0.679) { 
-	   nEvent.pfJetGoodPtBtag[nEvent.pfJetGoodNumBtag40]  = jpt;
-           nEvent.pfJetGoodEtaBtag[nEvent.pfJetGoodNumBtag40] = jeta;
-           nEvent.pfJetGoodPhiBtag[nEvent.pfJetGoodNumBtag40] = jphi;
-           nEvent.pfJetGoodEBtag[nEvent.pfJetGoodNumBtag40] = jenergy;
-           nEvent.pfJetGoodIDBtag[nEvent.pfJetGoodNumBtag40]  = isJetID;
-	   nEvent.pfBJetDphiZ[nEvent.pfJetGoodNumBtag40]  = aJet.DeltaPhi(zVector);
-           nEvent.pfJetGoodTracksBtag[nEvent.pfJetGoodNumBtag40] = ntracksch;
-           nEvent.pfJetGoodTracksNBtag[nEvent.pfJetGoodNumBtag40] = ntracksne;
-	   nEvent.pfJetGoodNumBtag40++;
+          nEvent.pfJetGoodPtBtag[nEvent.pfJetGoodNumBtag40]  = jpt;
+          nEvent.pfJetGoodEtaBtag[nEvent.pfJetGoodNumBtag40] = jeta;
+          nEvent.pfJetGoodPhiBtag[nEvent.pfJetGoodNumBtag40] = jphi;
+          nEvent.pfJetGoodEBtag[nEvent.pfJetGoodNumBtag40] = jenergy;
+          nEvent.pfJetGoodIDBtag[nEvent.pfJetGoodNumBtag40]  = isJetID;
+          nEvent.pfBJetDphiZ[nEvent.pfJetGoodNumBtag40]  = aJet.DeltaPhi(zVector);
+          nEvent.pfJetGoodTracksBtag[nEvent.pfJetGoodNumBtag40] = ntracksch;
+          nEvent.pfJetGoodTracksNBtag[nEvent.pfJetGoodNumBtag40] = ntracksne;
+          nEvent.pfJetGoodNumBtag40++;
 	   
-	   float ml1b_cand=(aJet+sortedGoodLeptons[PosLepton1].p).M();
+          float ml1b_cand=(aJet+sortedGoodLeptons[PosLepton1].p).M();
 	   
-	   if(nEvent.ml1b<0) nEvent.ml1b=ml1b_cand;
-	   else if(ml1b_cand<nEvent.ml1b) nEvent.ml1b=ml1b_cand;
+          if(nEvent.ml1b<0) nEvent.ml1b=ml1b_cand;
+          else if(ml1b_cand<nEvent.ml1b) nEvent.ml1b=ml1b_cand;
 	   
-	   float ml2b_cand=(aJet+sortedGoodLeptons[PosLepton2].p).M();
-	   if(nEvent.ml2b<0) nEvent.ml2b=ml2b_cand;
-	   else if(ml2b_cand<nEvent.ml2b) nEvent.ml2b=ml2b_cand;
+          float ml2b_cand=(aJet+sortedGoodLeptons[PosLepton2].p).M();
+          if(nEvent.ml2b<0) nEvent.ml2b=ml2b_cand;
+          else if(ml2b_cand<nEvent.ml2b) nEvent.ml2b=ml2b_cand;
         }
 
 	if(nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] > 0.244) nEvent.pfJetGoodNumBtag40CSVBPLoose++; 
@@ -2957,14 +2965,14 @@ void JZBAnalysis::Analyze() {
         nEvent.pfJetGoodNum40++;
 	
 	if(fDataType_ == "mc") {
-		bool is_tagged_med = fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i] > 0.679;
-		float random(-1.);
-		random = fRand3Normal->Uniform(0,1); // get random number from uniform distribution
-		nEvent.MC_pfJetGoodNumBTag40   +=fBTagSF->modifyBTagsWithSF(is_tagged_med, fTR->JPt[i], fTR->JEta[i], fTR->JPartonFlavour[i], "mean", random);
-		random = fRand3Normal->Uniform(0,1); // get random number from uniform distribution
-		nEvent.MC_pfJetGoodNumBTag40dn+=fBTagSFup->modifyBTagsWithSF(is_tagged_med, fTR->JPt[i], fTR->JEta[i], fTR->JPartonFlavour[i], "max", random);
-		random = fRand3Normal->Uniform(0,1); // get random number from uniform distribution
-		nEvent.MC_pfJetGoodNumBTag40up+=fBTagSFdn->modifyBTagsWithSF(is_tagged_med, fTR->JPt[i], fTR->JEta[i], fTR->JPartonFlavour[i], "min", random);
+          bool is_tagged_med = fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i] > 0.679;
+          float random(-1.);
+          random = fRand3Normal->Uniform(0,1); // get random number from uniform distribution
+          nEvent.MC_pfJetGoodNumBTag40   +=fBTagSF->modifyBTagsWithSF(is_tagged_med, fTR->JPt[i], fTR->JEta[i], fTR->JPartonFlavour[i], "mean", random);
+          random = fRand3Normal->Uniform(0,1); // get random number from uniform distribution
+          nEvent.MC_pfJetGoodNumBTag40dn+=fBTagSFup->modifyBTagsWithSF(is_tagged_med, fTR->JPt[i], fTR->JEta[i], fTR->JPartonFlavour[i], "max", random);
+          random = fRand3Normal->Uniform(0,1); // get random number from uniform distribution
+          nEvent.MC_pfJetGoodNumBTag40up+=fBTagSFdn->modifyBTagsWithSF(is_tagged_med, fTR->JPt[i], fTR->JEta[i], fTR->JPartonFlavour[i], "min", random);
 	}
       }
       
@@ -2992,42 +3000,42 @@ void JZBAnalysis::Analyze() {
       if ( jpt>60. )  nEvent.pfJetGoodNum60++;
     }
     
-    if(nEvent.ZbCHS3010_pfJetGoodNum>0) {
-      nEvent.ZbCHS3010_alpha=nEvent.ZbCHS3010_pfJetGoodPt[1]/nEvent.pt;
-      nEvent.ZbCHS3010_alphaL5=nEvent.ZbCHS3010_L5corr*nEvent.ZbCHS3010_pfJetGoodPt[1]/nEvent.pt;
-      nEvent.ZbCHS3010_alphaUp=nEvent.ZbCHS3010_alphaUp/nEvent.pt;
-      nEvent.ZbCHS3010_alphaDown=nEvent.ZbCHS3010_alphaDown/nEvent.pt;
-    }
-    if(nEvent.ZbCHS1010_pfJetGoodNum>0) {
-      nEvent.ZbCHS1010_alpha=nEvent.ZbCHS1010_pfJetGoodPt[1]/nEvent.pt;
-      nEvent.ZbCHS1010_alphaUp=nEvent.ZbCHS1010_alphaUp/nEvent.pt;
-      nEvent.ZbCHS1010_alphaDown=nEvent.ZbCHS1010_alphaDown/nEvent.pt;
-    }
-    nEvent.mpf=1+(Cleantype1METvector.Vect()*zVector.Vect())/(zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());
-    nEvent.fake_mpf=1+((Cleantype1METvector.Vect()+( 1.0 / 1.05  -  1 )*zVector.Vect())*zVector.Vect())/(1.05*zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());//we simulate a missing correction of 10%
+  if(nEvent.ZbCHS3010_pfJetGoodNum>0) {
+    nEvent.ZbCHS3010_alpha=nEvent.ZbCHS3010_pfJetGoodPt[1]/nEvent.pt;
+    nEvent.ZbCHS3010_alphaL5=nEvent.ZbCHS3010_L5corr*nEvent.ZbCHS3010_pfJetGoodPt[1]/nEvent.pt;
+    nEvent.ZbCHS3010_alphaUp=nEvent.ZbCHS3010_alphaUp/nEvent.pt;
+    nEvent.ZbCHS3010_alphaDown=nEvent.ZbCHS3010_alphaDown/nEvent.pt;
+  }
+  if(nEvent.ZbCHS1010_pfJetGoodNum>0) {
+    nEvent.ZbCHS1010_alpha=nEvent.ZbCHS1010_pfJetGoodPt[1]/nEvent.pt;
+    nEvent.ZbCHS1010_alphaUp=nEvent.ZbCHS1010_alphaUp/nEvent.pt;
+    nEvent.ZbCHS1010_alphaDown=nEvent.ZbCHS1010_alphaDown/nEvent.pt;
+  }
+  nEvent.mpf=1+(Cleantype1METvector.Vect()*zVector.Vect())/(zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());
+  nEvent.fake_mpf=1+((Cleantype1METvector.Vect()+( 1.0 / 1.05  -  1 )*zVector.Vect())*zVector.Vect())/(1.05*zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());//we simulate a missing correction of 10%
     
     
-    TLorentzVector leadingJet(0,0,0,0);
-    leadingJet.SetPtEtaPhiE(nEvent.pfJetGoodPt[0], nEvent.pfJetGoodEta[0], nEvent.pfJetGoodPhi[0], nEvent.pfJetGoodE[0]);
-    for(int jcounter = 0; jcounter < nEvent.pfJetGoodNum40; ++jcounter) {
-      TLorentzVector j1(0,0,0,0);
-      j1.SetPtEtaPhiE(nEvent.pfJetGoodPt[jcounter], nEvent.pfJetGoodEta[jcounter], nEvent.pfJetGoodPhi[jcounter], nEvent.pfJetGoodE[jcounter]);
-      nEvent.pfJetGoodMl[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).M();
-      nEvent.pfJetGoodPtl[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).Pt();
-      nEvent.pfJetGoodM[jcounter] = (j1+leadingJet).M();
+  TLorentzVector leadingJet(0,0,0,0);
+  leadingJet.SetPtEtaPhiE(nEvent.pfJetGoodPt[0], nEvent.pfJetGoodEta[0], nEvent.pfJetGoodPhi[0], nEvent.pfJetGoodE[0]);
+  for(int jcounter = 0; jcounter < nEvent.pfJetGoodNum40; ++jcounter) {
+    TLorentzVector j1(0,0,0,0);
+    j1.SetPtEtaPhiE(nEvent.pfJetGoodPt[jcounter], nEvent.pfJetGoodEta[jcounter], nEvent.pfJetGoodPhi[jcounter], nEvent.pfJetGoodE[jcounter]);
+    nEvent.pfJetGoodMl[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).M();
+    nEvent.pfJetGoodPtl[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).Pt();
+    nEvent.pfJetGoodM[jcounter] = (j1+leadingJet).M();
     
-    }
+  }
 
-    TLorentzVector leadingBJet(0,0,0,0);
-    leadingBJet.SetPtEtaPhiE(nEvent.pfJetGoodPtBtag[0], nEvent.pfJetGoodEtaBtag[0], nEvent.pfJetGoodPhiBtag[0], nEvent.pfJetGoodEBtag[0]);
-    for(int jcounter = 0; jcounter < nEvent.pfJetGoodNumBtag40; ++jcounter) {
-      TLorentzVector j1(0,0,0,0);
-      j1.SetPtEtaPhiE(nEvent.pfJetGoodPtBtag[jcounter], nEvent.pfJetGoodEtaBtag[jcounter], nEvent.pfJetGoodPhiBtag[jcounter], nEvent.pfJetGoodEBtag[jcounter]);
-      nEvent.pfJetGoodMlBtag[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).M();
-      nEvent.pfJetGoodPtlBtag[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).Pt();
-      nEvent.pfJetGoodMBtag[jcounter] = (j1+leadingBJet).M();
+  TLorentzVector leadingBJet(0,0,0,0);
+  leadingBJet.SetPtEtaPhiE(nEvent.pfJetGoodPtBtag[0], nEvent.pfJetGoodEtaBtag[0], nEvent.pfJetGoodPhiBtag[0], nEvent.pfJetGoodEBtag[0]);
+  for(int jcounter = 0; jcounter < nEvent.pfJetGoodNumBtag40; ++jcounter) {
+    TLorentzVector j1(0,0,0,0);
+    j1.SetPtEtaPhiE(nEvent.pfJetGoodPtBtag[jcounter], nEvent.pfJetGoodEtaBtag[jcounter], nEvent.pfJetGoodPhiBtag[jcounter], nEvent.pfJetGoodEBtag[jcounter]);
+    nEvent.pfJetGoodMlBtag[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).M();
+    nEvent.pfJetGoodPtlBtag[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).Pt();
+    nEvent.pfJetGoodMBtag[jcounter] = (j1+leadingBJet).M();
 
-    }
+  }
 
   if(fDataType_== "mc") {
     nEvent.pfJetGoodNumBtag40=nEvent.MC_pfJetGoodNumBTag40;
@@ -3070,21 +3078,21 @@ void JZBAnalysis::Analyze() {
   
   float dHT=0;
   for(int i=0; i<Mpx.size(); ++i){
-	if(grouping[i]==1){
-		pseudojet1.SetPx(pseudojet1.Px() + Mpx[i]);
-		pseudojet1.SetPy(pseudojet1.Py() + Mpy[i]);
-		pseudojet1.SetPz(pseudojet1.Pz() + Mpz[i]);
-		pseudojet1.SetE( pseudojet1.E()  + ME[i]);	
-		dHT += sqrt(Mpx[i]*Mpx[i] + Mpy[i]*Mpy[i]);
-		hemiobjs.hemisphere[i]=1;
-	}else if(grouping[i] == 2){
-		pseudojet2.SetPx(pseudojet2.Px() + Mpx[i]);
-		pseudojet2.SetPy(pseudojet2.Py() + Mpy[i]);
-		pseudojet2.SetPz(pseudojet2.Pz() + Mpz[i]);
-		pseudojet2.SetE( pseudojet2.E()  + ME[i]);
-		dHT -= sqrt(Mpx[i]*Mpx[i] + Mpy[i]*Mpy[i]);
-		hemiobjs.hemisphere[i]=2;
-	}
+    if(grouping[i]==1){
+      pseudojet1.SetPx(pseudojet1.Px() + Mpx[i]);
+      pseudojet1.SetPy(pseudojet1.Py() + Mpy[i]);
+      pseudojet1.SetPz(pseudojet1.Pz() + Mpz[i]);
+      pseudojet1.SetE( pseudojet1.E()  + ME[i]);	
+      dHT += sqrt(Mpx[i]*Mpx[i] + Mpy[i]*Mpy[i]);
+      hemiobjs.hemisphere[i]=1;
+    }else if(grouping[i] == 2){
+      pseudojet2.SetPx(pseudojet2.Px() + Mpx[i]);
+      pseudojet2.SetPy(pseudojet2.Py() + Mpy[i]);
+      pseudojet2.SetPz(pseudojet2.Pz() + Mpz[i]);
+      pseudojet2.SetE( pseudojet2.E()  + ME[i]);
+      dHT -= sqrt(Mpx[i]*Mpx[i] + Mpy[i]*Mpy[i]);
+      hemiobjs.hemisphere[i]=2;
+    }
   }
   delete hemisp;
   
@@ -3521,19 +3529,19 @@ const float JZBAnalysis::GetLeptonWeight(int id1, float pt1, float eta1, int id2
 
   
   /*if(id1==id2&&id1==0) {
-      EffErr=0.01;
-      return 0.99;
-  }
-  if(id1==id2&&id1==1) {
-     //mm
-      EffErr=0.02;
-      return 0.95;
+    EffErr=0.01;
+    return 0.99;
     }
-  if(id1!=id2) {
-      //em
-      EffErr=0.03;
-      return 0.98;
-   }*/
+    if(id1==id2&&id1==1) {
+    //mm
+    EffErr=0.02;
+    return 0.95;
+    }
+    if(id1!=id2) {
+    //em
+    EffErr=0.03;
+    return 0.98;
+    }*/
 
 }
 
@@ -3566,7 +3574,7 @@ const float JZBAnalysis::GetMuonWeight(float eta1, float pt1, float &error1) {
     }
   }  
   else if(abs(eta1)>1.2) {
-   if(pt1 > 10 && pt1 < 20) {
+    if(pt1 > 10 && pt1 < 20) {
       weight1 = 0.970;
       error1 = 0.051;
     }
@@ -3597,179 +3605,179 @@ const float JZBAnalysis::GetMuonWeight(float eta1, float pt1, float &error1) {
 const float JZBAnalysis::GetElectronWeight(float eta1, float pt1, float &error1) {
 
 
-   //This is for medium selection
-   float weight1 = 1.0;
+  //This is for medium selection
+  float weight1 = 1.0;
 
-   if(abs(eta1)<0.8) {
-     if(pt1 > 10.0 && pt1 < 15.0) {
-       weight1 = 0.879; 
-       error1 = 0.040;
-     }
-     else if(pt1 > 15.0 && pt1 < 20.0) {
-       weight1 = 0.946; 
-       error1 = 0.018;
-     }
-     else if(pt1 > 20.0 && pt1 < 30.0) {
-       weight1 = 1.017; 
-       error1 = 0.004;
-     }
-     else if(pt1 > 30.0 && pt1 < 40.0) {
-       weight1 = 1.019; 
-       error1 = 0.002;
-     }
-     else if(pt1 > 40.0 && pt1 < 50.0) {
-       weight1 = 1.015; 
-       error1 = 0.001;
-     }
-     else if(pt1 > 50.0) {
-       weight1 = 1.005; 
-       error1 = 0.002;
-     }
-   }
-   else if(abs(eta1) > 0.8 && abs(eta1) < 1.442) {
-     if(pt1 > 10.0 && pt1 < 15.0) {
-       weight1 = 0.885;
-       error1 = 0.043;
-     }
-     else if(pt1 > 15.0 && pt1 < 20.0) {
-       weight1 = 0.932;
-       error1 = 0.021;
-     }
-     else if(pt1 > 20.0 && pt1 < 30.0) {
-       weight1 = 0.991;
-       error1 = 0.013;
-     }
-     else if(pt1 > 30.0 && pt1 < 40.0) {
-       weight1 = 1.002;
-       error1 = 0.002;
-     }
-     else if(pt1 > 40.0 && pt1 < 50.0) {
-       weight1 = 1.00;
-       error1 = 0.002;
-     }
-     else if(pt1 > 50.0) {
-       weight1 = 0.992;
-       error1 = 0.003;
-     }
-   }
-   else if(abs(eta1) > 1.442 && abs(eta1) < 1.556) {
-     if(pt1 > 10.0 && pt1 < 15.0) {
-       weight1 = 1.020;
-       error1 = 0.170;
-     }
-     else if(pt1 > 15.0 && pt1 < 20.0) {
-       weight1 = 1.045;
-       error1 = 0.082;
-     }
-     else if(pt1 > 20.0 && pt1 < 30. ) {
-       weight1 = 1.176;
-       error1 = 0.025;
-     }
-     else if(pt1 > 30.0 && pt1 < 40.0) {
-       weight1 = 1.038;
-       error1 = 0.011;
-     }
-     else if(pt1 > 40.0 && pt1 < 50.0) {
-       weight1 = 0.985;
-       error1 = 0.009;
-     }
-     else if(pt1 > 50.0) {
-       weight1 = 0.990;
-       error1 = 0.037;
-     }
-   }
-   else if(abs(eta1) > 1.556 && abs(eta1) < 2.0) {
-     if(pt1 > 10.0 && pt1 < 15.0) {
-       weight1 = 0.873;
-       error1 = 0.073;
-     }
-     else if(pt1 > 15.0 && pt1 < 20.0) {
-       weight1 = 0.958;
-       error1 = 0.031;
-     }
-     else if(pt1 > 20.0 && pt1 < 30. ) {
-       weight1 = 1.010;
-       error1 = 0.009;
-     }
-     else if(pt1 > 30.0 && pt1 < 40.0) {
-       weight1 = 1.010;
-       error1 = 0.004;
-     }
-     else if(pt1 > 40.0 && pt1 < 50.0) {
-       weight1 = 1.013;
-       error1 = 0.003;
-     }
-     else if(pt1 > 50.0) {
-       weight1 = 1.005;
-       error1 = 0.005;
-     }
-   }
-   else if(abs(eta1) > 2.0 && abs(eta1) < 2.5) {
-     if(pt1 > 10.0 && pt1 < 15.0) {
-       weight1 = 1.080;
-       error1 = 0.075;
-     }
-     else if(pt1 > 15.0 && pt1 < 20.0) {
-       weight1 = 1.175;
-       error1 = 0.036;
-     }
-     else if(pt1 > 20.0 && pt1 < 30. ) {
-       weight1 = 1.110;
-       error1 = 0.005;
-     }
-     else if(pt1 > 30.0 && pt1 < 40.0) {
-       weight1 = 1.074;
-       error1 = 0.005;
-     }
-     else if(pt1 > 40.0 && pt1 < 50.0) {
-       weight1 = 1.042;
-       error1 = 0.004;
-     }
-     else if(pt1 > 50.0) {
-       weight1 = 1.020;
-       error1 = 0.007;
-     }
-   }
+  if(abs(eta1)<0.8) {
+    if(pt1 > 10.0 && pt1 < 15.0) {
+      weight1 = 0.879; 
+      error1 = 0.040;
+    }
+    else if(pt1 > 15.0 && pt1 < 20.0) {
+      weight1 = 0.946; 
+      error1 = 0.018;
+    }
+    else if(pt1 > 20.0 && pt1 < 30.0) {
+      weight1 = 1.017; 
+      error1 = 0.004;
+    }
+    else if(pt1 > 30.0 && pt1 < 40.0) {
+      weight1 = 1.019; 
+      error1 = 0.002;
+    }
+    else if(pt1 > 40.0 && pt1 < 50.0) {
+      weight1 = 1.015; 
+      error1 = 0.001;
+    }
+    else if(pt1 > 50.0) {
+      weight1 = 1.005; 
+      error1 = 0.002;
+    }
+  }
+  else if(abs(eta1) > 0.8 && abs(eta1) < 1.442) {
+    if(pt1 > 10.0 && pt1 < 15.0) {
+      weight1 = 0.885;
+      error1 = 0.043;
+    }
+    else if(pt1 > 15.0 && pt1 < 20.0) {
+      weight1 = 0.932;
+      error1 = 0.021;
+    }
+    else if(pt1 > 20.0 && pt1 < 30.0) {
+      weight1 = 0.991;
+      error1 = 0.013;
+    }
+    else if(pt1 > 30.0 && pt1 < 40.0) {
+      weight1 = 1.002;
+      error1 = 0.002;
+    }
+    else if(pt1 > 40.0 && pt1 < 50.0) {
+      weight1 = 1.00;
+      error1 = 0.002;
+    }
+    else if(pt1 > 50.0) {
+      weight1 = 0.992;
+      error1 = 0.003;
+    }
+  }
+  else if(abs(eta1) > 1.442 && abs(eta1) < 1.556) {
+    if(pt1 > 10.0 && pt1 < 15.0) {
+      weight1 = 1.020;
+      error1 = 0.170;
+    }
+    else if(pt1 > 15.0 && pt1 < 20.0) {
+      weight1 = 1.045;
+      error1 = 0.082;
+    }
+    else if(pt1 > 20.0 && pt1 < 30. ) {
+      weight1 = 1.176;
+      error1 = 0.025;
+    }
+    else if(pt1 > 30.0 && pt1 < 40.0) {
+      weight1 = 1.038;
+      error1 = 0.011;
+    }
+    else if(pt1 > 40.0 && pt1 < 50.0) {
+      weight1 = 0.985;
+      error1 = 0.009;
+    }
+    else if(pt1 > 50.0) {
+      weight1 = 0.990;
+      error1 = 0.037;
+    }
+  }
+  else if(abs(eta1) > 1.556 && abs(eta1) < 2.0) {
+    if(pt1 > 10.0 && pt1 < 15.0) {
+      weight1 = 0.873;
+      error1 = 0.073;
+    }
+    else if(pt1 > 15.0 && pt1 < 20.0) {
+      weight1 = 0.958;
+      error1 = 0.031;
+    }
+    else if(pt1 > 20.0 && pt1 < 30. ) {
+      weight1 = 1.010;
+      error1 = 0.009;
+    }
+    else if(pt1 > 30.0 && pt1 < 40.0) {
+      weight1 = 1.010;
+      error1 = 0.004;
+    }
+    else if(pt1 > 40.0 && pt1 < 50.0) {
+      weight1 = 1.013;
+      error1 = 0.003;
+    }
+    else if(pt1 > 50.0) {
+      weight1 = 1.005;
+      error1 = 0.005;
+    }
+  }
+  else if(abs(eta1) > 2.0 && abs(eta1) < 2.5) {
+    if(pt1 > 10.0 && pt1 < 15.0) {
+      weight1 = 1.080;
+      error1 = 0.075;
+    }
+    else if(pt1 > 15.0 && pt1 < 20.0) {
+      weight1 = 1.175;
+      error1 = 0.036;
+    }
+    else if(pt1 > 20.0 && pt1 < 30. ) {
+      weight1 = 1.110;
+      error1 = 0.005;
+    }
+    else if(pt1 > 30.0 && pt1 < 40.0) {
+      weight1 = 1.074;
+      error1 = 0.005;
+    }
+    else if(pt1 > 40.0 && pt1 < 50.0) {
+      weight1 = 1.042;
+      error1 = 0.004;
+    }
+    else if(pt1 > 50.0) {
+      weight1 = 1.020;
+      error1 = 0.007;
+    }
+  }
 
- return weight1;
+  return weight1;
 
 }
 
 const float JZBAnalysis::IndividualEffArea(float abseta, string type) {
-    //from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonID2012
+  //from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonID2012
     
-    if(type=="chargedhad") {
-        if(abs(abseta)<1.0) return 	0.002;
-        if(abs(abseta)<1.479) return 0.003;
-        if(abs(abseta)<2.0) return 0.004;
-        if(abs(abseta)<2.2) return 0.006;
-        if(abs(abseta)<2.3) return 0.006;
-        if(abs(abseta)<2.4) return 0.004;
-        return 0.003;
-    }
+  if(type=="chargedhad") {
+    if(abs(abseta)<1.0) return 	0.002;
+    if(abs(abseta)<1.479) return 0.003;
+    if(abs(abseta)<2.0) return 0.004;
+    if(abs(abseta)<2.2) return 0.006;
+    if(abs(abseta)<2.3) return 0.006;
+    if(abs(abseta)<2.4) return 0.004;
+    return 0.003;
+  }
     
-    if(type=="neutralhad") {
-        if(abs(abseta)<1.0) return 	0.024;
-        if(abs(abseta)<1.479) return 0.037;
-        if(abs(abseta)<2.0) return 0.037;
-        if(abs(abseta)<2.2) return 0.034;
-        if(abs(abseta)<2.3) return 0.043;
-        if(abs(abseta)<2.4) return 0.047;
-        return 0.066;
-    }
+  if(type=="neutralhad") {
+    if(abs(abseta)<1.0) return 	0.024;
+    if(abs(abseta)<1.479) return 0.037;
+    if(abs(abseta)<2.0) return 0.037;
+    if(abs(abseta)<2.2) return 0.034;
+    if(abs(abseta)<2.3) return 0.043;
+    if(abs(abseta)<2.4) return 0.047;
+    return 0.066;
+  }
     
-    if(type=="photon") {
-        if(abs(abseta)<1.0) return 	0.053 ;
-        if(abs(abseta)<1.479) return 0.052;
-        if(abs(abseta)<2.0) return 0.037;
-        if(abs(abseta)<2.2) return 0.073;
-        if(abs(abseta)<2.3) return 0.107;
-        if(abs(abseta)<2.4) return 0.123;
-        return 0.133;
-    }
+  if(type=="photon") {
+    if(abs(abseta)<1.0) return 	0.053 ;
+    if(abs(abseta)<1.479) return 0.052;
+    if(abs(abseta)<2.0) return 0.037;
+    if(abs(abseta)<2.2) return 0.073;
+    if(abs(abseta)<2.3) return 0.107;
+    if(abs(abseta)<2.4) return 0.123;
+    return 0.133;
+  }
     
-    cout << "YOUR PROVIDED TYPE, " << type << " HAS NOT BEEN RECOGNIZED. RETURNING HUGE NEGATIVE EFFECTIVE AREA" << endl;
-    return -10e8;
+  cout << "YOUR PROVIDED TYPE, " << type << " HAS NOT BEEN RECOGNIZED. RETURNING HUGE NEGATIVE EFFECTIVE AREA" << endl;
+  return -10e8;
 }
     
 const float JZBAnalysis::EffArea(float abseta) {
@@ -3784,24 +3792,24 @@ const float JZBAnalysis::EffArea(float abseta) {
 }
 
 float JZBAnalysis::PhoPFIso(int index){
-    float eta=fTR->PhoEta[index];
-    float pfchargedhadiso = max(fTR->PhoNewIsoPFCharged[index]-IndividualEffArea(eta,"chargedhad")*fTR->RhoForIso,(float)0.0)/fTR->PhoPt[index];
-    float pfneutralhadiso = max(fTR->PhoNewIsoPFNeutral[index]-IndividualEffArea(eta,"neutralhad")*fTR->RhoForIso,(float)0.0)/fTR->PhoPt[index];
-    float pfphotoniso     = max(fTR->PhoNewIsoPFPhoton[index]-IndividualEffArea(eta,"photon")*fTR->RhoForIso,(float)0.0)/fTR->PhoPt[index];
-    return pfchargedhadiso+pfneutralhadiso+pfphotoniso;
+  float eta=fTR->PhoEta[index];
+  float pfchargedhadiso = max(fTR->PhoNewIsoPFCharged[index]-IndividualEffArea(eta,"chargedhad")*fTR->RhoForIso,(float)0.0)/fTR->PhoPt[index];
+  float pfneutralhadiso = max(fTR->PhoNewIsoPFNeutral[index]-IndividualEffArea(eta,"neutralhad")*fTR->RhoForIso,(float)0.0)/fTR->PhoPt[index];
+  float pfphotoniso     = max(fTR->PhoNewIsoPFPhoton[index]-IndividualEffArea(eta,"photon")*fTR->RhoForIso,(float)0.0)/fTR->PhoPt[index];
+  return pfchargedhadiso+pfneutralhadiso+pfphotoniso;
 }
 
 float JZBAnalysis::MuPFIso(int index){
-   double neutral = (fTR->MuPfIsoR03NeHad[index] + fTR->MuPfIsoR03Photon[index] - 0.5*fTR->MuPfIsoR03SumPUPt[index] );
-   float iso = ( fTR->MuPfIsoR03ChHad[index] + TMath::Max(0., neutral) ) / fTR->MuPt[index];
-   return iso;
+  double neutral = (fTR->MuPfIsoR03NeHad[index] + fTR->MuPfIsoR03Photon[index] - 0.5*fTR->MuPfIsoR03SumPUPt[index] );
+  float iso = ( fTR->MuPfIsoR03ChHad[index] + TMath::Max(0., neutral) ) / fTR->MuPt[index];
+  return iso;
 }
 
 float JZBAnalysis::ElPFIso(int index){
-   double neutral = fTR->ElEventelPFIsoValueNeutral03PFIdStandard[index] + fTR->ElEventelPFIsoValueGamma03PFIdStandard[index];
-   double rhocorr = fTR->RhoForIso * EffArea(fTR->ElEta[index]);
-   double iso = ( fTR->ElEventelPFIsoValueCharged03PFIdStandard[index] + TMath::Max(0., neutral - rhocorr) )/ fTR->ElPt[index];
-   return iso;
+  double neutral = fTR->ElEventelPFIsoValueNeutral03PFIdStandard[index] + fTR->ElEventelPFIsoValueGamma03PFIdStandard[index];
+  double rhocorr = fTR->RhoForIso * EffArea(fTR->ElEta[index]);
+  double iso = ( fTR->ElEventelPFIsoValueCharged03PFIdStandard[index] + TMath::Max(0., neutral - rhocorr) )/ fTR->ElPt[index];
+  return iso;
 }
 
 const bool JZBAnalysis::IsCustomEl2012(const int index) {
@@ -3814,15 +3822,15 @@ const bool JZBAnalysis::IsCustomEl2012(const int index) {
 
   // Medium Working Point
   if ( fabs(fTR->ElEta[index]) < 1.479 ) { // Barrel
-     if(!(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index])<0.007)) return false;
-     if(!(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index])<0.15)) return false;
-     if(!(fTR->ElSigmaIetaIeta[index]<0.01)) return false;
-     if(!(fTR->ElHcalOverEcal[index]<0.12)) return false;
+    if(!(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index])<0.007)) return false;
+    if(!(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index])<0.15)) return false;
+    if(!(fTR->ElSigmaIetaIeta[index]<0.01)) return false;
+    if(!(fTR->ElHcalOverEcal[index]<0.12)) return false;
   } else { // Endcap
-     if(!(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index])<0.009 )) return false;
-     if(!(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index])<0.10 )) return false;
-     if(!(fTR->ElSigmaIetaIeta[index]<0.03)) return false;
-     if(!(fTR->ElHcalOverEcal[index]<0.10)) return false;
+    if(!(fabs(fTR->ElDeltaEtaSuperClusterAtVtx[index])<0.009 )) return false;
+    if(!(fabs(fTR->ElDeltaPhiSuperClusterAtVtx[index])<0.10 )) return false;
+    if(!(fTR->ElSigmaIetaIeta[index]<0.03)) return false;
+    if(!(fTR->ElHcalOverEcal[index]<0.10)) return false;
   }
   
   counters[EL].fill(" ... pass additional electron ID cuts");
@@ -3858,7 +3866,7 @@ const bool JZBAnalysis::IsCustomEl2012(const int index) {
   if ( fabs(fTR->ElSCEta[index]) > 1.4442 && fabs(fTR->ElSCEta[index]) < 1.566 )  return false;  
   counters[EL].fill(" ... not in ECAL gap");
 
-//fbrem : fTElNBrems (reco::GsfElectron::fbrem())  --> no cut?
+  //fbrem : fTElNBrems (reco::GsfElectron::fbrem())  --> no cut?
   
   float pfIso = ElPFIso(index);
   if ( fabs(fTR->ElEta[index]) < 1.479 || fTR->ElPt[index]>20.0) { // Barrel
@@ -3873,22 +3881,22 @@ const bool JZBAnalysis::IsCustomEl2012(const int index) {
 }
 
 /*// Check if electron is from photon conversion
-const bool JZBAnalysis::IsConvertedPhoton( const int eIndex ) {
+  const bool JZBAnalysis::IsConvertedPhoton( const int eIndex ) {
  
   int elIDWP90 = fTR->ElIDsimpleWP90relIso[eIndex];
   if ( elIDWP90 < 4 ) return true;
   counters[EL].fill(" ... passes conversion rejection");
   return false;
  
-}*/
+  }*/
 
 const bool JZBAnalysis::IsCustomJet(const int index){
   // Basic Jet ID cuts (loose Jet ID)
   // See https://twiki.cern.ch/twiki/bin/view/CMS/JetID
 
-//  if ( !(fTR->CAJID_n90Hits[index] > 1) ) return false;
+  //  if ( !(fTR->CAJID_n90Hits[index] > 1) ) return false;
   counters[JE].fill(" ... n90Hits > 1");
-//  if ( !(fTR->CAJID_HPD[index] < 0.98)  ) return false;
+  //  if ( !(fTR->CAJID_HPD[index] < 0.98)  ) return false;
   counters[JE].fill(" ... HPD < 0.98");
 
   if ( fabs(fTR->CAJEta[index])<3.0 ) {
@@ -3959,23 +3967,23 @@ void JZBAnalysis::GeneratorInfo(void) {
   //FR: Deactivate Z matching
   size_t i1 = 0, i2 = 1;
 
-   for(; i2<sortedGLeptons.size();i2++) {
-     if(sortedGLeptons[i1].charge*sortedGLeptons[i2].charge<0) break;
-   }
+  for(; i2<sortedGLeptons.size();i2++) {
+    if(sortedGLeptons[i1].charge*sortedGLeptons[i2].charge<0) break;
+  }
    
-//   // Select the two highest-pt leptons compatible with a Z
-//   size_t i1 = 0, i2 = 0;
-//   if ( sortedGLeptons.size()>1 ) {
-//     for ( size_t i=0; i<sortedGLeptons.size()-1; ++i ) {
-//       i1 = i;
-//       TLorentzVector lp1(sortedGLeptons[i].p);
-//       for ( size_t j=i+1; j<sortedGLeptons.size(); ++j ) {
-//         i2 = j;
-//         TLorentzVector lp2(sortedGLeptons[j].p);
-//         if ( fabs( (lp1+lp2).M() - 91.2 ) < mllCut ) break;
-//       }
-//     }
-//   }
+  //   // Select the two highest-pt leptons compatible with a Z
+  //   size_t i1 = 0, i2 = 0;
+  //   if ( sortedGLeptons.size()>1 ) {
+  //     for ( size_t i=0; i<sortedGLeptons.size()-1; ++i ) {
+  //       i1 = i;
+  //       TLorentzVector lp1(sortedGLeptons[i].p);
+  //       for ( size_t j=i+1; j<sortedGLeptons.size(); ++j ) {
+  //         i2 = j;
+  //         TLorentzVector lp2(sortedGLeptons[j].p);
+  //         if ( fabs( (lp1+lp2).M() - 91.2 ) < mllCut ) break;
+  //       }
+  //     }
+  //   }
   
   if(sortedGLeptons.size()>0)
     {
@@ -4195,7 +4203,7 @@ bool JZBAnalysis::DecaysToTaus(bool fdoGenInfo,TreeReader *fTR) {
   int nMu=0;
   int nEl=0;
   for(int iMother=0;iMother<fTR->nGenParticles;iMother++) {
-//    if(fTR->genInfoStatus[iMother]==2) continue;
+    //    if(fTR->genInfoStatus[iMother]==2) continue;
     if(!(abs(fTR->genInfoId[iMother])==23)) continue; // not a Z
     if(nEvent.GeneratorZPt==0) nEvent.GeneratorZPt=fTR->genInfoPt[iMother];
     for(int da=iMother+1;da<fTR->nGenParticles;da++) {
