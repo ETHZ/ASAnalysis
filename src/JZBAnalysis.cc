@@ -1152,13 +1152,52 @@ void JZBAnalysis::ContainsSoftLepton() {
 }
 
 float GetCoreResolutionScalingFactor(const float jeta) {
+  // jet resolution oversmearing as described here:
+  // https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+  // last updated 10/28/13
   float ajeta=abs(jeta);
-  if(ajeta<=1.1) return 1.07;
-  if(ajeta<1.7) return 1.10;
-  if(ajeta<2.3) return 1.07;
-  if(ajeta<5.0) return 1.18;
+  if(ajeta<=0.5) return 1.052;
+  if(ajeta<=1.1) return 1.057;
+  if(ajeta<1.7) return 1.096;
+  if(ajeta<2.3) return 1.134;
+  if(ajeta<5.0) return 1.1288;
   return 1.0; // not defined out here - don't smear
 }
+
+void GetCoreResolutionScalingFactorUncert(const float jeta, float &up, float &down) {
+  // jet resolution oversmearing as described here:
+  // https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+  // last updated 10/28/13
+  float ajeta=abs(jeta);
+  if(ajeta<=0.5) {
+        down=0.990;
+        up  =1.115;
+        return;
+  }
+  if(ajeta<=1.1) {
+        down=1.001;
+        up  =1.114;
+        return;
+  }
+  if(ajeta<=1.7) {
+        down=1.032;
+        up  =1.161;
+        return;
+  }
+  if(ajeta<=2.3) {
+        down=1.042;
+        up  =1.228;
+        return;
+  }
+  if(ajeta<=5.0) {
+        down=1.089;
+        up  =1.448;
+        return;
+  }
+  down=1.0;
+  up=1.0;
+}
+
 
 int JZBAnalysis::FindGenJetIndex(const float jpt, const float jeta, const float jphi) {
   int matchedindex=-1;
@@ -1176,15 +1215,23 @@ int JZBAnalysis::FindGenJetIndex(const float jpt, const float jeta, const float 
   return matchedindex;
 }
 
-float JZBAnalysis::smearedJetPt(const float jpt, const float jeta, const float jphi) {
-  //jet resolution oversmearing as described here: 
-  //https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+float JZBAnalysis::smearedJetPt(const float jpt, const float jeta, const float jphi, float &jup, float &jdn) {
+  // jet resolution oversmearing as described here:
+  // https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
   if(fDataType_!= "mc") return jpt; // if we're dealing with data we don't smear!
 
   int genIndex = FindGenJetIndex(jpt,jeta,jphi);
-  if(genIndex<0) return -jpt; // no associated gen jet
+  if(genIndex<0) {
+      jup=jpt;
+      jdn=jpt;
+      return jpt; // no associated gen jet
+  }
   float genPt = fTR->GenJetPt[genIndex];
   float c = GetCoreResolutionScalingFactor(jeta);
+  float c_up, c_down;
+  GetCoreResolutionScalingFactorUncert(jeta,c_up,c_down);
+  jup=max((float)0.,genPt+c_up*(jpt-genPt));
+  jdn=max((float)0.,genPt+c_down*(jpt-genPt));
   return max((float)0.,genPt+c*(jpt-genPt));
 }
 
@@ -2667,9 +2714,12 @@ void JZBAnalysis::Analyze() {
       float jenergy = fTR->PFCHSJE[i];
       bool isJetID = fTR->PFCHSJIDLoose[i];
       
-      float smeared_jpt = smearedJetPt(jpt,jeta,jphi);
+      float smeared_jpt_up,smeared_jpt_dn;
+      float smeared_jpt = smearedJetPt(jpt,jeta,jphi,smeared_jpt_up,smeared_jpt_dn);
       TLorentzVector aJet(0,0,0,0);
-      aJet.SetPtEtaPhiE(jpt, jeta, jphi, jenergy);
+      aJet.SetPtEtaPhiE(smeared_jpt, jeta, jphi, jenergy);
+        
+      jpt=smeared_jpt; // use oversmeared jpt as standard (pre-app condition #2)
 
       // lepton-jet cleaning
       if ( fFullCleaning_ ) {
@@ -2706,8 +2756,8 @@ void JZBAnalysis::Analyze() {
 	if(nEvent.ZbCHS3010_pfJetGoodNum==1) {
 	  nEvent.ZbCHS3010_SubLeadingJetIsPu=IsPUJet(jpt,jeta,jphi);
 	  if(smeared_jpt>0) {
-	    nEvent.ZbCHS3010_alphaUp = smeared_jpt;
-	    nEvent.ZbCHS3010_alphaDown = jpt*jpt/smeared_jpt;
+          nEvent.ZbCHS3010_alphaUp = smeared_jpt_up;
+          nEvent.ZbCHS3010_alphaDown = smeared_jpt_dn;
 	  } else {
 	    //jet did not correspond to any gen jet - smearing doesn't make much sense.
 	    nEvent.ZbCHS3010_alphaUp = 10e7;
@@ -3418,7 +3468,7 @@ void JZBAnalysis::End(TFile *f){
   weight_histo->Write();
 
   // Dump statistics
-  if (1) { // Put that to 0 if you are annoyed
+  if (0) { // Put that to 0 if you are annoyed
     std::cout << setfill('=') << std::setw(70) << "" << std::endl;
     std::cout << "Statistics" << std::endl;
     std::cout << setfill('-') << std::setw(70) << "" << setfill(' ') << std::endl;
