@@ -73,7 +73,7 @@ public:
   int DetermineFlavor(bool, TreeReader*);
   int ExtractFileNumber(string fileName);
   float GetBWeight(string WP,int JetFlavor, float JetPt, float JetEta, float &Uncert);
-  float smearedJetPt(float pt, float eta, float phi);
+  float smearedJetPt(float, float, float, float&, float&);
   int FindGenJetIndex(float jpt, float jeta, float jphi);
   bool IsThisDY(vector<string>);
   int IsThisTTbar(vector<string>);
