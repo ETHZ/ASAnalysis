@@ -1,0 +1,16 @@
+*.slo
+*.lo
+*.o
+*.ko
+*.so
+*.dylib
+*.lai
+*.la
+*.a
+*.lib
+*.exe
+*.out
+*.app
+*~
+*.root
+*.bak
