@@ -3468,7 +3468,7 @@ void JZBAnalysis::End(TFile *f){
   weight_histo->Write();
 
   // Dump statistics
-  if (0) { // Put that to 0 if you are annoyed
+  if (1) { // Put that to 0 if you are annoyed
     std::cout << setfill('=') << std::setw(70) << "" << std::endl;
     std::cout << "Statistics" << std::endl;
     std::cout << setfill('-') << std::setw(70) << "" << setfill(' ') << std::endl;
