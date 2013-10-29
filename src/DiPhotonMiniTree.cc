@@ -24,7 +24,7 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
 //  // 020616 no cleaning numbers (superseded: should be updated with new ones after removing pf ch iso from presel) XXX
 //  // EA SET TO ZERO HARDCODED BELOW, these values are ignored;
 //  float _binsdef_single_gamma_EB_eta[n_templates_EB+1] = {0,0.2,0.4,0.6,0.8,1,1.2,1.4442}; 
-//  float _binsdef_single_gamma_EE_eta[n_templates_EE+1] = {1.56,1.653,1.8,2,2.2,2.5};
+//  float _binsdef_single_gamma_EE_eta[n_templates_EE+1] = {1.566,1.653,1.8,2,2.2,2.5};
 //  float _eff_areas_EB_photon_data[n_templates_EB] = {2.601118e-01,2.584915e-01,2.640072e-01,2.656851e-01,2.564615e-01,2.396511e-01,1.645776e-01};
 //  float _eff_areas_EE_photon_data[n_templates_EE] = {5.783452e-02,8.321881e-02,1.177009e-01,1.422445e-01,1.139434e-01};
 //  float _eff_areas_EB_charged_data[n_templates_EB] = {2.526058e-02,2.619860e-02,2.118318e-02,2.078713e-02,2.066629e-02,1.908721e-02,1.732135e-02};
@@ -685,7 +685,7 @@ void DiPhotonMiniTree::Analyze(){
 	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
 	  if (fTR->PfCandPdgId[k]!=22) continue;
 	  float eta = fabs(fTR->PfCandEta[k]);
-	  if (eta>1.4442 && eta<1.56) continue;
+	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
 	  if (fTR->PhoisPFPhoton[passing.at(!pass12_whoissiglike)] && fTR->PhoMatchedPFPhotonCand[passing.at(!pass12_whoissiglike)]==k) continue;	
 	  bool removed = false;
@@ -772,7 +772,7 @@ void DiPhotonMiniTree::Analyze(){
 	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
 	  if (fTR->PfCandPdgId[k]!=22) continue;
 	  float eta = fabs(fTR->PfCandEta[k]);
-	  if (eta>1.4442 && eta<1.56) continue;
+	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
 	  if (fTR->PhoisPFPhoton[passing.at(i)] && fTR->PhoMatchedPFPhotonCand[passing.at(i)]==k) continue;	
 	  bool removed = false;
@@ -1186,7 +1186,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // fiducial region
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
-    if ((fabs(eta)>1.4442 && fabs(eta)<1.56) || (fabs(eta)>2.5)) it=passing.erase(it); else it++;
+    if ((fabs(eta)>1.4442 && fabs(eta)<1.566) || (fabs(eta)>2.5)) it=passing.erase(it); else it++;
   }
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
@@ -1198,7 +1198,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
     float energy=fTR->SCRaw[fTR->PhotSCindex[*it]];
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
     if (fabs(eta)<1.4442) energy*=phocorr->getEtaCorrectionBarrel(eta);
-    if (fabs(eta)>1.56) energy+=fTR->SCPre[fTR->PhotSCindex[*it]];
+    if (fabs(eta)>1.566) energy+=fTR->SCPre[fTR->PhotSCindex[*it]];
     if (energy/cosh(eta)<20) it=passing.erase(it); else it++;
   }
 
@@ -1217,8 +1217,8 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
     bool pass=0;
     if (fabs(eta)<1.4442 && r9<0.9 && hoe<0.075) pass=1;
     if (fabs(eta)<1.4442 && r9>0.9 && hoe<0.082) pass=1;
-    if (fabs(eta)>1.56 && r9<0.9 && hoe<0.075) pass=1;
-    if (fabs(eta)>1.56 && r9>0.9 && hoe<0.075) pass=1;
+    if (fabs(eta)>1.566 && r9<0.9 && hoe<0.075) pass=1;
+    if (fabs(eta)>1.566 && r9>0.9 && hoe<0.075) pass=1;
     if (!pass) it=passing.erase(it); else it++;
   }
 	
@@ -1227,7 +1227,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
     float sieie=SieieRescale(fTR->PhoSigmaIetaIeta[*it],(bool)(fabs(eta)<1.4442));
     bool pass=0;
     if (fabs(eta)<1.4442 && sieie<0.014 && sieie>0.001) pass=1; // to add sigmaiphiphi>0.001 in the future
-    if (fabs(eta)>1.56 && sieie<0.034) pass=1;
+    if (fabs(eta)>1.566 && sieie<0.034) pass=1;
     if (!pass) it=passing.erase(it); else it++;
   }
 	
@@ -1257,7 +1257,7 @@ std::vector<int> DiPhotonMiniTree::MuonSelection(TreeReader *fTR, std::vector<in
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
     float eta=fTR->MuEta[*it];
-    if ((fabs(eta)>1.4442 && fabs(eta)<1.56) || (fabs(eta)>2.5)) it=passing.erase(it); else it++;
+    if ((fabs(eta)>1.4442 && fabs(eta)<1.566) || (fabs(eta)>2.5)) it=passing.erase(it); else it++;
   }
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
@@ -1314,7 +1314,7 @@ std::vector<int> DiPhotonMiniTree::PhotonSelection(TreeReader *fTR, std::vector<
     float hoe=fTR->PhoHoverE[*it];
     bool pass=0;
     if (fabs(eta)<1.4442 && hoe<0.05) pass=1;
-    if (fabs(eta)>1.56 && hoe<0.05) pass=1;
+    if (fabs(eta)>1.566 && hoe<0.05) pass=1;
     if (!pass) it=passing.erase(it); else it++;
   }
 	
@@ -1324,11 +1324,11 @@ std::vector<int> DiPhotonMiniTree::PhotonSelection(TreeReader *fTR, std::vector<
     bool pass=0;
     if (mode=="invert_sieie_cut"){ // sieie sideband
       if (fabs(eta)<1.4442 && sieie>0.011 && sieie<0.014) pass=1;
-      if (fabs(eta)>1.56 && sieie>0.030 && sieie<0.034) pass=1;
+      if (fabs(eta)>1.566 && sieie>0.030 && sieie<0.034) pass=1;
     }
     else {
     if (fabs(eta)<1.4442 && sieie<0.011) pass=1;
-    if (fabs(eta)>1.56 && sieie<0.030) pass=1;
+    if (fabs(eta)>1.566 && sieie<0.030) pass=1;
     }
     if (!pass) it=passing.erase(it); else it++;
   }
@@ -1533,6 +1533,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   for (int i=0; i<fTR->NJets; i++){
     if (fTR->JPt[i]<20) continue;
+    //    if (!(fTR->JPassPileupIDM0[fTR->JVrtxListStart[i]+0])) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
     if (dR<mindR) found=true;
@@ -1971,10 +1972,10 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
   for (int i=0; i<fTR->NPfCand; i++){
 
     float pfeta = fTR->PfCandEta[i];
-    if (pfeta>1.4442 && pfeta<1.56) continue;
+    if (pfeta>1.4442 && pfeta<1.566) continue;
     if (pfeta>2.5) continue;
     if (isbarrel && fabs(pfeta)>1.4442) continue;
-    if (!isbarrel && fabs(pfeta)<1.56) continue;
+    if (!isbarrel && fabs(pfeta)<1.566) continue;
 
     if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
  
@@ -2174,7 +2175,7 @@ angular_distances_struct DiPhotonMiniTree::GetPFCandDeltaRFromSC(TreeReader *fTR
 
   TVector3 ecalpfhit = PropagatePFCandToEcal(fTR,i,isbarrel ? sc_position.Perp() : sc_position.z(),isbarrel);
 
-  if ((isbarrel && fabs(fTR->PfCandEta[i])>1.4442) || (!isbarrel && fabs(fTR->PfCandEta[i])<1.56) || (fabs(fTR->PfCandEta[i])>1.4442 && fabs(fTR->PfCandEta[i])<1.56) || (fabs(fTR->PfCandEta[i])>2.5)) {
+  if ((isbarrel && fabs(fTR->PfCandEta[i])>1.4442) || (!isbarrel && fabs(fTR->PfCandEta[i])<1.566) || (fabs(fTR->PfCandEta[i])>1.4442 && fabs(fTR->PfCandEta[i])<1.566) || (fabs(fTR->PfCandEta[i])>2.5)) {
     angular_distances_struct out;
     out.dR = 999;
     out.dEta = 999;
@@ -2269,6 +2270,9 @@ void DiPhotonMiniTree::FillLead(int index){
     pholead_PhoSCRemovalPFIsoCharged=isos.charged;
     pholead_PhoSCRemovalPFIsoNeutral=isos.neutral;
     pholead_PhoSCRemovalPFIsoPhoton=isos.photon;
+    if (isos.photon != fTR->PhoSCRemovalPFIsoPhoton[index]){
+      cout << "WRONG " << pholead_eta << " " << pholead_SCeta << " " << isos.photon << " " << fTR->PhoSCRemovalPFIsoPhoton[index] << endl;
+    }
     pholead_PhoSCRemovalPFIsoCombined=pholead_PhoSCRemovalPFIsoCharged+pholead_PhoSCRemovalPFIsoNeutral+pholead_PhoSCRemovalPFIsoPhoton;
   pholead_Npfcandphotonincone = isos.nphotoncand;
   pholead_Npfcandchargedincone = isos.nchargedcand;
