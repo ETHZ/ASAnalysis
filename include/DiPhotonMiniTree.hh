@@ -55,6 +55,8 @@ const float global_dR_cut_acceptance = 0.45;
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;
 
+const bool do_recalc_isolation = false;
+
 typedef struct {
   float photon;
   float charged;
