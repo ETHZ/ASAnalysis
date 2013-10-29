@@ -74,9 +74,14 @@ private:
 	static const int fMaxNmus  = 5;
 	static const int fMaxNeles = 5;
 	static const int fMaxNtaus = 5;
-	static const int fNCTEQ = 100;
-	static const int fNCT10 = 100;
-	static const int fNMRST = 100;
+//	static const int fNCTEQ = 100;
+//	static const int fNCT10 = 100;
+//	static const int fNMRST = 100;
+//	static const int fNCTEQ66 = 100;
+//	static const int fNNNP20100 = 100;
+	static const int fPdf1 = 100;
+	static const int fPdf2 = 100;
+	static const int fPdf3 = 100;
 	
 	static const int nx = 3;
 	static const float x_values[nx]; // = {0.05, 0.5, 0.95};
@@ -246,12 +251,22 @@ private:
 	float fTTauLCombIsoDB  [fMaxNtaus];
 
 	// PDF stuff
-	int   fTNPdfCTEQ;
-	float fTWPdfCTEQ[fNCTEQ];
-	int   fTNPdfCT10;
-	float fTWPdfCT10[fNCT10];
-	int   fTNPdfMRST;
-	float fTWPdfMRST[fNMRST];
+//	int   fTNPdfCTEQ;
+//	float fTWPdfCTEQ[fNCTEQ];
+//	int   fTNPdfCT10;
+//	float fTWPdfCT10[fNCT10];
+//	int   fTNPdfMRST;
+//	float fTWPdfMRST[fNMRST];
+//	int   fTNPdfCTEQ66;
+//	float fTWPdfCTEQ66[fNCTEQ66];
+//	int   fTNPdfNNP20100;
+//	float fTWPdfNNP20100[fNNNP20100];
+	int   fTNPdf1;
+	float fTWPdf1[fPdf1];
+	int   fTNPdf2;
+	float fTWPdf2[fPdf2];
+	int   fTNPdf3;
+	float fTWPdf3[fPdf3];
 
 };
 #endif

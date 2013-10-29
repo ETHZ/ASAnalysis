@@ -342,12 +342,22 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("JetBetaSq",     &fTJetBetaSq,     "JetBetaSq[NJets]/F");
 	fAnalysisTree->Branch("JetRMSCand",    &fTJetRMSCand,    "JetRMSCand[NJets]/F");
 
-	fAnalysisTree->Branch("NPdfCTEQ", &fTNPdfCTEQ , "NPdfCTEQ/I");
-	fAnalysisTree->Branch("WPdfCTEQ", &fTWPdfCTEQ , "WPdfCTEQ[NPdfCTEQ]/F");
-	fAnalysisTree->Branch("NPdfCT10", &fTNPdfCT10 , "NPdfCT10/I");
-	fAnalysisTree->Branch("WPdfCT10", &fTWPdfCT10 , "WPdfCT10[NPdfCT10]/F");
-	fAnalysisTree->Branch("NPdfMRST", &fTNPdfMRST , "NPdfMRST/I");
-	fAnalysisTree->Branch("WPdfMRST", &fTWPdfMRST , "WPdfMRST[NPdfMRST]/F");
+//	fAnalysisTree->Branch("NPdfCTEQ", &fTNPdfCTEQ , "NPdfCTEQ/I");
+//	fAnalysisTree->Branch("WPdfCTEQ", &fTWPdfCTEQ , "WPdfCTEQ[NPdfCTEQ]/F");
+//	fAnalysisTree->Branch("NPdfCT10", &fTNPdfCT10 , "NPdfCT10/I");
+//	fAnalysisTree->Branch("WPdfCT10", &fTWPdfCT10 , "WPdfCT10[NPdfCT10]/F");
+//	fAnalysisTree->Branch("NPdfMRST", &fTNPdfMRST , "NPdfMRST/I");
+//	fAnalysisTree->Branch("WPdfMRST", &fTWPdfMRST , "WPdfMRST[NPdfMRST]/F");
+//	fAnalysisTree->Branch("NPdfCTEQ66", &fTNPdfCTEQ66 , "NPdfCTEQ66/I");
+//	fAnalysisTree->Branch("WPdfCTEQ66", &fTWPdfCTEQ66 , "WPdfCTEQ66[NPdfCTEQ66]/F");
+//	fAnalysisTree->Branch("NPdfNNP20100", &fTNPdfNNP20100 , "NPdfNNP20100/I");
+//	fAnalysisTree->Branch("WPdfNNP20100", &fTWPdfNNP20100 , "WPdfNNP20100[NPdfNNP20100]/F");
+	fAnalysisTree->Branch("NPdf1", &fTNPdf1 , "NPdf1/I");
+	fAnalysisTree->Branch("WPdf1", &fTWPdf1 , "WPdf1[NPdf1]/F");
+	fAnalysisTree->Branch("NPdf2", &fTNPdf2 , "NPdf2/I");
+	fAnalysisTree->Branch("WPdf2", &fTWPdf2 , "WPdf2[NPdf2]/F");
+	fAnalysisTree->Branch("NPdf3", &fTNPdf3 , "NPdf3/I");
+	fAnalysisTree->Branch("WPdf3", &fTWPdf3 , "WPdf3[NPdf3]/F");
 
 }
 
@@ -444,7 +454,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	// Require at least one loose lepton
 	// if( (fTnqmus + fTnqels) < 1 ) return;
-	if( (nLooseMus + fTnqels) < 1 ) return;
+	if(!gDoPDFs && (nLooseMus + fTnqels) < 1 ) return;
 	fCounter.fill(fCutnames[3]);
 
 	// Event and run info
@@ -482,72 +492,65 @@ void SSDLAnalysis::FillAnalysisTree(){
 			double pdf_xpdf1, pdf_xpdf2;
 			double newxfx1, newxfx2;
 
-			// SAVE WEIGHTS FOR CTEQ
-			// ==========================
-			// std::cout << LHAPDF::numberPDF() << std::endl;
-			//LHAPDF::initPDFSet(1,"CT10.LHgrid");
-			LHAPDF::initPDFSet(1,"cteq61.LHgrid");
-			
+
+			LHAPDF::initPDFSet(1,"CT10.LHgrid");
 			LHAPDF::initPDF(1,0);
 			LHAPDF::usePDFMember(1,0);
-			fTNPdfCTEQ = (int)LHAPDF::numberPDF(1);
+			fTNPdf1 = (int)LHAPDF::numberPDF(1);
 			pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
 				
 			// std::vector<float> pdfweight;
 			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdfCTEQ; pdf++){
+			for(int pdf=0; pdf < fTNPdf1; pdf++){
 				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(1, pdf);
 				newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
-				fTWPdfCTEQ[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
 				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
 				// pdfWsum += pdfweight.back();
 			}
 
-			
-			//LHAPDF::initPDFSet(2,"cteq61.LHgrid");
-			LHAPDF::initPDFSet(2, "CT10.LHgrid");
-			LHAPDF::initPDF(2, 0);
-			LHAPDF::usePDFMember(2, 0);
-			fTNPdfCT10 = (int)LHAPDF::numberPDF(2);
+			LHAPDF::initPDFSet(2,"NNPDF20_100.LHgrid");
+			LHAPDF::initPDF(2,0);
+			LHAPDF::usePDFMember(2,0);
+			fTNPdf2 = (int)LHAPDF::numberPDF(2);
 			pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
 				
 			// std::vector<float> pdfweight;
 			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdfCT10; pdf++){
+			for(int pdf=0; pdf < fTNPdf2; pdf++){
 				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(2, pdf);
 				newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
-				fTWPdfCT10[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				fTWPdf2[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
 				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
 				// pdfWsum += pdfweight.back();
 			}
 
 
-			
-			//LHAPDF::initPDFSet(3, "MRST2006nnlo.LHgrid");
-			LHAPDF::initPDFSet(3, "MSTW2008nnlo90cl.LHgrid");
-			LHAPDF::initPDF(3, 0);
-			LHAPDF::usePDFMember(3, 0);
-			fTNPdfMRST = (int)LHAPDF::numberPDF(3);
+			LHAPDF::initPDFSet(3,"MSTW2008nnlo68cl.LHgrid");
+			LHAPDF::initPDF(3,0);
+			LHAPDF::usePDFMember(3,0);
+			fTNPdf3 = (int)LHAPDF::numberPDF(3);
 			pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
 				
 			// std::vector<float> pdfweight;
 			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdfMRST; pdf++){
+			for(int pdf=0; pdf < fTNPdf3; pdf++){
 				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(3, pdf);
 				newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
-				fTWPdfMRST[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				fTWPdf3[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
 				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
 				// pdfWsum += pdfweight.back();
 			}
+
 
 			// ===========================================================================
 
@@ -789,17 +792,37 @@ void SSDLAnalysis::ResetTree(){
 	fTisTChiSlepSnu   = -999.99;
 	fTisRightHanded   = -999.99;
 
-	fTNPdfCTEQ = 0;
-	for( int i=0; i<fNCTEQ; ++i){
-		fTWPdfCTEQ[i] = -1.;
+//	fTNPdfCTEQ = 0;
+//	for( int i=0; i<fNCTEQ; ++i){
+//		fTWPdfCTEQ[i] = -1.;
+//	}
+//	fTNPdfCT10 = 0;
+//	for( int i=0; i<fNCT10; ++i){
+//		fTWPdfCT10[i] = -1.;
+//	}
+//	fTNPdfMRST = 0;
+//	for( int i=0; i<fNMRST; ++i){
+//		fTWPdfMRST[i] = -1.;
+//	}
+//	fTNPdfCTEQ66 = 0;
+//	for( int i=0; i<fNCTEQ66; ++i){
+//		fTWPdfCTEQ66[i] = -1.;
+//	}
+//	fTNPdfNNP20100 = 0;
+//	for( int i=0; i<fNNNP20100; ++i){
+//		fTWPdfNNP20100[i] = -1.;
+//	}
+	fTNPdf1 = 0;
+	for( int i=0; i<fPdf1; ++i){
+		fTWPdf1[i] = -1.;
 	}
-	fTNPdfCT10 = 0;
-	for( int i=0; i<fNCT10; ++i){
-		fTWPdfCT10[i] = -1.;
+	fTNPdf2 = 0;
+	for( int i=0; i<fPdf2; ++i){
+		fTWPdf2[i] = -1.;
 	}
-	fTNPdfMRST = 0;
-	for( int i=0; i<fNMRST; ++i){
-		fTWPdfMRST[i] = -1.;
+	fTNPdf3 = 0;
+	for( int i=0; i<fPdf3; ++i){
+		fTWPdf3[i] = -1.;
 	}
 
 	for(size_t i = 0; i < fHLTPathSets.size(); ++i){
