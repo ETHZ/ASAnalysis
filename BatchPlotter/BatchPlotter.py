@@ -34,7 +34,7 @@ def read_config(config_name):
 		elif opt == 'SELocation'   : info['storage_location'] = arg
 		elif opt == 'ModelName'    : info['model_name'] = arg
 		elif opt == 'Date':
-			info['output_node'] = '/scratch/mdunser/'+arg+'/'
+			info['output_node'] = '/scratch/lbaeni/'+arg+'/'
 			info['date']        = arg
 		elif opt == 'OutputLocation':
 			if not arg[-1]== '/':
