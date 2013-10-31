@@ -94,6 +94,15 @@ typedef struct {
   std::vector<float> PfCandVz;
 } pfcandidates_struct;
 
+typedef struct {
+  int m_jet;
+  float phopt_footprint_total;
+  float phopt_footprint_m_frac;
+  float jetpt_pf;
+  float jetpt_m_frac;
+  float jetpt_m_frac_PhoComp;
+} jetmatching_struct;
+
 class DiPhotonMiniTree : public UserAnalysisBase{
 public:
   DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid=0);
@@ -188,6 +197,8 @@ private:
     }
   };
   IndexByPt indexComparator;
+
+  jetmatching_struct PFMatchPhotonToJet(int phoqi);
 
   TRandom3 *randomgen;
 

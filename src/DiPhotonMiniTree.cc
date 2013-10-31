@@ -376,6 +376,8 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
+    if (sel_cat!=11) continue;
+
     if (isstep2 && sel_cat!=0) continue;
 
     if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
@@ -537,6 +539,8 @@ void DiPhotonMiniTree::Analyze(){
   //  cout << "D" << endl;
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
+
+    if (sel_cat!=11) continue;
 
     if (isstep2 && sel_cat!=0) continue;
 
@@ -2337,6 +2341,16 @@ void DiPhotonMiniTree::FillLead(int index){
 //  pholead_scarea = scarea[fTR->PhotSCindex[index]];
 //  pholead_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
+  {
+  jetmatching_struct m = PFMatchPhotonToJet(index);
+  cout << "Matching: " << m.m_jet << endl;
+  cout << "Footprint/RECO: " << m.phopt_footprint_total/pholead_pt << endl;
+  cout << "Fraction of footprint: " << m.phopt_footprint_m_frac << endl;
+  cout << "Fraction of jet pt: " << m.jetpt_m_frac << endl;
+  cout << "Pho: " << pholead_pt << " " << pholead_eta << " " << pholead_phi << endl;
+  if (m.m_jet>=0) cout << "Jet: " << m.jetpt_pf << " " <<  fTR->JEta[m.m_jet] << " " << fTR->JPhi[m.m_jet] << endl;
+  }
+
 };
 
 float DiPhotonMiniTree::SieieRescale(float sieie, bool isbarrel){
@@ -2966,5 +2980,58 @@ void DiPhotonMiniTree::InitInputTree(){
     inputtree_isinitialized = true;
 
   }
+
+};
+
+
+jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (jet_index,fraction)
+
+  jetmatching_struct out;
+  out.m_jet=-999;
+  out.phopt_footprint_total=-999;
+  out.phopt_footprint_m_frac=-999;
+  out.jetpt_pf=-999;
+  out.jetpt_m_frac=-999;
+
+  // prepare list of pfcands to represent the photon deposit
+  std::vector<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
+  if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]>=0) {
+    int m = fTR->PhoMatchedPFPhotonCand[phoqi];
+    for (int i=0; i<pfcands.size(); i++) assert(pfcands.at(i)!=m); // this should never happen
+    pfcands.push_back(m);
+  }
+
+  // init ranking
+  std::vector<std::pair<int,float> > ranking;
+  for (int i=0; i<fTR->NJets; i++) ranking.push_back(std::pair<int,float>(i,0));
+  if (ranking.size()==0) {
+    cout << "PFMatchPhotonToJet: no jets in the event! Returning error state" << endl;
+    return out;
+  }
+
+  // loop on candidates
+  out.phopt_footprint_total=0;
+  for (int i=0; i<pfcands.size(); i++){
+    float pt = fTR->PfCandPt.at(pfcands.at(i));
+    out.phopt_footprint_total+=pt;
+    int j = fTR->PfCandBelongsToJet.at(pfcands.at(i));
+    if (j<0) continue; // unclustered or belonging to jet not present in ntuple
+    ranking.at(j).second+=pt;
+  }
+
+  // sort sharings
+  std::sort(ranking.begin(),ranking.end(),indexComparator); // sort done w.r.t. absolute pt sharing
+  std::pair<int,float> chosen = ranking.at(0);
+
+  if (!(chosen.second>0)) return out;
+
+  // output
+  out.m_jet = chosen.first;
+  out.phopt_footprint_m_frac = chosen.second/out.phopt_footprint_total;
+  out.jetpt_pf = fTR->JPt.at(chosen.first)/fTR->JEcorr.at(chosen.first);
+  out.jetpt_m_frac = chosen.second/out.jetpt_pf;
+  out.jetpt_m_frac_PhoComp = out.jetpt_m_frac/fTR->JPhoFrac.at(chosen.first);
+
+  return out;
 
 };
