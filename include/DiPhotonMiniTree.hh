@@ -283,6 +283,21 @@ private:
   Float_t pholead_scarea, photrail_scarea;
   Float_t pholead_scareaSF, photrail_scareaSF;
 
+  Float_t pholead_m_jet_ptcorr;
+  Float_t pholead_m_jet_dR;
+  Float_t pholead_phopt_footprint_total;
+  Float_t pholead_phopt_footprint_m_frac;
+  Float_t pholead_jetpt_pf;
+  Float_t pholead_jetpt_m_frac;
+  Float_t pholead_jetpt_m_frac_PhoComp;
+  Float_t photrail_m_jet_ptcorr;
+  Float_t photrail_m_jet_dR;
+  Float_t photrail_phopt_footprint_total;
+  Float_t photrail_phopt_footprint_m_frac;
+  Float_t photrail_jetpt_pf;
+  Float_t photrail_jetpt_m_frac;
+  Float_t photrail_jetpt_m_frac_PhoComp;
+
   Int_t pholead_Npfcandphotonincone;
   Int_t pholead_Npfcandchargedincone;
   Int_t pholead_Npfcandneutralincone;

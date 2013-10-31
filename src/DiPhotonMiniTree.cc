@@ -159,6 +159,21 @@ void DiPhotonMiniTree::Begin(){
 //  OutputTree[i]->Branch("photrail_scarea",&photrail_scarea,"photrail_scarea/F");
 //  OutputTree[i]->Branch("photrail_scareaSF",&photrail_scareaSF,"photrail_scareaSF/F");
 
+  OutputTree[i]->Branch("pholead_m_jet_ptcorr",&pholead_m_jet_ptcorr,"pholead_m_jet_ptcorr/F");
+  OutputTree[i]->Branch("pholead_m_jet_dR",&pholead_m_jet_dR,"pholead_m_jet_dR/F");
+  OutputTree[i]->Branch("pholead_phopt_footprint_total",&pholead_phopt_footprint_total,"pholead_phopt_footprint_total/F");
+  OutputTree[i]->Branch("pholead_phopt_footprint_m_frac",&pholead_phopt_footprint_m_frac,"pholead_phopt_footprint_m_frac/F");
+  OutputTree[i]->Branch("pholead_jetpt_pf",&pholead_jetpt_pf,"pholead_jetpt_pf/F");
+  OutputTree[i]->Branch("pholead_jetpt_m_frac",&pholead_jetpt_m_frac,"pholead_jetpt_m_frac/F");
+  OutputTree[i]->Branch("pholead_jetpt_m_frac_PhoComp",&pholead_jetpt_m_frac_PhoComp,"pholead_jetpt_m_frac_PhoComp/F");
+  OutputTree[i]->Branch("photrail_m_jet_ptcorr",&photrail_m_jet_ptcorr,"photrail_m_jet_ptcorr/F");
+  OutputTree[i]->Branch("photrail_m_jet_dR",&photrail_m_jet_dR,"photrail_m_jet_dR/F");
+  OutputTree[i]->Branch("photrail_phopt_footprint_total",&photrail_phopt_footprint_total,"photrail_phopt_footprint_total/F");
+  OutputTree[i]->Branch("photrail_phopt_footprint_m_frac",&photrail_phopt_footprint_m_frac,"photrail_phopt_footprint_m_frac/F");
+  OutputTree[i]->Branch("photrail_jetpt_pf",&photrail_jetpt_pf,"photrail_jetpt_pf/F");
+  OutputTree[i]->Branch("photrail_jetpt_m_frac",&photrail_jetpt_m_frac,"photrail_jetpt_m_frac/F");
+  OutputTree[i]->Branch("photrail_jetpt_m_frac_PhoComp",&photrail_jetpt_m_frac_PhoComp,"photrail_jetpt_m_frac_PhoComp/F");
+
   if (do_recalc_isolation){
   OutputTree[i]->Branch("pholead_Npfcandphotonincone",&pholead_Npfcandphotonincone,"pholead_Npfcandphotonincone/I");
   OutputTree[i]->Branch("pholead_Npfcandchargedincone",&pholead_Npfcandchargedincone,"pholead_Npfcandchargedincone/I");
@@ -1779,6 +1794,10 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 	  xtal_corners[1]=TVector3(fTR->XtalFront2X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront2Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront2Z[fTR->SCXtalListStart[scindex]+j]);
 	  xtal_corners[2]=TVector3(fTR->XtalFront3X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront3Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront3Z[fTR->SCXtalListStart[scindex]+j]);
 	  xtal_corners[3]=TVector3(fTR->XtalFront4X[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront4Y[fTR->SCXtalListStart[scindex]+j],fTR->XtalFront4Z[fTR->SCXtalListStart[scindex]+j]);
+	  if (rotation_phi!=0) {
+	    TRotation r; r.RotateZ(rotation_phi);
+	    for (int k=0; k<4; k++) xtal_corners[k] *= r;
+	  }
 	  float hitx = ecalpfhit.x();
 	  float hity = ecalpfhit.y();
 	  float polx[5];
@@ -2342,13 +2361,14 @@ void DiPhotonMiniTree::FillLead(int index){
 //  pholead_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
   {
-  jetmatching_struct m = PFMatchPhotonToJet(index);
-  cout << "Matching: " << m.m_jet << endl;
-  cout << "Footprint/RECO: " << m.phopt_footprint_total/pholead_pt << endl;
-  cout << "Fraction of footprint: " << m.phopt_footprint_m_frac << endl;
-  cout << "Fraction of jet pt: " << m.jetpt_m_frac << endl;
-  cout << "Pho: " << pholead_pt << " " << pholead_eta << " " << pholead_phi << endl;
-  if (m.m_jet>=0) cout << "Jet: " << m.jetpt_pf << " " <<  fTR->JEta[m.m_jet] << " " << fTR->JPhi[m.m_jet] << endl;
+    jetmatching_struct m = PFMatchPhotonToJet(index);
+    pholead_m_jet_ptcorr = (m.m_jet>=0) ? fTR->JPt[m.m_jet] : -999;
+    pholead_m_jet_dR = (m.m_jet>=0) ? Util::GetDeltaR(pholead_eta,fTR->JEta[m.m_jet],pholead_phi,fTR->JPhi[m.m_jet]) : 999;
+    pholead_phopt_footprint_total = m.phopt_footprint_total;
+    pholead_phopt_footprint_m_frac = m.phopt_footprint_m_frac;
+    pholead_jetpt_pf = m.jetpt_pf;
+    pholead_jetpt_m_frac = m.jetpt_m_frac;
+    pholead_jetpt_m_frac_PhoComp = m.jetpt_m_frac_PhoComp;
   }
 
 };
@@ -2410,6 +2430,17 @@ void DiPhotonMiniTree::FillTrail(int index){
   photrail_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
 //  photrail_scarea = scarea[fTR->PhotSCindex[index]];
 //  photrail_scareaSF = scareaSF[fTR->PhotSCindex[index]];
+
+  {
+    jetmatching_struct m = PFMatchPhotonToJet(index);
+    photrail_m_jet_ptcorr = (m.m_jet>=0) ? fTR->JPt[m.m_jet] : -999;
+    photrail_m_jet_dR = (m.m_jet>=0) ? Util::GetDeltaR(photrail_eta,fTR->JEta[m.m_jet],photrail_phi,fTR->JPhi[m.m_jet]) : 999;
+    photrail_phopt_footprint_total = m.phopt_footprint_total;
+    photrail_phopt_footprint_m_frac = m.phopt_footprint_m_frac;
+    photrail_jetpt_pf = m.jetpt_pf;
+    photrail_jetpt_m_frac = m.jetpt_m_frac;
+    photrail_jetpt_m_frac_PhoComp = m.jetpt_m_frac_PhoComp;
+  }
 
 };
 
@@ -2479,6 +2510,20 @@ void DiPhotonMiniTree::ResetVars(){
 //  photrail_scarea = -999;
 //  pholead_scareaSF = -999;
 //  photrail_scareaSF = -999;
+  pholead_m_jet_ptcorr = -999;
+  pholead_m_jet_dR = -999;
+  pholead_phopt_footprint_total = -999;
+  pholead_phopt_footprint_m_frac = -999;
+  pholead_jetpt_pf = -999;
+  pholead_jetpt_m_frac = -999;
+  pholead_jetpt_m_frac_PhoComp = -999;
+  photrail_m_jet_ptcorr = -999;
+  photrail_m_jet_dR = -999;
+  photrail_phopt_footprint_total = -999;
+  photrail_phopt_footprint_m_frac = -999;
+  photrail_jetpt_pf = -999;
+  photrail_jetpt_m_frac = -999;
+  photrail_jetpt_m_frac_PhoComp = -999;
   if (do_recalc_isolation){
   pholead_Npfcandphotonincone = -999;
   pholead_Npfcandchargedincone = -999;
