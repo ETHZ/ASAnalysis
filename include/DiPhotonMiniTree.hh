@@ -380,8 +380,10 @@ private:
   Float_t rewinfo_template_2events_bkgbkg_2[nclosest*6];
 
   Int_t   vetoobjects_count;
+  Float_t vetoobjects_pt[global_maxN_vetoobjects];
   Float_t vetoobjects_eta[global_maxN_vetoobjects];
   Float_t vetoobjects_phi[global_maxN_vetoobjects];
+  Int_t vetoobjects_type[global_maxN_vetoobjects];
 
   Int_t   input_allphotonpfcand_count;
   Float_t input_allphotonpfcand_pt[global_maxN_photonpfcandidates];

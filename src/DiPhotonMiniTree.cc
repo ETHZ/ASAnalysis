@@ -240,8 +240,10 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("rewinfo_template_2events_bkgbkg_2",&rewinfo_template_2events_bkgbkg_2,Form("rewinfo_template_2events_bkgbkg_2[%d]/F",nclosest*6));
 
   OutputTree[i]->Branch("vetoobjects_count",&vetoobjects_count,"vetoobjects_count/I");
+  OutputTree[i]->Branch("vetoobjects_pt",&vetoobjects_pt,"vetoobjects_pt[vetoobjects_count]/F");
   OutputTree[i]->Branch("vetoobjects_eta",&vetoobjects_eta,"vetoobjects_eta[vetoobjects_count]/F");
   OutputTree[i]->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
+  OutputTree[i]->Branch("vetoobjects_type",&vetoobjects_type,"vetoobjects_type[vetoobjects_count]/I");
 
   }
 
@@ -299,6 +301,8 @@ void DiPhotonMiniTree::Begin(){
 }
 
 void DiPhotonMiniTree::Analyze(){
+
+  //  cout << endl << "-----------------------" << endl;
 
   float weight;
   if (!isdata) weight = GetPUWeight(fTR->PUnumInteractions);
@@ -769,8 +773,9 @@ void DiPhotonMiniTree::Analyze(){
 	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
-	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
+	  //	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
 	  if (fTR->PfCandPdgId[k]!=22) continue;
+	  //	  cout << fTR->PfCandPt[k] << " " << fTR->PfCandEta[k] << " " << fTR->PfCandPhi[k] << endl;
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
@@ -784,6 +789,7 @@ void DiPhotonMiniTree::Analyze(){
 	  allphotonpfcand_vx[index] = fTR->PfCandVx[k];
 	  allphotonpfcand_vy[index] = fTR->PfCandVy[k];
 	  allphotonpfcand_vz[index] = fTR->PfCandVz[k];
+	  //	  cout << "taken" << endl;
 	  index++;
 	}
 	allphotonpfcand_count = index;
@@ -1533,7 +1539,8 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   for (int i=0; i<fTR->NJets; i++){
     if (fTR->JPt[i]<20) continue;
-    //    if (!(fTR->JPassPileupIDM0[fTR->JVrtxListStart[i]+0])) continue;
+    //    cout << "vj " << fTR->JPt[i] << " " << fTR->JEta[i] << " " << fTR->JPhi[i] << endl;
+    //    if (!(fTR->JPassPileupIDT0[fTR->JVrtxListStart[i]+0])) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
     if (dR<mindR) found=true;
@@ -1542,16 +1549,11 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   for (int i=0; i<fTR->NPhotons; i++){
     if (fTR->PhoPt[i]<10) continue;
+    //    cout << "vg " << fTR->PhoPt[i] << " " << fTR->PhoEta[i] << " " << fTR->PhoPhi[i] << endl;
     float dR = Util::GetDeltaR(eta,fTR->PhoEta[i],phi,fTR->PhoPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
     if (dR<mindR) found=true;
     if (debug) if (dR<mindR) std::cout << "Found phot eta=" << fTR->PhoEta[i] << " phi=" << fTR->PhoPhi[i] << std::endl;
-  }
-
-  for (int i=0; i<fTR->NMus; i++){
-    float mueta = fTR->MuEta[i];
-    float muphi = fTR->MuPhi[i];
-    if (Util::GetDeltaR(mueta,eta,muphi,phi)<0.4) found=true;
   }
 
   if (debug) std::cout << "returning " << found << std::endl;
@@ -1580,7 +1582,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(std::vector<std::pair<float,float
 
 void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
-  std::vector<std::pair<float,float> > obj;
+  std::vector<std::pair<TVector3,int>> obj;
 
   if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl;}
 
@@ -1593,24 +1595,26 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
     if (fTR->JPt[i]<20) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
-    obj.push_back(std::pair<float,float>(fTR->JEta[i],fTR->JPhi[i]));
+    TVector3 a;
+    a.SetPtEtaPhi(fTR->JPt[i],fTR->JEta[i],fTR->JPhi[i]);
+    obj.push_back(std::pair<TVector3,int>(a,0));
   }
 
   for (int i=0; i<fTR->NPhotons; i++){
     if (fTR->PhoPt[i]<10) continue;
     float dR = Util::GetDeltaR(eta,fTR->PhoEta[i],phi,fTR->PhoPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
-    obj.push_back(std::pair<float,float>(fTR->PhoEta[i],fTR->PhoPhi[i]));
-  }
-
-  for (int i=0; i<fTR->NMus; i++){
-    obj.push_back(std::pair<float,float>(fTR->MuEta[i],fTR->MuPhi[i]));
+    TVector3 a;
+    a.SetPtEtaPhi(fTR->PhoPt[i],fTR->PhoEta[i],fTR->PhoPhi[i]);
+    obj.push_back(std::pair<TVector3,int>(a,1));
   }
 
   if (obj.size()>global_maxN_vetoobjects) {std::cout << "MaxN vetoobjects reached" << std::endl; obj.resize(global_maxN_vetoobjects);}
   for (int i=0; i<obj.size(); i++){
-    vetoobjects_eta[i]=obj.at(i).first;
-    vetoobjects_phi[i]=obj.at(i).second;
+    vetoobjects_pt[i]=obj.at(i).first.Pt();
+    vetoobjects_eta[i]=obj.at(i).first.Eta();
+    vetoobjects_phi[i]=obj.at(i).first.Phi();
+    vetoobjects_type[i]=obj.at(i).second;
   }
   vetoobjects_count = obj.size();
 
@@ -1866,8 +1870,23 @@ isolations_struct DiPhotonMiniTree::RandomConeIsolation(TreeReader *fTR, int pho
 
   double rotation_phi = pi/2;
 
+  //  double rotation_phi = fTR->PhoSCRemovalRConePhi[phoqi]-TVector3(fTR->SCX[fTR->PhotSCindex[phoqi]],fTR->SCY[fTR->PhotSCindex[phoqi]],fTR->SCZ[fTR->PhotSCindex[phoqi]]).Phi();
+
+//  if (fTR->PhoSCRemovalPFIsoPhoton[phoqi]>900){
+//    isolations_struct out;
+//    out.nphotoncand=0; out.nchargedcand=0; out.nneutralcand=0;
+//    out.photon = -999;
+//    out.charged = -999;
+//    out.neutral = -999;
+//    out.newphi=-999;
+//    return out;
+//  }
+
   bool isok = !(FindCloseJetsAndPhotons(fTR,rotation_phi,phoqi,mod));
   if (!isok) {
+    
+    //    cout << "WRONG: MISMATCH IN OUTPUT OF CHECK " << fTR->PhoSCEta[phoqi] << " " << fTR->PhoPt[phoqi] << endl;
+    
     rotation_phi = -pi/2;
     isok=!(FindCloseJetsAndPhotons(fTR,rotation_phi,phoqi,mod));
   }
@@ -1882,6 +1901,7 @@ isolations_struct DiPhotonMiniTree::RandomConeIsolation(TreeReader *fTR, int pho
   isolations_struct out;
   out.nphotoncand=0; out.nchargedcand=0; out.nneutralcand=0;
 
+
   if (count==20){
     std::cout << "Error in random cone generation!!!"  << std::endl;
     out.photon = -999;
@@ -1895,6 +1915,15 @@ isolations_struct DiPhotonMiniTree::RandomConeIsolation(TreeReader *fTR, int pho
   out.photon = PFIsolation(phoqi,rotation_phi,"photon",&(out.nphotoncand),&(out.photoncandenergies),&(out.photoncandets),&(out.photoncanddetas),&(out.photoncanddphis),&(out.newphi));
   out.charged = PFIsolation(phoqi,rotation_phi,"charged",&(out.nchargedcand),&(out.chargedcandenergies),&(out.chargedcandets),&(out.chargedcanddetas),&(out.chargedcanddphis),&(out.newphi));
   out.neutral = PFIsolation(phoqi,rotation_phi,"neutral",&(out.nneutralcand),&(out.neutralcandenergies),&(out.neutralcandets),&(out.neutralcanddetas),&(out.neutralcanddphis),&(out.newphi));
+
+//  if (fabs(out.photon/fTR->PhoSCRemovalPFIsoPhotonRCone[phoqi]-1)>1e-3)  {
+//    cout << "(" << out.photon << "," << fTR->PhoSCRemovalPFIsoPhotonRCone[phoqi] << ") ";
+//    cout << "(" << fTR->PhoSCRemovalRConePhi[phoqi] << "," << out.newphi << ") ";
+//    cout << "(" << fTR->PhoSCRemovalRConeEta[phoqi] << "," << fTR->PhoSCEta[phoqi] << ") ";
+//    cout << "(" << pholead_PhoSCRemovalPFIsoPhoton << "," << fTR->PhoSCRemovalPFIsoPhoton[phoqi] << ") ";
+//    cout << endl;
+//  }
+
   return out;
 
 };
@@ -1968,6 +1997,12 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
     for (int i=0; i<footprint.size(); i++) removals.push_back(footprint.at(i));
     //    scaleresult = scareaSF[fTR->PhotSCindex[phoqi]];
   }
+
+//  if (rotation_phi!=0) {
+//    cout << "rotated removals ";
+//    for (int i=0; i<removals.size(); i++) cout << fTR->PfCandPt[removals.at(i)] << " ";
+//    cout << endl;
+//  }
 
   for (int i=0; i<fTR->NPfCand; i++){
 
@@ -2528,8 +2563,10 @@ void DiPhotonMiniTree::ResetVars(){
 
   vetoobjects_count=0;
   for (int i=0; i<global_maxN_vetoobjects; i++){
+    vetoobjects_pt[i]=-999;
     vetoobjects_eta[i]=-999;
     vetoobjects_phi[i]=-999;
+    vetoobjects_type[i]=-999;
   }
 
 };
