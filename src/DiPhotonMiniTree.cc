@@ -260,6 +260,14 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
   OutputTree[i]->Branch("vetoobjects_type",&vetoobjects_type,"vetoobjects_type[vetoobjects_count]/I");
 
+  OutputTree[i]->Branch("n_jets",&n_jets,"n_jets/I");
+  OutputTree[i]->Branch("jet1_pt",&jet1_pt,"jet1_pt/F");
+  OutputTree[i]->Branch("jet1_eta",&jet1_eta,"jet1_eta/F");
+  OutputTree[i]->Branch("jet1_phi",&jet1_phi,"jet1_phi/F");
+  OutputTree[i]->Branch("jet2_pt",&jet2_pt,"jet2_pt/F");
+  OutputTree[i]->Branch("jet2_eta",&jet2_eta,"jet2_eta/F");
+  OutputTree[i]->Branch("jet2_phi",&jet2_phi,"jet2_phi/F");
+
   }
 
   inputtree_isinitialized = false;
@@ -384,14 +392,17 @@ void DiPhotonMiniTree::Analyze(){
 
   bool passtrigger = TriggerSelection();
 
-  std::vector<int> passing_selection[18];
+  photon_jet_matching.clear();
+  if (passtrigger){
+    for (int i=0; i<fTR->NPhotons; i++) photon_jet_matching.push_back(PFMatchPhotonToJet(i));
+  }
 
+  std::vector<int> passing_selection[18];
+  std::vector<int> passing_selection_jets[18];
   bool pass[18];
-  int pass12_whoissiglike;
+  int pass12_whoissiglike[18];
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
-
-    if (sel_cat!=11) continue;
 
     if (isstep2 && sel_cat!=0) continue;
 
@@ -410,6 +421,7 @@ void DiPhotonMiniTree::Analyze(){
     pass[sel_cat]=false;
 
     std::vector<int> passing;
+    std::vector<int> passing_jets;
 
     if (sel_cat==10){
       for (int i=0; i<fTR->NMus; i++){
@@ -425,12 +437,19 @@ void DiPhotonMiniTree::Analyze(){
 	assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
       }
       passing = PhotonPreSelection(fTR,passing);
+
+      for (int i=0; i<fTR->NJets; i++) passing_jets.push_back(i);
+      for (int i=0; i<(int)(passing_jets.size())-1; i++){
+        assert(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)]);
+      }
+      JetSelection(passing_jets);
+
     }
 
 
     if (sel_cat==0){
       passing = PhotonSelection(fTR,passing);
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==1){
       passing = PhotonSelection(fTR,passing);
@@ -446,7 +465,7 @@ void DiPhotonMiniTree::Analyze(){
     }
     else if (sel_cat==3){
       passing = PhotonSelection(fTR,passing,"revert_pixel_veto"); // revert pixel veto already done
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==4){
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
@@ -456,7 +475,7 @@ void DiPhotonMiniTree::Analyze(){
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
     else if (sel_cat==6){
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==7){
       std::vector<int> passing_bkg = PhotonSelection(fTR,passing,"invert_sieie_cut");
@@ -465,18 +484,18 @@ void DiPhotonMiniTree::Analyze(){
       if (passing_bkg.size()>=1 && passing_sel.size()>=1){
 	int fondo = passing_bkg[0];
 	int forcone = passing_sel[0];
-	if (fTR->PhoPt[fondo] > fTR->PhoPt[forcone]) {newpassing.push_back(fondo); newpassing.push_back(forcone); pass12_whoissiglike=1;}
-	else {newpassing.push_back(forcone); newpassing.push_back(fondo); pass12_whoissiglike=0;}
+	if (fTR->PhoPt[fondo] > fTR->PhoPt[forcone]) {newpassing.push_back(fondo); newpassing.push_back(forcone); pass12_whoissiglike[sel_cat]=1;}
+	else {newpassing.push_back(forcone); newpassing.push_back(fondo); pass12_whoissiglike[sel_cat]=0;}
       }
       passing=newpassing;
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==8){
       passing = PhotonSelection(fTR,passing,"invert_sieie_cut");
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==9){
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==10){
       pass[sel_cat] = DiMuonFromZSelection(fTR,passing);
@@ -494,7 +513,7 @@ void DiPhotonMiniTree::Analyze(){
     else if (sel_cat==13){
       passing = SignalSelection(fTR,passing);
       passing = PhotonSelection(fTR,passing);
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==14){
       passing = PhotonSelection(fTR,passing);
@@ -504,16 +523,16 @@ void DiPhotonMiniTree::Analyze(){
       if (passing_bkg.size()>=1 && passing_sig.size()>=1){
 	int fondo = passing_bkg[0];
 	int prompt = passing_sig[0];
-	if (fTR->PhoPt[fondo] > fTR->PhoPt[prompt]) {newpassing.push_back(fondo); newpassing.push_back(prompt); pass12_whoissiglike=1;}
-	else {newpassing.push_back(prompt); newpassing.push_back(fondo); pass12_whoissiglike=0;}
+	if (fTR->PhoPt[fondo] > fTR->PhoPt[prompt]) {newpassing.push_back(fondo); newpassing.push_back(prompt); pass12_whoissiglike[sel_cat]=1;}
+	else {newpassing.push_back(prompt); newpassing.push_back(fondo); pass12_whoissiglike[sel_cat]=0;}
       }
       passing=newpassing;
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==15){
       passing = BackgroundSelection(fTR,passing);
       passing = PhotonSelection(fTR,passing);
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==16){
       std::vector<int> passing_bkg = BackgroundSelection(fTR,passing);
@@ -524,11 +543,11 @@ void DiPhotonMiniTree::Analyze(){
       if (passing_bkg.size()>=1 && passing_sig.size()>=1){
 	int fondo = passing_bkg[0];
 	int forcone = passing_sig[0];
-	if (fTR->PhoPt[fondo] > fTR->PhoPt[forcone]) {newpassing.push_back(fondo); newpassing.push_back(forcone); pass12_whoissiglike=1;}
-	else {newpassing.push_back(forcone); newpassing.push_back(fondo); pass12_whoissiglike=0;}
+	if (fTR->PhoPt[fondo] > fTR->PhoPt[forcone]) {newpassing.push_back(fondo); newpassing.push_back(forcone); pass12_whoissiglike[sel_cat]=1;}
+	else {newpassing.push_back(forcone); newpassing.push_back(fondo); pass12_whoissiglike[sel_cat]=0;}
       }
       passing=newpassing;
-      pass[sel_cat] = StandardEventSelection(fTR,passing);
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
     else if (sel_cat==17){
       std::vector<int> passing_sig = SignalSelection(fTR,passing);
@@ -538,24 +557,21 @@ void DiPhotonMiniTree::Analyze(){
       if (passing_bkg.size()>=1 && passing_sig.size()>=1){
 	int fondo = passing_bkg[0];
 	int prompt = passing_sig[0];
-	if (fTR->PhoPt[fondo] > fTR->PhoPt[prompt]) {newpassing.push_back(fondo); newpassing.push_back(prompt); pass12_whoissiglike=1;}
-	else {newpassing.push_back(prompt); newpassing.push_back(fondo); pass12_whoissiglike=0;}
+	if (fTR->PhoPt[fondo] > fTR->PhoPt[prompt]) {newpassing.push_back(fondo); newpassing.push_back(prompt); pass12_whoissiglike[sel_cat]=1;}
+	else {newpassing.push_back(prompt); newpassing.push_back(fondo); pass12_whoissiglike[sel_cat]=0;}
       }
       passing=newpassing;
-      pass[sel_cat] = StandardEventSelection(fTR,passing);      
+      pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);      
     }
 
     passing_selection[sel_cat] = passing;
+    passing_selection_jets[sel_cat] = passing_jets;
 
   }
-
-
 
   //  cout << "D" << endl;
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
-
-    if (sel_cat!=11) continue;
 
     if (isstep2 && sel_cat!=0) continue;
 
@@ -574,6 +590,7 @@ void DiPhotonMiniTree::Analyze(){
     if (!pass[sel_cat]) continue;
 
     std::vector<int> passing = passing_selection[sel_cat];
+    std::vector<int> passing_jets = passing_selection_jets[sel_cat];
     int minsize = (is2d[sel_cat]) ? 2 : 1;
 
     if (passing_selection[sel_cat].size()<minsize){
@@ -592,11 +609,12 @@ void DiPhotonMiniTree::Analyze(){
       ResetVars();
       FillLead(passing.at(0));
       FillTrail(passing.at(1));
+      FillJetsInfo(passing_jets);
       bool dofill=true;
 
-      if (sel_cat==7 || sel_cat==14 || sel_cat==16 || sel_cat==17) event_pass12whoissiglike=pass12_whoissiglike;
+      if (sel_cat==7 || sel_cat==14 || sel_cat==16 || sel_cat==17) event_pass12whoissiglike=pass12_whoissiglike[sel_cat];
 
-      if (sel_cat==6 || ((sel_cat==7 || sel_cat==16) && pass12_whoissiglike==0)) {
+      if (sel_cat==6 || ((sel_cat==7 || sel_cat==16) && pass12_whoissiglike[sel_cat]==0)) {
 
 	  if (do_recalc_isolation){
 	    isolations_struct rcone_isos;
@@ -634,7 +652,7 @@ void DiPhotonMiniTree::Analyze(){
 	    if (pholead_PhoSCRemovalPFIsoCharged==999 || pholead_PhoSCRemovalPFIsoNeutral==999 || pholead_PhoSCRemovalPFIsoPhoton==999) dofill=false;
 	  }
       }
-      if (sel_cat==6 || ((sel_cat==7 || sel_cat==16) && pass12_whoissiglike==1)) {
+      if (sel_cat==6 || ((sel_cat==7 || sel_cat==16) && pass12_whoissiglike[sel_cat]==1)) {
 
 	if (do_recalc_isolation){
 	  isolations_struct rcone_isos;
@@ -702,7 +720,7 @@ void DiPhotonMiniTree::Analyze(){
       }
 
       if (sel_cat==7) {
-	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(!pass12_whoissiglike),0,"photon");
+	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(!pass12_whoissiglike[sel_cat]),0,"photon");
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
 	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
@@ -710,7 +728,7 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(!pass12_whoissiglike)]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
 	  bool removed = false;
 	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
 	  if (removed) continue;
@@ -724,7 +742,7 @@ void DiPhotonMiniTree::Analyze(){
 	}
 	allphotonpfcand_count = index;
 
-	FillVetoObjects(fTR,passing.at(!pass12_whoissiglike),TString("exclude_object_itself"));
+	FillVetoObjects(fTR,passing.at(!pass12_whoissiglike[sel_cat]),TString("exclude_object_itself"));
 
       }
 
@@ -823,152 +841,151 @@ void DiPhotonMiniTree::Analyze(){
     }
 
     
-    }
-  
-
-  { // lightweight tree for efficiency and unfolding studies
-
-    ResetVars(); 
-
-    std::vector<int> passing;
-    for (int i=0; i<fTR->NPhotons; i++){
-      passing.push_back(i);
-    }
-    for (int i=0; i<(int)(passing.size())-1; i++){
-      assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
-    }
-
-    std::vector<int> passing_gen;
-    for (int i=0; i<fTR->NGenPhotons; i++){
-      passing_gen.push_back(i);
-    }
-
-    bool found_reco = false;
-    bool gen_in_acc = false;
-
-    passing = PhotonPreSelection(fTR,passing);
-    passing = PhotonSelection(fTR,passing);
-    found_reco = passtrigger && StandardEventSelection(fTR,passing);
-
-    bool reco_has_matched_gen_no_acceptance = false;
-    bool reco_has_matched_gen_within_acceptance = false;
-    bool reco_has_matched_gen_outside_acceptance = false;
-
-    if (found_reco) {
- 
-      bool match0 = ( (fTR->PhoMCmatchexitcode[passing.at(0)]==1 || fTR->PhoMCmatchexitcode[passing.at(0)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(0)]]<5 );
-      bool match1 = ( (fTR->PhoMCmatchexitcode[passing.at(1)]==1 || fTR->PhoMCmatchexitcode[passing.at(1)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(1)]]<5 ); 
-      reco_has_matched_gen_no_acceptance = match0 && match1;
-
-      if (reco_has_matched_gen_no_acceptance){
-	int m0 = fTR->PhoMCmatchindex[passing.at(0)];
-	int m1 = fTR->PhoMCmatchindex[passing.at(1)];
-	bool match0acc = ( (fabs(fTR->GenPhotonEta[m0])<1.4442) || (fabs(fTR->GenPhotonEta[m0])>1.566 && fabs(fTR->GenPhotonEta[m0])<2.5) ) && (fTR->GenPhotonPt[m0]>25);
-	bool match1acc = ( (fabs(fTR->GenPhotonEta[m1])<1.4442) || (fabs(fTR->GenPhotonEta[m1])>1.566 && fabs(fTR->GenPhotonEta[m1])<2.5) ) && (fTR->GenPhotonPt[m1]>25);
-	reco_has_matched_gen_within_acceptance = match0acc && match1acc && ((fTR->GenPhotonPt[m0]>40) || (fTR->GenPhotonPt[m1]>40)) && (Util::GetDeltaR(fTR->GenPhotonEta[m0],fTR->GenPhotonEta[m1],fTR->GenPhotonPhi[m0],fTR->GenPhotonPhi[m1])>global_dR_cut_acceptance);
-	reco_has_matched_gen_outside_acceptance = !reco_has_matched_gen_within_acceptance;
-      }
-
-    }
-
-    for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
-      bool pass=0;
-      if ( (fabs(fTR->GenPhotonEta[*it])<1.4442) || (fabs(fTR->GenPhotonEta[*it])>1.566 && fabs(fTR->GenPhotonEta[*it])<2.5)  ) pass=1;
-      if (fTR->GenPhotonPt[*it]<=25) pass=0;
-      if (fTR->GenPhotonIsoDR04[*it]>5) pass=0;
-      if (!pass) it=passing_gen.erase(it); else it++;
-    }
-
-    for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
-      bool pass=0;
-      int mother = fTR->GenPhotonMotherID[*it];
-      if (mother>=-6 && mother<=6) pass=1;
-      if (mother==21) pass=1;
-      if (mother==22 && fTR->GenPhotonMotherStatus[*it]==3) pass=1;
-      if (!pass) it=passing_gen.erase(it); else it++;
-    }
-
-    {
-      int sizegenphotonsbefore = passing_gen.size();
-      std::vector<OrderPair> passing_gen_ordered;
-      for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); it++){
-	passing_gen_ordered.push_back(make_pair<int,float>(int(*it),float(fTR->GenPhotonPt[*it])));
-      }
-      std::sort(passing_gen_ordered.begin(),passing_gen_ordered.end(),indexComparator);
-      passing_gen.clear();
-      for (vector<OrderPair>::iterator it = passing_gen_ordered.begin(); it != passing_gen_ordered.end(); it++) passing_gen.push_back(it->first);
-      assert(sizegenphotonsbefore==passing_gen.size());
-    }
-    for (int i=0; i<(int)(passing_gen.size())-1; i++){
-      assert(fTR->GenPhotonPt[passing_gen.at(i)]>=fTR->GenPhotonPt[passing_gen.at(i+1)]);
-    }
-
-    if (passing_gen.size()>=2 && fTR->GenPhotonPt[passing_gen.at(0)]>40 && \
-	Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>global_dR_cut_acceptance) gen_in_acc=true;
-
-    bool gen_in_acc_has_matched_reco = false;
-
-    if (found_reco && gen_in_acc) {
-      int found = 0;
-      for (std::vector<int>::iterator it = passing.begin(); it != passing.end(); it++){
-	if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2)
-	  if (fTR->PhoMCmatchindex[*it]==passing_gen.at(0) || fTR->PhoMCmatchindex[*it]==passing_gen.at(1)) found++;
-      }
-      if (found==2 && (fTR->PhoMCmatchindex[passing.at(0)] != fTR->PhoMCmatchindex[passing.at(1)])) gen_in_acc_has_matched_reco=true;
-    }
-
-    bool gen_in_acc_has_no_matched_reco = gen_in_acc && !gen_in_acc_has_matched_reco;
-
-    //CHECK
-    if (gen_in_acc && reco_has_matched_gen_no_acceptance){
-      bool ok = false;
-      if (passing_gen.at(0)==fTR->PhoMCmatchindex[passing.at(0)] && passing_gen.at(1)==fTR->PhoMCmatchindex[passing.at(1)]) ok = true;
-      if (passing_gen.at(0)==fTR->PhoMCmatchindex[passing.at(1)] && passing_gen.at(1)==fTR->PhoMCmatchindex[passing.at(0)]) ok = true;
-      if (!ok) {std::cout << "PROBLEM! MISMATCH IN GEN OBJECTS! Throwing away the event." << std::endl; reco_has_matched_gen_no_acceptance=false; gen_in_acc=false;}
-    }
-
-    if (reco_has_matched_gen_no_acceptance) {
-      FillLead(passing.at(0));
-      FillTrail(passing.at(1));
-    }
-
-    {
-      int m0=-1; int m1=-1;
-      if (gen_in_acc) {m0 = passing_gen.at(0); m1=passing_gen.at(1);}
-      else if (reco_has_matched_gen_no_acceptance){
-	m0 = fTR->PhoMCmatchindex[passing.at(0)];
-	m1 = fTR->PhoMCmatchindex[passing.at(1)];
-	if (fTR->GenPhotonPt[m0]<fTR->GenPhotonPt[m1]) {int temp=m1; m1=m0; m0=temp;}
-      }
-      if (gen_in_acc || reco_has_matched_gen_no_acceptance) {
-	TLorentzVector genphotons[2];
-	genphotons[0].SetPtEtaPhiM(fTR->GenPhotonPt[m0],fTR->GenPhotonEta[m0],fTR->GenPhotonPhi[m0],0);
-	genphotons[1].SetPtEtaPhiM(fTR->GenPhotonPt[m1],fTR->GenPhotonEta[m1],fTR->GenPhotonPhi[m1],0);
-	pholead_GEN_eta =     genphotons[0].Eta();
-	photrail_GEN_eta =    genphotons[1].Eta();
-	pholead_GEN_phi =     genphotons[0].Phi();
-	photrail_GEN_phi =    genphotons[1].Phi();
-	pholead_GEN_pt =      genphotons[0].Pt();
-	photrail_GEN_pt =     genphotons[1].Pt();
-      }
-    }
-
-    tree_reco_has_matched_gen_no_acceptance = reco_has_matched_gen_no_acceptance;
-    tree_reco_has_matched_gen_within_acceptance = reco_has_matched_gen_within_acceptance;
-    tree_reco_has_matched_gen_outside_acceptance = reco_has_matched_gen_outside_acceptance;
-    tree_gen_in_acc = gen_in_acc;
-    tree_gen_in_acc_has_matched_reco = gen_in_acc_has_matched_reco;
-    tree_gen_in_acc_has_no_matched_reco = gen_in_acc_has_no_matched_reco;
-
-
-    if (reco_has_matched_gen_no_acceptance || gen_in_acc) LightTreeGenReco->Fill();
-
   }
-
-
-
-
   
+//
+//  { // lightweight tree for efficiency and unfolding studies
+//
+//    ResetVars(); 
+//
+//    std::vector<int> passing;
+//    for (int i=0; i<fTR->NPhotons; i++){
+//      passing.push_back(i);
+//    }
+//    for (int i=0; i<(int)(passing.size())-1; i++){
+//      assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
+//    }
+//
+//    std::vector<int> passing_gen;
+//    for (int i=0; i<fTR->NGenPhotons; i++){
+//      passing_gen.push_back(i);
+//    }
+//
+//    bool found_reco = false;
+//    bool gen_in_acc = false;
+//
+//    passing = PhotonPreSelection(fTR,passing);
+//    passing = PhotonSelection(fTR,passing);
+//    found_reco = passtrigger && StandardEventSelection(fTR,passing);
+//
+//    bool reco_has_matched_gen_no_acceptance = false;
+//    bool reco_has_matched_gen_within_acceptance = false;
+//    bool reco_has_matched_gen_outside_acceptance = false;
+//
+//    if (found_reco) {
+// 
+//      bool match0 = ( (fTR->PhoMCmatchexitcode[passing.at(0)]==1 || fTR->PhoMCmatchexitcode[passing.at(0)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(0)]]<5 );
+//      bool match1 = ( (fTR->PhoMCmatchexitcode[passing.at(1)]==1 || fTR->PhoMCmatchexitcode[passing.at(1)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(1)]]<5 ); 
+//      reco_has_matched_gen_no_acceptance = match0 && match1;
+//
+//      if (reco_has_matched_gen_no_acceptance){
+//	int m0 = fTR->PhoMCmatchindex[passing.at(0)];
+//	int m1 = fTR->PhoMCmatchindex[passing.at(1)];
+//	bool match0acc = ( (fabs(fTR->GenPhotonEta[m0])<1.4442) || (fabs(fTR->GenPhotonEta[m0])>1.566 && fabs(fTR->GenPhotonEta[m0])<2.5) ) && (fTR->GenPhotonPt[m0]>25);
+//	bool match1acc = ( (fabs(fTR->GenPhotonEta[m1])<1.4442) || (fabs(fTR->GenPhotonEta[m1])>1.566 && fabs(fTR->GenPhotonEta[m1])<2.5) ) && (fTR->GenPhotonPt[m1]>25);
+//	reco_has_matched_gen_within_acceptance = match0acc && match1acc && ((fTR->GenPhotonPt[m0]>40) || (fTR->GenPhotonPt[m1]>40)) && (Util::GetDeltaR(fTR->GenPhotonEta[m0],fTR->GenPhotonEta[m1],fTR->GenPhotonPhi[m0],fTR->GenPhotonPhi[m1])>global_dR_cut_acceptance);
+//	reco_has_matched_gen_outside_acceptance = !reco_has_matched_gen_within_acceptance;
+//      }
+//
+//    }
+//
+//    for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
+//      bool pass=0;
+//      if ( (fabs(fTR->GenPhotonEta[*it])<1.4442) || (fabs(fTR->GenPhotonEta[*it])>1.566 && fabs(fTR->GenPhotonEta[*it])<2.5)  ) pass=1;
+//      if (fTR->GenPhotonPt[*it]<=25) pass=0;
+//      if (fTR->GenPhotonIsoDR04[*it]>5) pass=0;
+//      if (!pass) it=passing_gen.erase(it); else it++;
+//    }
+//
+//    for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
+//      bool pass=0;
+//      int mother = fTR->GenPhotonMotherID[*it];
+//      if (mother>=-6 && mother<=6) pass=1;
+//      if (mother==21) pass=1;
+//      if (mother==22 && fTR->GenPhotonMotherStatus[*it]==3) pass=1;
+//      if (!pass) it=passing_gen.erase(it); else it++;
+//    }
+//
+//    {
+//      int sizegenphotonsbefore = passing_gen.size();
+//      std::vector<OrderPair> passing_gen_ordered;
+//      for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); it++){
+//	passing_gen_ordered.push_back(make_pair<int,float>(int(*it),float(fTR->GenPhotonPt[*it])));
+//      }
+//      std::sort(passing_gen_ordered.begin(),passing_gen_ordered.end(),indexComparator);
+//      passing_gen.clear();
+//      for (vector<OrderPair>::iterator it = passing_gen_ordered.begin(); it != passing_gen_ordered.end(); it++) passing_gen.push_back(it->first);
+//      assert(sizegenphotonsbefore==passing_gen.size());
+//    }
+//    for (int i=0; i<(int)(passing_gen.size())-1; i++){
+//      assert(fTR->GenPhotonPt[passing_gen.at(i)]>=fTR->GenPhotonPt[passing_gen.at(i+1)]);
+//    }
+//
+//    if (passing_gen.size()>=2 && fTR->GenPhotonPt[passing_gen.at(0)]>40 && \
+//	Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>global_dR_cut_acceptance) gen_in_acc=true;
+//
+//    bool gen_in_acc_has_matched_reco = false;
+//
+//    if (found_reco && gen_in_acc) {
+//      int found = 0;
+//      for (std::vector<int>::iterator it = passing.begin(); it != passing.end(); it++){
+//	if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2)
+//	  if (fTR->PhoMCmatchindex[*it]==passing_gen.at(0) || fTR->PhoMCmatchindex[*it]==passing_gen.at(1)) found++;
+//      }
+//      if (found==2 && (fTR->PhoMCmatchindex[passing.at(0)] != fTR->PhoMCmatchindex[passing.at(1)])) gen_in_acc_has_matched_reco=true;
+//    }
+//
+//    bool gen_in_acc_has_no_matched_reco = gen_in_acc && !gen_in_acc_has_matched_reco;
+//
+//    //CHECK
+//    if (gen_in_acc && reco_has_matched_gen_no_acceptance){
+//      bool ok = false;
+//      if (passing_gen.at(0)==fTR->PhoMCmatchindex[passing.at(0)] && passing_gen.at(1)==fTR->PhoMCmatchindex[passing.at(1)]) ok = true;
+//      if (passing_gen.at(0)==fTR->PhoMCmatchindex[passing.at(1)] && passing_gen.at(1)==fTR->PhoMCmatchindex[passing.at(0)]) ok = true;
+//      if (!ok) {std::cout << "PROBLEM! MISMATCH IN GEN OBJECTS! Throwing away the event." << std::endl; reco_has_matched_gen_no_acceptance=false; gen_in_acc=false;}
+//    }
+//
+//    if (reco_has_matched_gen_no_acceptance) {
+//      FillLead(passing.at(0));
+//      FillTrail(passing.at(1));
+//    }
+//
+//    {
+//      int m0=-1; int m1=-1;
+//      if (gen_in_acc) {m0 = passing_gen.at(0); m1=passing_gen.at(1);}
+//      else if (reco_has_matched_gen_no_acceptance){
+//	m0 = fTR->PhoMCmatchindex[passing.at(0)];
+//	m1 = fTR->PhoMCmatchindex[passing.at(1)];
+//	if (fTR->GenPhotonPt[m0]<fTR->GenPhotonPt[m1]) {int temp=m1; m1=m0; m0=temp;}
+//      }
+//      if (gen_in_acc || reco_has_matched_gen_no_acceptance) {
+//	TLorentzVector genphotons[2];
+//	genphotons[0].SetPtEtaPhiM(fTR->GenPhotonPt[m0],fTR->GenPhotonEta[m0],fTR->GenPhotonPhi[m0],0);
+//	genphotons[1].SetPtEtaPhiM(fTR->GenPhotonPt[m1],fTR->GenPhotonEta[m1],fTR->GenPhotonPhi[m1],0);
+//	pholead_GEN_eta =     genphotons[0].Eta();
+//	photrail_GEN_eta =    genphotons[1].Eta();
+//	pholead_GEN_phi =     genphotons[0].Phi();
+//	photrail_GEN_phi =    genphotons[1].Phi();
+//	pholead_GEN_pt =      genphotons[0].Pt();
+//	photrail_GEN_pt =     genphotons[1].Pt();
+//      }
+//    }
+//
+//    tree_reco_has_matched_gen_no_acceptance = reco_has_matched_gen_no_acceptance;
+//    tree_reco_has_matched_gen_within_acceptance = reco_has_matched_gen_within_acceptance;
+//    tree_reco_has_matched_gen_outside_acceptance = reco_has_matched_gen_outside_acceptance;
+//    tree_gen_in_acc = gen_in_acc;
+//    tree_gen_in_acc_has_matched_reco = gen_in_acc_has_matched_reco;
+//    tree_gen_in_acc_has_no_matched_reco = gen_in_acc_has_no_matched_reco;
+//
+//
+//    if (reco_has_matched_gen_no_acceptance || gen_in_acc) LightTreeGenReco->Fill();
+//
+//  }
+//
+//
+
+
 };
 
 void DiPhotonMiniTree::End(){
@@ -1463,7 +1480,7 @@ bool DiPhotonMiniTree::SinglePhotonEventSelection(TreeReader *fTR, std::vector<i
 
 };
 
-bool DiPhotonMiniTree::StandardEventSelection(TreeReader *fTR, std::vector<int> &passing){
+bool DiPhotonMiniTree::StandardEventSelection(TreeReader *fTR, std::vector<int> &passing, std::vector<int> &passing_jets){
 
   if (passing.size()<2) return false;
 
@@ -1479,7 +1496,29 @@ bool DiPhotonMiniTree::StandardEventSelection(TreeReader *fTR, std::vector<int> 
   //  if (invmass0<80) return false;
   if (dR<global_dR_cut_acceptance) return false;
 
+  VetoJetPhotonOverlap(passing,passing_jets);
+
   return true;
+};
+
+void DiPhotonMiniTree::VetoJetPhotonOverlap(std::vector<int> &passing, std::vector<int> &passing_jets){
+
+  // remove jets that coincide with selected photons
+  for (size_t i=0; i<passing.size(); i++){
+    int m = photon_jet_matching.at(passing.at(i)).m_jet;
+    for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
+      if ((*it)==m) it=passing_jets.erase(it); else it++;
+    }
+  }
+
+  // minimum dR between photon and jet
+  for (size_t i=0; i<passing.size(); i++){
+    for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
+      float dR = Util::GetDeltaR(fTR->PhoEta[passing.at(i)],fTR->JEta[*it],fTR->PhoPhi[passing.at(i)],fTR->JPhi[*it]);
+      if (dR<1.0) it=passing_jets.erase(it); else it++;
+    }
+  }
+
 };
 
 bool DiPhotonMiniTree::DiMuonFromZSelection(TreeReader *fTR, std::vector<int> &passing){
@@ -2361,7 +2400,7 @@ void DiPhotonMiniTree::FillLead(int index){
 //  pholead_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
   {
-    jetmatching_struct m = PFMatchPhotonToJet(index);
+    jetmatching_struct m = photon_jet_matching.at(index);
     pholead_m_jet_ptcorr = (m.m_jet>=0) ? fTR->JPt[m.m_jet] : -999;
     pholead_m_jet_dR = (m.m_jet>=0) ? Util::GetDeltaR(pholead_eta,fTR->JEta[m.m_jet],pholead_phi,fTR->JPhi[m.m_jet]) : 999;
     pholead_phopt_footprint_total = m.phopt_footprint_total;
@@ -2369,6 +2408,30 @@ void DiPhotonMiniTree::FillLead(int index){
     pholead_jetpt_pf = m.jetpt_pf;
     pholead_jetpt_m_frac = m.jetpt_m_frac;
     pholead_jetpt_m_frac_PhoComp = m.jetpt_m_frac_PhoComp;
+  }
+
+  if (pholead_phopt_footprint_total<0.5*pholead_pt){
+    int phoqi = index;
+    cout << event_run << " " << event_lumi << " " << event_number << endl;
+    cout << "qui mancano circa " << pholead_pt - pholead_phopt_footprint_total << endl;
+    cout << pholead_pt << " " << pholead_phopt_footprint_total << endl;
+    cout << pholead_PhoSCRemovalPFIsoCharged << " " << pholead_PhoSCRemovalPFIsoNeutral << " " << pholead_PhoSCRemovalPFIsoPhoton << endl;
+    std::vector<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
+    if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) {
+      int m = fTR->PhoMatchedPFPhotonOrElectronCand[phoqi];
+      for (int i=0; i<pfcands.size(); i++) assert(pfcands.at(i)!=m); // this should never happen
+      pfcands.push_back(m);
+    }
+    cout << "PF cands in footprint" << endl;
+    for (int i=0; i<pfcands.size(); i++) cout << pfcands.at(i) << " " << fTR->PfCandPt[pfcands.at(i)] << " " << fTR->PfCandEta[pfcands.at(i)] << " " << fTR->PfCandPhi[pfcands.at(i)] << endl;
+    cout << "other pfcands nearby" << endl;
+    for (int i=0; i<fTR->NPfCand; i++){
+      bool good = true;
+      for (int j=0; j<pfcands.size(); j++) if (i==pfcands.at(j)) good=false;
+      if (!good) continue;
+      if (Util::GetDeltaR(fTR->PfCandEta[i],fTR->PhoEta[phoqi],fTR->PfCandPhi[i],fTR->PhoPhi[phoqi])>0.6) continue;
+      cout << i << " " << fTR->PfCandPt[i] << " " << fTR->PfCandEta[i] << " " << fTR->PfCandPhi[i] << " " << fTR->PfCandPdgId[i] << endl;
+    }
   }
 
 };
@@ -2443,6 +2506,32 @@ void DiPhotonMiniTree::FillTrail(int index){
   }
 
 };
+
+void DiPhotonMiniTree::FillJetsInfo(std::vector<int> passing_jets){
+
+  n_jets = passing_jets.size();
+  jet1_pt = (passing_jets.size()>0) ? fTR->JPt[passing_jets.at(0)] : -999;
+  jet1_eta = (passing_jets.size()>0) ? fTR->JEta[passing_jets.at(0)] : -999;
+  jet1_phi = (passing_jets.size()>0) ? fTR->JPhi[passing_jets.at(0)] : -999;
+  jet2_pt = (passing_jets.size()>1) ? fTR->JPt[passing_jets.at(1)] : -999;
+  jet2_eta = (passing_jets.size()>1) ? fTR->JEta[passing_jets.at(1)] : -999;
+  jet2_phi = (passing_jets.size()>1) ? fTR->JPhi[passing_jets.at(1)] : -999;
+
+};
+
+void DiPhotonMiniTree::JetSelection(std::vector<int> &passing_jets){
+
+  for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
+    float pt = fTR->JPt[*it];
+    float eta = fTR->JEta[*it];
+    bool pass=1;
+    if (pt<30) pass=0;
+    if (fabs(eta)>2.4) pass=0;
+    if (!(fTR->JPassPileupIDM0[fTR->JVrtxListStart[*it]+0])) pass=0; // pileup ID medium cut-based
+    if (!pass) it=passing_jets.erase(it); else it++;
+  }
+
+}
 
 void DiPhotonMiniTree::FillMuonInfo(int index){
 //
@@ -2627,6 +2716,14 @@ void DiPhotonMiniTree::ResetVars(){
     vetoobjects_phi[i]=-999;
     vetoobjects_type[i]=-999;
   }
+
+  n_jets = -999;
+  jet1_pt = -999;
+  jet1_eta = -999;
+  jet1_phi = -999;
+  jet2_pt = -999;
+  jet2_eta = -999;
+  jet2_phi = -999;
 
 };
 

@@ -55,7 +55,11 @@ const float global_dR_cut_acceptance = 0.45;
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;
 
+// CAREFUL if you set this to true: the selection of saved pfcandidates,
+// for instance, is decided at ntuple production level.
+// Check that you really don't have to re-run the ntuple as well.
 const bool do_recalc_isolation = false;
+// ------------------------------------
 
 typedef struct {
   float photon;
@@ -134,7 +138,9 @@ private:
   std::vector<int> ImpingingTrackSelection(TreeReader *fTR, std::vector<int> passing, bool invert=false);
   std::vector<int> GetPFCandRemovals(TreeReader *fTR, int phoqi);
   bool SinglePhotonEventSelection(TreeReader *fTR, std::vector<int> &passing);
-  bool StandardEventSelection(TreeReader *fTR, std::vector<int> &passing);
+  bool StandardEventSelection(TreeReader *fTR, std::vector<int> &passing, std::vector<int> &passing_jets);
+  void VetoJetPhotonOverlap(std::vector<int> &passing, std::vector<int> &passing_jets);
+  void JetSelection(std::vector<int> &passing_jets);
   bool TriggerSelection();
   int Count_part_isrfsr_gamma(TreeReader *fTR);
   void ResetVars();
@@ -158,6 +164,8 @@ private:
   void FillVetoObjects(TreeReader *fTR, int phoqi, TString mod);
   void InitInputTree();
 
+  std::vector<jetmatching_struct> photon_jet_matching;
+
   std::vector<int> DiPhotonInvariantMassCutSelection(TreeReader *fTR, std::vector<int> passing);
 
   Int_t Choose_bin_eta(float eta, int region);
@@ -169,6 +177,7 @@ private:
 
   void FillLead(int index);
   void FillTrail(int index);
+  void FillJetsInfo(std::vector<int> passing_jets);
 
   //  double etaTransformation(float EtaParticle, float Zvertex);
   double phiNorm(float phi);
@@ -410,6 +419,14 @@ private:
   Float_t vetoobjects_eta[global_maxN_vetoobjects];
   Float_t vetoobjects_phi[global_maxN_vetoobjects];
   Int_t vetoobjects_type[global_maxN_vetoobjects];
+
+  Int_t n_jets;
+  Float_t jet1_pt;
+  Float_t jet1_eta;
+  Float_t jet1_phi;
+  Float_t jet2_pt;
+  Float_t jet2_eta;
+  Float_t jet2_phi;
 
   Int_t   input_allphotonpfcand_count;
   Float_t input_allphotonpfcand_pt[global_maxN_photonpfcandidates];
