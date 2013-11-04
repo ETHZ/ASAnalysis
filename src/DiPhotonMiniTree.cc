@@ -710,7 +710,7 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->PhoisPFPhoton[passing.at(!pass12_whoissiglike)] && fTR->PhoMatchedPFPhotonCand[passing.at(!pass12_whoissiglike)]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(!pass12_whoissiglike)]==k) continue;	
 	  bool removed = false;
 	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
 	  if (removed) continue;
@@ -798,7 +798,7 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->PhoisPFPhoton[passing.at(i)] && fTR->PhoMatchedPFPhotonCand[passing.at(i)]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(i)]==k) continue;	
 	  bool removed = false;
 	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
 	  if (removed) continue;
@@ -1641,7 +1641,7 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
 std::vector<int> DiPhotonMiniTree::GetPFCandIDedRemovals(TreeReader *fTR, int phoqi){
   std::vector<int> out;
-  if (fTR->PhoisPFPhoton[phoqi]) out.push_back(fTR->PhoMatchedPFPhotonCand[phoqi]);
+  out.push_back(fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]);
   return out;
 };
 
@@ -1691,7 +1691,7 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 
     bool inside=false;
 
-    if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]==i) continue;
 
     for (int j=0; j<nxtals; j++){
       
@@ -2035,7 +2035,7 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
     if (isbarrel && fabs(pfeta)>1.4442) continue;
     if (!isbarrel && fabs(pfeta)<1.566) continue;
 
-    if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]==i) continue;
  
     int type = FindPFCandType(fTR->PfCandPdgId[i]);
 
@@ -2754,7 +2754,7 @@ bool DiPhotonMiniTree::FindImpingingTrack(TreeReader *fTR, int phoqi, int &refer
 //
 //  for (int i=0; i<fTR->NPfCand; i++){
 //
-//    if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
+//    if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]==i) continue;
 //
 //    int type = FindPFCandType(fTR->PfCandPdgId[i]);
 //    if (type!=1) continue;
@@ -3040,8 +3040,8 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
 
   // prepare list of pfcands to represent the photon deposit
   std::vector<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
-  if (fTR->PhoisPFPhoton[phoqi] && fTR->PhoMatchedPFPhotonCand[phoqi]>=0) {
-    int m = fTR->PhoMatchedPFPhotonCand[phoqi];
+  if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) {
+    int m = fTR->PhoMatchedPFPhotonOrElectronCand[phoqi];
     for (int i=0; i<pfcands.size(); i++) assert(pfcands.at(i)!=m); // this should never happen
     pfcands.push_back(m);
   }
