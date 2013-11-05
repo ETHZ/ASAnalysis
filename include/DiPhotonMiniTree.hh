@@ -147,6 +147,7 @@ private:
   void Fillhist_PFPhotonDepositAroundImpingingTrack(int phoqi, int trkindex);  
   std::vector<int> GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component);
   std::vector<int> GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component);
+  std::vector<int> GetPrecalculatedFootprint(int phoqi);
   std::vector<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component);
   std::vector<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, bool outoffootprint, TString component);
   TVector3 PropagatePFCandToEcal(TreeReader *fTR, int pfcandindex, float position, bool isbarrel);

@@ -1685,11 +1685,20 @@ std::vector<int> DiPhotonMiniTree::GetPFCandIDedRemovals(TreeReader *fTR, int ph
 };
 
 std::vector<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component){
-  return GetPFCandWithFootprintRemoval(fTR,phoqi,rotation_phi,false,component);
+  std::vector<int> removals = GetPFCandWithFootprintRemoval(fTR,phoqi,rotation_phi,false,component);
+  std::vector<int> removals2 = GetPrecalculatedFootprint(phoqi);
+  removals.insert(removals.end(),removals2.begin(),removals2.end());
+  return removals;
 };
 
 std::vector<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component){
+  cout << "TOFIX" << endl;
   return GetPFCandWithFootprintRemoval(fTR,pfcands,phoqi,rotation_phi,false,component);
+};
+
+std::vector<int> DiPhotonMiniTree::GetPrecalculatedFootprint(int phoqi){
+  std::vector<int>::iterator stop = (phoqi<fTR->NPhotons-1) ? fTR->fTPhoFootprintPfCands.begin()+fTR->fTPhoFootprintPfCandsListStart[phoqi+1] : fTR->fTPhoFootprintPfCands.end();
+  return std::vector<int>(fTR->fTPhoFootprintPfCands.begin()+fTR->fTPhoFootprintPfCandsListStart[phoqi],stop);
 };
 
 std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component){
@@ -3135,11 +3144,13 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
   out.jetpt_pf=-999;
   out.jetpt_m_frac=-999;
 
+  if (fTR->PhoPt[phoqi]<25) return out;
+
   // prepare list of pfcands to represent the photon deposit
   std::vector<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
   if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) {
     int m = fTR->PhoMatchedPFPhotonOrElectronCand[phoqi];
-    for (int i=0; i<pfcands.size(); i++) assert(pfcands.at(i)!=m); // this should never happen
+    for (int i=0; i<pfcands.size(); i++) if (pfcands.at(i)==m) continue; // avoid double counting
     pfcands.push_back(m);
   }
 
@@ -3147,7 +3158,7 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
   std::vector<std::pair<int,float> > ranking;
   for (int i=0; i<fTR->NJets; i++) ranking.push_back(std::pair<int,float>(i,0));
   if (ranking.size()==0) {
-    cout << "PFMatchPhotonToJet: no jets in the event! Returning error state" << endl;
+    //    cout << "PFMatchPhotonToJet: no jets in the event! Returning error state" << endl;
     return out;
   }
 
