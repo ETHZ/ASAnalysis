@@ -404,6 +404,8 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
+    if (sel_cat!=11) continue;
+
     if (isstep2 && sel_cat!=0) continue;
 
     if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
@@ -573,6 +575,8 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
+    if (sel_cat!=11) continue;
+
     if (isstep2 && sel_cat!=0) continue;
 
     if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
@@ -720,7 +724,7 @@ void DiPhotonMiniTree::Analyze(){
       }
 
       if (sel_cat==7) {
-	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(!pass12_whoissiglike[sel_cat]),0,"photon");
+	std::set<int> removals = GetPFCandInsideFootprint(fTR,passing.at(!pass12_whoissiglike[sel_cat]),0,"photon");
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
 	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
@@ -730,7 +734,7 @@ void DiPhotonMiniTree::Analyze(){
 	  if (eta>2.5) continue;
 	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
 	  bool removed = false;
-	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
+	  for (set<int>::iterator j=removals.begin(); j!=removals.end(); j++) if (k==*j) removed=true;
 	  if (removed) continue;
 	  allphotonpfcand_pt[index] = fTR->PfCandPt[k];
 	  allphotonpfcand_eta[index] = fTR->PfCandEta[k];
@@ -807,7 +811,7 @@ void DiPhotonMiniTree::Analyze(){
 
 
       if (sel_cat==1 || sel_cat==2) {
-	std::vector<int> removals = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
+	std::set<int> removals = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
 	  //	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
@@ -818,7 +822,7 @@ void DiPhotonMiniTree::Analyze(){
 	  if (eta>2.5) continue;
 	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(i)]==k) continue;	
 	  bool removed = false;
-	  for (int j=0; j<removals.size(); j++) if (k==removals.at(j)) removed=true;
+	  for (set<int>::iterator j=removals.begin(); j!=removals.end(); j++) if (k==*j) removed=true;
 	  if (removed) continue;
 	  allphotonpfcand_pt[index] = fTR->PfCandPt[k];
 	  allphotonpfcand_eta[index] = fTR->PfCandEta[k];
@@ -1678,39 +1682,39 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
 };
 
-std::vector<int> DiPhotonMiniTree::GetPFCandIDedRemovals(TreeReader *fTR, int phoqi){
-  std::vector<int> out;
-  out.push_back(fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]);
+std::set<int> DiPhotonMiniTree::GetPFCandIDedRemovals(TreeReader *fTR, int phoqi){
+  std::set<int> out;
+  out.insert(fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]);
   return out;
 };
 
-std::vector<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component){
-  std::vector<int> removals = GetPFCandWithFootprintRemoval(fTR,phoqi,rotation_phi,false,component);
-  std::vector<int> removals2 = GetPrecalculatedFootprint(phoqi);
-  removals.insert(removals.end(),removals2.begin(),removals2.end());
+std::set<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component){
+  std::set<int> removals = GetPFCandWithFootprintRemoval(fTR,phoqi,rotation_phi,false,component);
+  std::set<int> removals2 = GetPrecalculatedFootprint(phoqi);
+  removals.insert(removals2.begin(),removals2.end());
   return removals;
 };
 
-std::vector<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component){
+std::set<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component){
   cout << "TOFIX" << endl;
   return GetPFCandWithFootprintRemoval(fTR,pfcands,phoqi,rotation_phi,false,component);
 };
 
-std::vector<int> DiPhotonMiniTree::GetPrecalculatedFootprint(int phoqi){
-  std::vector<int>::iterator stop = (phoqi<fTR->NPhotons-1) ? fTR->fTPhoFootprintPfCands.begin()+fTR->fTPhoFootprintPfCandsListStart[phoqi+1] : fTR->fTPhoFootprintPfCands.end();
-  return std::vector<int>(fTR->fTPhoFootprintPfCands.begin()+fTR->fTPhoFootprintPfCandsListStart[phoqi],stop);
+std::set<int> DiPhotonMiniTree::GetPrecalculatedFootprint(int phoqi){
+  std::vector<int>::iterator stop = (phoqi<fTR->NPhotons-1) ? fTR->PhoFootprintPfCands.begin()+fTR->PhoFootprintPfCandsListStart[phoqi+1] : fTR->PhoFootprintPfCands.end();
+  return std::set<int>(fTR->PhoFootprintPfCands.begin()+fTR->PhoFootprintPfCandsListStart[phoqi],stop);
 };
 
-std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component){
+std::set<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component){
 
   if (component!="photon"){
     std::cout << "propagation not implemented for non photon objects!!!" << std::endl;
-    return std::vector<int>();
+    return std::set<int>();
   }
 
   if (component!="neutral" && component!="charged" && component!="photon" && component!="combined") {
     std::cout << "Wrong choice for component" << std::endl;
-    return std::vector<int>();
+    return std::set<int>();
   }
 
   int scindex = fTR->PhotSCindex[phoqi];
@@ -1718,13 +1722,13 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
   if (scindex<0) {
     std::cout << "Error in GetPFCandOverlappingSC" << std::endl;
     std::cout << scindex << " " << phoqi << std::endl;
-    return std::vector<int>();
+    return std::set<int>();
   }
 
   bool isbarrel = fTR->PhoisEB[phoqi];
   int nxtals = fTR->SCNXtals[scindex];
 
-  std::vector<int> result;
+  std::set<int> result;
 
   for (int i=0; i<fTR->NPfCand; i++){
 
@@ -1786,7 +1790,7 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
     }
 
     if (outoffootprint) inside=!inside;
-    if (inside) result.push_back(i);
+    if (inside) result.insert(i);
 
   }
 
@@ -1794,29 +1798,29 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
 
 };
 
-std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, bool outoffootprint, TString component){
+std::set<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, bool outoffootprint, TString component){
 
   assert(rotation_phi==0);
 
   if (component!="photon"){
     std::cout << "propagation not implemented for non photon objects!!!" << std::endl;
-    return std::vector<int>();
+    return std::set<int>();
   }
 
-  if (phoqi<0) return std::vector<int>();
+  if (phoqi<0) return std::set<int>();
 
   int scindex = fTR->PhotSCindex[phoqi];
   
   if (scindex<0) {
     std::cout << "Error in GetPFCandOverlappingSC" << std::endl;
     std::cout << scindex << " " << phoqi << std::endl;
-    return std::vector<int>();
+    return std::set<int>();
   }
 
   bool isbarrel = fTR->PhoisEB[phoqi];
   int nxtals = fTR->SCNXtals[scindex];
 
-  std::vector<int> result;
+  std::set<int> result;
 
   for (int i=0; i<pfcands->PfCandPt.size(); i++){
 
@@ -1864,7 +1868,7 @@ std::vector<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR
     }
 
     if (outoffootprint) inside=!inside;
-    if (inside) result.push_back(i);
+    if (inside) result.insert(i);
 
   }
 
@@ -2013,15 +2017,15 @@ std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi
   float result1=0;
   float result2=0;
   
-  std::vector<int> footprint;
-  if (doremoval1) {std::vector<int> footprint1 = GetPFCandInsideFootprint(fTR,pfcands,phoqi1,0,"photon"); footprint.insert(footprint.end(),footprint1.begin(),footprint1.end());} // phoqi<0 ritorna vuoto
-  if (doremoval2) {std::vector<int> footprint2 = GetPFCandInsideFootprint(fTR,pfcands,phoqi2,0,"photon"); footprint.insert(footprint.end(),footprint2.begin(),footprint2.end());} // phoqi<0 ritorna vuoto
+  std::set<int> footprint;
+  if (doremoval1) {std::set<int> footprint1 = GetPFCandInsideFootprint(fTR,pfcands,phoqi1,0,"photon"); footprint.insert(footprint1.begin(),footprint1.end());} // phoqi<0 ritorna vuoto
+  if (doremoval2) {std::set<int> footprint2 = GetPFCandInsideFootprint(fTR,pfcands,phoqi2,0,"photon"); footprint.insert(footprint2.begin(),footprint2.end());} // phoqi<0 ritorna vuoto
 
   for (int i=0; i<pfcands->PfCandPt.size(); i++){
 
     bool removed=false;
-    for (int j=0; j<footprint.size(); j++) {
-      if (i==footprint.at(j)) removed=true;
+    for (set<int>::iterator j=footprint.begin(); j!=footprint.end(); j++) {
+      if (i==*j) removed=true;
     }
     if (removed) continue;
 
@@ -2036,7 +2040,7 @@ std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi
 
 };
 
-float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString component, int *counter, std::vector<float> *energies, std::vector<float> *ets, std::vector<float> *detas, std::vector<float> *dphis, float* newphi, std::vector<int> removals){
+float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString component, int *counter, std::vector<float> *energies, std::vector<float> *ets, std::vector<float> *detas, std::vector<float> *dphis, float* newphi, std::set<int> removals){
 
   if (component=="combined") return PFIsolation(phoqi,rotation_phi,"photon",counter,energies,ets,detas,dphis,newphi,removals) \
     + PFIsolation(phoqi,rotation_phi,"charged",counter,energies,ets,detas,dphis,newphi,removals) \
@@ -2064,8 +2068,8 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
   if (newphi) *newphi = photon_position.Phi();
 
   if (component=="photon"){
-    std::vector<int> footprint = GetPFCandInsideFootprint(fTR,phoqi,rotation_phi,"photon");
-    for (int i=0; i<footprint.size(); i++) removals.push_back(footprint.at(i));
+    std::set<int> footprint = GetPFCandInsideFootprint(fTR,phoqi,rotation_phi,"photon");
+    for (set<int>::iterator i=footprint.begin(); i!=footprint.end(); i++) removals.insert(*i);
     //    scaleresult = scareaSF[fTR->PhotSCindex[phoqi]];
   }
 
@@ -2094,8 +2098,8 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
     if (component=="photon" && type!=2) continue;
 
     bool removed = false;
-    for (int j=0; j<removals.size(); j++) {
-      if (i==removals.at(j)) removed=true;
+    for (set<int>::iterator j=removals.begin(); j!=removals.end(); j++) {
+      if (i==*j) removed=true;
     }
     if (removed) continue;
 
@@ -2419,29 +2423,34 @@ void DiPhotonMiniTree::FillLead(int index){
     pholead_jetpt_m_frac_PhoComp = m.jetpt_m_frac_PhoComp;
   }
 
-  if (pholead_phopt_footprint_total<0.5*pholead_pt){
-    int phoqi = index;
-    cout << event_run << " " << event_lumi << " " << event_number << endl;
-    cout << "qui mancano circa " << pholead_pt - pholead_phopt_footprint_total << endl;
-    cout << pholead_pt << " " << pholead_phopt_footprint_total << endl;
-    cout << pholead_PhoSCRemovalPFIsoCharged << " " << pholead_PhoSCRemovalPFIsoNeutral << " " << pholead_PhoSCRemovalPFIsoPhoton << endl;
-    std::vector<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
-    if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) {
-      int m = fTR->PhoMatchedPFPhotonOrElectronCand[phoqi];
-      for (int i=0; i<pfcands.size(); i++) assert(pfcands.at(i)!=m); // this should never happen
-      pfcands.push_back(m);
-    }
-    cout << "PF cands in footprint" << endl;
-    for (int i=0; i<pfcands.size(); i++) cout << pfcands.at(i) << " " << fTR->PfCandPt[pfcands.at(i)] << " " << fTR->PfCandEta[pfcands.at(i)] << " " << fTR->PfCandPhi[pfcands.at(i)] << endl;
-    cout << "other pfcands nearby" << endl;
-    for (int i=0; i<fTR->NPfCand; i++){
-      bool good = true;
-      for (int j=0; j<pfcands.size(); j++) if (i==pfcands.at(j)) good=false;
-      if (!good) continue;
-      if (Util::GetDeltaR(fTR->PfCandEta[i],fTR->PhoEta[phoqi],fTR->PfCandPhi[i],fTR->PhoPhi[phoqi])>0.6) continue;
-      cout << i << " " << fTR->PfCandPt[i] << " " << fTR->PfCandEta[i] << " " << fTR->PfCandPhi[i] << " " << fTR->PfCandPdgId[i] << endl;
-    }
-  }
+//  if (fabs(pholead_phopt_footprint_total/pholead_pt-1)>0.5){
+//    int phoqi = index;
+//    cout << event_run << " " << event_lumi << " " << event_number << endl;
+//    cout << pholead_pt << " " << pholead_SCeta << " " << pholead_SCphi << endl;
+//    cout << "qui mancano circa " << pholead_pt - pholead_phopt_footprint_total << endl;
+//    cout << pholead_pt << " " << pholead_phopt_footprint_total << endl;
+//    cout << pholead_PhoSCRemovalPFIsoCharged << " " << pholead_PhoSCRemovalPFIsoNeutral << " " << pholead_PhoSCRemovalPFIsoPhoton << endl;
+//    std::set<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
+//    if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) {
+//      int m = fTR->PhoMatchedPFPhotonOrElectronCand[phoqi];
+//      for (set<int>::iterator i=pfcands.begin(); i!=pfcands.end(); i++) if (*i!=m) continue;
+//      pfcands.insert(m);
+//    }
+//    cout << "PF cands in footprint" << endl;
+//    float sum=0;
+//    for (set<int>::iterator i=pfcands.begin(); i!=pfcands.end(); i++) cout << *i << " " << fTR->PfCandPt[*i] << " " << fTR->PfCandEta[*i] << " " << fTR->PfCandPhi[*i] << " " << fTR->PfCandPdgId[*i] << endl;
+//    for (set<int>::iterator i=pfcands.begin(); i!=pfcands.end(); i++) sum+=fTR->PfCandPt[*i];
+//    cout << sum << " " << pholead_pt << endl;
+//    if (fabs(sum/pholead_pt-1)<0.5) cout << "RECOVERED" << endl; else cout << "WROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG" << endl;
+//    cout << "other pfcands nearby" << endl;
+//    for (int i=0; i<fTR->NPfCand; i++){
+//      bool good = true;
+//      for (set<int>::iterator j=pfcands.begin(); j!=pfcands.end(); j++) if (i==*j) good=false;
+//      if (!good) continue;
+//      if (Util::GetDeltaR(fTR->PfCandEta[i],fTR->PhoEta[phoqi],fTR->PfCandPhi[i],fTR->PhoPhi[phoqi])>0.6) continue;
+//      cout << i << " " << fTR->PfCandPt[i] << " " << fTR->PfCandEta[i] << " " << fTR->PfCandPhi[i] << " " << fTR->PfCandPdgId[i] << endl;
+//    }
+//  }
 
 };
 
@@ -2504,7 +2513,7 @@ void DiPhotonMiniTree::FillTrail(int index){
 //  photrail_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
   {
-    jetmatching_struct m = PFMatchPhotonToJet(index);
+    jetmatching_struct m = photon_jet_matching.at(index);
     photrail_m_jet_ptcorr = (m.m_jet>=0) ? fTR->JPt[m.m_jet] : -999;
     photrail_m_jet_dR = (m.m_jet>=0) ? Util::GetDeltaR(photrail_eta,fTR->JEta[m.m_jet],photrail_phi,fTR->JPhi[m.m_jet]) : 999;
     photrail_phopt_footprint_total = m.phopt_footprint_total;
@@ -2844,7 +2853,7 @@ std::vector<int> DiPhotonMiniTree::ImpingingTrackSelection(TreeReader *fTR, std:
 };
 
 
-bool DiPhotonMiniTree::FindImpingingTrack(TreeReader *fTR, int phoqi, int &reference_index_found, bool dofootprintremoval, std::vector<int> removals){
+bool DiPhotonMiniTree::FindImpingingTrack(TreeReader *fTR, int phoqi, int &reference_index_found, bool dofootprintremoval, std::set<int> removals){
 
   return false;
 
@@ -2936,7 +2945,7 @@ bool DiPhotonMiniTree::FindImpingingTrack(TreeReader *fTR, int phoqi, int &refer
 //
 };
 
-int DiPhotonMiniTree::CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std::vector<int> removals, bool skipvetocones){
+int DiPhotonMiniTree::CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std::set<int> removals, bool skipvetocones){
 
   return 0;
 
@@ -3004,9 +3013,9 @@ int DiPhotonMiniTree::CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std:
 //
 };
 
-std::vector<int> DiPhotonMiniTree::NChargedHadronsInConeSelection(TreeReader *fTR, std::vector<int> passing, int minimum, int maximum){
+std::set<int> DiPhotonMiniTree::NChargedHadronsInConeSelection(TreeReader *fTR, std::vector<int> passing, int minimum, int maximum){
 
-  return std::vector<int>();
+  return std::set<int>();
 
 //  if (maximum<minimum) {
 //    std::cout << "Wrong values for NChargedHadronsInCone selection!!!" << std::endl;
@@ -3147,11 +3156,11 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
   if (fTR->PhoPt[phoqi]<25) return out;
 
   // prepare list of pfcands to represent the photon deposit
-  std::vector<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
+  std::set<int> pfcands = GetPFCandInsideFootprint(fTR,phoqi,0,"photon");
   if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) {
     int m = fTR->PhoMatchedPFPhotonOrElectronCand[phoqi];
-    for (int i=0; i<pfcands.size(); i++) if (pfcands.at(i)==m) continue; // avoid double counting
-    pfcands.push_back(m);
+    for (set<int>::iterator i=pfcands.begin(); i!=pfcands.end(); i++) if (*i==m) continue; // avoid double counting
+    pfcands.insert(m);
   }
 
   // init ranking
@@ -3164,10 +3173,11 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
 
   // loop on candidates
   out.phopt_footprint_total=0;
-  for (int i=0; i<pfcands.size(); i++){
-    float pt = fTR->PfCandPt.at(pfcands.at(i));
+  for (set<int>::iterator i=pfcands.begin(); i!=pfcands.end(); i++){
+    float ecalfrac = fTR->PfCandEcalEnergy.at(*i)/fTR->PfCandEnergy.at(*i);
+    float pt = fTR->PfCandPt.at(*i)*ecalfrac;
     out.phopt_footprint_total+=pt;
-    int j = fTR->PfCandBelongsToJet.at(pfcands.at(i));
+    int j = fTR->PfCandBelongsToJet.at(*i);
     if (j<0) continue; // unclustered or belonging to jet not present in ntuple
     ranking.at(j).second+=pt;
   }

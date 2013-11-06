@@ -19,6 +19,7 @@
 #include <map>
 #include <utility> 
 #include <vector>
+#include <set>
 
 #include "TRandom3.h"
 #include "helper/Utilities.hh"
@@ -145,21 +146,21 @@ private:
   int Count_part_isrfsr_gamma(TreeReader *fTR);
   void ResetVars();
   void Fillhist_PFPhotonDepositAroundImpingingTrack(int phoqi, int trkindex);  
-  std::vector<int> GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component);
-  std::vector<int> GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component);
-  std::vector<int> GetPrecalculatedFootprint(int phoqi);
-  std::vector<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component);
-  std::vector<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, bool outoffootprint, TString component);
+  std::set<int> GetPFCandInsideFootprint(TreeReader *fTR, int phoqi, float rotation_phi, TString component);
+  std::set<int> GetPFCandInsideFootprint(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, TString component);
+  std::set<int> GetPrecalculatedFootprint(int phoqi);
+  std::set<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component);
+  std::set<int> GetPFCandWithFootprintRemoval(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, float rotation_phi, bool outoffootprint, TString component);
   TVector3 PropagatePFCandToEcal(TreeReader *fTR, int pfcandindex, float position, bool isbarrel);
   TVector3 PropagatePFCandToEcal(pfcandidates_struct *pfcands, int pfcandindex, float position, bool isbarrel);
-  bool FindImpingingTrack(TreeReader *fTR, int phoqi, int &reference_index_found, bool dofootprintremoval = false, std::vector<int> removals = std::vector<int>());
-  float PFIsolation(int phoqi, float rotation_phi, TString component, int *counter = NULL, std::vector<float> *energies = NULL, std::vector<float> *ets = NULL,  std::vector<float> *detas = NULL, std::vector<float> *dphis = NULL, float *newphi = NULL, std::vector<int> removals = std::vector<int>());
+  bool FindImpingingTrack(TreeReader *fTR, int phoqi, int &reference_index_found, bool dofootprintremoval = false, std::set<int> removals = std::set<int>());
+  float PFIsolation(int phoqi, float rotation_phi, TString component, int *counter = NULL, std::vector<float> *energies = NULL, std::vector<float> *ets = NULL,  std::vector<float> *detas = NULL, std::vector<float> *dphis = NULL, float *newphi = NULL, std::set<int> removals = std::set<int>());
   std::pair<float,float> PFPhotonIsolationFromMinitree(int phoqi1, int phoqi2, pfcandidates_struct *pfcands, bool doremoval1 = true, bool doremoval2 = true, float matched_eta1=-999, float matched_eta2=-999);
   angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, int phoqi, int pfindex, float rotation_phi = 0);
   angular_distances_struct GetPFCandDeltaRFromSC(TreeReader *fTR, pfcandidates_struct *pfcands, int phoqi, int pfindex, float matched_eta=-999);
   bool FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_phi, int phoqi, TString mod="");
   bool FindCloseJetsAndPhotons(std::vector<std::pair<float,float> > obj, float eta, float phi);
-  std::vector<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
+  std::set<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
 
   void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing);
   void FillVetoObjects(TreeReader *fTR, int phoqi, TString mod);
@@ -186,8 +187,8 @@ private:
   isolations_struct PFConeIsolation(TreeReader *fTR, int phoqi);
   int FindPFCandType(int id);
 
-  int CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std::vector<int> removals = std::vector<int>(), bool skipvetocones=false);
-  std::vector<int> NChargedHadronsInConeSelection(TreeReader *fTR, std::vector<int> passing, int minimum=0, int maximum=9999);
+  int CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std::set<int> removals = std::set<int>(), bool skipvetocones=false);
+  std::set<int> NChargedHadronsInConeSelection(TreeReader *fTR, std::vector<int> passing, int minimum=0, int maximum=9999);
 
   std::vector<int> MuonSelection(TreeReader *fTR, std::vector<int> passing);
   bool DiMuonFromZSelection(TreeReader *fTR, std::vector<int> &passing);
