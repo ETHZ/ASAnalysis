@@ -174,6 +174,11 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("photrail_jetpt_m_frac",&photrail_jetpt_m_frac,"photrail_jetpt_m_frac/F");
   OutputTree[i]->Branch("photrail_jetpt_m_frac_PhoComp",&photrail_jetpt_m_frac_PhoComp,"photrail_jetpt_m_frac_PhoComp/F");
 
+  OutputTree[i]->Branch("pholead_pt_closestjet",&pholead_pt_closestjet,"pholead_pt_closestjet/F");
+  OutputTree[i]->Branch("pholead_dR_closestjet",&pholead_dR_closestjet,"pholead_dR_closestjet/F");
+  OutputTree[i]->Branch("photrail_pt_closestjet",&photrail_pt_closestjet,"photrail_pt_closestjet/F");
+  OutputTree[i]->Branch("photrail_dR_closestjet",&photrail_dR_closestjet,"photrail_dR_closestjet/F");
+
   if (do_recalc_isolation){
   OutputTree[i]->Branch("pholead_Npfcandphotonincone",&pholead_Npfcandphotonincone,"pholead_Npfcandphotonincone/I");
   OutputTree[i]->Branch("pholead_Npfcandchargedincone",&pholead_Npfcandchargedincone,"pholead_Npfcandchargedincone/I");
@@ -404,8 +409,6 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
-    if (sel_cat!=11) continue;
-
     if (isstep2 && sel_cat!=0) continue;
 
     if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
@@ -575,8 +578,6 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
-    if (sel_cat!=11) continue;
-
     if (isstep2 && sel_cat!=0) continue;
 
     if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
@@ -611,9 +612,9 @@ void DiPhotonMiniTree::Analyze(){
     }
     else if (is2d[sel_cat]){
       ResetVars();
-      FillLead(passing.at(0));
-      FillTrail(passing.at(1));
-      FillJetsInfo(passing_jets);
+      FillLead(passing.at(0),passing_jets);
+      FillTrail(passing.at(1),passing_jets);
+      FillJetsInfo(passing,passing_jets);
       bool dofill=true;
 
       if (sel_cat==7 || sel_cat==14 || sel_cat==16 || sel_cat==17) event_pass12whoissiglike=pass12_whoissiglike[sel_cat];
@@ -760,7 +761,7 @@ void DiPhotonMiniTree::Analyze(){
 
       for (int i=0; i<passing.size(); i++){
       ResetVars();
-      FillLead(passing.at(i));
+      FillLead(passing.at(i),passing_jets);
       bool dofill = true;
 
       if (sel_cat==1) {
@@ -1519,7 +1520,7 @@ void DiPhotonMiniTree::VetoJetPhotonOverlap(std::vector<int> &passing, std::vect
   for (size_t i=0; i<passing.size(); i++){
     for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
       float dR = Util::GetDeltaR(fTR->PhoEta[passing.at(i)],fTR->JEta[*it],fTR->PhoPhi[passing.at(i)],fTR->JPhi[*it]);
-      if (dR<1.0) it=passing_jets.erase(it); else it++;
+      if (dR<0) it=passing_jets.erase(it); else it++;
     }
   }
 
@@ -2362,7 +2363,7 @@ int DiPhotonMiniTree::FindPFCandType(int id){
 }
 
 
-void DiPhotonMiniTree::FillLead(int index){
+void DiPhotonMiniTree::FillLead(int index, std::vector<int> passing_jets){
 
   pholead_eta = fTR->PhoEta[index];
   pholead_phi = fTR->PhoPhi[index];
@@ -2421,7 +2422,15 @@ void DiPhotonMiniTree::FillLead(int index){
     pholead_jetpt_pf = m.jetpt_pf;
     pholead_jetpt_m_frac = m.jetpt_m_frac;
     pholead_jetpt_m_frac_PhoComp = m.jetpt_m_frac_PhoComp;
+    pholead_dR_closestjet = 999;
+    pholead_pt_closestjet = 999;
+    for (size_t i=0; i<passing_jets.size(); i++){
+      if (passing_jets.at(i)==m.m_jet) continue;
+      float dR = Util::GetDeltaR(pholead_eta,fTR->JEta[passing_jets.at(i)],pholead_phi,fTR->JPhi[passing_jets.at(i)]);
+      if (dR<pholead_dR_closestjet) {pholead_dR_closestjet = dR; pholead_pt_closestjet = fTR->JPt[passing_jets.at(i)];}
+    }
   }
+
 
 //  if (fabs(pholead_phopt_footprint_total/pholead_pt-1)>0.5){
 //    int phoqi = index;
@@ -2464,7 +2473,7 @@ float DiPhotonMiniTree::R9Rescale(float r9){
   return 1.005*r9;
 };
 
-void DiPhotonMiniTree::FillTrail(int index){
+void DiPhotonMiniTree::FillTrail(int index, std::vector<int> passing_jets){
 
   photrail_eta = fTR->PhoEta[index];
   photrail_phi = fTR->PhoPhi[index];
@@ -2521,11 +2530,18 @@ void DiPhotonMiniTree::FillTrail(int index){
     photrail_jetpt_pf = m.jetpt_pf;
     photrail_jetpt_m_frac = m.jetpt_m_frac;
     photrail_jetpt_m_frac_PhoComp = m.jetpt_m_frac_PhoComp;
+    photrail_dR_closestjet = 999;
+    photrail_pt_closestjet = 999;
+    for (size_t i=0; i<passing_jets.size(); i++){
+      if (passing_jets.at(i)==m.m_jet) continue;
+      float dR = Util::GetDeltaR(photrail_eta,fTR->JEta[passing_jets.at(i)],photrail_phi,fTR->JPhi[passing_jets.at(i)]);
+      if (dR<photrail_dR_closestjet) {photrail_dR_closestjet = dR; photrail_pt_closestjet = fTR->JPt[passing_jets.at(i)];}
+    }
   }
 
 };
 
-void DiPhotonMiniTree::FillJetsInfo(std::vector<int> passing_jets){
+void DiPhotonMiniTree::FillJetsInfo(std::vector<int> passing, std::vector<int> passing_jets){
 
   n_jets = passing_jets.size();
   jet1_pt = (passing_jets.size()>0) ? fTR->JPt[passing_jets.at(0)] : -999;
@@ -2631,6 +2647,10 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_jetpt_pf = -999;
   photrail_jetpt_m_frac = -999;
   photrail_jetpt_m_frac_PhoComp = -999;
+  pholead_pt_closestjet = -999;
+  pholead_dR_closestjet = -999;
+  photrail_pt_closestjet = -999;
+  photrail_dR_closestjet = -999;
   if (do_recalc_isolation){
   pholead_Npfcandphotonincone = -999;
   pholead_Npfcandchargedincone = -999;

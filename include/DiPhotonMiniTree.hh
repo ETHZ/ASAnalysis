@@ -177,9 +177,9 @@ private:
   float CalculateSCArea(TreeReader *fTR, int scindex);
   float GetPUEnergy(TreeReader *fTR, TString mode, float eta);
 
-  void FillLead(int index);
-  void FillTrail(int index);
-  void FillJetsInfo(std::vector<int> passing_jets);
+  void FillLead(int index, std::vector<int> passing_jets);
+  void FillTrail(int index, std::vector<int> passing_jets);
+  void FillJetsInfo(std::vector<int> passing, std::vector<int> passing_jets);
 
   //  double etaTransformation(float EtaParticle, float Zvertex);
   double phiNorm(float phi);
@@ -308,6 +308,11 @@ private:
   Float_t photrail_jetpt_pf;
   Float_t photrail_jetpt_m_frac;
   Float_t photrail_jetpt_m_frac_PhoComp;
+
+  Float_t pholead_pt_closestjet;
+  Float_t pholead_dR_closestjet;
+  Float_t photrail_pt_closestjet;
+  Float_t photrail_dR_closestjet;
 
   Int_t pholead_Npfcandphotonincone;
   Int_t pholead_Npfcandchargedincone;
