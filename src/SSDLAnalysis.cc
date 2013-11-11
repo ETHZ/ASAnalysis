@@ -16,7 +16,7 @@ const int SSDLAnalysis::nx;
 const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
 
 
-const bool gDoPDFs = false;
+const bool gDoPDFs = true;
 
 
 //TString SSDLAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/";
@@ -238,6 +238,7 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("PUWeight",      &fTpuweight,  "PUWeight/F");
 	fAnalysisTree->Branch("PUWeightUp",      &fTpuweightUp,  "PUWeightUp/F");
 	fAnalysisTree->Branch("PUWeightDn",      &fTpuweightDn,  "PUWeightDn/F");
+	fAnalysisTree->Branch("GenWeight",      &fTGenWeight,  "GenWeight/F");
 	fAnalysisTree->Branch("PUnumTrueInteractions", &fTPUnumTrueInteractions, "PUnumTrueInteractions/I");
 
 	// single-muon properties
@@ -492,63 +493,111 @@ void SSDLAnalysis::FillAnalysisTree(){
 			double pdf_xpdf1, pdf_xpdf2;
 			double newxfx1, newxfx2;
 
+			//LHAPDF::initPDFSet(1,"MSTW2008nnlo68cl_asmz-68clhalf.LHgrid");
+			//LHAPDF::initPDFSet(1,"NNPDF20_as_0120_100.LHgrid");
+			LHAPDF::initPDFSetM(1,"cteq6ll.LHpdf");
+//			LHAPDF::initPDFSetM(1,"cteq6mE.LHgrid");
+//			LHAPDF::initPDFSetM(1,"cteq61.LHgrid");
+//			LHAPDF::initPDFSetM(1,"CT10.LHgrid");
+			LHAPDF::initPDFM(1,0);
+			fTNPdf1 = (int)LHAPDF::numberPDFM(1);
+			cout << "fTNPdf1: " << fTNPdf1 << endl;
+			pdf_xpdf1 = LHAPDF::xfxM(1, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfxM(1, x2, Q, id2);
 
-			LHAPDF::initPDFSet(1,"CT10.LHgrid");
-			LHAPDF::initPDF(1,0);
-			LHAPDF::usePDFMember(1,0);
-			fTNPdf1 = (int)LHAPDF::numberPDF(1);
-			pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
-			pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
+//			cout << Form("pdf_xpdf1: %8.3f\tpdf_xpdf2: %8.3f\tfTR->PDFxPDF1: %8.3f\tfTR->PDFxPDF2: %8.3f", pdf_xpdf1, pdf_xpdf2, fTR->PDFxPDF1, fTR->PDFxPDF2) << endl;
 				
 			// std::vector<float> pdfweight;
 			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdf1; pdf++){
-				// LHAPDF::initPDF(pdf);
-				LHAPDF::usePDFMember(1, pdf);
-				newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
-				newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
-				fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
-			}
+//			for(int pdf=0; pdf < fTNPdf1; pdf++){
+//				LHAPDF::initPDFM(1, pdf);
+//				newxfx1 = LHAPDF::xfxM(1, x1, Q, id1);
+//				newxfx2 = LHAPDF::xfxM(1, x2, Q, id2);
+//				fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+////				if (fTWPdf1[pdf] < 0.)
+////					cout << Form("fTWPdf1[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
+////													pdf,
+////													fTWPdf1[pdf],
+////													newxfx1,
+////													pdf_xpdf1,
+////													newxfx2,
+////													pdf_xpdf2,
+////													x1,
+////													x2,
+////													Q,
+////													id1,
+////													id2) << endl;
+//			}
 
-			LHAPDF::initPDFSet(2,"NNPDF20_100.LHgrid");
-			LHAPDF::initPDF(2,0);
-			LHAPDF::usePDFMember(2,0);
-			fTNPdf2 = (int)LHAPDF::numberPDF(2);
-			pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
-			pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
-				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
+			//LHAPDF::initPDFSet(2,"NNPDF20_100.LHgrid");
+			//LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
+			LHAPDF::initPDFSetM(2,"CT10.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz+68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz-68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0116_100.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0118_100.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
+
+
+//			LHAPDF::initPDFSetM(2,"CT10.LHgrid");
+			LHAPDF::initPDFM(2,0);
+
+
+			fTNPdf2 = (int)LHAPDF::numberPDFM(2);
+			cout << "fTNPdf2: " << fTNPdf2 << endl;
+
 			for(int pdf=0; pdf < fTNPdf2; pdf++){
-				// LHAPDF::initPDF(pdf);
-				LHAPDF::usePDFMember(2, pdf);
-				newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
-				newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
+				LHAPDF::initPDFM(2, pdf);
+				newxfx1 = LHAPDF::xfxM(2, x1, Q, id1);
+				newxfx2 = LHAPDF::xfxM(2, x2, Q, id2);
 				fTWPdf2[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
+//				if (fTWPdf2[pdf] < 0.)
+//					cout << Form("fTWPdf2[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
+//													pdf,
+//													fTWPdf2[pdf],
+//													newxfx1,
+//													pdf_xpdf1,
+//													newxfx2,
+//													pdf_xpdf2,
+//													x1,
+//													x2,
+//													Q,
+//													id1,
+//													id2) << endl;
 			}
 
 
-			LHAPDF::initPDFSet(3,"MSTW2008nnlo68cl.LHgrid");
-			LHAPDF::initPDF(3,0);
-			LHAPDF::usePDFMember(3,0);
-			fTNPdf3 = (int)LHAPDF::numberPDF(3);
-			pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
-			pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
-				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
+			//LHAPDF::initPDFSet(3,"MSTW2008nnlo68cl_asmz-68cl.LHgrid");
+			//LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
+			LHAPDF::initPDFSet(3,"CT10as.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz+68clhalf.LHgrid");
+//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz-68clhalf.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0117_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0120_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
+			fTNPdf3 = (int)LHAPDF::numberPDFM(3);
+			cout << "fTNPdf3: " << fTNPdf3 << endl;
+
 			for(int pdf=0; pdf < fTNPdf3; pdf++){
-				// LHAPDF::initPDF(pdf);
-				LHAPDF::usePDFMember(3, pdf);
-				newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
-				newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
+				LHAPDF::initPDFM(3, pdf);
+				newxfx1 = LHAPDF::xfxM(3, x1, Q, id1);
+				newxfx2 = LHAPDF::xfxM(3, x2, Q, id2);
 				fTWPdf3[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
+//				if (fTWPdf3[pdf] < 0.)
+//					cout << Form("fTWPdf3[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
+//													pdf,
+//													fTWPdf3[pdf],
+//													newxfx1,
+//													pdf_xpdf1,
+//													newxfx2,
+//													pdf_xpdf2,
+//													x1,
+//													x2,
+//													Q,
+//													id1,
+//													id2) << endl;
 			}
 
 
@@ -631,11 +680,14 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTpuweightUp = GetPUWeightUp  (fTR->PUnumTrueInteractions);
 		fTpuweightDn = GetPUWeightDown(fTR->PUnumTrueInteractions);
 		fTPUnumTrueInteractions = fTR->PUnumTrueInteractions;
+
+		fTGenWeight = fTR->GenWeight;
 	}
 	else {
 		fTpuweight   = 1.;
 		fTpuweightUp = 1.;
 		fTpuweightDn = 1.;
+		fTGenWeight  = 1.;
 	}
 
 	// cout << "---------------------------------------------------------------------------" << endl;
@@ -836,6 +888,7 @@ void SSDLAnalysis::ResetTree(){
 	fTpuweightUp = -999.99;
 	fTpuweightDn = -999.99;
 	fTPUnumTrueInteractions = -999;
+	fTGenWeight = -999.99;
 	
 	// muon properties
 	fTnqmus = 0;

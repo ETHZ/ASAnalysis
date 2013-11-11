@@ -136,6 +136,7 @@ private:
 	float fTpuweightUp;
 	float fTpuweightDn;
 	int   fTPUnumTrueInteractions;
+	float fTGenWeight;
 	
 	// Triggers
 	vector<HLTPathSet> fHLTPathSets;
