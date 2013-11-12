@@ -350,16 +350,18 @@ SSDLDumper::SSDLDumper(TString configfile){
 	SSDLDumper::tmp_gElMaxIso = gElMaxIso;
 
 	// initializing all the systematics here out of a lack of other places
-	gSystematics["Normal"]   = 0;
-	gSystematics["JetUp"]    = 1;
-	gSystematics["JetDown"]  = 2;
-	gSystematics["JetSmear"] = 3;
-	gSystematics["BUp"]      = 4;
-	gSystematics["BDown"]    = 5;
-	gSystematics["LepUp"]    = 6;
-	gSystematics["LepDown"]  = 7;
-	gSystematics["METUp"]    = 8;
-	gSystematics["METDown"]  = 9;
+	gSystematics["Normal"]     = 0;
+	gSystematics["JetUp"]      = 1;
+	gSystematics["JetDown"]    = 2;
+	gSystematics["JetSmear"]   = 3;
+	gSystematics["BUp"]        = 4;
+	gSystematics["BDown"]      = 5;
+	gSystematics["LepUp"]      = 6;
+	gSystematics["LepDown"]    = 7;
+	gSystematics["METUp"]      = 8;
+	gSystematics["METDown"]    = 9;
+	gSystematics["PileupUp"]   = 10;
+	gSystematics["PileupDown"] = 11;
 
 
 }
@@ -417,7 +419,10 @@ void SSDLDumper::init(){
 
 	// PU reweighting
 //	fPUWeight = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/mdunser/puhistos/may21/DataPUTrue_may21_upDown.root", "pileup", "pileup");
-	fPUWeight = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/mdunser/puhistos/may21/PU_all_minBias69400.root", "pileup", "pileup");
+	fPUWeight     = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/mdunser/puhistos/may21/PU_all_minBias69400.root", "pileup", "pileup");
+	fPUWeightUp   = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/lbaeni/puhistos/Oct21/PU_all_minBias72870.root", "pileup", "pileup");
+	fPUWeightDown = new reweight::LumiReWeighting("/shome/mdunser/puhistos/2012MC_S10_for53X.root", "/shome/lbaeni/puhistos/Oct21/PU_all_minBias65930.root", "pileup", "pileup");
+	fPUWeightCentral = fPUWeight;
 
 	// FOR THE BDT. LET'S SEE HOW THAT WORKS
 	// --------------------------------------------
@@ -608,6 +613,8 @@ void SSDLDumper::loopEvents(Sample *S){
 		scaleBTags(S, 0); // this applies the bTagSF
 		saveBTags(); // this just saves the btag values for each jet.
 		/////////////////////////////////////////////
+
+		scalePileup(0); // use central value
 		
 		fCounter[Muon].fill(fMMCutNames[0]);
 		fCounter[ElMu].fill(fEMCutNames[0]);
@@ -630,7 +637,7 @@ void SSDLDumper::loopEvents(Sample *S){
 		fDoCounting = false;
 		
 		gEventWeight  = gHLTSF * gBtagSF;
-		if( S->datamc!=4 ) gEventWeight *= PUWeight; // no pu weight for mc with no pu, that really doesn't exist anymore in 2012, so it's fine
+		if( S->datamc!=4 ) gEventWeight *= fPUWeight->weight(PUnumTrueInteractions); // no pu weight for mc with no pu, that really doesn't exist anymore in 2012, so it's fine
 		
 		fillKinPlots(S,gRegion[gBaseRegion]);
 		if (gDoWZValidation) fillKinPlots(S,gRegion["WZEnriched"]);
@@ -724,6 +731,18 @@ void SSDLDumper::loopEvents(Sample *S){
 		resetBTags(); // reset to scaled btag values
 		scaleMET(S, 2);
 		fillSigEventTree(S, gSystematics["METDown"]);
+
+		// Pileup scaled up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		scalePileup(1);
+		fillSigEventTree(S, gSystematics["PileupUp"]);
+
+		// Pileup scaled down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		scalePileup(2);
+		fillSigEventTree(S, gSystematics["PileupDown"]);
 	}
 	//FOR PABLO	cout << "--------------------------------------------------" << endl;
 	//FOR PABLO	cout << "--------------------------------------------------" << endl;
@@ -5071,6 +5090,11 @@ void SSDLDumper::smearMET(Sample *S){
 	float sm_met = getMET() + fRand3->Gaus(0, 0.05) * getMET();
 	pfMET = sm_met;
 }
+void SSDLDumper::scalePileup(int flag){
+	if (flag == 0) fPUWeight = fPUWeightCentral; // central value
+	if (flag == 1) fPUWeight = fPUWeightUp;      // scale up
+	if (flag == 2) fPUWeight = fPUWeightDown;    // scale down
+}
 float SSDLDumper::getJetPt(int i){
 	return JetPt[i];
 }
@@ -5918,42 +5942,42 @@ bool SSDLDumper::passesGammaStarVeto(int l1, int l2, int toggle, float mass){
 	return true;
 }
 bool SSDLDumper::passesZVeto(bool(SSDLDumper::*muonSelector)(int), bool(SSDLDumper::*eleSelector)(int), float dm){
-// Checks if any combination of opposite sign, same flavor leptons (e or mu)
-// has invariant mass closer than dm to the Z mass, returns true if none found
-// Default for dm is 15 GeV
-  if(NMus > 1){
-    for(size_t i = 0; i < NMus-1; ++i){
-      if((*this.*muonSelector)(i) == false) continue;
-      TLorentzVector pmu1, pmu2;
-      pmu1.SetPtEtaPhiM(MuPt[i], MuEta[i], MuPhi[i], gMMU);
-      
-      // Second muon
-      for(size_t j = i+1; j < NMus; ++j){ 
-	if((*this.*muonSelector)(j) == false) continue;
-	pmu2.SetPtEtaPhiM(MuPt[j], MuEta[j], MuPhi[j], gMMU);
-	if(MuCharge[i] == MuCharge[j]) continue;
-	if(fabs((pmu1+pmu2).M() - gMZ) < dm) return false;
-      }
-    }
-  }
-  
-  if(NEls > 1){
-    for(size_t i = 0; i < NEls-1; ++i){
-      if((*this.*eleSelector)(i)){
-	TLorentzVector pel1, pel2;
-	pel1.SetPtEtaPhiM(ElPt[i], ElEta[i], ElPhi[i], gMEL);
-	
-	// Second electron
-	for(size_t j = i+1; j < NEls; ++j){
-	  if((*this.*eleSelector)(j) && (ElCharge[i] != ElCharge[j]) ){
-	    pel2.SetPtEtaPhiM(ElPt[j], ElEta[j], ElPhi[j], gMEL);
-	    if(fabs((pel1+pel2).M() - gMZ) < dm) return false;
-	  }
+	// Checks if any combination of opposite sign, same flavor leptons (e or mu)
+	// has invariant mass closer than dm to the Z mass, returns true if none found
+	// Default for dm is 15 GeV
+	if(NMus > 1){
+		for(size_t i = 0; i < NMus-1; ++i){
+			if((*this.*muonSelector)(i) == false) continue;
+			TLorentzVector pmu1, pmu2;
+			pmu1.SetPtEtaPhiM(MuPt[i], MuEta[i], MuPhi[i], gMMU);
+
+			// Second muon
+			for(size_t j = i+1; j < NMus; ++j){ 
+				if((*this.*muonSelector)(j) == false) continue;
+				pmu2.SetPtEtaPhiM(MuPt[j], MuEta[j], MuPhi[j], gMMU);
+				if(MuCharge[i] == MuCharge[j]) continue;
+				if(fabs((pmu1+pmu2).M() - gMZ) < dm) return false;
+			}
+		}
 	}
-      }
-    }		
-  }
-  return true;
+
+	if(NEls > 1){
+		for(size_t i = 0; i < NEls-1; ++i){
+			if((*this.*eleSelector)(i)){
+				TLorentzVector pel1, pel2;
+				pel1.SetPtEtaPhiM(ElPt[i], ElEta[i], ElPhi[i], gMEL);
+
+				// Second electron
+				for(size_t j = i+1; j < NEls; ++j){
+					if((*this.*eleSelector)(j) && (ElCharge[i] != ElCharge[j]) ){
+						pel2.SetPtEtaPhiM(ElPt[j], ElEta[j], ElPhi[j], gMEL);
+						if(fabs((pel1+pel2).M() - gMZ) < dm) return false;
+					}
+				}
+			}
+		}		
+	}
+	return true;
 }
 bool SSDLDumper::passesZVeto(float dm){
 	if(!gApplyZVeto) return true;

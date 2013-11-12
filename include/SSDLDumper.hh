@@ -803,6 +803,7 @@ public:
 	virtual void smearMET(Sample *S);
 	virtual void propagateMET(TLorentzVector vec1, TLorentzVector vec2);
 	virtual void scaleMET(Sample *S, int flag = 0);
+	virtual void scalePileup(int flag = 0);
 	virtual float getJetPt(int); // for shifting and smearing
 	virtual float getM3();
 	virtual void  setMET(float );
@@ -1100,7 +1101,7 @@ public:
         GoodRunList *fGoodRunList;
 	TRandom3 *fRand3;
 	TRandom3 *fRand3Normal;
-	reweight::LumiReWeighting *fPUWeight;
+	reweight::LumiReWeighting *fPUWeight, *fPUWeightUp, *fPUWeightDown, *fPUWeightCentral;
 
 	// FOR THE BDT
 	// ---------------------------------------

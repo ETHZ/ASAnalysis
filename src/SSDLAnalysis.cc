@@ -492,32 +492,74 @@ void SSDLAnalysis::FillAnalysisTree(){
 			int id2  = fTR->PDFID2;
 			double pdf_xpdf1, pdf_xpdf2;
 			double newxfx1, newxfx2;
+			vector<double> pdf2_xfx1, pdf2_xfx2, pdf3_xfx1, pdf3_xfx2;
+			pdf2_xfx1.clear();
+			pdf2_xfx2.clear();
+			pdf3_xfx1.clear();
+			pdf3_xfx2.clear();
 
-			//LHAPDF::initPDFSet(1,"MSTW2008nnlo68cl_asmz-68clhalf.LHgrid");
-			//LHAPDF::initPDFSet(1,"NNPDF20_as_0120_100.LHgrid");
-			LHAPDF::initPDFSetM(1,"cteq6ll.LHpdf");
-//			LHAPDF::initPDFSetM(1,"cteq6mE.LHgrid");
-//			LHAPDF::initPDFSetM(1,"cteq61.LHgrid");
-//			LHAPDF::initPDFSetM(1,"CT10.LHgrid");
-			LHAPDF::initPDFM(1,0);
+			// PDF set #2
+//			LHAPDF::initPDFSetM(2,"CT10.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz+68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz-68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0116_100.LHgrid");
+			LHAPDF::initPDFSetM(2,"NNPDF20_as_0118_100.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
+			LHAPDF::initPDFM(2,0);
+			fTNPdf2 = (int)LHAPDF::numberPDFM(2);
+			for(int pdf=0; pdf < fTNPdf2; pdf++){
+				LHAPDF::initPDFM(2, pdf);
+				//newxfx1 = LHAPDF::xfxM(2, x1, Q, id1);
+				//newxfx2 = LHAPDF::xfxM(2, x2, Q, id2);
+				//fTWPdf2[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				pdf2_xfx1.push_back(LHAPDF::xfxM(2, x1, Q, id1));
+				pdf2_xfx2.push_back(LHAPDF::xfxM(2, x2, Q, id2));
+			}
+
+			// PDF set #3
+//			LHAPDF::initPDFSetM(3,"CT10as.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz+68clhalf.LHgrid");
+//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz-68clhalf.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0117_100.LHgrid");
+			LHAPDF::initPDFSet(3,"NNPDF20_as_0120_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
+			LHAPDF::initPDFM(3,0);
+			fTNPdf3 = (int)LHAPDF::numberPDFM(3);
+			for(int pdf=0; pdf < fTNPdf3; pdf++){
+				LHAPDF::initPDFM(3, pdf);
+				//newxfx1 = LHAPDF::xfxM(1, x1, Q, id1);
+				//newxfx2 = LHAPDF::xfxM(1, x2, Q, id2);
+				//fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				pdf3_xfx1.push_back(LHAPDF::xfxM(3, x1, Q, id1));
+				pdf3_xfx2.push_back(LHAPDF::xfxM(3, x2, Q, id2));
+			}
+
+			// gen PDF set
+			LHAPDF::initPDFSet(1,"cteq6ll.LHpdf");
 			fTNPdf1 = (int)LHAPDF::numberPDFM(1);
-			cout << "fTNPdf1: " << fTNPdf1 << endl;
 			pdf_xpdf1 = LHAPDF::xfxM(1, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfxM(1, x2, Q, id2);
 
-//			cout << Form("pdf_xpdf1: %8.3f\tpdf_xpdf2: %8.3f\tfTR->PDFxPDF1: %8.3f\tfTR->PDFxPDF2: %8.3f", pdf_xpdf1, pdf_xpdf2, fTR->PDFxPDF1, fTR->PDFxPDF2) << endl;
-				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
-//			for(int pdf=0; pdf < fTNPdf1; pdf++){
-//				LHAPDF::initPDFM(1, pdf);
-//				newxfx1 = LHAPDF::xfxM(1, x1, Q, id1);
-//				newxfx2 = LHAPDF::xfxM(1, x2, Q, id2);
-//				fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-////				if (fTWPdf1[pdf] < 0.)
-////					cout << Form("fTWPdf1[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
+			// store pdf weights
+			for (int pdf=0; pdf < fTNPdf2; pdf++) {
+				fTWPdf2[pdf] = pdf2_xfx1[pdf]/pdf_xpdf1 * pdf2_xfx2[pdf]/pdf_xpdf2;
+			}
+			for (int pdf=0; pdf < fTNPdf3; pdf++) {
+				fTWPdf3[pdf] = pdf3_xfx1[pdf]/pdf_xpdf1 * pdf3_xfx2[pdf]/pdf_xpdf2;
+			}
+
+
+//			for(int pdf=0; pdf < fTNPdf3; pdf++){
+//				LHAPDF::initPDFM(3, pdf);
+//				newxfx1 = LHAPDF::xfxM(3, x1, Q, id1);
+//				newxfx2 = LHAPDF::xfxM(3, x2, Q, id2);
+//				fTWPdf3[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+////				if (fTWPdf3[pdf] < 0.)
+////					cout << Form("fTWPdf3[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
 ////													pdf,
-////													fTWPdf1[pdf],
+////													fTWPdf3[pdf],
 ////													newxfx1,
 ////													pdf_xpdf1,
 ////													newxfx2,
@@ -528,77 +570,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 ////													id1,
 ////													id2) << endl;
 //			}
-
-			//LHAPDF::initPDFSet(2,"NNPDF20_100.LHgrid");
-			//LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
-			LHAPDF::initPDFSetM(2,"CT10.LHgrid");
-//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl.LHgrid");
-//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz+68cl.LHgrid");
-//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz-68cl.LHgrid");
-//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0116_100.LHgrid");
-//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0118_100.LHgrid");
-//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
-
-
-//			LHAPDF::initPDFSetM(2,"CT10.LHgrid");
-			LHAPDF::initPDFM(2,0);
-
-
-			fTNPdf2 = (int)LHAPDF::numberPDFM(2);
-			cout << "fTNPdf2: " << fTNPdf2 << endl;
-
-			for(int pdf=0; pdf < fTNPdf2; pdf++){
-				LHAPDF::initPDFM(2, pdf);
-				newxfx1 = LHAPDF::xfxM(2, x1, Q, id1);
-				newxfx2 = LHAPDF::xfxM(2, x2, Q, id2);
-				fTWPdf2[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-//				if (fTWPdf2[pdf] < 0.)
-//					cout << Form("fTWPdf2[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
-//													pdf,
-//													fTWPdf2[pdf],
-//													newxfx1,
-//													pdf_xpdf1,
-//													newxfx2,
-//													pdf_xpdf2,
-//													x1,
-//													x2,
-//													Q,
-//													id1,
-//													id2) << endl;
-			}
-
-
-			//LHAPDF::initPDFSet(3,"MSTW2008nnlo68cl_asmz-68cl.LHgrid");
-			//LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
-			LHAPDF::initPDFSet(3,"CT10as.LHgrid");
-//			LHAPDF::initPDFSet(3,"NNPDF20_100.LHgrid");
-//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz+68clhalf.LHgrid");
-//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz-68clhalf.LHgrid");
-//			LHAPDF::initPDFSet(3,"NNPDF20_as_0117_100.LHgrid");
-//			LHAPDF::initPDFSet(3,"NNPDF20_as_0120_100.LHgrid");
-//			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
-			fTNPdf3 = (int)LHAPDF::numberPDFM(3);
-			cout << "fTNPdf3: " << fTNPdf3 << endl;
-
-			for(int pdf=0; pdf < fTNPdf3; pdf++){
-				LHAPDF::initPDFM(3, pdf);
-				newxfx1 = LHAPDF::xfxM(3, x1, Q, id1);
-				newxfx2 = LHAPDF::xfxM(3, x2, Q, id2);
-				fTWPdf3[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-//				if (fTWPdf3[pdf] < 0.)
-//					cout << Form("fTWPdf3[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
-//													pdf,
-//													fTWPdf3[pdf],
-//													newxfx1,
-//													pdf_xpdf1,
-//													newxfx2,
-//													pdf_xpdf2,
-//													x1,
-//													x2,
-//													Q,
-//													id1,
-//													id2) << endl;
-			}
 
 
 			// ===========================================================================

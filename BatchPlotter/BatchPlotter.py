@@ -150,7 +150,7 @@ def merge_and_clean():
 					
 	## os.system('rm -r tmp/ ; rm sgejob-* -rf')
 	os.system('rm -r tmp/ ; rm plot_* ; rm sgejob-* -rf')
-	#os.system('rm sgejob-* -rf') # no cleaning up, for debugging puposes
+#	os.system('rm sgejob-* -rf') # no cleaning up, for debugging puposes
 	## for ls in os.listdir(output_location):
 	## 	if os.path.isdir(output_location+ls) and 'output' in ls:
 
@@ -240,6 +240,7 @@ def do_stuff(config_name):
 			jn = 'plot_'+str(ind)
 			jobnames.append(jn)
 			jobstrings.append('qsub -q short.q  -N '+jn+' '+tmpScript_name+' > /dev/null')
+#			jobstrings.append('qsub -q short.q -l h_vmem=6g -N '+jn+' '+tmpScript_name+' > /dev/null')
 			## os.system('qsub -q short.q  -N '+jn+' '+tmpScript_name+' > /dev/null')
 			## os.system('sleep 1')
 	if not dryrun:
