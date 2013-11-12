@@ -2,12 +2,12 @@ import ROOT, commands
 from array import array
 import math
 
-def masterFormulaCT10(eff):
-	x0 = eff[0]
+def masterFormulaCT10(eff, eff0):
+	x0 = eff0
 	deltaPos, deltaNeg = 0., 0.
 	## for(int k = 0 k < ((int)eff.size()-1)/2 k++) {
-	for k in range((len(eff)-1)/2):
-		xneg = eff[2*k+2]
+	for k in range((len(eff))/2):
+		xneg = eff[2*k]
 		xpos = eff[2*k+1]
 		if(xpos-x0>0 or xneg-x0>0):
 			if(xpos-x0 > xneg-x0):
@@ -25,27 +25,27 @@ def masterFormulaCT10(eff):
 	return errHi/1.645, errLo/1.645
 
 
-def masterFormulaNNPDF(eff):
-	x0 = eff[0]
+def masterFormulaNNPDF(eff, eff0):
+	x0 = eff0
 	deltaPos, deltaNeg = 0., 0.
+	Npos, Nneg = 0, 0
 	## for(int k = 0 k < ((int)eff.size()-1)/2 k++) {
-	for k in range((len(eff)-1)/2):
-		xneg = eff[2*k+2]
-		xpos = eff[2*k+1]
-		if(xpos-x0>0 or xneg-x0>0):
-			if(xpos-x0 > xneg-x0):
-				deltaPos += (xpos-x0)*(xpos-x0)
-			else:
-				deltaPos += (xneg-x0)*(xneg-x0)
-		if(x0-xpos>0 or x0-xneg>0):
-			if(x0-xpos > x0-xneg):
-				deltaNeg += (xpos-x0)*(xpos-x0)
-			else:
-				deltaNeg += (xneg-x0)*(xneg-x0)
+	for k in range(len(eff)-1):
+		x = eff[k+1]
+		if (x >= x0):
+			deltaPos += (x-x0)*(x-x0)
+			Npos += 1
+		else:
+			deltaNeg += (x0-x)*(x0-x)
+			Nneg += 1
 
-	errHi = math.sqrt(deltaPos)
-	errLo = math.sqrt(deltaNeg)
-	return errHi, errLo
+	print Npos, Nneg
+	print deltaPos, deltaNeg
+	#errHi = math.sqrt(1./(Npos-1) * deltaPos)
+	#errLo = math.sqrt(1./(Nneg-1) * deltaNeg)
+	#print errHi, errLo
+	#return errHi, errLo
+	return Npos, Nneg, deltaPos, deltaNeg
 
 def masterFormula(eff):
 	x0 = eff[0]
