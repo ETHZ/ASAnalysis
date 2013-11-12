@@ -64,6 +64,7 @@ public :
    Float_t         PUWeight;
    Float_t         PUWeightUp;
    Float_t         PUWeightDn;
+   Float_t         GenWeight;
    Int_t           PUnumTrueInteractions;
    Int_t           NMus;
    Int_t           IsSignalMuon[7];   //[NMus]
@@ -209,6 +210,7 @@ public :
    TBranch        *b_PUWeight;   //!
    TBranch        *b_PUWeightUp;   //!
    TBranch        *b_PUWeightDn;   //!
+   TBranch        *b_GenWeight;   //!
    TBranch        *b_PUnumTrueInteractions;   //!
    TBranch        *b_NMus;   //!
    TBranch        *b_IsSignalMuon;   //!
@@ -423,6 +425,7 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("PUWeight", &PUWeight, &b_PUWeight);
    fChain->SetBranchAddress("PUWeightUp", &PUWeightUp, &b_PUWeightUp);
    fChain->SetBranchAddress("PUWeightDn", &PUWeightDn, &b_PUWeightDn);
+   fChain->SetBranchAddress("GenWeight", &GenWeight, &b_GenWeight);
    fChain->SetBranchAddress("PUnumTrueInteractions", &PUnumTrueInteractions, &b_PUnumTrueInteractions);
    fChain->SetBranchAddress("NMus", &NMus, &b_NMus);
    fChain->SetBranchAddress("IsSignalMuon", IsSignalMuon, &b_IsSignalMuon);

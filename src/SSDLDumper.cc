@@ -1917,6 +1917,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	fSETree_MET      = getMET();
 	fSETree_NVrtx    = NVrtx;
 	fSETree_NTrue    = PUnumTrueInteractions;
+	fSETree_GenWeight = GenWeight;
 
 	fSETree_NM = getNTightMuons();
 	fSETree_NE = getNTightElectrons();
@@ -3302,6 +3303,7 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("BetaStar5",   &fSETree_BetaStar5, "BetaStar5/F");
 	fSigEv_Tree->Branch("NVrtx",       &fSETree_NVrtx   , "NVrtx/I");
 	fSigEv_Tree->Branch("NTrue",       &fSETree_NTrue   , "NTrue/I");
+	fSigEv_Tree->Branch("GenWeight",   &fSETree_GenWeight, "GenWeight/F");
 	
 }
 void SSDLDumper::resetSigEventTree(){
@@ -3356,6 +3358,7 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_BetaStar5= -999.;
 	fSETree_NVrtx    = -1.;
 	fSETree_NTrue    = -1.;
+	fSETree_GenWeight = -999.;
 }
 void SSDLDumper::writeSigEvTree(TFile *pFile){
 	pFile->cd();
