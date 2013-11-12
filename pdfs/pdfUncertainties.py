@@ -54,12 +54,18 @@ if model == 'TTWJets':
 		subdirs = [subdir7]
 		pdfsets = {}
 		pdfsets[subdir7] = ['pdf2', 'pdf3']
+		centralSubdir = subdir7
+		centralPDF = 'pdf2'
+		DeltaA = []
 	elif pdfset == 'MSTW2008':
 		subdirs = [subdir1, subdir2, subdir3]
 		pdfsets = {}
 		pdfsets[subdir1] = ['pdf2']
 		pdfsets[subdir2] = ['pdf2', 'pdf3']
 		pdfsets[subdir3] = ['pdf2', 'pdf3']
+		centralSubdir = subdir1
+		centralPDF = 'pdf2'
+		Aalpha = []
 	elif pdfset == 'NNPDF20':
 		subdirs = [subdir1, subdir4, subdir5, subdir6]
 		pdfsets = {}
@@ -67,6 +73,9 @@ if model == 'TTWJets':
 		pdfsets[subdir4] = ['pdf2', 'pdf3']
 		pdfsets[subdir5] = ['pdf2', 'pdf3']
 		pdfsets[subdir6] = ['pdf2', 'pdf3']
+		centralSubdir = subdir1
+		centralPDF = 'pdf3'
+		errsNNPDF = [0., 0., 0., 0.]
 	else:
 		print 'SOMETHING WENT TERRIBLY WRONG!! CHECK THE PDF SET'
 		sys.exit(0)
@@ -119,33 +128,17 @@ allHistos['pdf3'] = {}
 
 for region in regions:
 	if not region == relevantRegion: continue
-	if pdfset == 'NNPDF20':
-		errsNNPDF = [0., 0., 0., 0.]
-		centralFile = ROOT.TFile(subdir1+model+'_'+region+'.root', 'READ', 'centralFile')
-		histo = centralFile.Get(modelRoot+'_nPass_pdf3_0').Clone()
-		histo.SetName(modelRoot+'_eff_pdf3_0')
-		histo.Divide(centralFile.Get(modelRoot+'_nTot_pdf3_0'))
-		bin = histo.FindBin(50.,50.)
-		centralEff = histo.GetBinContent(bin)
-		print 'A0: %.8f' %(centralEff)
-	if pdfset == 'MSTW2008':
-		Aalpha = []
-		centralFile = ROOT.TFile(subdir1+model+'_'+region+'.root', 'READ', 'centralFile')
-		histo = centralFile.Get(modelRoot+'_nPass_pdf2_0').Clone()
-		histo.SetName(modelRoot+'_eff_pdf2_0')
-		histo.Divide(centralFile.Get(modelRoot+'_nTot_pdf2_0'))
-		bin = histo.FindBin(50.,50.)
-		centralEff = histo.GetBinContent(bin)
-		print 'A0: %.8f' %(centralEff)
-	if pdfset == 'CT10':
-		DeltaA = []
-		centralFile = ROOT.TFile(subdir7+model+'_'+region+'.root', 'READ', 'centralFile')
-		histo = centralFile.Get(modelRoot+'_nPass_pdf2_0').Clone()
-		histo.SetName(modelRoot+'_eff_pdf2_0')
-		histo.Divide(centralFile.Get(modelRoot+'_nTot_pdf2_0'))
-		bin = histo.FindBin(50.,50.)
-		centralEff = histo.GetBinContent(bin)
-		print 'A0: %.8f' %(centralEff)
+
+	centralSubdir
+	centralPDF
+	centralFile = ROOT.TFile(centralSubdir+model+'_'+region+'.root', 'READ', 'centralFile')
+	histo = centralFile.Get(modelRoot+'_nPass_'+centralPDF+'_0').Clone()
+	histo.SetName(modelRoot+'_eff_'+centralPDF+'_0')
+	histo.Divide(centralFile.Get(modelRoot+'_nTot_'+centralPDF+'_0'))
+	bin = histo.FindBin(50.,50.)
+	centralEff = histo.GetBinContent(bin)
+	print 'A0: %.8f' %(centralEff)
+
 	for subdir in subdirs:
 		infileName = subdir+model+'_'+region+'.root'
 		if not os.path.isfile(infileName):
