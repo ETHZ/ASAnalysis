@@ -1373,6 +1373,7 @@ JZBAnalysis::~JZBAnalysis(){}
 void JZBAnalysis::Begin(TFile *f){
 
   solver = new SolveTTbarNew();
+  minuit = new TMinuit();
   
   CSVT_CorrectionFile = new TFile("/shome/buchmann/material/Corrections/CSVT_Complete.root");
   CSVT_EfficiencyCorrection = (TH2F*)CSVT_CorrectionFile->Get("EfficiencyCorrection");
@@ -2135,7 +2136,6 @@ void GetTopWeights(int sample) {
 
 //______________________________________________________________________________
 void JZBAnalysis::Analyze() {
-  minuit = new TMinuit();
   minuit->SetPrintLevel(-1);
   // #--- analysis global parameters
   double DRmax=0.4; // veto jets in a cone of DRmax close to the lepton
