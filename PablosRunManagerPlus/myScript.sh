@@ -201,19 +201,11 @@ if test -e $SEOUTFILES; then
           echo "Running lcg-cp -b -D srmv2 -v $srmdebug /$WORKDIR/$n $SERESULTDIR/$n"
           tries=0
           failed=0
-          while [ $tries -le 5 ]; do
-             lcg-cp -b -D srmv2 -v $srmdebug /$WORKDIR/$n $SERESULTDIR/$n
-             if test $? -ne 0; then
-                echo "WARNING: Failed to copy $WORKDIR/$n to $SERESULTDIR/$n (try $tries)" >&2
-                failed=1
-             else
-               echo "Copy SUCCESS"
-               failed=0
-             fi
-             let tries++
-          done
-          if [ $failed -ne 0 ]; then
-             echo "ERROR: Failed to copy $WORKDIR/$n to $SERESULTDIR/$n : giving up!" >&2
+          lcg-cp -b -D srmv2 -v $srmdebug /$WORKDIR/$n $SERESULTDIR/$n
+          if test $? -ne 0; then
+             echo "ERROR: Failed to copy $WORKDIR/$n to $SERESULTDIR/$n" >&2
+          else
+            echo "Copy SUCCESS"
           fi
        fi
    done
