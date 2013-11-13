@@ -16,7 +16,7 @@ const int SSDLAnalysis::nx;
 const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
 
 
-const bool gDoPDFs = true;
+const bool gDoPDFs = false;
 
 
 //TString SSDLAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/";
@@ -537,7 +537,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 			}
 
 			// gen PDF set
-			LHAPDF::initPDFSet(1,"cteq6ll.LHpdf");
+			LHAPDF::initPDFSetM(1,"cteq6ll.LHpdf");
 			fTNPdf1 = (int)LHAPDF::numberPDFM(1);
 			pdf_xpdf1 = LHAPDF::xfxM(1, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfxM(1, x2, Q, id2);
