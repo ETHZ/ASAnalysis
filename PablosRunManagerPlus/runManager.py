@@ -461,11 +461,10 @@ if __name__ == '__main__' :
                 parser.print_usage()
                 sys.exit(-1)
         
-        timeleft=commands.getoutput("voms-proxy-info -valid -timeleft | grep timeleft | awk '{ print $3 }'")
-        timeleft=float(timeleft[:timeleft.find(':')])
+        timeleft=commands.getoutput("voms-proxy-info -timeleft | grep timeleft | awk '{ print $3 }'")
         
         print "Seems like your proxy will be alive for another "+str(timeleft)+" hours"
-        if timeleft>5 and timeleft<500:
+        if timeleft>10800: ## valid for >3h
 	  print "You should be ok, your proxy is still valid for a long time."
 	else:
 	  print "You need to refresh your proxy! (will run voms-proxy-init -voms cms for you)"
