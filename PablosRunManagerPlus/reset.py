@@ -31,7 +31,7 @@ def getSeDir(dir,opt):
          if m: hnname = m.group(1)
          if sehome!='' and sesubdir != '' and hnname != '': break
    finally: f.close()
-   sepath = path.join(sehome,hnname,'ProcessedTrees/',sesubdir)
+   sepath = path.join(sehome,hnname,sesubdir)
    if opt.verb>2: 
       print '  Found remote home',sehome,', HN name',hnname,'and subdir',sesubdir
       print '  Returning',sepath

@@ -177,7 +177,7 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
   thisjobnumber=0
 
   #cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-j','y',nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
   if options.verbose: print cmd
   if options.dryrun: return thisjobnumber
 
@@ -461,7 +461,7 @@ if __name__ == '__main__' :
                 parser.print_usage()
                 sys.exit(-1)
         
-        timeleft=commands.getoutput("voms-proxy-info -timeleft | grep timeleft | awk '{ print $3 }'")
+        timeleft=commands.getoutput("voms-proxy-info | grep timeleft | awk '{ print $3 }'")
         
         print "Seems like your proxy will be alive for another "+str(timeleft)+" hours"
         if timeleft>10800: ## valid for >3h
