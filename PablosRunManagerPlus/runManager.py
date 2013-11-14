@@ -116,15 +116,6 @@ def getFiles(step, FilesPerJob, NumberOfJobs, OverloadedJobs, listOfFiles):
       
 
 #-------------------------------------------------------------#
-# createDirectory method: Creates a directory                 #
-# returns 0 if everything was all right                       #
-#-------------------------------------------------------------# 
-def createDirectory(nameOfDirectory):
-  result = os.system("mkdir " + nameOfDirectory)
-  result2 = os.system("cd " + nameOfDirectory)
-  return result 
-
-#-------------------------------------------------------------#
 # fixPath method: Just makes sure the path is ending          #
 # with slash. Otherwise appends it                            #
 #-------------------------------------------------------------# 
@@ -176,8 +167,9 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
   
   thisjobnumber=0
 
-  #cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-j','y',nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  #SHORT QUEUE cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  #MERGED OUTPUT cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-j','y',nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
   if options.verbose: print cmd
   if options.dryrun: return thisjobnumber
 
@@ -350,21 +342,22 @@ def process(task, conf):
     NumberOfJobs = numberOfFiles
     OverloadedJobs = 0
 
-  #FR FIXME: this part is tricky and might be fragile
   # Task[0] is now a dataset: /DATASET/USER-TAG_DATASET-TYPE-AOD-HASH/USER
-  # Extract useful information (DATASET-TYPE-AOD)
-
-
-  ### FOR NORMAL RUNNING:
-  primaryDataset = dataset.lstrip('/').replace('_','-').split('/')[0]
-  fullName = dataset.lstrip('/').replace('_','-').split('/')[1]
-  primaryDataset2 = dataset.lstrip('/').split('/')[0]
-  fullName2 = dataset.lstrip('/').split('/')[1]
-  index1 = fullName.index(primaryDataset)
-  index2 = fullName.rindex('-')
-  nameOfFolder = fullName[index1:index2]
+  # Remove the trailing '/USER' string and convert it to not contain '/'s 
+  nameOfFolder = dataset.lstrip('/').rstrip('/USER').replace('/','_')
   taskName = nameOfFolder
   os.system("mkdir -p " + taskName)
+
+#  ### FOR NORMAL RUNNING:
+#  primaryDataset = dataset.lstrip('/').replace('_','-').split('/')[0]
+#  fullName = dataset.lstrip('/').replace('_','-').split('/')[1]
+#  primaryDataset2 = dataset.lstrip('/').split('/')[0]
+#  fullName2 = dataset.lstrip('/').split('/')[1]
+#  index1 = fullName.index(primaryDataset)
+#  index2 = fullName.rindex('-')
+#  nameOfFolder = fullName[index1:index2]
+#  taskName = nameOfFolder
+#  os.system("mkdir -p " + taskName)
 # ## ##  os.system("mkdir -p ../" + taskName)
 
   ## ### FOR RUNNING WITH PRESET FILES ETC. SMSs mostly
