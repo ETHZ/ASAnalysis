@@ -1702,8 +1702,15 @@ std::set<int> DiPhotonMiniTree::GetPFCandInsideFootprint(TreeReader *fTR, pfcand
 };
 
 std::set<int> DiPhotonMiniTree::GetPrecalculatedFootprint(int phoqi){
-  std::vector<int>::iterator stop = (phoqi<fTR->NPhotons-1) ? fTR->PhoFootprintPfCands.begin()+fTR->PhoFootprintPfCandsListStart[phoqi+1] : fTR->PhoFootprintPfCands.end();
-  return std::set<int>(fTR->PhoFootprintPfCands.begin()+fTR->PhoFootprintPfCandsListStart[phoqi],stop);
+  int stop = (phoqi<fTR->NPhotons-1) ? fTR->PhoFootprintPfCandsListStart[phoqi+1] : fTR->PhoFootprintPfCands.size();
+  std::set<int> out;
+  for (int i = fTR->PhoFootprintPfCandsListStart[phoqi]; i<stop; i++){
+    int pfcand = fTR->PhoFootprintPfCands.at(i);
+    int type = FindPFCandType(fTR->PfCandPdgId[pfcand]);
+    if (type!=2 && type!=3) continue;
+    out.insert(pfcand);
+  }
+  return out;
 };
 
 std::set<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, int phoqi, float rotation_phi, bool outoffootprint, TString component){
@@ -1722,7 +1729,10 @@ std::set<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, i
   
   if (scindex<0) {
     std::cout << "Error in GetPFCandOverlappingSC" << std::endl;
-    std::cout << scindex << " " << phoqi << std::endl;
+    std::cout << scindex << " " << phoqi << " " << fTR->PhoPt[phoqi] << " " << fTR->PhoEta[phoqi] << " " << fTR->PhoPhi[phoqi] << std::endl;
+    for (int i=0; i<fTR->NSuperClusters; i++){
+      cout << i << " " << fTR->SCEnergy[i]/TMath::CosH(fTR->SCEta[phoqi]) << " " << fTR->SCEta[phoqi] << " " << fTR->SCRaw[i]/fTR->SCEnergy[i] << endl;
+    }
     return std::set<int>();
   }
 
@@ -2408,8 +2418,10 @@ void DiPhotonMiniTree::FillLead(int index, std::vector<int> passing_jets){
     pholead_PhoSCRemovalPFIsoCombined=pholead_PhoSCRemovalPFIsoCharged+pholead_PhoSCRemovalPFIsoNeutral+pholead_PhoSCRemovalPFIsoPhoton;
   }
   pholead_PhoPassConversionVeto=fTR->PhoPassConversionVeto[index];
-  if (fTR->PhoMCmatchindex[index]>=0) pholead_GenPhotonIsoDR04=fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[index]];
-  pholead_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
+  if (!isdata){
+    if (fTR->PhoMCmatchindex[index]>=0) pholead_GenPhotonIsoDR04=fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[index]];
+    pholead_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
+  }
 //  pholead_scarea = scarea[fTR->PhotSCindex[index]];
 //  pholead_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
@@ -2516,8 +2528,10 @@ void DiPhotonMiniTree::FillTrail(int index, std::vector<int> passing_jets){
   }
 
   photrail_PhoPassConversionVeto=fTR->PhoPassConversionVeto[index];
-  if (fTR->PhoMCmatchindex[index]>=0) photrail_GenPhotonIsoDR04=fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[index]];
-  photrail_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
+  if (!isdata){
+    if (fTR->PhoMCmatchindex[index]>=0) photrail_GenPhotonIsoDR04=fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[index]];
+    photrail_PhoMCmatchexitcode=fTR->PhoMCmatchexitcode[index];
+  }
 //  photrail_scarea = scarea[fTR->PhotSCindex[index]];
 //  photrail_scareaSF = scareaSF[fTR->PhotSCindex[index]];
 
@@ -3076,34 +3090,6 @@ bool DiPhotonMiniTree::PassPrimaryVertexFilter(){
   return false;
 };
 
-void DiPhotonMiniTree::BugfixWrongGenPhotonsMatching(TreeReader *fTR){   // redo the matching to fix bug dphi (no fabs in matching)
-
-  for (int i=0; i<fTR->NPhotons; i++){
-
-    if (fTR->PhoMCmatchexitcode[i]==-1 || fTR->PhoMCmatchexitcode[i]==0) continue;
-
-    int matched=-1;
-    for (int k=0; k<fTR->NGenPhotons; k++){
-      if (fabs(fTR->GenPhotonPt[k]-fTR->PhoPt[i])/fTR->GenPhotonPt[k]>2) continue;
-      if (Util::GetDeltaR(fTR->GenPhotonEta[k],fTR->PhoEta[i],fTR->GenPhotonPhi[k],fTR->PhoPhi[i])>0.1) continue;
-      matched=k; break;
-    }
-
-    if (matched==-1) {fTR->PhoMCmatchexitcode[i]=-2; fTR->PhoMCmatchindex[i]=-999;}
-    else {
-
-      fTR->PhoMCmatchindex[i]=matched;
-
-      int mother = fTR->GenPhotonMotherID[matched];      
-      if ((mother>=-6 && mother<=6) || (mother==21)) fTR->PhoMCmatchexitcode[i]=1;
-      else if (mother==22 && fTR->GenPhotonMotherStatus[matched]==3) fTR->PhoMCmatchexitcode[i]=2;
-      else fTR->PhoMCmatchexitcode[i]=3;
-
-
-    }
-  }
-
-};
 
 void DiPhotonMiniTree::InitInputTree(){
   if (isstep2){
@@ -3173,6 +3159,7 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
   out.jetpt_pf=-999;
   out.jetpt_m_frac=-999;
 
+  if (fTR->PhotSCindex[phoqi]<0) return out;
   if (fTR->PhoPt[phoqi]<25) return out;
 
   // prepare list of pfcands to represent the photon deposit
