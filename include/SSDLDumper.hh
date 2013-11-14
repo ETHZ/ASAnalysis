@@ -983,6 +983,7 @@ public:
 	int   fC_vetoTTZSel; // ttZ veto
         int   fC_chargeVeto;
         int   fC_GStarVeto;
+        int   fC_invertZVeto;
 	void resetHypLeptons();
 	void setHypLepton1(int, gChannel);
 	void setHypLepton2(int, gChannel);
@@ -1132,9 +1133,9 @@ public:
         bool skipLumi;
         bool skipRun;
 	bool isTChiSlepSnu;
+	Monitor fCounter[3];	
 	private:
 	
-	Monitor fCounter[3];	
         Monitor fCounterSync[3];
         Monitor fCounterPurities[3];
         Monitor fCounterWZ[3];

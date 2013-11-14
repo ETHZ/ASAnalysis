@@ -51,7 +51,7 @@ float gElMaxIso     ;
 float gMinJetPt     ;
 float gMaxJetEta    ;
 bool  gTTWZ         ;
-bool  gInvertZVeto  ;
+//bool  gInvertZVeto  ;
 bool  tmp_gApplyZVeto;
 bool  gApplyGStarVeto    ;
 TString tmp_gBaseRegion  ;
@@ -170,7 +170,7 @@ void SSDLDumper::setVariables(char buffer[1000]){
 		if (v != "v") {cout << "ERROR in reading variables!!" << endl; exit(1); }
 		if      (type == "bool"    && name =="gDoSystStudies" ) gDoSystStudies      = ((value == "1" || value == "true") ? true:false);
 		else if (type == "bool"    && name =="gTTWZ"          ) gTTWZ               = ((value == "1" || value == "true") ? true:false);
-		else if (type == "bool"    && name =="gInvertZVeto"   ) gInvertZVeto        = ((value == "1" || value == "true") ? true:false);
+		else if (type == "bool"    && name =="gInvertZVeto"   ) fC_invertZVeto        = ((value == "1" || value == "true") ? true:false);
 		else if (type == "bool"    && name =="gApplyGStarVeto") gApplyGStarVeto     = ((value == "1" || value == "true") ? true:false);
 		else if (type == "TString" && name =="gBaseRegion"    ) tmp_gBaseRegion     = value; // this and the next are the only ones used in the plotter
 		else if (type == "TString" && name =="gJSONfile"      ) gJSONfile           = value;
@@ -334,7 +334,7 @@ SSDLDumper::SSDLDumper(TString configfile){
 	cout << Form("gTTWZ = %d\ngApplyZVeto = %d\ngInvertZVeto = %d\ngMuMaxIso = %3.2f\ngElMaxIso = %3.2f\ngMinJetPt = %3.2f\ngMaxJetEta = %3.2f\ngDoPileUpID = %d\ngBaseRegion = %s",
 		     gTTWZ       ,
 		     tmp_gApplyZVeto ,
-		     gInvertZVeto,
+		     fC_invertZVeto,
 		     gMuMaxIso   ,
 		     gElMaxIso   ,
 		     gMinJetPt ,
@@ -818,8 +818,8 @@ void SSDLDumper::fillYields(Sample *S, int reg){
 	
 	if(reg == gRegion[gBaseRegion])   fDoCounting  = true;
 
-	if(reg == gRegion["WZEnriched"])  gInvertZVeto = true;
-	else                              gInvertZVeto = false;
+	if(reg == gRegion["WZEnriched"])  fC_invertZVeto = true;
+	else                              fC_invertZVeto = false;
 	
 	fCurrentChannel = Muon;
 	int mu1(-1), mu2(-1);
@@ -5538,8 +5538,8 @@ void SSDLDumper::setRegionCuts(int reg){
 	fC_vetoTTZSel = gRegions[reg]->vetoTTZSel ;
 	fC_chargeVeto = gRegions[reg]->chargeVeto ;
 
-	if(reg == gRegion["WZEnriched"])  gInvertZVeto = true;
-	else                              gInvertZVeto = false;
+	if(reg == gRegion["WZEnriched"])  fC_invertZVeto = true;
+	else                              fC_invertZVeto = false;
 }
 void SSDLDumper::setLowPtCuts(){
 	if (fC_minHT < 250) fC_minHT = 250.;
@@ -5567,9 +5567,10 @@ void SSDLDumper::printRegionCuts(int reg){
 	cout << "fC_app3rdVet : " << fC_app3rdVet  << endl;
 	cout << "fC_vetoTTZSel: " << fC_vetoTTZSel << endl;
 	cout << "fC_chargeVeto: " << fC_chargeVeto << endl;
+	cout << "fC_invertZVeto: " << fC_invertZVeto << endl;
 
-	if(reg == gRegion["WZEnriched"])  gInvertZVeto = true;
-	else                              gInvertZVeto = false;
+	if(reg == gRegion["WZEnriched"])  fC_invertZVeto = true;
+	else                              fC_invertZVeto = false;
 }
 
 //____________________________________________________________________________
@@ -5888,7 +5889,7 @@ bool SSDLDumper::passesZVetoNew(int l1, int l2, int toggle, float dm){
 			if( ( fabs((pel2+pel3).M()) - gMZ ) < dm) return false;
 		  }
 	}
-	if (gInvertZVeto) return false;
+	if (fC_invertZVeto) return false;
 	return true;
 }
 bool SSDLDumper::passesGammaStarVeto(int l1, int l2, int toggle, float mass){
@@ -5983,13 +5984,15 @@ bool SSDLDumper::passesZVeto(bool(SSDLDumper::*muonSelector)(int), bool(SSDLDump
 	return true;
 }
 bool SSDLDumper::passesZVeto(float dm){
+//	cout << "gApplyZVeto: " << gApplyZVeto << endl;
+//	cout << "fC_invertZVeto: " << fC_invertZVeto << endl;
 	if(!gApplyZVeto) return true;
 	
 	bool passZVeto = passesZVeto(&SSDLDumper::isGoodMuonForZVeto, &SSDLDumper::isGoodEleForZVeto, dm);
 	// return passesZVeto(&SSDLDumper::isTightMuon, &SSDLDumper::isTightElectron, dm);
 	// return passesZVeto(&SSDLDumper::isLooseMuon, &SSDLDumper::isLooseElectron, dm);
 	// return !passesZVeto(&SSDLDumper::isGoodMuonForZVeto, &SSDLDumper::isGoodEleForZVeto, dm); //inverted Zveto
-	if (gInvertZVeto)  return !passZVeto;
+	if (fC_invertZVeto)  return !passZVeto;
 	else               return  passZVeto;
 }
 bool SSDLDumper::passesChVeto(int ch){

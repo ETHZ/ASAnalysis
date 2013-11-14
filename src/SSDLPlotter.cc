@@ -476,6 +476,9 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 void SSDLPlotter::doAnalysis(){
   // sandBox();         
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
+  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph.root", false);
+  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo.root", true);
+  return;
 
 
   cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
@@ -24769,64 +24772,75 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
 	int ngenR(0);
 	int nmm(0);
 
-	// for (Long64_t jentry=0; jentry<tot_events;jentry++) {
-	// 	setRegionCuts(0);
-	// 	tree_->GetEntry(jentry);
-	// 	printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
-	// 	// printRegionCuts(0);
-	// 	// if(jentry > 1) break;
-	// 	if(amcnlo && GenWeight < 0) ngenR--;
-	// 	else ngenR++;
-	// 	int i1(-1), i2(-1);
-	// 	// if(!isSSLLEvent(i1, i2)) continue;
-	// 	// resetHypLeptons();
-	// 	if(amcnlo && GenWeight < 0) nll--;
-	// 	else nll++;
-	// 	bool ismumu(false), iselel(false), iselmu(false);
-	// 	int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
-	// 	if( isSSLLMuEvent(m1, m2)) { 
-	// 		if(amcnlo && GenWeight < 0) nmm--;
-	// 		else nmm++;
-	// 		if(isTightMuon(m1) && isTightMuon(m2)){
-	// 			if(amcnlo && GenWeight < 0) ntt20--;
-	// 			else ntt20++;
-	// 			if(MuPt[m1] < 40. || MuPt[m2] < 40.){ resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) ntt40--;
-	// 			else ntt40++;
-	// 			if(getNJets(30.) < 3){resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) ntt3j--;
-	// 			else ntt3j++;
-	// 			if(getHT() < 155){resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) nttht--;
-	// 			else nttht++;
-	// 			if(getNBTagsMed() < 1){resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) ntt1b--;
-	// 			else ntt1b++;
-	// 		}
-	// 	}
-	// 	resetHypLeptons();
-	// 	//if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
-	// 	//resetHypLeptons();
-	// 	//if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
-	// 	//resetHypLeptons();
-	// 	//cout << ismumu << " " << iselel << " " << iselmu << endl;
-	// 	//if(!(ismumu || iselel || iselmu) ) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt20--;
-	// 	//else ntt20++;
-	// 	//if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt40--;
-	// 	//else ntt40++;
-	// 	//if(getNJets(30.) < 3) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt3j--;
-	// 	//else ntt3j++;
-	// 	//if(getHT() < 155) continue;
-	// 	//if(amcnlo && GenWeight < 0) nttht--;
-	// 	//else nttht++;
-	// 	//if(getNBTagsMed() < 1) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt1b--;
-	// 	//else ntt1b++;
-	// 	//resetHypLeptons();
-	// }
+	initCounters();
+	fDoCounting = true;
+	fC_invertZVeto = false;
+
+	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
+		setRegionCuts(0);   // TODO: why is this setting fC_invertZVeto true?
+		fC_invertZVeto = false;
+		tree_->GetEntry(jentry);
+		printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
+		if(jentry == 1) printRegionCuts(0);
+		// if(jentry > 1) break;
+		if(amcnlo && GenWeight < 0) ngenR--;
+		else ngenR++;
+		int i1(-1), i2(-1);
+		// if(!isSSLLEvent(i1, i2)) continue;
+		// resetHypLeptons();
+		if(amcnlo && GenWeight < 0) nll--;
+		else nll++;
+		bool ismumu(false), iselel(false), iselmu(false);
+		int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
+//		if( isSSLLMuEvent(m1, m2)) { 
+//			//if(amcnlo && GenWeight < 0) nmm--;
+//			//else nmm++;
+//			nmm++;
+//			if(isTightMuon(m1) && isTightMuon(m2)){
+//				if(amcnlo && GenWeight < 0) ntt20--;
+//				else ntt20++;
+//				if(MuPt[m1] < 40. || MuPt[m2] < 40.){ resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) ntt40--;
+//				else ntt40++;
+//				if(getNJets(30.) < 3){resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) ntt3j--;
+//				else ntt3j++;
+//				if(getHT() < 155){resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) nttht--;
+//				else nttht++;
+//				if(getNBTagsMed() < 1){resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) ntt1b--;
+//				else ntt1b++;
+//			}
+//		}
+		if( isSSLLMuEvent(m1, m2)) { if(isTightMuon(m1) && isTightMuon(m2))         ismumu = true;}
+		resetHypLeptons();
+		if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
+		resetHypLeptons();
+		if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
+		resetHypLeptons();
+		//cout << ismumu << " " << iselel << " " << iselmu << endl;
+		if(!(ismumu || iselel || iselmu) ) continue;
+		if(amcnlo && GenWeight < 0) ntt20--;
+		else ntt20++;
+		if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
+		if(amcnlo && GenWeight < 0) ntt40--;
+		else ntt40++;
+		if(getNJets(30.) < 3) continue;
+		if(amcnlo && GenWeight < 0) ntt3j--;
+		else ntt3j++;
+		if(getHT() < 155) continue;
+		if(amcnlo && GenWeight < 0) nttht--;
+		else nttht++;
+		if(getNBTagsMed() < 1) continue;
+		if(amcnlo && GenWeight < 0) ntt1b--;
+		else ntt1b++;
+		resetHypLeptons();
+	}
+
+	for (int i = 0; i < fMMCutNames.size(); i++) {
+		cout << "fCounter[Muon].counts(fMMCutNames[" << i << "]): " << fCounter[Muon].counts(fMMCutNames[i]) << " " << fMMCutNames[i] << endl;
+	}
 
 
 	// cout << Form("%40s:  %10d   --  %7.2f\%", "total generated ", nTot         , 100.*nTot         /(float)nSSGen ) << endl;
