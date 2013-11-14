@@ -24617,6 +24617,258 @@ void SSDLPlotter::drawRegionSel(int reg){
 	// // if(     Region::minNbjets[reg] > 0 ) lat->DrawLatex(0.55,0.75, Form("N_{bTags} #geq %1d",         Region::minNbjets[reg]));
 	// if(     Region::minNbjmed[reg] > 0 ) lat->DrawLatex(0.55,0.80, Form("N_{bTags} (medium) #geq %1d",         Region::minNbjets[reg]));
 }
+class genLep{
+	public: 
+		int sgn;
+		int type; // 0 mu, 1 el
+		float pt;
+		float eta;
+		float phi;
+		float mass(){
+			if(type==0) return 0.1057;
+			if(type==1) return 0.0005;
+		}
+		bool passesFiducials(){
+			if(type == 0){
+				if(pt < 20.)        return false;
+				if(fabs(eta) > 2.4) return false;
+			}
+			else if(type == 1){
+				if(pt < 20.)        return false;
+				if(fabs(eta) > 2.4) return false;
+				if(fabs(eta) > 1.4442 && fabs(eta) < 1.566) return false;
+			}
+			else cout << "what the fuuuuuuuck " << endl;
+			return true;
+		}
+
+};
+float poisErr(int a, int b){
+	float k = a;
+	float n = b;
+	return TMath::Sqrt(k*(n+k)/(n*n*n));
+}
+float binoErr(int a, int b){
+	float k = a;
+	float n = b;
+	return (1/n)*TMath::Sqrt( k * (1-k/n) ); 
+}
+void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
+
+	cout << filestring << endl;
+
+	TFile * file_ = TFile::Open(filestring);
+	TTree * tree_ = (TTree *) file_->Get("Analysis");
+	tree_->ResetBranchAddresses();
+	Init(tree_);
+	Long64_t tot_events = tree_->GetEntriesFast();
+
+	TH1F * n_leptons = new TH1F("nleptons", "N_{leptons}",   5,   0,   5);
+	TH1F * ss_pts    = new TH1F("pts"     , "p_{T}"      ,  50,   0, 150);
+	TH1F * ss_etas   = new TH1F("etas"    , "|eta|"      ,  50,-2.5, 2.5);
+	TH1F * jetpts    = new TH1F("jetpts"  , "p_T_{jet}"  ,  50,  20, 250);
+	TH1F * bjetpts   = new TH1F("bjetpts" , "p_T_{b-jet}",  50,  20, 250);
+	TH1F * hthist    = new TH1F("ht"      , "H_{T}"      ,  50,  20, 400);
+	TH1F * njethist  = new TH1F("njets"   , "N_{jets}"   ,  10,   0,  10);
+
+	int nTot          = 0;
+	int nSSGen        = 0;
+	int nPassFiducial = 0;
+	int nPassPt40     = 0;
+	int nPassNJ3      = 0;
+	int nPassHT155    = 0;
+	int nPassnNB1     = 0;
+
+	// loop on events
+//	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
+//		tree_->GetEntry(jentry);
+//		printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
+//		// nTot++;
+//		if(amcnlo && GenWeight < 0) nTot--;
+//		else nTot++;
+//		std::vector<genLep> leps_p;
+//		std::vector<genLep> leps_m;
+//		std::vector<genLep> leps;
+//		bool hasSSPair = false;
+//		for(int i = 0 ; i < NGenLep; ++i){
+//			// if((!amcnlo && GenLepStatus[i] != 3) || (amcnlo && GenLepStatus[i] != 3 && GenLepStatus[i] != 1 ) ) continue; // status 3 or NLO+status 1||3
+//			if((!amcnlo && GenLepStatus[i] == 3) || (amcnlo && (GenLepStatus[i] != 3 || GenLepStatus[i] != 1)) ) {
+//				if( (abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13) && (abs(GenLepMID[i]) == 24 || abs(GenLepMID[i]) == 15) ){
+//					// if(GenLepPt [i] < 20.) continue;
+//					// if(fabs(GenLepEta[i]) > 2.4) continue;
+//					// if(abs(GenLepID[i]) == 11 && fabs(GenLepEta[i]) > 1.4442 && fabs(GenLepEta[i]) < 1.566) continue;
+//					genLep tmpLep;
+//					tmpLep.pt   = GenLepPt [i];
+//					tmpLep.eta  = GenLepEta[i];
+//					tmpLep.phi  = GenLepPhi[i];
+//					tmpLep.sgn  = GenLepID[i] > 0 ? -1 : 1;
+//					tmpLep.type = abs(GenLepID[i]) == 13 ? 0 : 1;
+//					// tmpLep.vec.SetPtEtaPhiM(GenLepPt[i], GenLepEta[i], GenLepPhi[i], tmpLep.mass());
+//					// cout << Form("id: %d  charge: %d    stat: %d   mo: %d   pt: %.2f",tmpLep.type , tmpLep.sgn, GenLepStatus[i] , GenLepMID[i] , tmpLep.pt) << endl;
+//					if(tmpLep.sgn > 0) leps_p.push_back(tmpLep);
+//					if(tmpLep.sgn < 0) leps_m.push_back(tmpLep);
+//				}
+//			}
+//		}
+//		n_leptons->Fill(leps_p.size() + leps_m.size());
+//		if(leps_p.size() > 1 || leps_m.size() > 1) hasSSPair = true;
+//		if(!hasSSPair) continue; // has one SS pair
+//		if(amcnlo && GenWeight < 0) nSSGen--;
+//		else nSSGen++;
+//		leps = leps_p.size() > 1 ? leps_p : leps_m;
+//		// see if leptons pass fiducial cuts (20 gev and eta cuts)
+//		if(!(leps[0].passesFiducials()) || !(leps[1].passesFiducials())) continue;
+//		// cout << "-------------------------------------------" << endl;
+//		// cout << "Event: " << Event << " leps_p.size(): " << leps_p.size() << " leps_m.size(): " << leps_m.size() <<
+//		// " leps.size(): " << leps.size() << endl
+//		// << " leps[0].type: " << leps[0].type 
+//		// << " leps[0].pt: " << leps[0].pt 
+//		// << " fabs(leps[0].eta): "  << fabs(leps[0].eta) 
+//		// << endl
+//		// << " leps[1].type: " << leps[1].type 
+//		// << " leps[1].pt: " << leps[1].pt 
+//		// << " fabs(leps[1].eta): "  << fabs(leps[1].eta) << endl;
+//		// fill lepton pts
+//		ss_pts ->Fill(leps[0].pt);
+//		ss_pts ->Fill(leps[1].pt);
+//		ss_etas->Fill(leps[0].eta);
+//		ss_etas->Fill(leps[1].eta);
+//		(amcnlo && GenWeight < 0) ? nPassFiducial-- : nPassFiducial++; // both leptons pass 20 GeV and eta cuts
+//		if(leps[0].pt < 40. || leps[1].pt < 40) continue;      // cut on pt > 40 GeV
+//		(amcnlo && GenWeight < 0) ? nPassPt40-- : nPassPt40++;
+//		// loop on jets
+//		int njets(0), nbjets(0);
+//		float ht(0.);
+//		for(int i=0; i < NJets; ++i){
+//			if(JetGenPt[i] < 30.) continue;
+//			// if(Util::GetDeltaR(leps[0].eta, JetGenEta[i], leps[0].phi, JetGenPhi[i]) < 0.4 ||
+//			//    Util::GetDeltaR(leps[1].eta, JetGenEta[i], leps[1].phi, JetGenPhi[i]) < 0.4  ) continue;
+//			// TLorentzVector jet;
+//			// jet.SetPtEtaPhiM(1., JetGenEta[i], JetGenPhi[i], 1.); //don't worry about pt and the mass
+//			// cout << JetGenEta[i] << "   "  <<  JetGenPhi[i] << endl;
+//			// cout << leps[0].vec.DeltaR(jet) << "   " << leps[1].vec.DeltaR(jet) << endl;
+//			// if(leps[0].vec.DeltaR(jet) < 0.4 || leps[1].vec.DeltaR(jet) < 0.4) continue;
+//			njets++;
+//			jetpts->Fill(JetGenPt[i]);
+//			ht += JetGenPt[i];
+//			if(abs(JetPartonFlav[i]) != 5) continue;
+//			nbjets++;
+//			bjetpts->Fill(JetGenPt[i]);
+//		} // end jet loop
+//		hthist  ->Fill(ht);
+//		njethist->Fill(njets);
+//		if(njets <3) continue;
+//		(amcnlo && GenWeight < 0) ? nPassNJ3-- : nPassNJ3++;
+//		if(ht < 155.) continue;
+//		(amcnlo && GenWeight < 0) ? nPassHT155-- : nPassHT155++;
+//		if(nbjets < 1) continue;
+//		(amcnlo && GenWeight < 0) ? nPassnNB1-- : nPassnNB1++;
+//	}
+	
+	int nll(0), ntt20(0), ntt40(0), ntt3j(0), nttht(0), ntt1b(0);
+	int ngenR(0);
+	int nmm(0);
+
+	// for (Long64_t jentry=0; jentry<tot_events;jentry++) {
+	// 	setRegionCuts(0);
+	// 	tree_->GetEntry(jentry);
+	// 	printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
+	// 	// printRegionCuts(0);
+	// 	// if(jentry > 1) break;
+	// 	if(amcnlo && GenWeight < 0) ngenR--;
+	// 	else ngenR++;
+	// 	int i1(-1), i2(-1);
+	// 	// if(!isSSLLEvent(i1, i2)) continue;
+	// 	// resetHypLeptons();
+	// 	if(amcnlo && GenWeight < 0) nll--;
+	// 	else nll++;
+	// 	bool ismumu(false), iselel(false), iselmu(false);
+	// 	int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
+	// 	if( isSSLLMuEvent(m1, m2)) { 
+	// 		if(amcnlo && GenWeight < 0) nmm--;
+	// 		else nmm++;
+	// 		if(isTightMuon(m1) && isTightMuon(m2)){
+	// 			if(amcnlo && GenWeight < 0) ntt20--;
+	// 			else ntt20++;
+	// 			if(MuPt[m1] < 40. || MuPt[m2] < 40.){ resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) ntt40--;
+	// 			else ntt40++;
+	// 			if(getNJets(30.) < 3){resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) ntt3j--;
+	// 			else ntt3j++;
+	// 			if(getHT() < 155){resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) nttht--;
+	// 			else nttht++;
+	// 			if(getNBTagsMed() < 1){resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) ntt1b--;
+	// 			else ntt1b++;
+	// 		}
+	// 	}
+	// 	resetHypLeptons();
+	// 	//if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
+	// 	//resetHypLeptons();
+	// 	//if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
+	// 	//resetHypLeptons();
+	// 	//cout << ismumu << " " << iselel << " " << iselmu << endl;
+	// 	//if(!(ismumu || iselel || iselmu) ) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt20--;
+	// 	//else ntt20++;
+	// 	//if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt40--;
+	// 	//else ntt40++;
+	// 	//if(getNJets(30.) < 3) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt3j--;
+	// 	//else ntt3j++;
+	// 	//if(getHT() < 155) continue;
+	// 	//if(amcnlo && GenWeight < 0) nttht--;
+	// 	//else nttht++;
+	// 	//if(getNBTagsMed() < 1) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt1b--;
+	// 	//else ntt1b++;
+	// 	//resetHypLeptons();
+	// }
+
+
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "total generated ", nTot         , 100.*nTot         /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "has SS pair     ", nSSGen       , 100.*nSSGen       /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "pair passes fid ", nPassFiducial, 100.*nPassFiducial/(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "leps pass 40gev ", nPassPt40    , 100.*nPassPt40    /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "at least 3 jets ", nPassNJ3     , 100.*nPassNJ3     /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "ht > 155        ", nPassHT155   , 100.*nPassHT155   /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "nbjets >= 1     ", nPassnNB1    , 100.*nPassnNB1    /(float)nSSGen ) << endl;
+	cout << "===============================   GEN   ===============================" << endl;
+	cout << "total generated "<< nTot          <<"  -- "<< 100.*nTot         /(float)nSSGen<<" +- "<<100.*binoErr(nTot         ,nSSGen)<<" ("<<100.*poisErr(nTot         ,nSSGen)<<")"<<endl;
+	cout << "has SS pair     "<< nSSGen        <<"  -- "<< 100.*nSSGen       /(float)nSSGen<<" +- "<<100.*binoErr(nSSGen       ,nSSGen)<<" ("<<100.*poisErr(nSSGen       ,nSSGen)<<")"<<endl;
+	cout << "pair passes fid "<< nPassFiducial <<"  -- "<< 100.*nPassFiducial/(float)nSSGen<<" +- "<<100.*binoErr(nPassFiducial,nSSGen)<<" ("<<100.*poisErr(nPassFiducial,nSSGen)<<")"<<endl;
+	cout << "leps pass 40gev "<< nPassPt40     <<"  -- "<< 100.*nPassPt40    /(float)nSSGen<<" +- "<<100.*binoErr(nPassPt40    ,nSSGen)<<" ("<<100.*poisErr(nPassPt40    ,nSSGen)<<")"<<endl;
+	cout << "at least 3 jets "<< nPassNJ3      <<"  -- "<< 100.*nPassNJ3     /(float)nSSGen<<" +- "<<100.*binoErr(nPassNJ3     ,nSSGen)<<" ("<<100.*poisErr(nPassNJ3     ,nSSGen)<<")"<<endl;
+	cout << "ht > 155        "<< nPassHT155    <<"  -- "<< 100.*nPassHT155   /(float)nSSGen<<" +- "<<100.*binoErr(nPassHT155   ,nSSGen)<<" ("<<100.*poisErr(nPassHT155   ,nSSGen)<<")"<<endl;
+	cout << "nbjets >= 1     "<< nPassnNB1     <<"  -- "<< 100.*nPassnNB1    /(float)nSSGen<<" +- "<<100.*binoErr(nPassnNB1    ,nSSGen)<<" ("<<100.*poisErr(nPassnNB1    ,nSSGen)<<")"<<endl;
+	cout << "===============================  RECO   ===============================" << endl;
+	cout << "total generated " << ngenR          << "  -- " << 100.*ngenR  /(float)nll << endl;
+	cout << "has SSLL pair   " << nll            << "  -- " << 100.*nll    /(float)nll << endl;
+	cout << "has SSLL mumu   " << nmm            << "  -- " << 100.*nmm    /(float)nll << endl;
+	cout << "TT pair pt 20   " << ntt20          << "  -- " << 100.*ntt20  /(float)nll << endl;
+	cout << "leps pass 40gev " << ntt40          << "  -- " << 100.*ntt40  /(float)nll << endl;
+	cout << "at least 3 jets " << ntt3j          << "  -- " << 100.*ntt3j  /(float)nll << endl;
+	cout << "ht > 155        " << nttht          << "  -- " << 100.*nttht  /(float)nll << endl;
+	cout << "nbjets >= 1     " << ntt1b          << "  -- " << 100.*ntt1b  /(float)nll << endl;
+
+	file_->Close();
+
+	TFile * res_;
+	res_ = new TFile( (amcnlo ? "output_ngenstudues_amcnlo.root" : "output_ngenstudues_madgraph.root"), "RECREATE", "res_");
+	res_   -> cd();
+	n_leptons -> Write();
+	ss_pts    -> Write();
+	ss_etas   -> Write();
+	jetpts    -> Write();
+	bjetpts   -> Write();
+	hthist    -> Write();
+	njethist  -> Write();
+	res_->Close();
+
+}
 
 void SSDLPlotter::msugraKfacs(TFile * results){
     ifstream IN("msugraSSDL/nlo_kfactors.txt");
