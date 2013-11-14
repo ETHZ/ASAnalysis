@@ -24786,8 +24786,8 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
 		if(amcnlo && GenWeight < 0) ngenR--;
 		else ngenR++;
 		int i1(-1), i2(-1);
-		// if(!isSSLLEvent(i1, i2)) continue;
-		// resetHypLeptons();
+		if(!isSSLLEvent(i1, i2)) continue;
+		resetHypLeptons();
 		if(amcnlo && GenWeight < 0) nll--;
 		else nll++;
 		bool ismumu(false), iselel(false), iselmu(false);
