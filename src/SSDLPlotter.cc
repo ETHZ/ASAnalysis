@@ -12447,17 +12447,17 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 		gChannel chan = gChannel(Flavor);
 		if(chan == ElMu){
 			if(pT1 > pT2){
-				if(pT1 < minPT1) continue;
-				if(pT2 < minPT2) continue;
+				if(pT1 < minPt1) continue;
+				if(pT2 < minPt2) continue;
 			}
 			if(pT1 < pT2){
-				if(pT1 < minPT2) continue;
-				if(pT2 < minPT1) continue;
+				if(pT1 < minPt2) continue;
+				if(pT2 < minPt1) continue;
 			}
 		}
 		else{
-			if(pT1 < minPT1) continue;
-			if(pT2 < minPT2) continue;
+			if(pT1 < minPt1) continue;
+			if(pT2 < minPt2) continue;
 		}
 		if (gApplyZVeto && Flavor < 3 && passZVeto == 0)  continue; // do not apply Z veto on OS
 
@@ -25011,91 +25011,6 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
 		if(nbjets < 1) continue;
 		(amcnlo && GenWeight < 0) ? nPassnNB1-- : nPassnNB1++;
 	}
-//	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
-//		tree_->GetEntry(jentry);
-//		printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
-//		// nTot++;
-//		if(amcnlo && GenWeight < 0) nTot--;
-//		else nTot++;
-//		std::vector<genLep> leps_p;
-//		std::vector<genLep> leps_m;
-//		std::vector<genLep> leps;
-//		bool hasSSPair = false;
-//		for(int i = 0 ; i < NGenLep; ++i){
-//			// if((!amcnlo && GenLepStatus[i] != 3) || (amcnlo && GenLepStatus[i] != 3 && GenLepStatus[i] != 1 ) ) continue; // status 3 or NLO+status 1||3
-//			if((!amcnlo && GenLepStatus[i] == 3) || (amcnlo && (GenLepStatus[i] != 3 || GenLepStatus[i] != 1)) ) {
-//				if( (abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13) && (abs(GenLepMID[i]) == 24 || abs(GenLepMID[i]) == 15) ){
-//					// if(GenLepPt [i] < 20.) continue;
-//					// if(fabs(GenLepEta[i]) > 2.4) continue;
-//					// if(abs(GenLepID[i]) == 11 && fabs(GenLepEta[i]) > 1.4442 && fabs(GenLepEta[i]) < 1.566) continue;
-//					genLep tmpLep;
-//					tmpLep.pt   = GenLepPt [i];
-//					tmpLep.eta  = GenLepEta[i];
-//					tmpLep.phi  = GenLepPhi[i];
-//					tmpLep.sgn  = GenLepID[i] > 0 ? -1 : 1;
-//					tmpLep.type = abs(GenLepID[i]) == 13 ? 0 : 1;
-//					// tmpLep.vec.SetPtEtaPhiM(GenLepPt[i], GenLepEta[i], GenLepPhi[i], tmpLep.mass());
-//					// cout << Form("id: %d  charge: %d    stat: %d   mo: %d   pt: %.2f",tmpLep.type , tmpLep.sgn, GenLepStatus[i] , GenLepMID[i] , tmpLep.pt) << endl;
-//					if(tmpLep.sgn > 0) leps_p.push_back(tmpLep);
-//					if(tmpLep.sgn < 0) leps_m.push_back(tmpLep);
-//				}
-//			}
-//		}
-//		n_leptons->Fill(leps_p.size() + leps_m.size());
-//		if(leps_p.size() > 1 || leps_m.size() > 1) hasSSPair = true;
-//		if(!hasSSPair) continue; // has one SS pair
-//		if(amcnlo && GenWeight < 0) nSSGen--;
-//		else nSSGen++;
-//		leps = leps_p.size() > 1 ? leps_p : leps_m;
-//		// see if leptons pass fiducial cuts (20 gev and eta cuts)
-//		if(!(leps[0].passesFiducials()) || !(leps[1].passesFiducials())) continue;
-//		// cout << "-------------------------------------------" << endl;
-//		// cout << "Event: " << Event << " leps_p.size(): " << leps_p.size() << " leps_m.size(): " << leps_m.size() <<
-//		// " leps.size(): " << leps.size() << endl
-//		// << " leps[0].type: " << leps[0].type 
-//		// << " leps[0].pt: " << leps[0].pt 
-//		// << " fabs(leps[0].eta): "  << fabs(leps[0].eta) 
-//		// << endl
-//		// << " leps[1].type: " << leps[1].type 
-//		// << " leps[1].pt: " << leps[1].pt 
-//		// << " fabs(leps[1].eta): "  << fabs(leps[1].eta) << endl;
-//		// fill lepton pts
-//		ss_pts ->Fill(leps[0].pt);
-//		ss_pts ->Fill(leps[1].pt);
-//		ss_etas->Fill(leps[0].eta);
-//		ss_etas->Fill(leps[1].eta);
-//		(amcnlo && GenWeight < 0) ? nPassFiducial-- : nPassFiducial++; // both leptons pass 20 GeV and eta cuts
-//		if(leps[0].pt < 40. || leps[1].pt < 40) continue;      // cut on pt > 40 GeV
-//		(amcnlo && GenWeight < 0) ? nPassPt40-- : nPassPt40++;
-//		// loop on jets
-//		int njets(0), nbjets(0);
-//		float ht(0.);
-//		for(int i=0; i < NJets; ++i){
-//			if(JetGenPt[i] < 30.) continue;
-//			// if(Util::GetDeltaR(leps[0].eta, JetGenEta[i], leps[0].phi, JetGenPhi[i]) < 0.4 ||
-//			//    Util::GetDeltaR(leps[1].eta, JetGenEta[i], leps[1].phi, JetGenPhi[i]) < 0.4  ) continue;
-//			// TLorentzVector jet;
-//			// jet.SetPtEtaPhiM(1., JetGenEta[i], JetGenPhi[i], 1.); //don't worry about pt and the mass
-//			// cout << JetGenEta[i] << "   "  <<  JetGenPhi[i] << endl;
-//			// cout << leps[0].vec.DeltaR(jet) << "   " << leps[1].vec.DeltaR(jet) << endl;
-//			// if(leps[0].vec.DeltaR(jet) < 0.4 || leps[1].vec.DeltaR(jet) < 0.4) continue;
-//			njets++;
-//			jetpts->Fill(JetGenPt[i]);
-//			ht += JetGenPt[i];
-//			if(abs(JetPartonFlav[i]) != 5) continue;
-//			nbjets++;
-//			bjetpts->Fill(JetGenPt[i]);
-//		} // end jet loop
-//		hthist  ->Fill(ht);
-//		njethist->Fill(njets);
-//		if(njets <3) continue;
-//		(amcnlo && GenWeight < 0) ? nPassNJ3-- : nPassNJ3++;
-//		if(ht < 155.) continue;
-//		(amcnlo && GenWeight < 0) ? nPassHT155-- : nPassHT155++;
-//		if(nbjets < 1) continue;
-//		(amcnlo && GenWeight < 0) ? nPassnNB1-- : nPassnNB1++;
-//	}
-	
 	int nll(0), ntt20(0), ntt40(0), ntt3j(0), nttht(0), ntt1b(0);
 	int ngenR(0);
 	int nmm(0);
@@ -25120,27 +25035,6 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
 		else nll++;
 		bool ismumu(false), iselel(false), iselmu(false);
 		int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
-//		if( isSSLLMuEvent(m1, m2)) { 
-//			//if(amcnlo && GenWeight < 0) nmm--;
-//			//else nmm++;
-//			nmm++;
-//			if(isTightMuon(m1) && isTightMuon(m2)){
-//				if(amcnlo && GenWeight < 0) ntt20--;
-//				else ntt20++;
-//				if(MuPt[m1] < 40. || MuPt[m2] < 40.){ resetHypLeptons(); continue;}
-//				if(amcnlo && GenWeight < 0) ntt40--;
-//				else ntt40++;
-//				if(getNJets(30.) < 3){resetHypLeptons(); continue;}
-//				if(amcnlo && GenWeight < 0) ntt3j--;
-//				else ntt3j++;
-//				if(getHT() < 155){resetHypLeptons(); continue;}
-//				if(amcnlo && GenWeight < 0) nttht--;
-//				else nttht++;
-//				if(getNBTagsMed() < 1){resetHypLeptons(); continue;}
-//				if(amcnlo && GenWeight < 0) ntt1b--;
-//				else ntt1b++;
-//			}
-//		}
 		if( isSSLLMuEvent(m1, m2)) { if(isTightMuon(m1) && isTightMuon(m2))         ismumu = true;}
 		resetHypLeptons();
 		if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
@@ -25171,13 +25065,6 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
 	}
 
 
-	// cout << Form("%40s:  %10d   --  %7.2f\%", "total generated ", nTot         , 100.*nTot         /(float)nSSGen ) << endl;
-	// cout << Form("%40s:  %10d   --  %7.2f\%", "has SS pair     ", nSSGen       , 100.*nSSGen       /(float)nSSGen ) << endl;
-	// cout << Form("%40s:  %10d   --  %7.2f\%", "pair passes fid ", nPassFiducial, 100.*nPassFiducial/(float)nSSGen ) << endl;
-	// cout << Form("%40s:  %10d   --  %7.2f\%", "leps pass 40gev ", nPassPt40    , 100.*nPassPt40    /(float)nSSGen ) << endl;
-	// cout << Form("%40s:  %10d   --  %7.2f\%", "at least 3 jets ", nPassNJ3     , 100.*nPassNJ3     /(float)nSSGen ) << endl;
-	// cout << Form("%40s:  %10d   --  %7.2f\%", "ht > 155        ", nPassHT155   , 100.*nPassHT155   /(float)nSSGen ) << endl;
-	// cout << Form("%40s:  %10d   --  %7.2f\%", "nbjets >= 1     ", nPassnNB1    , 100.*nPassnNB1    /(float)nSSGen ) << endl;
 	cout << "===============================   GEN   ===============================" << endl;
 	cout << "total generated "<< nTot          <<"  -- "<< 100.*nTot         /(float)nSSGen<<" +- "<<100.*binoErr(nTot         ,nSSGen)<<" ("<<100.*poisErr(nTot         ,nSSGen)<<")"<<endl;
 	cout << "has SS pair     "<< nSSGen        <<"  -- "<< 100.*nSSGen       /(float)nSSGen<<" +- "<<100.*binoErr(nSSGen       ,nSSGen)<<" ("<<100.*poisErr(nSSGen       ,nSSGen)<<")"<<endl;
