@@ -578,7 +578,9 @@ public:
 			    (sname.Contains("TTJets"))  ) return 2;
 			if( (sname.Contains("DYJets")) ||
 			    (sname.Contains("GJets"))  ||
-			    (sname) == "WJets" )   return 3;
+			    (sname) == "WJets"  ||
+				(sname) == "WJets2" ||
+				(sname) == "WbbJets" )   return 3;
 			if( (sname) == "HWW"    ||
 			    (sname) == "HZZ"    ||
 			    (sname) == "HTauTau"   ||
@@ -801,6 +803,7 @@ public:
 	virtual void smearMET(Sample *S);
 	virtual void propagateMET(TLorentzVector vec1, TLorentzVector vec2);
 	virtual void scaleMET(Sample *S, int flag = 0);
+	virtual void scalePileup(int flag = 0);
 	virtual float getJetPt(int); // for shifting and smearing
 	virtual float getM3();
 	virtual void  setMET(float );
@@ -981,6 +984,7 @@ public:
 	int   fC_vetoTTZSel; // ttZ veto
         int   fC_chargeVeto;
         int   fC_GStarVeto;
+        int   fC_invertZVeto;
 	void resetHypLeptons();
 	void setHypLepton1(int, gChannel);
 	void setHypLepton2(int, gChannel);
@@ -1076,6 +1080,7 @@ public:
 	float       fSETree_BetaStar5;
 	int			fSETree_NVrtx;
 	int			fSETree_NTrue;
+	float		fSETree_GenWeight;
 //	float		fSETree_Ml1l3; // invariant mass of 3rd lepton pair
 //	float		fSETree_Ml2l3; // invariant mass of 3rd lepton pair
 //	int			fSETree_Charge3rdLep;
@@ -1100,7 +1105,7 @@ public:
         GoodRunList *fGoodRunList;
 	TRandom3 *fRand3;
 	TRandom3 *fRand3Normal;
-	reweight::LumiReWeighting *fPUWeight;
+	reweight::LumiReWeighting *fPUWeight, *fPUWeightUp, *fPUWeightDown, *fPUWeightCentral;
 
 	// FOR THE BDT
 	// ---------------------------------------
@@ -1130,9 +1135,9 @@ public:
         bool skipLumi;
         bool skipRun;
 	bool isTChiSlepSnu;
+	Monitor fCounter[3];	
 	private:
 	
-	Monitor fCounter[3];	
         Monitor fCounterSync[3];
         Monitor fCounterPurities[3];
         Monitor fCounterWZ[3];

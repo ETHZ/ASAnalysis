@@ -462,7 +462,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	// Require at least one loose lepton
 	// if( (fTnqmus + fTnqels) < 1 ) return;
-	// temporary !! if(!gDoPDFs && (nLooseMus + fTnqels) < 1 ) return;
+	if(!gDoPDFs && (nLooseMus + fTnqels) < 1 ) return;
 	fCounter.fill(fCutnames[3]);
 
 	// Event and run info
@@ -499,68 +499,84 @@ void SSDLAnalysis::FillAnalysisTree(){
 			int id2  = fTR->PDFID2;
 			double pdf_xpdf1, pdf_xpdf2;
 			double newxfx1, newxfx2;
+			vector<double> pdf2_xfx1, pdf2_xfx2, pdf3_xfx1, pdf3_xfx2;
+			pdf2_xfx1.clear();
+			pdf2_xfx2.clear();
+			pdf3_xfx1.clear();
+			pdf3_xfx2.clear();
 
-
-			//LHAPDF::initPDFSet(1,"MSTW2008nnlo68cl_asmz-68clhalf.LHgrid");
-			LHAPDF::initPDFSet(1,"NNPDF20_as_0120_100.LHgrid");
-			LHAPDF::initPDF(1,0);
-			LHAPDF::usePDFMember(1,0);
-			fTNPdf1 = (int)LHAPDF::numberPDF(1);
-			pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
-			pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
-				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdf1; pdf++){
-				// LHAPDF::initPDF(pdf);
-				LHAPDF::usePDFMember(1, pdf);
-				newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
-				newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
-				fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
-			}
-
-			//LHAPDF::initPDFSet(2,"NNPDF20_100.LHgrid");
-			LHAPDF::initPDFSet(2,"NNPDF20_as_0121_100.LHgrid");
-			LHAPDF::initPDF(2,0);
-			LHAPDF::usePDFMember(2,0);
-			fTNPdf2 = (int)LHAPDF::numberPDF(2);
-			pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
-			pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
-				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
+			// PDF set #2
+//			LHAPDF::initPDFSetM(2,"CT10.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz+68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz-68cl.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0116_100.LHgrid");
+			LHAPDF::initPDFSetM(2,"NNPDF20_as_0118_100.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
+			LHAPDF::initPDFM(2,0);
+			fTNPdf2 = (int)LHAPDF::numberPDFM(2);
 			for(int pdf=0; pdf < fTNPdf2; pdf++){
-				// LHAPDF::initPDF(pdf);
-				LHAPDF::usePDFMember(2, pdf);
-				newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
-				newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
-				fTWPdf2[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
+				LHAPDF::initPDFM(2, pdf);
+				//newxfx1 = LHAPDF::xfxM(2, x1, Q, id1);
+				//newxfx2 = LHAPDF::xfxM(2, x2, Q, id2);
+				//fTWPdf2[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				pdf2_xfx1.push_back(LHAPDF::xfxM(2, x1, Q, id1));
+				pdf2_xfx2.push_back(LHAPDF::xfxM(2, x2, Q, id2));
 			}
 
-
-			//LHAPDF::initPDFSet(3,"MSTW2008nnlo68cl_asmz-68cl.LHgrid");
-			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
-			LHAPDF::initPDF(3,0);
-			LHAPDF::usePDFMember(3,0);
-			fTNPdf3 = (int)LHAPDF::numberPDF(3);
-			pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
-			pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
-				
-			// std::vector<float> pdfweight;
-			// float pdfWsum=0;
+			// PDF set #3
+//			LHAPDF::initPDFSetM(3,"CT10as.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz+68clhalf.LHgrid");
+//			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz-68clhalf.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0117_100.LHgrid");
+			LHAPDF::initPDFSet(3,"NNPDF20_as_0120_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
+			LHAPDF::initPDFM(3,0);
+			fTNPdf3 = (int)LHAPDF::numberPDFM(3);
 			for(int pdf=0; pdf < fTNPdf3; pdf++){
-				// LHAPDF::initPDF(pdf);
-				LHAPDF::usePDFMember(3, pdf);
-				newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
-				newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
-				fTWPdf3[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
-				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
-				// pdfWsum += pdfweight.back();
+				LHAPDF::initPDFM(3, pdf);
+				//newxfx1 = LHAPDF::xfxM(1, x1, Q, id1);
+				//newxfx2 = LHAPDF::xfxM(1, x2, Q, id2);
+				//fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				pdf3_xfx1.push_back(LHAPDF::xfxM(3, x1, Q, id1));
+				pdf3_xfx2.push_back(LHAPDF::xfxM(3, x2, Q, id2));
 			}
+
+			// gen PDF set
+			LHAPDF::initPDFSetM(1,"cteq6ll.LHpdf");
+			fTNPdf1 = (int)LHAPDF::numberPDFM(1);
+			pdf_xpdf1 = LHAPDF::xfxM(1, x1, Q, id1);
+			pdf_xpdf2 = LHAPDF::xfxM(1, x2, Q, id2);
+
+			// store pdf weights
+			for (int pdf=0; pdf < fTNPdf2; pdf++) {
+				fTWPdf2[pdf] = pdf2_xfx1[pdf]/pdf_xpdf1 * pdf2_xfx2[pdf]/pdf_xpdf2;
+			}
+			for (int pdf=0; pdf < fTNPdf3; pdf++) {
+				fTWPdf3[pdf] = pdf3_xfx1[pdf]/pdf_xpdf1 * pdf3_xfx2[pdf]/pdf_xpdf2;
+			}
+
+
+//			for(int pdf=0; pdf < fTNPdf3; pdf++){
+//				LHAPDF::initPDFM(3, pdf);
+//				newxfx1 = LHAPDF::xfxM(3, x1, Q, id1);
+//				newxfx2 = LHAPDF::xfxM(3, x2, Q, id2);
+//				fTWPdf3[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+////				if (fTWPdf3[pdf] < 0.)
+////					cout << Form("fTWPdf3[%3d]: %8.3f\tnewxfx1: %8.3f\tpdf_xpdf1: %8.3f\tnewxfx2: %8.3f\tpdf_xpdf2: %8.3f\tx1: %8.3f\tx2: %8.3f\tQ: %8.3f\tid1: %8d\tid2: %8d",
+////													pdf,
+////													fTWPdf3[pdf],
+////													newxfx1,
+////													pdf_xpdf1,
+////													newxfx2,
+////													pdf_xpdf2,
+////													x1,
+////													x2,
+////													Q,
+////													id1,
+////													id2) << endl;
+//			}
 
 
 			// ===========================================================================
@@ -606,7 +622,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 		int genjetind = GenJetMatch(jetindex);
 		if(genjetind > -1){
 			fTJetGenpt [ind] = fTR->GenJetPt [genjetind];
-			fTJetGenpt [ind] = fTR->GenJetPt [genjetind];
 			fTJetGeneta[ind] = fTR->GenJetEta[genjetind];
 			fTJetGenphi[ind] = fTR->GenJetPhi[genjetind];
 		}
@@ -617,6 +632,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 		}
 		
 	}
+
 	// Get METs
 	fTpfMET     = fTR->PFMET;
 	fTpfMETphi  = fTR->PFMETphi;

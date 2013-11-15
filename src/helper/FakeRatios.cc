@@ -749,7 +749,8 @@ float FakeRatios::getEStat2(float N){
 		float upper = eff->ClopperPearson(fNGen, N, 0.68, true);
 		float delta = upper - float(N)/float(fNGen);
 		delete eff;
-		return delta * float(fNGen);
+		float err = delta * float(fNGen);
+		return err * err;
 	}	
 	
 	if(N > 3.) return N;

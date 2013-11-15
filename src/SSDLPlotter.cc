@@ -71,20 +71,20 @@ static const float gMinPt1_ttWPresel     =  20.;
 static const float gMinPt2_ttWPresel     =  20.;
 
 // ttW final selection
-static const float gMinHT_ttWSel_pp      = 150.;
+static const float gMinHT_ttWSel_pp      = 155.;
 static const float gMinMET_ttWSel_pp     =   0.;
 static const int   gMinNjets_ttWSel_pp   =   3 ;
 static const int   gMinNbjetsL_ttWSel_pp =   1 ;
 static const int   gMinNbjetsM_ttWSel_pp =   1 ;
-static const float gMinPt1_ttWSel_pp     =  33.;
-static const float gMinPt2_ttWSel_pp     =  33.;
-static const float gMinHT_ttWSel_mm      = 150.;
+static const float gMinPt1_ttWSel_pp     =  40.;
+static const float gMinPt2_ttWSel_pp     =  40.;
+static const float gMinHT_ttWSel_mm      = 155.;
 static const float gMinMET_ttWSel_mm     =   0.;
 static const int   gMinNjets_ttWSel_mm   =   3 ;
 static const int   gMinNbjetsL_ttWSel_mm =   1 ;
 static const int   gMinNbjetsM_ttWSel_mm =   1 ;
-static const float gMinPt1_ttWSel_mm     =  33.;
-static const float gMinPt2_ttWSel_mm     =  33.;
+static const float gMinPt1_ttWSel_mm     =  40.;
+static const float gMinPt2_ttWSel_mm     =  40.;
 
 ttGpred ttG_SR0;
 
@@ -484,42 +484,42 @@ void SSDLPlotter::doAnalysis(){
   cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
   if(readHistos(fOutputFileName) != 0) return;
 
+  /* Here I calculate the EWK MC scale factors, but I don't use 
+     them in producing any of the fakerate control plots   */
+  bool saveRatioControlPlots = true;
+  makeRatioControlPlots(1, true, saveRatioControlPlots); // El
+  makeRatioControlPlots(2, true, saveRatioControlPlots); // Mu17
+  makeRatioControlPlots(3, true, saveRatioControlPlots); // Mu24_eta2p1
+
+  /* Here I produce the control plots without re-calculating the
+     EWK MC scale factors, but instead using the numbers obtained above. 
+     NB: without the previous calls, a SF=1 would be used (FIXME: this is bad design)*/
+  makeRatioControlPlots(1, false, saveRatioControlPlots); // El
+  makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
+  makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
 
 
-  // marc /* Here I calculate the EWK MC scale factors, but I don't use 
-  // marc    them in producing any of the fakerate control plots   */
-  // marc bool saveRatioControlPlots = true;
-  // marc makeRatioControlPlots(1, true, saveRatioControlPlots); // El
-  // marc makeRatioControlPlots(2, true, saveRatioControlPlots); // Mu17
-  // marc makeRatioControlPlots(3, true, saveRatioControlPlots); // Mu24_eta2p1
-
-  // marc /* Here I produce the control plots without re-calculating the
-  // marc    EWK MC scale factors, but instead using the numbers obtained above. 
-  // marc    NB: without the previous calls, a SF=1 would be used (FIXME: this is bad design)*/
-  // marc makeRatioControlPlots(1, false, saveRatioControlPlots); // El
-  // marc makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
-  // marc makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
+  bool saveRatioPlots = false;
+  fillRatios(fMuTotData,    fEGData,    0, false, saveRatioPlots);  //make FR plots without applying EWK subtraction
+  fillRatios(fMuTotData,    fEGData,    0, true,  saveRatioPlots);  //make the same applying the EWK subtraction
 
 
-  // marc bool saveRatioPlots = true;
-  // marc fillRatios(fMuTotData,    fEGData,    0, false, saveRatioPlots);  //make FR plots without applying EWK subtraction
-  // marc fillRatios(fMuTotData,    fEGData,    0, true,  saveRatioPlots);  //make the same applying the EWK subtraction
+  fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, false, false);
+  storeWeightedPred(gRegion[gBaseRegion]);
+  ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
+  cout << "...done ====" << endl;
 
 
-  // marc fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, false, false);
-  // marc storeWeightedPred(gRegion[gBaseRegion]);
-  // marc ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
-  // marc cout << "...done ====" << endl;
+//  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+//  makeTTWDiffPredictionsSigEvent();
+//  cout << "...done ===" << endl;
 
+//  make2DRatioPlots(Muon);
+//  make2DRatioPlots(Elec);
 
-  // marc cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-  // marc makeTTWDiffPredictionsSigEvent();
-  // marc cout << "...done ===" << endl;
-
-
-  //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;  
-  //makeTTWIntPredictionsSigEvent();
-  //cout << "...done ===" << endl;
+//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+//  makeTTWIntPredictionsSigEvent();
+//  cout << "...done ===" << endl;
 
 
   //makeTTWKinPlotsSigEvent(); // BM: what is this for ??
@@ -532,6 +532,7 @@ void SSDLPlotter::doAnalysis(){
 
 
 
+	makeTTWNLOPlots();
 
 
 
@@ -6406,8 +6407,8 @@ void SSDLPlotter::make2DRatioPlots(gChannel chan){
 	sprintf(cmd,"mkdir -p %s%s", fOutputDir.Data(), fOutputSubDir.Data());
 	system(cmd);
 
-	histo->SetMinimum(0.0);
-	histo->SetMaximum(1.0);
+//	histo->SetMinimum(0.0);
+//	histo->SetMaximum(1.0);
 
 	TCanvas *c_temp = new TCanvas("C_Temp", "fRatio", 0, 0, 800, 600);
 	c_temp->cd();
@@ -7166,9 +7167,9 @@ void SSDLPlotter::makeTTWNLOPlots(){
 //    diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
 //    diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
 //    diffVarName.push_back("Rho"   );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("rho"                             );   yAxisTitle.push_back("Events"          );
-//	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  0);
-	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  1);
-	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1, -1);
+	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  0);
+//	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  1);
+//	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1, -1);
 }
 void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins, vector<double> xmin, vector<double> xmax, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel){
 //	TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag){
@@ -7184,8 +7185,8 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	float minHT   (  0.), maxHT     ( 8000.);
 	float minMET  (  0.), maxMET    ( 8000.);
 	int minNjets  (  3 ), maxNjets  (   99 );
-	int minNbjetsL(  0 ), maxNbjetsL(   99 );
-	int minNbjetsM(  0 ), maxNbjetsM(   99 );
+	int minNbjetsL(  1 ), maxNbjetsL(   99 );
+	int minNbjetsM(  1 ), maxNbjetsM(   99 );
 	float minPt1  ( 20.), maxPt1    ( 8000.);
 	float minPt2  ( 20.), maxPt2    ( 8000.);
 	float minMll  (  8.); // 8.
@@ -7196,6 +7197,7 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	bool looseSel = false;
 	TString sysString = "";
 	TString chargeString = "_PreSel";
+//	TString chargeString = "_Pt40";
 	TString flavorString = "";
 
 	if (region_sel == 1) {
@@ -7216,9 +7218,6 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 //	TString sysString = "";
 //	TString chargeString = "";
 	
-	for( gsystIt = gSystematics.begin(); gsystIt != gSystematics.end(); ++gsystIt) {
-		if (gsystIt->second == systflag) { sysString = gsystIt->first; break; }
-	}
 	if (chVeto == -1) chargeString = "_mm";
 	if (chVeto == +1) chargeString = "_pp";
 	
@@ -7255,7 +7254,7 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	string *sname = 0;
 	int flag;
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed;
-	float puweight, pT1, pT2, HT, MET, SLumi;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF;
 	float eta1, eta2, mll;
 	int   event, run;
 	int charge;
@@ -7285,6 +7284,7 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	sigtree->SetBranchAddress("Mll",      &mll);
 	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
 	sigtree->SetBranchAddress("Pass3rdSFLepVeto",&passes3rdSFLepVeto);
+	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
 	
 	
 	// {  0 ,   1  ,    2   ,   3  ,   4  ,   5  ,    6    ,   7   ,      8     ,      9      }
@@ -7317,6 +7317,15 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 		histoname = "TTW_NLO_"             + diffVarName[i];   h_TTWNLO_HT.push_back(new TH1D(histoname , histoname, nbins[i], xmin[i], xmax[i]));   h_TTWNLO_HT[i] ->Sumw2();
 		histoname = "TTW_LO_to_NLO_Ratio_" + diffVarName[i];   h_HT_ratio .push_back(new TH1D(histoname , histoname, nbins[i], xmin[i], xmax[i]));   h_HT_ratio[i]  ->Sumw2();
 	}
+
+	TH2D *h_HT_MinPt_madgraph, *h_HT_MinPt_aMCatNLO;
+	TH2D *h_HT_MinPt_madgraph_eff, *h_HT_MinPt_aMCatNLO_eff;
+	TH2D *h_HT_MinPt_syst;
+	h_HT_MinPt_madgraph     = new TH2D("HT_MinPt_madgraph"    , "HT_MinPt_madgraph"    , 40, 0., 1000., 30, 20., 170.);
+	h_HT_MinPt_aMCatNLO     = new TH2D("HT_MinPt_aMCatNLO"    , "HT_MinPt_aMCatNLO"    , 40, 0., 1000., 30, 20., 170.);
+	h_HT_MinPt_madgraph_eff = new TH2D("HT_MinPt_madgraph_eff", "HT_MinPt_madgraph_eff", 40, 0., 1000., 30, 20., 170.);
+	h_HT_MinPt_aMCatNLO_eff = new TH2D("HT_MinPt_aMCatNLO_eff", "HT_MinPt_aMCatNLO_eff", 40, 0., 1000., 30, 20., 170.);
+	h_HT_MinPt_syst         = new TH2D("HT_MinPt_syst"        , "HT_MinPt_syst"        , 40, 0., 1000., 30, 20., 170.);
 	
 	for( int i = 0; i < sigtree->GetEntries(); i++ ){
 		showStatusBar(i, sigtree->GetEntries(), 10000);
@@ -7326,6 +7335,9 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 		if (*sname != "TTbarW" && *sname != "TTbarWNLO") continue;
 		
 		if (chVeto && charge != chVeto ) continue;
+
+		if (Flavor > 2) continue;
+		if (gApplyZVeto && passZVeto == 0) continue;
 		
 		if (TLCat != 0) continue;
 		
@@ -7352,47 +7364,52 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 			if(pT2 < minPt2) continue;
 		}
 		
-		for (int j = 0; j < diffVarName.size(); j++) {
-			if      (diffVarName[j] == "HT"    ) diffVar = HT;
-            else if (diffVarName[j] == "MET"   ) diffVar = MET;
-            else if (diffVarName[j] == "NJ"    ) diffVar = NJ+0.5;
-            else if (diffVarName[j] == "NbJmed") diffVar = NbJmed+0.5;
-            else if (diffVarName[j] == "pT1"   ) {
+		for (int var = 0; var < diffVarName.size(); var++) {
+			if      (diffVarName[var] == "HT"    ) diffVar = HT;
+            else if (diffVarName[var] == "MET"   ) diffVar = MET;
+            else if (diffVarName[var] == "NJ"    ) diffVar = NJ+0.5;
+            else if (diffVarName[var] == "NbJmed") diffVar = NbJmed+0.5;
+            else if (diffVarName[var] == "pT1"   ) {
                 if (pT1 > pT2)                   diffVar = pT1;
                 else                             diffVar = pT2;
             }
-            else if (diffVarName[j] == "pT2"   ) {
+            else if (diffVarName[var] == "pT2"   ) {
                 if (pT1 > pT2)                   diffVar = pT2;
                 else                             diffVar = pT1;
             }
-            else if (diffVarName[j] == "Mll"   ) diffVar = mll;
-            else if (diffVarName[j] == "NVrtx" ) diffVar = NVrtx;
-//            else if (diffVarName[j] == "PFIso1") {
+            else if (diffVarName[var] == "Mll"   ) diffVar = mll;
+            else if (diffVarName[var] == "NVrtx" ) diffVar = NVrtx;
+//            else if (diffVarName[var] == "PFIso1") {
 //                if (pT1 > pT2)                   diffVar = PFIso1;
 //                else                             diffVar = PFIso2;
 //                //			TLCat = 0;
 //            }
-//            else if (diffVarName[j] == "PFIso2") {
+//            else if (diffVarName[var] == "PFIso2") {
 //                if (pT1 > pT2)                   diffVar = PFIso2;
 //                else                             diffVar = PFIso1;
 //                //			TLCat = 0;
 //            }
-//			else if (diffVarName[j] == "D01") {
+//			else if (diffVarName[var] == "D01") {
 //				if (pT1 > pT2)                diffVar = D01;
 //				else                          diffVar = D02;
 //			}
-//			else if (diffVarName[j] == "D02") {
+//			else if (diffVarName[var] == "D02") {
 //				if (pT1 > pT2)                diffVar = D02;
 //				else                          diffVar = D01;
 //			}
-//			else if (diffVarName[j] == "Rho")    diffVar = Rho;
+//			else if (diffVarName[var] == "Rho")    diffVar = Rho;
             else                                 diffVar = -9999.;
 			
+			float weight(1.);
 			if (*sname == "TTbarW") {
-				h_TTWLO_HT[j]->Fill(diffVar);
+				weight = puweight * HLTSF / fSampleMap["TTbarW"]->ngen;
+				h_TTWLO_HT[var]->Fill(diffVar, weight);
+				if (var == 0) h_HT_MinPt_madgraph->Fill(HT, TMath::Min(pT1, pT2), weight);
 			}
 			if (*sname == "TTbarWNLO") {
-				h_TTWNLO_HT[j]->Fill(diffVar);
+				weight = puweight * HLTSF / fSampleMap["TTbarWNLO"]->ngen;
+				h_TTWNLO_HT[var]->Fill(diffVar, weight);
+				if (var == 0) h_HT_MinPt_aMCatNLO->Fill(HT, TMath::Min(pT1, pT2), weight);
 			}
 		}
 	}
@@ -7421,6 +7438,42 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 		OUT << "	\\hline\n";
 		OUT << "\\end{tabular}\n";
 	}
+
+	for (int htbin = 1; htbin < h_HT_MinPt_madgraph->GetNbinsX()+1; htbin++) {
+		for (int ptbin = 1; ptbin < h_HT_MinPt_madgraph->GetNbinsY()+1; ptbin++) {
+			float eff_madgraph = h_HT_MinPt_madgraph->Integral(htbin, h_HT_MinPt_madgraph->GetNbinsX()+1, ptbin, h_HT_MinPt_madgraph->GetNbinsY()+1);
+			h_HT_MinPt_madgraph_eff->SetBinContent(htbin, ptbin, eff_madgraph);
+			float eff_aMCatNLO = h_HT_MinPt_aMCatNLO->Integral(htbin, h_HT_MinPt_aMCatNLO->GetNbinsX()+1, ptbin, h_HT_MinPt_aMCatNLO->GetNbinsY()+1);
+			h_HT_MinPt_aMCatNLO_eff->SetBinContent(htbin, ptbin, eff_aMCatNLO);
+			h_HT_MinPt_syst->SetBinContent(htbin, ptbin, eff_aMCatNLO / eff_madgraph - 1.);
+		}
+	}
+
+	h_HT_MinPt_madgraph_eff->SetXTitle("H_{T} cut (GeV)");
+	h_HT_MinPt_aMCatNLO_eff->SetXTitle("H_{T} cut (GeV)");
+	h_HT_MinPt_syst        ->SetXTitle("H_{T} cut (GeV)");
+	h_HT_MinPt_madgraph_eff->SetYTitle("lepton p_{T} cut (GeV)");
+	h_HT_MinPt_aMCatNLO_eff->SetYTitle("lepton p_{T} cut (GeV)");
+	h_HT_MinPt_syst        ->SetYTitle("lepton p_{T} cut (GeV)");
+
+	TCanvas *c_temp = new TCanvas("C_HTPlot", "HT", 0, 0, 600, 600);
+	c_temp->cd();
+	h_HT_MinPt_syst->Draw("colz");
+	drawTopLineSim();
+	Util::PrintPDF(c_temp, "systematic" + chargeString, fOutputDir + fOutputSubDir);
+	Util::PrintPNG(c_temp, "systematic" + chargeString, fOutputDir + fOutputSubDir);
+
+	h_HT_MinPt_madgraph_eff->Draw("colz");
+	drawTopLineSim();
+	Util::PrintPDF(c_temp, "madgraph_sigeff" + chargeString, fOutputDir + fOutputSubDir);
+	Util::PrintPNG(c_temp, "madgraph_sigeff" + chargeString, fOutputDir + fOutputSubDir);
+
+	h_HT_MinPt_aMCatNLO_eff->Draw("colz");
+	drawTopLineSim();
+	Util::PrintPDF(c_temp, "aMCatNLO_sigeff" + chargeString, fOutputDir + fOutputSubDir);
+	Util::PrintPNG(c_temp, "aMCatNLO_sigeff" + chargeString, fOutputDir + fOutputSubDir);
+
+	delete c_temp;
 	
 	for (int i = 0; i < diffVarName.size(); i++) {
 		
@@ -7467,10 +7520,10 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 //		
 //		OUT << "diff: " << h_TTWNLO_HT[i]->Integral()/fSampleMap["TTbarWNLO"]->ngen / (h_TTWLO_HT[i]->Integral()/fSampleMap["TTbarW"]->ngen) * 100. << " %" << endl;
 		
-		h_TTWLO_HT [i]->Scale(fLumiNorm / fSampleMap["TTbarW"]   ->getLumi());
-		h_TTWNLO_HT[i]->Scale(fLumiNorm / fSampleMap["TTbarWNLO"]->getLumi());
-		//	h_TTWLO_HT ->Scale(1. / fSampleMap["TTbarW"]   ->ngen);
-		//	h_TTWNLO_HT->Scale(1. / fSampleMap["TTbarWNLO"]->ngen);
+//		h_TTWLO_HT [i]->Scale(fLumiNorm / fSampleMap["TTbarW"]   ->getLumi());
+//		h_TTWNLO_HT[i]->Scale(fLumiNorm / fSampleMap["TTbarWNLO"]->getLumi());
+//		h_TTWLO_HT [i]->Scale(1. / fSampleMap["TTbarW"]   ->ngen);
+//		h_TTWNLO_HT[i]->Scale(1. / fSampleMap["TTbarWNLO"]->ngen);
 		h_HT_ratio[i]->Divide(h_TTWNLO_HT[i], h_TTWLO_HT[i]);
 	
 		float max(100.);
@@ -7544,12 +7597,16 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 		//	Util::PrintPDF(c_temp, fpname + "Ratio_" + name + "_Pt", fOutputDir + fOutputSubDir);
 //		Util::PrintPDF(c_temp, Form(diffVarName[i]+"_customRegion_HT%.0f"+jvString+"MET%.0fNJ%.0iNbjL%.0iNbjM%.0iPT1%.0fPT2%.0f_"+sysString+chargeString, minHT, minMET, minNjets, minNbjetsL, minNbjetsM, minPt1, minPt2), fOutputDir + fOutputSubDir);
 		Util::PrintPDF(c_temp, diffVarName[i] + chargeString, fOutputDir + fOutputSubDir);
+		Util::PrintPNG(c_temp, diffVarName[i] + chargeString, fOutputDir + fOutputSubDir);
 		//	delete h_ptratio_mc, h_ptratio_data, h_ptratio_qcd, h_ptratio_wjets;
 		delete c_temp, lat, leg;
 		
 		delete h_TTWNLO_HT[i], h_TTWLO_HT[i], h_HT_ratio[i];
 	}
-	
+	delete h_HT_MinPt_madgraph, h_HT_MinPt_aMCatNLO;
+	delete h_HT_MinPt_madgraph_eff, h_HT_MinPt_aMCatNLO_eff;
+	delete h_HT_MinPt_syst;
+
 	OUT.close();
 	
 }
@@ -9847,8 +9904,9 @@ void SSDLPlotter::makeSystPlot(TString outputname, TString label, TH1D *nom, TH1
 	leg->SetTextFont(42);
 	leg->SetTextSize(0.03);
 	leg->SetBorderSize(0);
-	
-	plus ->DrawCopy("hist");
+
+	plus ->DrawCopy("goff");
+	plus ->DrawCopy("hist same");
 	if(minus!=NULL) minus->DrawCopy("hist same");
 	nom  ->DrawCopy("hist same");
 	leg  ->Draw();
@@ -9856,6 +9914,7 @@ void SSDLPlotter::makeSystPlot(TString outputname, TString label, TH1D *nom, TH1
 	drawTopLineSim(0.50, 1.0, 0.11);
 	gPad->RedrawAxis();
 	Util::PrintPDF(c_temp, outputname, fOutputDir + fOutputSubDir);
+	Util::PrintROOT(c_temp, outputname, fOutputDir + fOutputSubDir);
 }
 SSPrediction SSDLPlotter::makeIntPrediction(TString filename, int reg){
 	ofstream OUT(filename.Data(), ios::trunc);
@@ -11857,7 +11916,7 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	float nlo_syst = 1.13; // old numbers for the moment
 //	if (chVeto == +1) nlo_syst = nlo_syst_plpl;
 //	if (chVeto == -1) nlo_syst = nlo_syst_mimi;
-	TString lumiError = "1.044";
+	TString lumiError = "1.026";
 	datacard = outputdir + "datacard_ssdl_3channels_ttW_plpl_mimi.txt";
 	fOUTSTREAM.open(datacard.Data(), ios::trunc);
 	fOUTSTREAM <<      "#=========================================================================================" << endl;
@@ -11890,7 +11949,7 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 					   ttwzpreds_mimi["Normal"].ttw_ee, ttwzpreds_mimi["Normal"].ttz_ee, ttwzpreds_mimi["Normal"].fake_ee, ttwzpreds_mimi["Normal"].cmid_ee, ttwzpreds_mimi["Normal"].wz_ee, ttwzpreds_mimi["Normal"].rare_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-",
 					   1.0+ttwzpreds_plpl["Normal"].ttz_err_mm/ttwzpreds_plpl["Normal"].ttz_mm,
 					   1.0+ttwzpreds_plpl["Normal"].ttz_err_em/ttwzpreds_plpl["Normal"].ttz_em,
@@ -12096,9 +12155,58 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
 					   1.0+(ttwzpreds_mimi["JetSmear"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
 					   1.0+(ttwzpreds_mimi["JetSmear"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst,
-					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst,
+//					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds_plpl["PileupDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["PileupUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["PileupDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["PileupUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["PileupDown"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["PileupUp"].wz_mm    -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["PileupDown"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["PileupUp"].rare_mm  -ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["PileupDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["PileupUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["PileupDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["PileupUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["PileupDown"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["PileupUp"].wz_em    -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["PileupDown"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["PileupUp"].rare_em  -ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["PileupDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["PileupUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["PileupDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["PileupUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["PileupDown"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["PileupUp"].wz_ee    -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["PileupDown"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_plpl["PileupUp"].rare_ee  -ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["PileupDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["PileupUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["PileupDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["PileupUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["PileupDown"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["PileupUp"].wz_mm    -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["PileupDown"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["PileupUp"].rare_mm  -ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["PileupDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["PileupUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["PileupDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["PileupUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["PileupDown"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["PileupUp"].wz_em    -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["PileupDown"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["PileupUp"].rare_em  -ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["PileupDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["PileupUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["PileupDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["PileupUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["PileupDown"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["PileupUp"].wz_ee    -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["PileupDown"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["PileupUp"].rare_ee  -ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
 //	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 //					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 //					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
@@ -12339,17 +12447,17 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 		gChannel chan = gChannel(Flavor);
 		if(chan == ElMu){
 			if(pT1 > pT2){
-				if(pT1 < minPt1) continue;
-				if(pT2 < minPt2) continue;
+				if(pT1 < minPT1) continue;
+				if(pT2 < minPT2) continue;
 			}
 			if(pT1 < pT2){
-				if(pT1 < minPt2) continue;
-				if(pT2 < minPt1) continue;
+				if(pT1 < minPT2) continue;
+				if(pT2 < minPT1) continue;
 			}
 		}
 		else{
-			if(pT1 < minPt1) continue;
-			if(pT2 < minPt2) continue;
+			if(pT1 < minPT1) continue;
+			if(pT2 < minPT2) continue;
 		}
 		if (gApplyZVeto && Flavor < 3 && passZVeto == 0)  continue; // do not apply Z veto on OS
 
@@ -12604,6 +12712,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	gsystIt = gSystematics.begin();
 	for( ; gsystIt != gSystematics.end() ; ++gsystIt){
 		TString outputname = outputdir + "DataPred_" + gsystIt->first + chargeString + ".txt";
+		//if (gsystIt->second != 0 && gsystIt->second != 10 && gsystIt->second != 11) continue;
 		ttwzpreds[gsystIt->first] = makePredictionSignalEvents(minHT, maxHT, minMET, maxMET, minNjets, minNbjetsL, minNbjetsM, pT1, pT2, chVeto, ttw, gsystIt->second);
 	// here we are. fix this stuff
 	}
@@ -12710,7 +12819,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	const float nlo_syst_plpl = 1.038;
 	const float nlo_syst_mimi = 1.270;
 	float nlo_syst = (ttwzpreds["Normal"].ttw_aMCatNLO / ttwzpreds["Normal"].ttw_aMCatNLO_gen) / (ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw_gen);
-	TString lumiError = "1.044";
+	TString lumiError = "1.026";
 	
 	datacard = outputdir + "datacard_TTWZ" + chargeString + ".txt";
 	fOUTSTREAM.open(datacard.Data(), ios::trunc);
@@ -12737,7 +12846,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw, ttwzpreds["Normal"].ttz) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err/ttwzpreds["Normal"].fake) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err/ttwzpreds["Normal"].cmid) << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err  /ttwzpreds["Normal"].wz)   << endl;
@@ -12767,8 +12876,15 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetSmear"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
 					   1.0+(ttwzpreds["JetSmear"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
 					   1.0+(ttwzpreds["JetSmear"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["PileupDown"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["PileupUp"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["PileupDown"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
+					   1.0+(ttwzpreds["PileupUp"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
+					   1.0+(ttwzpreds["PileupDown"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare,
+					   1.0+(ttwzpreds["PileupUp"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst) << endl;
 	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
 	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
@@ -12800,7 +12916,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   ttwzpreds["Normal"].ttw, ttwzpreds["Normal"].ttz, ttwzpreds["Normal"].fake, ttwzpreds["Normal"].cmid, ttwzpreds["Normal"].wz, ttwzpreds["Normal"].rare) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].ttz_err/ttwzpreds["Normal"].ttz)   << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err/ttwzpreds["Normal"].fake) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err/ttwzpreds["Normal"].cmid) << endl;
@@ -12838,8 +12954,17 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetSmear"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
 					   1.0+(ttwzpreds["JetSmear"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
 					   1.0+(ttwzpreds["JetSmear"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst, pu_syst) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["PileupDown"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["PileupUp"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["PileupDown"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["PileupUp"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["PileupDown"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
+					   1.0+(ttwzpreds["PileupUp"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
+					   1.0+(ttwzpreds["PileupDown"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare,
+					   1.0+(ttwzpreds["PileupUp"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare) << endl;
 //	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 //					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
 //	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
@@ -12874,7 +12999,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw_mm, ttwzpreds["Normal"].ttz_mm) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err_mm/ttwzpreds["Normal"].fake_mm) << endl;
 	fOUTSTREAM <<      "bgUnccmi lnN\t-\t\t-\t\t-\t\t-\t\t-" << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err_mm  /ttwzpreds["Normal"].wz_mm)   << endl;
@@ -12904,8 +13029,15 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetSmear"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
 					   1.0+(ttwzpreds["JetSmear"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
 					   1.0+(ttwzpreds["JetSmear"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["PileupDown"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupDown"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["PileupUp"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["PileupDown"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+					   1.0+(ttwzpreds["PileupUp"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst) << endl;
 	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
 	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
@@ -12938,7 +13070,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw_em, ttwzpreds["Normal"].ttz_em) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err_em/ttwzpreds["Normal"].fake_em) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err_em/ttwzpreds["Normal"].cmid_em) << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err_em  /ttwzpreds["Normal"].wz_em)   << endl;
@@ -12968,8 +13100,15 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetSmear"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
 					   1.0+(ttwzpreds["JetSmear"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
 					   1.0+(ttwzpreds["JetSmear"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["PileupDown"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupDown"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["PileupUp"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["PileupDown"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+					   1.0+(ttwzpreds["PileupUp"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst) << endl;
 	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
 	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
@@ -13002,7 +13141,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << Form("# separate signal yields: %5.3f (ttW), %5.3f (ttZ)", ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttz_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-", 1.0+ttwzpreds["Normal"].fake_err_ee/ttwzpreds["Normal"].fake_ee) << endl;
 	fOUTSTREAM << Form("bgUnccmi lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-", 1.0+ttwzpreds["Normal"].cmid_err_ee/ttwzpreds["Normal"].cmid_ee) << endl;
 	fOUTSTREAM << Form("bgUncwz  lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-", 1.0+ttwzpreds["Normal"].wz_err_ee  /ttwzpreds["Normal"].wz_ee)   << endl;
@@ -13032,8 +13171,15 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetSmear"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
 					   1.0+(ttwzpreds["JetSmear"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
 					   1.0+(ttwzpreds["JetSmear"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["PileupDown"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupDown"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["PileupUp"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["PileupDown"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee,
+					   1.0+(ttwzpreds["PileupUp"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst) << endl;
 	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
 	fOUTSTREAM << Form("scale    lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
@@ -13071,7 +13217,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttz_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncfak lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-",
 					   1.0+ttwzpreds["Normal"].fake_err_mm/ttwzpreds["Normal"].fake_mm,
 					   1.0+ttwzpreds["Normal"].fake_err_em/ttwzpreds["Normal"].fake_em,
@@ -13154,8 +13300,27 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetSmear"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
 					   1.0+(ttwzpreds["JetSmear"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
 					   1.0+(ttwzpreds["JetSmear"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["PileupDown"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupDown"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["PileupUp"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["PileupDown"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+					   1.0+(ttwzpreds["PileupUp"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+					   1.0+(ttwzpreds["PileupDown"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupDown"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["PileupUp"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["PileupDown"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+					   1.0+(ttwzpreds["PileupUp"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+					   1.0+(ttwzpreds["PileupDown"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupDown"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["PileupUp"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["PileupDown"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee,
+					   1.0+(ttwzpreds["PileupUp"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
 	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
@@ -13192,7 +13357,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttz_ee, ttwzpreds["Normal"].fake_ee, ttwzpreds["Normal"].cmid_ee, ttwzpreds["Normal"].wz_ee, ttwzpreds["Normal"].rare_ee) << endl;
 	fOUTSTREAM << endl << endl;
 	fOUTSTREAM <<      "#syst" << endl;
-	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
+	fOUTSTREAM <<      "lumi     lnN\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+lumiError+"\t\t"+"-"+"\t\t"+"-"+"\t\t"+lumiError+"\t\t"+lumiError+"" << endl;
 	fOUTSTREAM << Form("bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-",
 					   1.0+ttwzpreds["Normal"].ttz_err_mm/ttwzpreds["Normal"].ttz_mm,
 					   1.0+ttwzpreds["Normal"].ttz_err_em/ttwzpreds["Normal"].ttz_em,
@@ -13300,8 +13465,33 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetSmear"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
 					   1.0+(ttwzpreds["JetSmear"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
 					   1.0+(ttwzpreds["JetSmear"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
-	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
+	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["PileupDown"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupDown"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["PileupDown"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["PileupUp"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["PileupDown"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+					   1.0+(ttwzpreds["PileupUp"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+					   1.0+(ttwzpreds["PileupDown"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupDown"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["PileupDown"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["PileupUp"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["PileupDown"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+					   1.0+(ttwzpreds["PileupUp"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+					   1.0+(ttwzpreds["PileupDown"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupDown"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupUp"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["PileupDown"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["PileupUp"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["PileupDown"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee,
+					   1.0+(ttwzpreds["PileupUp"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
+//	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
 //	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 //					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 //					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
@@ -13323,6 +13513,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	TH1D *h_ttw_bd  ;
 	TH1D *h_ttw_lu  ;
 	TH1D *h_ttw_ld  ;
+	TH1D *h_ttw_pu  ;
+	TH1D *h_ttw_pd  ;
 	TH1D *h_bg_nom   ;
 	TH1D *h_bg_ju    ;
 	TH1D *h_bg_jd    ;
@@ -13331,6 +13523,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	TH1D *h_bg_bd    ;
 	TH1D *h_bg_lu    ;
 	TH1D *h_bg_ld    ;
+	TH1D *h_bg_pu    ;
+	TH1D *h_bg_pd    ;
 	if (addTotalBin) {
 		h_ttw_nom = new TH1D("h_ttwz",    "Nominal ttW",         4, 0., 4.);
 		h_ttw_ju  = new TH1D("h_ttw_ju", "ttW jets up",         4, 0., 4.);
@@ -13340,6 +13534,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		h_ttw_bd  = new TH1D("h_ttw_bd", "ttW b-tags dn",       4, 0., 4.);
 		h_ttw_lu  = new TH1D("h_ttw_lu", "ttW lepton up",       4, 0., 4.);
 		h_ttw_ld  = new TH1D("h_ttw_ld", "ttW lepton dn",       4, 0., 4.);
+		h_ttw_pu  = new TH1D("h_ttw_pu", "ttW pileup up",       4, 0., 4.);
+		h_ttw_pd  = new TH1D("h_ttw_pd", "ttW pileup dn",       4, 0., 4.);
 		h_bg_nom   = new TH1D("h_bg",      "Nominal background",   4, 0., 4.);
 		h_bg_ju    = new TH1D("h_bg_ju",   "background jets up",   4, 0., 4.);
 		h_bg_jd    = new TH1D("h_bg_jd",   "background jets dn",   4, 0., 4.);
@@ -13348,6 +13544,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		h_bg_bd    = new TH1D("h_bg_bd",   "background b-tags dn", 4, 0., 4.);
 		h_bg_lu    = new TH1D("h_bg_lu",   "background lepton up", 4, 0., 4.);
 		h_bg_ld    = new TH1D("h_bg_ld",   "background lepton dn", 4, 0., 4.);
+		h_bg_pu    = new TH1D("h_bg_pu",   "background pileup up", 4, 0., 4.);
+		h_bg_pd    = new TH1D("h_bg_pd",   "background pileup dn", 4, 0., 4.);
 	}
 	else {
 		h_ttw_nom = new TH1D("h_ttwz",    "Nominal ttW",         3, 0., 3.);
@@ -13358,6 +13556,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		h_ttw_bd  = new TH1D("h_ttw_bd", "ttW b-tags dn",       3, 0., 3.);
 		h_ttw_lu  = new TH1D("h_ttw_lu", "ttW lepton up",       3, 0., 3.);
 		h_ttw_ld  = new TH1D("h_ttw_ld", "ttW lepton dn",       3, 0., 3.);
+		h_ttw_pu  = new TH1D("h_ttw_pu", "ttW pileup up",       3, 0., 3.);
+		h_ttw_pd  = new TH1D("h_ttw_pd", "ttW pileup dn",       3, 0., 3.);
 		h_bg_nom   = new TH1D("h_bg",      "Nominal background",   3, 0., 3.);
 		h_bg_ju    = new TH1D("h_bg_ju",   "background jets up",   3, 0., 3.);
 		h_bg_jd    = new TH1D("h_bg_jd",   "background jets dn",   3, 0., 3.);
@@ -13366,6 +13566,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		h_bg_bd    = new TH1D("h_bg_bd",   "background b-tags dn", 3, 0., 3.);
 		h_bg_lu    = new TH1D("h_bg_lu",   "background lepton up", 3, 0., 3.);
 		h_bg_ld    = new TH1D("h_bg_ld",   "background lepton dn", 3, 0., 3.);
+		h_bg_pu    = new TH1D("h_bg_pu",   "background pileup up", 3, 0., 3.);
+		h_bg_pd    = new TH1D("h_bg_pd",   "background pileup dn", 3, 0., 3.);
 	}
 	vector<TH1D*> histos;
 	histos.push_back(h_ttw_nom);
@@ -13376,6 +13578,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	histos.push_back(h_ttw_bd);
 	histos.push_back(h_ttw_lu);
 	histos.push_back(h_ttw_ld);
+	histos.push_back(h_ttw_pu);
+	histos.push_back(h_ttw_pd);
 	histos.push_back(h_bg_nom);
 	histos.push_back(h_bg_ju);
 	histos.push_back(h_bg_jd);
@@ -13384,6 +13588,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	histos.push_back(h_bg_bd);
 	histos.push_back(h_bg_lu);
 	histos.push_back(h_bg_ld);
+	histos.push_back(h_bg_pu);
+	histos.push_back(h_bg_pd);
 	
 	h_ttw_nom->SetBinContent(1, ttwzpreds["Normal"].ttw_ee);
 	h_ttw_nom->SetBinContent(2, ttwzpreds["Normal"].ttw_mm);
@@ -13422,6 +13628,28 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	h_ttw_ld ->SetBinContent(3, ttwzpreds["LepDown"].ttw_em);
 	h_ttw_ld ->SetBinContent(4, ttwzpreds["LepDown"].ttw);
 	
+	h_ttw_pu ->SetBinContent(1, ttwzpreds["PileupUp"].ttw_ee);
+	h_ttw_pu ->SetBinContent(2, ttwzpreds["PileupUp"].ttw_mm);
+	h_ttw_pu ->SetBinContent(3, ttwzpreds["PileupUp"].ttw_em);
+	h_ttw_pu ->SetBinContent(4, ttwzpreds["PileupUp"].ttw);
+	h_ttw_pd ->SetBinContent(1, ttwzpreds["PileupDown"].ttw_ee);
+	h_ttw_pd ->SetBinContent(2, ttwzpreds["PileupDown"].ttw_mm);
+	h_ttw_pd ->SetBinContent(3, ttwzpreds["PileupDown"].ttw_em);
+	h_ttw_pd ->SetBinContent(4, ttwzpreds["PileupDown"].ttw);
+	
+	cout << "ttwzpreds[\"Normal\"].ttw_ee  : " << ttwzpreds["Normal"].ttw_ee   << endl;
+	cout << "ttwzpreds[\"Normal\"].ttw_mm  : " << ttwzpreds["Normal"].ttw_mm   << endl;
+	cout << "ttwzpreds[\"Normal\"].ttw_em  : " << ttwzpreds["Normal"].ttw_em   << endl;
+	cout << "ttwzpreds[\"Normal\"].ttw     : " << ttwzpreds["Normal"].ttw      << endl;
+	cout << "ttwzpreds[\"PileupUp\"].ttw_ee  : " << ttwzpreds["PileupUp"].ttw_ee   << endl;
+	cout << "ttwzpreds[\"PileupUp\"].ttw_mm  : " << ttwzpreds["PileupUp"].ttw_mm   << endl;
+	cout << "ttwzpreds[\"PileupUp\"].ttw_em  : " << ttwzpreds["PileupUp"].ttw_em   << endl;
+	cout << "ttwzpreds[\"PileupUp\"].ttw     : " << ttwzpreds["PileupUp"].ttw      << endl;
+	cout << "ttwzpreds[\"PileupDown\"].ttw_ee: " << ttwzpreds["PileupDown"].ttw_ee << endl;
+	cout << "ttwzpreds[\"PileupDown\"].ttw_mm: " << ttwzpreds["PileupDown"].ttw_mm << endl;
+	cout << "ttwzpreds[\"PileupDown\"].ttw_em: " << ttwzpreds["PileupDown"].ttw_em << endl;
+	cout << "ttwzpreds[\"PileupDown\"].ttw   : " << ttwzpreds["PileupDown"].ttw    << endl;
+	
 	h_bg_nom->SetBinContent(1, ttwzpreds["Normal"].wz_ee+ttwzpreds["Normal"].rare_ee);
 	h_bg_nom->SetBinContent(2, ttwzpreds["Normal"].wz_mm+ttwzpreds["Normal"].rare_mm);
 	h_bg_nom->SetBinContent(3, ttwzpreds["Normal"].wz_em+ttwzpreds["Normal"].rare_em);
@@ -13459,6 +13687,15 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	h_bg_ld ->SetBinContent(3, ttwzpreds["LepDown"].wz_em+ttwzpreds["LepDown"].rare_em);
 	h_bg_ld ->SetBinContent(4, ttwzpreds["LepDown"].wz   +ttwzpreds["LepDown"].rare   );
 	
+	h_bg_pu ->SetBinContent(1, ttwzpreds["PileupUp"].wz_ee+ttwzpreds["PileupUp"].rare_ee);
+	h_bg_pu ->SetBinContent(2, ttwzpreds["PileupUp"].wz_mm+ttwzpreds["PileupUp"].rare_mm);
+	h_bg_pu ->SetBinContent(3, ttwzpreds["PileupUp"].wz_em+ttwzpreds["PileupUp"].rare_em);
+	h_bg_pu ->SetBinContent(4, ttwzpreds["PileupUp"].wz   +ttwzpreds["PileupUp"].rare   );
+	h_bg_pd ->SetBinContent(1, ttwzpreds["PileupDown"].wz_ee+ttwzpreds["PileupDown"].rare_ee);
+	h_bg_pd ->SetBinContent(2, ttwzpreds["PileupDown"].wz_mm+ttwzpreds["PileupDown"].rare_mm);
+	h_bg_pd ->SetBinContent(3, ttwzpreds["PileupDown"].wz_em+ttwzpreds["PileupDown"].rare_em);
+	h_bg_pd ->SetBinContent(4, ttwzpreds["PileupDown"].wz   +ttwzpreds["PileupDown"].rare   );
+	
 	h_ttw_nom->SetLineColor(kBlack);
 	h_bg_nom  ->SetLineColor(kBlack);
 	
@@ -13466,17 +13703,21 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	h_ttw_ju->SetLineColor(kGreen+1);
 	h_ttw_bu->SetLineColor(kGreen+1);
 	h_ttw_lu->SetLineColor(kGreen+1);
+	h_ttw_pu->SetLineColor(kGreen+1);
 	h_bg_js  ->SetLineColor(kGreen+1);
 	h_bg_ju  ->SetLineColor(kGreen+1);
 	h_bg_bu  ->SetLineColor(kGreen+1);
 	h_bg_lu  ->SetLineColor(kGreen+1);
+	h_bg_pu  ->SetLineColor(kGreen+1);
 	
 	h_ttw_jd->SetLineColor(kRed-3);
 	h_ttw_bd->SetLineColor(kRed-3);
 	h_ttw_ld->SetLineColor(kRed-3);
+	h_ttw_pd->SetLineColor(kRed-3);
 	h_bg_jd  ->SetLineColor(kRed-3);
 	h_bg_bd  ->SetLineColor(kRed-3);
 	h_bg_ld  ->SetLineColor(kRed-3);
+	h_bg_pd  ->SetLineColor(kRed-3);
 
 	float max_sig(10.), max_bg(4.);
 	max_sig = 1.2 * h_ttw_nom->GetBinContent(h_ttw_nom->GetMaximumBin());
@@ -13498,27 +13739,29 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		}
 		if (addTotalBin) (*it)->GetXaxis()->SetBinLabel(4, "Total");
 		(*it)->GetXaxis()->SetLabelSize(0.06);
-		if(cnt<8)(*it)->GetYaxis()->SetTitle("Signal Events");
-		if(cnt>7)(*it)->GetYaxis()->SetTitle("Background Events");
+		if(cnt<10)(*it)->GetYaxis()->SetTitle("Signal Events");
+		if(cnt>9)(*it)->GetYaxis()->SetTitle("Background Events");
 		(*it)->GetYaxis()->SetTitleOffset(1.15);
 		(*it)->SetMinimum(0);
 //		if(cnt<8)(*it)->SetMaximum(10);
 //		if(cnt>7)(*it)->SetMaximum(4);
-		if(cnt<8)(*it)->SetMaximum(max_sig);
-		if(cnt>7)(*it)->SetMaximum(max_bg );
+		if(cnt<10)(*it)->SetMaximum(max_sig);
+		if(cnt>9)(*it)->SetMaximum(max_bg );
 		(*it)->SetLineWidth(2);
 		(*it)->SetFillStyle(0);
 		cnt++;
 	}
 	
-	makeSystPlot("Syst_Sig_JES"  + chargeString, "JES",          h_ttw_nom, h_ttw_ju, h_ttw_jd);
-	makeSystPlot("Syst_Sig_bTag" + chargeString, "b Tag",        h_ttw_nom, h_ttw_bu, h_ttw_bd);
-	makeSystPlot("Syst_Sig_Lept" + chargeString, "Lepton Scale", h_ttw_nom, h_ttw_lu, h_ttw_ld);
-	makeSystPlot("Syst_Sig_JER"  + chargeString, "JER",          h_ttw_nom, h_ttw_js);
-	makeSystPlot("Syst_Bg_JES"   + chargeString, "JES",          h_bg_nom, h_bg_ju, h_bg_jd);
-	makeSystPlot("Syst_Bg_bTag"  + chargeString, "b Tag",        h_bg_nom, h_bg_bu, h_bg_bd);
-	makeSystPlot("Syst_Bg_Lept"  + chargeString, "Lepton Scale", h_bg_nom, h_bg_lu, h_bg_ld);
-	makeSystPlot("Syst_Bg_JER"   + chargeString, "JER",          h_bg_nom, h_bg_js);
+	makeSystPlot("Syst_Sig_JES"    + chargeString, "JES",          h_ttw_nom, h_ttw_ju, h_ttw_jd);
+	makeSystPlot("Syst_Sig_bTag"   + chargeString, "b Tag",        h_ttw_nom, h_ttw_bu, h_ttw_bd);
+	makeSystPlot("Syst_Sig_Lept"   + chargeString, "Lepton Scale", h_ttw_nom, h_ttw_lu, h_ttw_ld);
+	makeSystPlot("Syst_Sig_JER"    + chargeString, "JER",          h_ttw_nom, h_ttw_js);
+	makeSystPlot("Syst_Sig_Pileup" + chargeString, "Pileup",       h_ttw_nom, h_ttw_pu, h_ttw_pd);
+	makeSystPlot("Syst_Bg_JES"     + chargeString, "JES",          h_bg_nom, h_bg_ju, h_bg_jd);
+	makeSystPlot("Syst_Bg_bTag"    + chargeString, "b Tag",        h_bg_nom, h_bg_bu, h_bg_bd);
+	makeSystPlot("Syst_Bg_Lept"    + chargeString, "Lepton Scale", h_bg_nom, h_bg_lu, h_bg_ld);
+	makeSystPlot("Syst_Bg_JER"     + chargeString, "JER",          h_bg_nom, h_bg_js);
+	makeSystPlot("Syst_Bg_Pileup"  + chargeString, "Pileup",       h_bg_nom, h_bg_pu, h_bg_pd);
 	
 //	return ttwzpreds["Normal"];
 	return ttwzpreds;
@@ -13570,35 +13813,47 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	// 2 J   1 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
 	// 2 J   0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
-//	// 3 J   0 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
-//	// 1 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
-////	// 0 J   0 bJ
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
-////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
-	// 3 J   1 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+////	// 3 J   0 bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+////	// 1 J   0 bJ
+////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
+////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
+////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  5,  0);
+////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  5,  0);
+//////	// 0 J   0 bJ
+//////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  6,  0);
+//////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
+//////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
+//////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
+//	// 3 J   1 bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+//	// 3 J   2 bJ
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9, +1);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9, -1);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  9,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  9,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  9,  0);
 	// >=2 J   ==0 bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
+//	// >=2 J   ==0 bJ  pt > 40 GeV
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 11,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0, 11,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1, 11,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2, 11,  0);
 //	// final sel
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
@@ -13672,6 +13927,8 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	if (region_sel == 6)  fOutputSubDir = "DiffPredictionSigEventTree/0J0bJ/";
 	if (region_sel == 7)  fOutputSubDir = "DiffPredictionSigEventTree/3J1bJ/";
 	if (region_sel == 8)  fOutputSubDir = "DiffPredictionSigEventTree/2JnobJ/";
+	if (region_sel == 9)  fOutputSubDir = "DiffPredictionSigEventTree/3J2bJ/";
+	if (region_sel == 11) fOutputSubDir = "DiffPredictionSigEventTree/2JnobJ40pt/";
 
 //	gApplyZVeto = true;
 //	if (gApplyZVeto) {
@@ -13819,6 +14076,28 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		minNjets   =   2 , maxNjets   =    99 ;
 		minNbjetsL =   0 , maxNbjetsL =    99 ;
 		minNbjetsM =   0 , maxNbjetsM =     0 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 11) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   2 , maxNjets   =    99 ;
+		minNbjetsL =   0 , maxNbjetsL =    99 ;
+		minNbjetsM =   0 , maxNbjetsM =     0 ;
+		minPt1     =  40., maxPt1     =  8000.;
+		minPt2     =  40., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 9) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   3 , maxNjets   =    99 ;
+		minNbjetsL =   2 , maxNbjetsL =    99 ;
+		minNbjetsM =   2 , maxNbjetsM =    99 ;
 		minPt1     =  20., maxPt1     =  8000.;
 		minPt2     =  20., maxPt2     =  8000.;
 		minMll     =   8.; // 8.
@@ -16912,6 +17191,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 			// make sure here to get the lumi from the sample and not from the Slumi variable. Doesn't work otherwise
 			Sample *S = fSampleMap[*sname];
 			float scale = fLumiNorm / S->getLumi();
+//			scale = 1.;
 //			float tmp_nt2_rare_mc    = puweight*trigScale[Flavor]*scale;
 			float tmp_nt2_rare_mc    = puweight*HLTSF*scale;
 			// float tmp_nt2_rare_mc_e2 = tmp_nt2_rare_mc*tmp_nt2_rare_mc;
@@ -17128,9 +17408,9 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		float EM_yiel = rareMapEM[it->first];
 		float EE_yiel = rareMapEE[it->first];
 
-		float MM_stat = weight*trigScale[0]*(S->getError(rareMapMM_npass[it->first]));
-		float EM_stat = weight*trigScale[1]*(S->getError(rareMapEM_npass[it->first]));
-		float EE_stat = weight*trigScale[2]*(S->getError(rareMapEE_npass[it->first]));
+		float MM_stat = weight*HLTSF*(S->getError(rareMapMM_npass[it->first]));
+		float EM_stat = weight*HLTSF*(S->getError(rareMapEM_npass[it->first]));
+		float EE_stat = weight*HLTSF*(S->getError(rareMapEE_npass[it->first]));
 		// float MM_yiel = rareMapMM.find(it->first) != rareMapMM.end()? rareMapMM[it->first]:0.;
 		// float EM_yiel = rareMapEM.find(it->first) != rareMapEM.end()? rareMapEM[it->first]:0.;
 		// float EE_yiel = rareMapEE.find(it->first) != rareMapEE.end()? rareMapEE[it->first]:0.;
@@ -24731,69 +25011,164 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
 		if(nbjets < 1) continue;
 		(amcnlo && GenWeight < 0) ? nPassnNB1-- : nPassnNB1++;
 	}
+//	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
+//		tree_->GetEntry(jentry);
+//		printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
+//		// nTot++;
+//		if(amcnlo && GenWeight < 0) nTot--;
+//		else nTot++;
+//		std::vector<genLep> leps_p;
+//		std::vector<genLep> leps_m;
+//		std::vector<genLep> leps;
+//		bool hasSSPair = false;
+//		for(int i = 0 ; i < NGenLep; ++i){
+//			// if((!amcnlo && GenLepStatus[i] != 3) || (amcnlo && GenLepStatus[i] != 3 && GenLepStatus[i] != 1 ) ) continue; // status 3 or NLO+status 1||3
+//			if((!amcnlo && GenLepStatus[i] == 3) || (amcnlo && (GenLepStatus[i] != 3 || GenLepStatus[i] != 1)) ) {
+//				if( (abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13) && (abs(GenLepMID[i]) == 24 || abs(GenLepMID[i]) == 15) ){
+//					// if(GenLepPt [i] < 20.) continue;
+//					// if(fabs(GenLepEta[i]) > 2.4) continue;
+//					// if(abs(GenLepID[i]) == 11 && fabs(GenLepEta[i]) > 1.4442 && fabs(GenLepEta[i]) < 1.566) continue;
+//					genLep tmpLep;
+//					tmpLep.pt   = GenLepPt [i];
+//					tmpLep.eta  = GenLepEta[i];
+//					tmpLep.phi  = GenLepPhi[i];
+//					tmpLep.sgn  = GenLepID[i] > 0 ? -1 : 1;
+//					tmpLep.type = abs(GenLepID[i]) == 13 ? 0 : 1;
+//					// tmpLep.vec.SetPtEtaPhiM(GenLepPt[i], GenLepEta[i], GenLepPhi[i], tmpLep.mass());
+//					// cout << Form("id: %d  charge: %d    stat: %d   mo: %d   pt: %.2f",tmpLep.type , tmpLep.sgn, GenLepStatus[i] , GenLepMID[i] , tmpLep.pt) << endl;
+//					if(tmpLep.sgn > 0) leps_p.push_back(tmpLep);
+//					if(tmpLep.sgn < 0) leps_m.push_back(tmpLep);
+//				}
+//			}
+//		}
+//		n_leptons->Fill(leps_p.size() + leps_m.size());
+//		if(leps_p.size() > 1 || leps_m.size() > 1) hasSSPair = true;
+//		if(!hasSSPair) continue; // has one SS pair
+//		if(amcnlo && GenWeight < 0) nSSGen--;
+//		else nSSGen++;
+//		leps = leps_p.size() > 1 ? leps_p : leps_m;
+//		// see if leptons pass fiducial cuts (20 gev and eta cuts)
+//		if(!(leps[0].passesFiducials()) || !(leps[1].passesFiducials())) continue;
+//		// cout << "-------------------------------------------" << endl;
+//		// cout << "Event: " << Event << " leps_p.size(): " << leps_p.size() << " leps_m.size(): " << leps_m.size() <<
+//		// " leps.size(): " << leps.size() << endl
+//		// << " leps[0].type: " << leps[0].type 
+//		// << " leps[0].pt: " << leps[0].pt 
+//		// << " fabs(leps[0].eta): "  << fabs(leps[0].eta) 
+//		// << endl
+//		// << " leps[1].type: " << leps[1].type 
+//		// << " leps[1].pt: " << leps[1].pt 
+//		// << " fabs(leps[1].eta): "  << fabs(leps[1].eta) << endl;
+//		// fill lepton pts
+//		ss_pts ->Fill(leps[0].pt);
+//		ss_pts ->Fill(leps[1].pt);
+//		ss_etas->Fill(leps[0].eta);
+//		ss_etas->Fill(leps[1].eta);
+//		(amcnlo && GenWeight < 0) ? nPassFiducial-- : nPassFiducial++; // both leptons pass 20 GeV and eta cuts
+//		if(leps[0].pt < 40. || leps[1].pt < 40) continue;      // cut on pt > 40 GeV
+//		(amcnlo && GenWeight < 0) ? nPassPt40-- : nPassPt40++;
+//		// loop on jets
+//		int njets(0), nbjets(0);
+//		float ht(0.);
+//		for(int i=0; i < NJets; ++i){
+//			if(JetGenPt[i] < 30.) continue;
+//			// if(Util::GetDeltaR(leps[0].eta, JetGenEta[i], leps[0].phi, JetGenPhi[i]) < 0.4 ||
+//			//    Util::GetDeltaR(leps[1].eta, JetGenEta[i], leps[1].phi, JetGenPhi[i]) < 0.4  ) continue;
+//			// TLorentzVector jet;
+//			// jet.SetPtEtaPhiM(1., JetGenEta[i], JetGenPhi[i], 1.); //don't worry about pt and the mass
+//			// cout << JetGenEta[i] << "   "  <<  JetGenPhi[i] << endl;
+//			// cout << leps[0].vec.DeltaR(jet) << "   " << leps[1].vec.DeltaR(jet) << endl;
+//			// if(leps[0].vec.DeltaR(jet) < 0.4 || leps[1].vec.DeltaR(jet) < 0.4) continue;
+//			njets++;
+//			jetpts->Fill(JetGenPt[i]);
+//			ht += JetGenPt[i];
+//			if(abs(JetPartonFlav[i]) != 5) continue;
+//			nbjets++;
+//			bjetpts->Fill(JetGenPt[i]);
+//		} // end jet loop
+//		hthist  ->Fill(ht);
+//		njethist->Fill(njets);
+//		if(njets <3) continue;
+//		(amcnlo && GenWeight < 0) ? nPassNJ3-- : nPassNJ3++;
+//		if(ht < 155.) continue;
+//		(amcnlo && GenWeight < 0) ? nPassHT155-- : nPassHT155++;
+//		if(nbjets < 1) continue;
+//		(amcnlo && GenWeight < 0) ? nPassnNB1-- : nPassnNB1++;
+//	}
 	
 	int nll(0), ntt20(0), ntt40(0), ntt3j(0), nttht(0), ntt1b(0);
 	int ngenR(0);
 	int nmm(0);
 
-	// for (Long64_t jentry=0; jentry<tot_events;jentry++) {
-	// 	setRegionCuts(0);
-	// 	tree_->GetEntry(jentry);
-	// 	printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
-	// 	// printRegionCuts(0);
-	// 	// if(jentry > 1) break;
-	// 	if(amcnlo && GenWeight < 0) ngenR--;
-	// 	else ngenR++;
-	// 	int i1(-1), i2(-1);
-	// 	// if(!isSSLLEvent(i1, i2)) continue;
-	// 	// resetHypLeptons();
-	// 	if(amcnlo && GenWeight < 0) nll--;
-	// 	else nll++;
-	// 	bool ismumu(false), iselel(false), iselmu(false);
-	// 	int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
-	// 	if( isSSLLMuEvent(m1, m2)) { 
-	// 		if(amcnlo && GenWeight < 0) nmm--;
-	// 		else nmm++;
-	// 		if(isTightMuon(m1) && isTightMuon(m2)){
-	// 			if(amcnlo && GenWeight < 0) ntt20--;
-	// 			else ntt20++;
-	// 			if(MuPt[m1] < 40. || MuPt[m2] < 40.){ resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) ntt40--;
-	// 			else ntt40++;
-	// 			if(getNJets(30.) < 3){resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) ntt3j--;
-	// 			else ntt3j++;
-	// 			if(getHT() < 155){resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) nttht--;
-	// 			else nttht++;
-	// 			if(getNBTagsMed() < 1){resetHypLeptons(); continue;}
-	// 			if(amcnlo && GenWeight < 0) ntt1b--;
-	// 			else ntt1b++;
-	// 		}
-	// 	}
-	// 	resetHypLeptons();
-	// 	//if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
-	// 	//resetHypLeptons();
-	// 	//if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
-	// 	//resetHypLeptons();
-	// 	//cout << ismumu << " " << iselel << " " << iselmu << endl;
-	// 	//if(!(ismumu || iselel || iselmu) ) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt20--;
-	// 	//else ntt20++;
-	// 	//if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt40--;
-	// 	//else ntt40++;
-	// 	//if(getNJets(30.) < 3) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt3j--;
-	// 	//else ntt3j++;
-	// 	//if(getHT() < 155) continue;
-	// 	//if(amcnlo && GenWeight < 0) nttht--;
-	// 	//else nttht++;
-	// 	//if(getNBTagsMed() < 1) continue;
-	// 	//if(amcnlo && GenWeight < 0) ntt1b--;
-	// 	//else ntt1b++;
-	// 	//resetHypLeptons();
-	// }
+	initCounters();
+	fDoCounting = true;
+	fC_invertZVeto = false;
+
+	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
+		setRegionCuts(0);   // TODO: why is this setting fC_invertZVeto true?
+		fC_invertZVeto = false;
+		tree_->GetEntry(jentry);
+		printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
+		if(jentry == 1) printRegionCuts(0);
+		// if(jentry > 1) break;
+		if(amcnlo && GenWeight < 0) ngenR--;
+		else ngenR++;
+		int i1(-1), i2(-1);
+		if(!isSSLLEvent(i1, i2)) continue;
+		resetHypLeptons();
+		if(amcnlo && GenWeight < 0) nll--;
+		else nll++;
+		bool ismumu(false), iselel(false), iselmu(false);
+		int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
+//		if( isSSLLMuEvent(m1, m2)) { 
+//			//if(amcnlo && GenWeight < 0) nmm--;
+//			//else nmm++;
+//			nmm++;
+//			if(isTightMuon(m1) && isTightMuon(m2)){
+//				if(amcnlo && GenWeight < 0) ntt20--;
+//				else ntt20++;
+//				if(MuPt[m1] < 40. || MuPt[m2] < 40.){ resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) ntt40--;
+//				else ntt40++;
+//				if(getNJets(30.) < 3){resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) ntt3j--;
+//				else ntt3j++;
+//				if(getHT() < 155){resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) nttht--;
+//				else nttht++;
+//				if(getNBTagsMed() < 1){resetHypLeptons(); continue;}
+//				if(amcnlo && GenWeight < 0) ntt1b--;
+//				else ntt1b++;
+//			}
+//		}
+		if( isSSLLMuEvent(m1, m2)) { if(isTightMuon(m1) && isTightMuon(m2))         ismumu = true;}
+		resetHypLeptons();
+		if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
+		resetHypLeptons();
+		if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
+		resetHypLeptons();
+		//cout << ismumu << " " << iselel << " " << iselmu << endl;
+		if(!(ismumu || iselel || iselmu) ) continue;
+		if(amcnlo && GenWeight < 0) ntt20--;
+		else ntt20++;
+		if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
+		if(amcnlo && GenWeight < 0) ntt40--;
+		else ntt40++;
+		if(getNJets(30.) < 3) continue;
+		if(amcnlo && GenWeight < 0) ntt3j--;
+		else ntt3j++;
+		if(getHT() < 155) continue;
+		if(amcnlo && GenWeight < 0) nttht--;
+		else nttht++;
+		if(getNBTagsMed() < 1) continue;
+		if(amcnlo && GenWeight < 0) ntt1b--;
+		else ntt1b++;
+		resetHypLeptons();
+	}
+
+	for (int i = 0; i < fMMCutNames.size(); i++) {
+		cout << "fCounter[Muon].counts(fMMCutNames[" << i << "]): " << fCounter[Muon].counts(fMMCutNames[i]) << " " << fMMCutNames[i] << endl;
+	}
 
 
 	// cout << Form("%40s:  %10d   --  %7.2f\%", "total generated ", nTot         , 100.*nTot         /(float)nSSGen ) << endl;
@@ -25732,6 +26107,10 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 	// marc for ttw for (int i=0; i<nSyst;i++) {
 	// marc for ttw 	Model_eff_ [i]->Divide(Model_nPass_[i], Model_nTot_ , 1. , 1.);
 	// marc for ttw }
+
+	for(int j=0; j<NPdf1; ++j) cout << "nTot_pdf1_" << j << ": " << Model_nTot_pdf1_  [j] ->Integral() << " (" << Model_nTot_pdf1_  [j] ->GetEntries() << " entries)" << endl;
+	for(int j=0; j<NPdf2; ++j) cout << "nTot_pdf2_" << j << ": " << Model_nTot_pdf2_  [j] ->Integral() << " (" << Model_nTot_pdf2_  [j] ->GetEntries() << " entries)" << endl;
+	for(int j=0; j<NPdf3; ++j) cout << "nTot_pdf3_" << j << ": " << Model_nTot_pdf3_  [j] ->Integral() << " (" << Model_nTot_pdf3_  [j] ->GetEntries() << " entries)" << endl;
 
 	TFile * res_;
 	res_ = new TFile(fOutputDir+model+"_results_"+gRegions[reg]->sname+".root", "RECREATE", "res_");
