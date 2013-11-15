@@ -71,12 +71,14 @@ private:
 	string fCutnames[4];
 
 	static const int fMaxNjets = 40;
-	static const int fMaxNmus  = 5;
-	static const int fMaxNeles = 5;
+	static const int fMaxNmus  = 8;
+	static const int fMaxNeles = 8;
 	static const int fMaxNtaus = 5;
-	static const int fNCTEQ = 100;
-	static const int fNCT10 = 100;
-	static const int fNMRST = 100;
+	static const int fMaxNGenLep  = 25;
+	static const int fMaxNGenJets = 40;
+	static const int fPdf1 = 100;
+	static const int fPdf2 = 100;
+	static const int fPdf3 = 100;
 	
 	static const int nx = 3;
 	static const float x_values[nx]; // = {0.05, 0.5, 0.95};
@@ -131,6 +133,7 @@ private:
 	float fTpuweightUp;
 	float fTpuweightDn;
 	int   fTPUnumTrueInteractions;
+	float fTGenWeight;
 	
 	// Triggers
 	vector<HLTPathSet> fHLTPathSets;
@@ -245,13 +248,31 @@ private:
 	float fTTauTightMuRej  [fMaxNtaus];
 	float fTTauLCombIsoDB  [fMaxNtaus];
 
+	// generator lepton properties
+	int fTNGenLep;
+	int fTGenLepID     [fMaxNGenLep];
+	int fTGenLepMID    [fMaxNGenLep];
+	int fTGenLepGMID   [fMaxNGenLep];
+	int fTGenLepStatus [fMaxNGenLep];
+	int fTGenLepMStatus[fMaxNGenLep];
+	float fTGenLepPt   [fMaxNGenLep];
+	float fTGenLepEta  [fMaxNGenLep];
+	float fTGenLepPhi  [fMaxNGenLep];
+
+	// generator jet properties
+	int fTNGenJets;
+	float fTGenJetPt   [fMaxNGenJets];
+	float fTGenJetE    [fMaxNGenJets];
+	float fTGenJetEta  [fMaxNGenJets];
+	float fTGenJetPhi  [fMaxNGenJets];
+
 	// PDF stuff
-	int   fTNPdfCTEQ;
-	float fTWPdfCTEQ[fNCTEQ];
-	int   fTNPdfCT10;
-	float fTWPdfCT10[fNCT10];
-	int   fTNPdfMRST;
-	float fTWPdfMRST[fNMRST];
+	int   fTNPdf1;
+	float fTWPdf1[fPdf1];
+	int   fTNPdf2;
+	float fTWPdf2[fPdf2];
+	int   fTNPdf3;
+	float fTWPdf3[fPdf3];
 
 };
 #endif

@@ -16,7 +16,8 @@ const int SSDLAnalysis::nx;
 const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
 
 
-const bool gDoPDFs = false;
+const bool gDoPDFs      = false;
+const bool gSaveGenInfo = false;
 
 
 //TString SSDLAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/";
@@ -238,6 +239,7 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("PUWeight",      &fTpuweight,  "PUWeight/F");
 	fAnalysisTree->Branch("PUWeightUp",      &fTpuweightUp,  "PUWeightUp/F");
 	fAnalysisTree->Branch("PUWeightDn",      &fTpuweightDn,  "PUWeightDn/F");
+	fAnalysisTree->Branch("GenWeight",      &fTGenWeight,  "GenWeight/F");
 	fAnalysisTree->Branch("PUnumTrueInteractions", &fTPUnumTrueInteractions, "PUnumTrueInteractions/I");
 
 	// single-muon properties
@@ -307,6 +309,22 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElGenGMType",            &fTElGenGMType,         "ElGenGMType[NEls]/I");
 	fAnalysisTree->Branch("ElMT",                   &fTElMT,                "ElMT[NEls]/F");
 
+	fAnalysisTree->Branch("NGenLep"     ,   &fTNGenLep     ,   "NGenLep/I");
+	fAnalysisTree->Branch("GenLepID"    ,   &fTGenLepID    ,   "GenLepID[NGenLep]/I");
+	fAnalysisTree->Branch("GenLepMID"   ,   &fTGenLepMID   ,   "GenLepMID[NGenLep]/I");
+	fAnalysisTree->Branch("GenLepGMID"  ,   &fTGenLepGMID  ,   "GenLepGMID[NGenLep]/I");
+	fAnalysisTree->Branch("GenLepStatus",   &fTGenLepStatus,   "GenLepStatus[NGenLep]/I");
+	fAnalysisTree->Branch("GenLepMStatus",  &fTGenLepMStatus,  "GenLepMStatus[NGenLep]/I");
+	fAnalysisTree->Branch("GenLepPt"    ,   &fTGenLepPt    ,   "GenLepPt[NGenLep]/F");
+	fAnalysisTree->Branch("GenLepEta"   ,   &fTGenLepEta   ,   "GenLepEta[NGenLep]/F");
+	fAnalysisTree->Branch("GenLepPhi"   ,   &fTGenLepPhi   ,   "GenLepPhi[NGenLep]/F");
+
+	fAnalysisTree->Branch("NGenJets"    ,   &fTNGenJets    ,   "NGenJets/I");
+	fAnalysisTree->Branch("GenJetPt"    ,   &fTGenJetPt    ,   "GenJetPt[NGenJets]/F");
+	fAnalysisTree->Branch("GenJetE"     ,   &fTGenJetE     ,   "GenJetE[NGenJets]/F");
+	fAnalysisTree->Branch("GenJetEta"   ,   &fTGenJetEta   ,   "GenJetEta[NGenJets]/F");
+	fAnalysisTree->Branch("GenJetPhi"   ,   &fTGenJetPhi   ,   "GenJetPhi[NGenJets]/F");
+
 	// single-tau properties
 	fAnalysisTree->Branch("NTaus",                   &fTnqtaus,               "NTaus/I");
 	fAnalysisTree->Branch("TauCharge",               &fTTaucharge,            "TauCh[NTaus]/I");
@@ -342,12 +360,12 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("JetBetaSq",     &fTJetBetaSq,     "JetBetaSq[NJets]/F");
 	fAnalysisTree->Branch("JetRMSCand",    &fTJetRMSCand,    "JetRMSCand[NJets]/F");
 
-	fAnalysisTree->Branch("NPdfCTEQ", &fTNPdfCTEQ , "NPdfCTEQ/I");
-	fAnalysisTree->Branch("WPdfCTEQ", &fTWPdfCTEQ , "WPdfCTEQ[NPdfCTEQ]/F");
-	fAnalysisTree->Branch("NPdfCT10", &fTNPdfCT10 , "NPdfCT10/I");
-	fAnalysisTree->Branch("WPdfCT10", &fTWPdfCT10 , "WPdfCT10[NPdfCT10]/F");
-	fAnalysisTree->Branch("NPdfMRST", &fTNPdfMRST , "NPdfMRST/I");
-	fAnalysisTree->Branch("WPdfMRST", &fTWPdfMRST , "WPdfMRST[NPdfMRST]/F");
+	fAnalysisTree->Branch("NPdf1", &fTNPdf1 , "NPdf1/I");
+	fAnalysisTree->Branch("WPdf1", &fTWPdf1 , "WPdf1[NPdf1]/F");
+	fAnalysisTree->Branch("NPdf2", &fTNPdf2 , "NPdf2/I");
+	fAnalysisTree->Branch("WPdf2", &fTWPdf2 , "WPdf2[NPdf2]/F");
+	fAnalysisTree->Branch("NPdf3", &fTNPdf3 , "NPdf3/I");
+	fAnalysisTree->Branch("WPdf3", &fTWPdf3 , "WPdf3[NPdf3]/F");
 
 }
 
@@ -444,7 +462,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 
 	// Require at least one loose lepton
 	// if( (fTnqmus + fTnqels) < 1 ) return;
-	if( (nLooseMus + fTnqels) < 1 ) return;
+	// temporary !! if(!gDoPDFs && (nLooseMus + fTnqels) < 1 ) return;
 	fCounter.fill(fCutnames[3]);
 
 	// Event and run info
@@ -482,72 +500,68 @@ void SSDLAnalysis::FillAnalysisTree(){
 			double pdf_xpdf1, pdf_xpdf2;
 			double newxfx1, newxfx2;
 
-			// SAVE WEIGHTS FOR CTEQ
-			// ==========================
-			// std::cout << LHAPDF::numberPDF() << std::endl;
-			//LHAPDF::initPDFSet(1,"CT10.LHgrid");
-			LHAPDF::initPDFSet(1,"cteq61.LHgrid");
-			
+
+			//LHAPDF::initPDFSet(1,"MSTW2008nnlo68cl_asmz-68clhalf.LHgrid");
+			LHAPDF::initPDFSet(1,"NNPDF20_as_0120_100.LHgrid");
 			LHAPDF::initPDF(1,0);
 			LHAPDF::usePDFMember(1,0);
-			fTNPdfCTEQ = (int)LHAPDF::numberPDF(1);
+			fTNPdf1 = (int)LHAPDF::numberPDF(1);
 			pdf_xpdf1 = LHAPDF::xfx(1, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(1, x2, Q, id2);
 				
 			// std::vector<float> pdfweight;
 			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdfCTEQ; pdf++){
+			for(int pdf=0; pdf < fTNPdf1; pdf++){
 				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(1, pdf);
 				newxfx1 = LHAPDF::xfx(1, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(1, x2, Q, id2);
-				fTWPdfCTEQ[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				fTWPdf1[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
 				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
 				// pdfWsum += pdfweight.back();
 			}
 
-			
-			//LHAPDF::initPDFSet(2,"cteq61.LHgrid");
-			LHAPDF::initPDFSet(2, "CT10.LHgrid");
-			LHAPDF::initPDF(2, 0);
-			LHAPDF::usePDFMember(2, 0);
-			fTNPdfCT10 = (int)LHAPDF::numberPDF(2);
+			//LHAPDF::initPDFSet(2,"NNPDF20_100.LHgrid");
+			LHAPDF::initPDFSet(2,"NNPDF20_as_0121_100.LHgrid");
+			LHAPDF::initPDF(2,0);
+			LHAPDF::usePDFMember(2,0);
+			fTNPdf2 = (int)LHAPDF::numberPDF(2);
 			pdf_xpdf1 = LHAPDF::xfx(2, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(2, x2, Q, id2);
 				
 			// std::vector<float> pdfweight;
 			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdfCT10; pdf++){
+			for(int pdf=0; pdf < fTNPdf2; pdf++){
 				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(2, pdf);
 				newxfx1 = LHAPDF::xfx(2, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(2, x2, Q, id2);
-				fTWPdfCT10[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				fTWPdf2[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
 				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
 				// pdfWsum += pdfweight.back();
 			}
 
 
-			
-			//LHAPDF::initPDFSet(3, "MRST2006nnlo.LHgrid");
-			LHAPDF::initPDFSet(3, "MSTW2008nnlo90cl.LHgrid");
-			LHAPDF::initPDF(3, 0);
-			LHAPDF::usePDFMember(3, 0);
-			fTNPdfMRST = (int)LHAPDF::numberPDF(3);
+			//LHAPDF::initPDFSet(3,"MSTW2008nnlo68cl_asmz-68cl.LHgrid");
+			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
+			LHAPDF::initPDF(3,0);
+			LHAPDF::usePDFMember(3,0);
+			fTNPdf3 = (int)LHAPDF::numberPDF(3);
 			pdf_xpdf1 = LHAPDF::xfx(3, x1, Q, id1);
 			pdf_xpdf2 = LHAPDF::xfx(3, x2, Q, id2);
 				
 			// std::vector<float> pdfweight;
 			// float pdfWsum=0;
-			for(int pdf=0; pdf < fTNPdfMRST; pdf++){
+			for(int pdf=0; pdf < fTNPdf3; pdf++){
 				// LHAPDF::initPDF(pdf);
 				LHAPDF::usePDFMember(3, pdf);
 				newxfx1 = LHAPDF::xfx(3, x1, Q, id1);
 				newxfx2 = LHAPDF::xfx(3, x2, Q, id2);
-				fTWPdfMRST[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
+				fTWPdf3[pdf] = newxfx1/pdf_xpdf1*newxfx2/pdf_xpdf2;
 				// pdfweight.push_back( newpdf1/newpdf1_0*newpdf2/newpdf2_0 );
 				// pdfWsum += pdfweight.back();
 			}
+
 
 			// ===========================================================================
 
@@ -592,6 +606,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 		int genjetind = GenJetMatch(jetindex);
 		if(genjetind > -1){
 			fTJetGenpt [ind] = fTR->GenJetPt [genjetind];
+			fTJetGenpt [ind] = fTR->GenJetPt [genjetind];
 			fTJetGeneta[ind] = fTR->GenJetEta[genjetind];
 			fTJetGenphi[ind] = fTR->GenJetPhi[genjetind];
 		}
@@ -602,7 +617,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 		}
 		
 	}
-
 	// Get METs
 	fTpfMET     = fTR->PFMET;
 	fTpfMETphi  = fTR->PFMETphi;
@@ -628,11 +642,14 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTpuweightUp = GetPUWeightUp  (fTR->PUnumTrueInteractions);
 		fTpuweightDn = GetPUWeightDown(fTR->PUnumTrueInteractions);
 		fTPUnumTrueInteractions = fTR->PUnumTrueInteractions;
+
+		fTGenWeight = fTR->GenWeight;
 	}
 	else {
 		fTpuweight   = 1.;
 		fTpuweightUp = 1.;
 		fTpuweightDn = 1.;
+		fTGenWeight  = 1.;
 	}
 
 	// cout << "---------------------------------------------------------------------------" << endl;
@@ -768,6 +785,36 @@ void SSDLAnalysis::FillAnalysisTree(){
 		fTTauLCombIsoDB [ind] = fTR->TauLooseCombinedIsoDBSumPtCorr [tauindex];
 	}
 
+	// dump gen lepton properties
+	fTNGenLep = 0;
+	fTNGenJets = 0;
+	if(fIsData == false && gSaveGenInfo){ // mc truth information		
+		for (int ind = 0; ind < fTR->genInfoId.size(); ++ind){
+			if (fTR->genInfoPt[ind] < 10.) continue;
+			// let's store also the b's here. why not.
+			if (fabs(fTR->genInfoId[ind]) != 11 && fabs(fTR->genInfoId[ind]) != 13 && fabs(fTR->genInfoId[ind]) != 15 && fabs(fTR->genInfoId[ind]) != 5) continue;
+			fTNGenLep++;
+			fTGenLepID     [fTNGenLep-1] = fTR->genInfoId    [ind];
+			fTGenLepMID    [fTNGenLep-1] = fTR->genInfoId[fTR->genInfoMo1[ind]];
+			fTGenLepGMID   [fTNGenLep-1] = fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[ind]]];
+			fTGenLepStatus [fTNGenLep-1] = fTR->genInfoStatus[ind];
+			fTGenLepMStatus[fTNGenLep-1] = fTR->genInfoStatus[fTR->genInfoMo1[ind]];
+			fTGenLepPt     [fTNGenLep-1] = fTR->genInfoPt    [ind];
+			fTGenLepEta    [fTNGenLep-1] = fTR->genInfoEta   [ind];
+			fTGenLepPhi    [fTNGenLep-1] = fTR->genInfoPhi   [ind];
+		}
+		// dump generator jet properties
+		for(int ind = 0; ind < fTR->NGenJets; ind++){
+			if(fTR->GenJetPt[ind] < 20.       ) continue;
+			if(fabs(fTR->GenJetEta[ind]) > 3.0) continue;
+			fTNGenJets++;
+			fTGenJetPt     [fTNGenJets-1] = fTR->GenJetPt [ind];
+			fTGenJetE      [fTNGenJets-1] = fTR->GenJetE  [ind];
+			fTGenJetEta    [fTNGenJets-1] = fTR->GenJetEta[ind];
+			fTGenJetPhi    [fTNGenJets-1] = fTR->GenJetPhi[ind];
+		}
+	}
+
 	fAnalysisTree->Fill();
 }
 
@@ -789,17 +836,17 @@ void SSDLAnalysis::ResetTree(){
 	fTisTChiSlepSnu   = -999.99;
 	fTisRightHanded   = -999.99;
 
-	fTNPdfCTEQ = 0;
-	for( int i=0; i<fNCTEQ; ++i){
-		fTWPdfCTEQ[i] = -1.;
+	fTNPdf1 = 0;
+	for( int i=0; i<fPdf1; ++i){
+		fTWPdf1[i] = -1.;
 	}
-	fTNPdfCT10 = 0;
-	for( int i=0; i<fNCT10; ++i){
-		fTWPdfCT10[i] = -1.;
+	fTNPdf2 = 0;
+	for( int i=0; i<fPdf2; ++i){
+		fTWPdf2[i] = -1.;
 	}
-	fTNPdfMRST = 0;
-	for( int i=0; i<fNMRST; ++i){
-		fTWPdfMRST[i] = -1.;
+	fTNPdf3 = 0;
+	for( int i=0; i<fPdf3; ++i){
+		fTWPdf3[i] = -1.;
 	}
 
 	for(size_t i = 0; i < fHLTPathSets.size(); ++i){
@@ -813,6 +860,7 @@ void SSDLAnalysis::ResetTree(){
 	fTpuweightUp = -999.99;
 	fTpuweightDn = -999.99;
 	fTPUnumTrueInteractions = -999;
+	fTGenWeight = -999.99;
 	
 	// muon properties
 	fTnqmus = 0;
@@ -895,6 +943,27 @@ void SSDLAnalysis::ResetTree(){
 		fTTauMVAElRej[i]   = -999.99;
 		fTTauTightMuRej[i] = -999.99;
 		fTTauLCombIsoDB[i] = -999.99;
+	}
+
+	// gen lepton properties
+	fTNGenLep = 0;
+	for(int i = 0; i < fMaxNGenLep; i++){
+		fTGenLepID     [i]= -999;
+		fTGenLepMID    [i]= -999;
+		fTGenLepGMID   [i]= -999;
+		fTGenLepStatus [i]= -999;
+		fTGenLepMStatus[i]= -999;
+		fTGenLepPt     [i]= -999;
+		fTGenLepEta    [i]= -999;
+		fTGenLepPhi    [i]= -999;
+	}
+	// gen lepton properties
+	fTNGenJets = 0;
+	for(int i = 0; i < fMaxNGenJets; i++){
+		fTGenJetPt     [i]= -999;
+		fTGenJetE      [i]= -999;
+		fTGenJetEta    [i]= -999;
+		fTGenJetPhi    [i]= -999;
 	}
 
 	// jet-MET properties
