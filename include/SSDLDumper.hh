@@ -128,9 +128,9 @@ public:
 //		MuEG1                   , MuEG1a     , MuEG2     ,  MuEG3     , MuEG4     , MuEG5     , 
 		SingleMu1, SingleMu2, SingleMu3, SingleMu4, SingleMu5, SingleMu6, SingleMu7,
 		// fake samples
-		TTJets, TTJets_v1, TTJets_madgraph_v1, TTJets_madgraph_v2,
+		TTJets,  TTJets_v2, TTJets_v1, TTJets_madgraph_v1, TTJets_madgraph_v2,
 		SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
-		WJets, WJets2, WbbJets,
+		WJets, WJets1, WJets2, WbbJets,
 		DYJets,
 		// no longer needed GVJets,
 		// not here yet GJets200, GJets400,
@@ -809,6 +809,7 @@ public:
 	virtual int getNJets(float = 0., bool doLepCleaning=true);
 	virtual float getNthJetPt(int = 0, bool = false);
 	virtual int getNBTags(float = 0., bool doLepCleaning=true);
+	virtual float isRealBJet(TLorentzVector, float, bool = false);
 	virtual int getNBTagsMed();
 	virtual float getBetaStar(int);
 	virtual std::vector< int > getNBTagsMedIndices();
@@ -1030,6 +1031,7 @@ public:
 	float       fSETree_xsec;
 	std::string fSETree_SName;
 	int         fSETree_SType; // DoubleMu(0), DoubleEle(1), MuEG(2), MC(10)
+	float       fSETree_GenWeight;
 	int         fSETree_Run;
 	int         fSETree_LS;
 	long        fSETree_Event;
