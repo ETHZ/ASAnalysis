@@ -476,40 +476,45 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 void SSDLPlotter::doAnalysis(){
   // sandBox();         
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
+  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genJets.root", false);
+  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo.root", true);
+  return;
 
 
   cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
   if(readHistos(fOutputFileName) != 0) return;
 
-  /* Here I calculate the EWK MC scale factors, but I don't use 
-     them in producing any of the fakerate control plots   */
-  bool saveRatioControlPlots = true;
-  makeRatioControlPlots(1, true, saveRatioControlPlots); // El
-  makeRatioControlPlots(2, true, saveRatioControlPlots); // Mu17
-  makeRatioControlPlots(3, true, saveRatioControlPlots); // Mu24_eta2p1
-
-  /* Here I produce the control plots without re-calculating the
-     EWK MC scale factors, but instead using the numbers obtained above. 
-     NB: without the previous calls, a SF=1 would be used (FIXME: this is bad design)*/
-  makeRatioControlPlots(1, false, saveRatioControlPlots); // El
-  makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
-  makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
 
 
-  bool saveRatioPlots = true;
-  fillRatios(fMuTotData,    fEGData,    0, false, saveRatioPlots);  //make FR plots without applying EWK subtraction
-  fillRatios(fMuTotData,    fEGData,    0, true,  saveRatioPlots);  //make the same applying the EWK subtraction
+  // marc /* Here I calculate the EWK MC scale factors, but I don't use 
+  // marc    them in producing any of the fakerate control plots   */
+  // marc bool saveRatioControlPlots = true;
+  // marc makeRatioControlPlots(1, true, saveRatioControlPlots); // El
+  // marc makeRatioControlPlots(2, true, saveRatioControlPlots); // Mu17
+  // marc makeRatioControlPlots(3, true, saveRatioControlPlots); // Mu24_eta2p1
+
+  // marc /* Here I produce the control plots without re-calculating the
+  // marc    EWK MC scale factors, but instead using the numbers obtained above. 
+  // marc    NB: without the previous calls, a SF=1 would be used (FIXME: this is bad design)*/
+  // marc makeRatioControlPlots(1, false, saveRatioControlPlots); // El
+  // marc makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
+  // marc makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
 
 
-  fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, false, false);
-  storeWeightedPred(gRegion[gBaseRegion]);
-  ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
-  cout << "...done ====" << endl;
+  // marc bool saveRatioPlots = true;
+  // marc fillRatios(fMuTotData,    fEGData,    0, false, saveRatioPlots);  //make FR plots without applying EWK subtraction
+  // marc fillRatios(fMuTotData,    fEGData,    0, true,  saveRatioPlots);  //make the same applying the EWK subtraction
 
 
-  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-  makeTTWDiffPredictionsSigEvent();
-  cout << "...done ===" << endl;
+  // marc fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, false, false);
+  // marc storeWeightedPred(gRegion[gBaseRegion]);
+  // marc ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
+  // marc cout << "...done ====" << endl;
+
+
+  // marc cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+  // marc makeTTWDiffPredictionsSigEvent();
+  // marc cout << "...done ===" << endl;
 
 
   //cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;  
@@ -521,7 +526,9 @@ void SSDLPlotter::doAnalysis(){
   
   //-- Perhaps Marc needs this
   //makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
-  //makeClosureTestSigEvents(280., 0., 2, 1, 30., 30.);
+  // storeWeightedPred(gRegion[gBaseRegion]);
+  makeClosureTestSigEvents(  0., 0., 2, 0, 20., 20.);
+  makeClosureTestSigEvents(150., 0., 2, 0, 30., 30.);
 
 
 
@@ -612,9 +619,9 @@ void SSDLPlotter::doAnalysis(){
 //	makeFRvsEtaPlots(Elec);
 //	makeChMidvsPtPlots();
 //
-	makeAllClosureTestsTTW();
+//	makeAllClosureTestsTTW();
 //	makeAllIntPredictions();
-	makeAllClosureTests();
+//	makeAllClosureTests();
 //
 	// makeDiffPrediction();
 //	makeTTWDiffPredictions();
@@ -12109,117 +12116,167 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	fOUTSTREAM << endl;
 	fOUTSTREAM.close();
 }
-void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ, int minNbJ, float minPT1, float minPT2){
+void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ, int minNbJ, float minPt1, float minPt2){
 	TString outputdir = Util::MakeOutputDir(fOutputDir + "ClosureTestSigEventTree");
 	fOutputSubDir = "ClosureTestSigEventTree/";
-	TString title = Form("_HT%.0f_MET%.0f_NJ%i_NbJ%i_PT%.0f_PT%.0f.txt", minHT, minMET, minNJ, minNbJ, minPT1, minPT2);
+	TString title = Form("_HT%.0f_MET%.0f_NJ%i_NbJ%i_PT%.0f_PT%.0f.txt", minHT, minMET, minNJ, minNbJ, minPt1, minPt2);
 	TString outfile = outputdir + "ClosureTest"+title;
 	fOUTSTREAM.open(outfile.Data(), ios::trunc);
-	fOUTSTREAM << Form("min HT:  %.0f  minMET:  %0.0f  minNJ:  %i  minNbJ:  %i  minPT1:  %.0f  minPT2:  %.0f", minHT, minMET, minNJ, minNbJ, minPT1, minPT2);
-
-	///////////////////////////////////////////////////////////////////////////////////
-	// RATIOS /////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////
-	// float mufratio_data(0.),  mufratio_data_e(0.);
-	// float mupratio_data(0.),  mupratio_data_e(0.);
-	// float elfratio_data(0.),  elfratio_data_e(0.);
-	// float elpratio_data(0.),  elpratio_data_e(0.);
-
-
-	TH2D * fRatioHistoMu;
-	TH2D * fRatioHistoMu_e;
-	TH2D * pRatioHistoMu;
-	TH2D * pRatioHistoMu_e;
-
-	TH2D * fRatioHistoEl;
-	TH2D * fRatioHistoEl_e;
-	TH2D * pRatioHistoEl;
-	TH2D * pRatioHistoEl_e;
-
-	
-	fRatioHistoMu	= new TH2D("fRatioMu"  , "fRatioMu"  , getNFPtBins(Muon), getFPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
-	fRatioHistoMu_e	= new TH2D("fRatioMu_e", "fRatioMu_e", getNFPtBins(Muon), getFPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
-	pRatioHistoMu	= new TH2D("pRatioMu"  , "pRatioMu"  , getNPPtBins(Muon), getPPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
-	pRatioHistoMu_e	= new TH2D("pRatioMu_e", "pRatioMu_e", getNPPtBins(Muon), getPPtBins(Muon), getNEtaBins(Muon), getEtaBins(Muon));
-                                                                                                                   
-	fRatioHistoEl	= new TH2D("fRatioEl"  , "fRatioEl"  , getNFPtBins(Elec), getFPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
-	fRatioHistoEl_e	= new TH2D("fRatioEl_e", "fRatioEl_e", getNFPtBins(Elec), getFPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
-	pRatioHistoEl	= new TH2D("pRatioEl"  , "pRatioEl"  , getNPPtBins(Elec), getPPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
-	pRatioHistoEl_e	= new TH2D("pRatioEl_e", "pRatioEl_e", getNPPtBins(Elec), getPPtBins(Elec), getNEtaBins(Elec), getEtaBins(Elec));
+	fOUTSTREAM << Form("min HT:  %.0f  minMET:  %0.0f  minNJ:  %i  minNbJ:  %i  minPT1:  %.0f  minPT2:  %.0f", minHT, minMET, minNJ, minNbJ, minPt1, minPt2);
 
 	bool dataRatio = false;
-
-	cout << Form("fRatioHistoMu nbinsx: %d xmin: %.2f xmax: %.2f nbinsy: %d ymin: %.2f ymax: %.2f", fRatioHistoMu->GetNbinsX(), fRatioHistoMu->GetXaxis()->GetXmin(), fRatioHistoMu->GetXaxis()->GetXmax(), fRatioHistoMu->GetNbinsY(), fRatioHistoMu->GetYaxis()->GetXmin(), fRatioHistoMu->GetYaxis()->GetXmax() ) << endl;
 
 	//==================================
 	// GET THE RATIOS
 	//==================================
 	
+	std::vector<int> muFR;
+	std::vector<int> muPR;
+	std::vector<int> elFR;
+	std::vector<int> elPR;
 	if (dataRatio){
-		// ratio from data:
-		//===========================
-		calculateRatio(fMuData, Muon, SigSup, fRatioHistoMu);
-		calculateRatio(fMuData, Muon, ZDecay, pRatioHistoMu);
+		muPR.push_back(DoubleMu1);
+		muPR.push_back(DoubleMu1a);
+		muPR.push_back(DoubleMu2);
+		muPR.push_back(DoubleMu3);
+		muPR.push_back(DoubleMu4);
+		muPR.push_back(DoubleMu5);
+		muPR.push_back(DoubleMu6);
 
-		calculateRatio(fEGData, Elec, SigSup, fRatioHistoMu);
-		calculateRatio(fEGData, Elec, ZDecay, pRatioHistoMu);
+		elPR.push_back(DoubleEle1);
+		elPR.push_back(DoubleEle1a);
+		elPR.push_back(DoubleEle2);
+		elPR.push_back(DoubleEle3);
+		elPR.push_back(DoubleEle4);
+		elPR.push_back(DoubleEle5);
+		elPR.push_back(DoubleEle6);
+
+		muFR.push_back(DoubleMu1);
+		muFR.push_back(DoubleMu1a);
+		muFR.push_back(DoubleMu2);
+		muFR.push_back(DoubleMu3);
+		muFR.push_back(DoubleMu4);
+		muFR.push_back(DoubleMu5);
+		muFR.push_back(DoubleMu6);
+
+		elFR.push_back(DoubleEle1);
+		elFR.push_back(DoubleEle1a);
+		elFR.push_back(DoubleEle2);
+		elFR.push_back(DoubleEle3);
+		elFR.push_back(DoubleEle4);
+		elFR.push_back(DoubleEle5);
+		elFR.push_back(DoubleEle6);
+
+		fillRatios(muFR, elFR, muPR, elPR, 0, false, false);
 	}
 	else {
 		// ratio from MC:
 		//===========================
-		std::vector<int> ratioSamples;
-		ratioSamples.push_back(QCD50);
-		ratioSamples.push_back(QCD80);
-		ratioSamples.push_back(QCD120);
-		ratioSamples.push_back(QCD170);
-		ratioSamples.push_back(QCD300);
-		ratioSamples.push_back(QCD470);
-		ratioSamples.push_back(QCD600);
-		ratioSamples.push_back(QCD800);
+		muPR.push_back(DYJets);
+		elPR.push_back(DYJets);
+
+		// muFR.push_back(QCD50);
+		// muFR.push_back(QCD80);
+		// muFR.push_back(QCD120);
+		// muFR.push_back(QCD170);
+		// muFR.push_back(QCD300);
+		// muFR.push_back(QCD470);
+		// muFR.push_back(QCD600);
+		// muFR.push_back(QCD800);
+		// muFR.push_back(QCDMuEnr15);
+		// muFR.push_back(QCDbEnr50);
+		// muFR.push_back(QCDbEnr150);
+		muFR.push_back(TTJets);
 	
-		ratioSamples.push_back(QCDEM30);
-		ratioSamples.push_back(QCDEM80);
-		ratioSamples.push_back(QCDEM250);
-		ratioSamples.push_back(QCDMuEnr15);
+		// elFR.push_back(QCD50);
+		// elFR.push_back(QCD80);
+		// elFR.push_back(QCD120);
+		// elFR.push_back(QCD170);
+		// elFR.push_back(QCD300);
+		// elFR.push_back(QCD470);
+		// elFR.push_back(QCD600);
+		// elFR.push_back(QCD800);
+		// elFR.push_back(QCDEM30);
+		// elFR.push_back(QCDEM80);
+		// elFR.push_back(QCDEM250);
+		// elFR.push_back(QCDEM350);
+		// elFR.push_back(QCDbEnr50);
+		// elFR.push_back(QCDbEnr150);
+		elFR.push_back(TTJets);
+
+		fillRatios(muFR, elFR, muPR, elPR, 1, false, false);
 	
-		calculateRatio(ratioSamples , Muon, SigSup, fRatioHistoMu);
-	 	// calculateRatio(fMCBGMuEnr, Muon, ZDecay, pRatioHistoMu);
-	 	// calculateRatio(ratioSamples , Elec, SigSup, fRatioHistoEl);
-	 	// calculateRatio(fMCBGEMEnr, Elec, ZDecay, pRatioHistoEl);
 	}
 
 	fOUTSTREAM << "content of bins for the ratio histogram:" << endl;
 
-	fOUTSTREAM << "fRatioHistoMu" << endl;
-	for (int i=1; i <= getNFPtBins(Muon)*getNFPtBins(Muon); ++i){
-		fOUTSTREAM << Form("%d: %.4f", i, fRatioHistoMu->GetBinContent(i)) << endl;
+	if (dataRatio) {
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << "fH2D_ElfRatio" << endl;
+		for (int i=1; i <= fH2D_ElfRatio->GetNbinsX()*fH2D_ElfRatio->GetNbinsY(); ++i){
+			fOUTSTREAM << Form("%d: %.4f +- %.4f", i, fH2D_ElfRatio->GetBinContent(i), fH2D_ElfRatio->GetBinError(i)) << endl;
+		}
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << "fH2D_MufRatio" << endl;
+		for (int i=1; i <= fH2D_MufRatio->GetNbinsX()*fH2D_MufRatio->GetNbinsY(); ++i){
+			fOUTSTREAM << Form("%d: %.4f +- %.4f", i, fH2D_MufRatio->GetBinContent(i), fH2D_MufRatio->GetBinError(i)) << endl;
+		}
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << "fH2D_ElpRatio" << endl;
+		for (int i=1; i <= fH2D_ElpRatio->GetNbinsX()*fH2D_ElpRatio->GetNbinsY(); ++i){
+			fOUTSTREAM << Form("%d: %.4f +- %.4f", i, fH2D_ElpRatio->GetBinContent(i), fH2D_ElpRatio->GetBinError(i)) << endl;
+		}
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << "fH2D_MupRatio" << endl;
+		for (int i=1; i <= fH2D_MupRatio->GetNbinsX()*fH2D_MupRatio->GetNbinsY(); ++i){
+			fOUTSTREAM << Form("%d: %.4f +- %.4f", i, fH2D_MupRatio->GetBinContent(i), fH2D_MupRatio->GetBinError(i)) << endl;
+		}
+	}
+	else {
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << "fH2D_ElfRatio_MC" << endl;
+		for (int i=1; i <= fH2D_ElfRatio_MC->GetNbinsX(); ++i){
+			for (int j=1; j <= fH2D_ElfRatio_MC->GetNbinsY(); ++j){
+				fOUTSTREAM << Form("%d, %d: val+err: %.4f +- %.4f \n\t bincenterX: %.2f\n\t bincenterY: %.2f", 
+				                     i, j,  fH2D_ElfRatio_MC->GetBinContent(i,j), fH2D_ElfRatio_MC->GetBinError(i,j), 
+				                     fH2D_ElfRatio_MC->GetXaxis()->GetBinCenter(i), fH2D_ElfRatio_MC->GetYaxis()->GetBinCenter(j)) << endl;
+			}
+		}
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << "fH2D_MufRatio_MC" << endl;
+		for (int i=1; i <= fH2D_MufRatio_MC->GetNbinsX(); ++i){
+			for (int j=1; j <= fH2D_MufRatio_MC->GetNbinsY(); ++j){
+				fOUTSTREAM << Form("%d, %d: val+err: %.4f +- %.4f \n\t bincenterX: %.2f\n\t bincenterY: %.2f", 
+				                     i, j,  fH2D_MufRatio_MC->GetBinContent(i,j), fH2D_MufRatio_MC->GetBinError(i,j), 
+				                     fH2D_MufRatio_MC->GetXaxis()->GetBinCenter(i), fH2D_MufRatio_MC->GetYaxis()->GetBinCenter(j)) << endl;
+			}
+		}
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << endl << endl << endl;
+		fOUTSTREAM << "fH2D_ElpRatio_MC" << endl;
+		for (int i=1; i <= fH2D_ElpRatio_MC->GetNbinsX(); ++i){
+			for (int j=1; j <= fH2D_ElpRatio_MC->GetNbinsY(); ++j){
+				fOUTSTREAM << Form("%d, %d: val+err: %.4f +- %.4f \n\t bincenterX: %.2f\n\t bincenterY: %.2f", 
+				                     i, j,  fH2D_ElpRatio_MC->GetBinContent(i,j), fH2D_ElpRatio_MC->GetBinError(i,j), 
+				                     fH2D_ElpRatio_MC->GetXaxis()->GetBinCenter(i), fH2D_ElpRatio_MC->GetYaxis()->GetBinCenter(j)) << endl;
+			}
+		}
+		fOUTSTREAM << "fH2D_MupRatio_MC" << endl;
+		for (int i=1; i <= fH2D_MupRatio_MC->GetNbinsX(); ++i){
+			for (int j=1; j <= fH2D_MupRatio_MC->GetNbinsY(); ++j){
+				fOUTSTREAM << Form("%d, %d: val+err: %.4f +- %.4f \n\t bincenterX: %.2f\n\t bincenterY: %.2f", 
+				                     i, j,  fH2D_MupRatio_MC->GetBinContent(i,j), fH2D_MupRatio_MC->GetBinError(i,j), 
+				                     fH2D_MupRatio_MC->GetXaxis()->GetBinCenter(i), fH2D_MupRatio_MC->GetYaxis()->GetBinCenter(j)) << endl;
+			}
+		}
 	}
 
-	//==================================
-	// DEFINE THE SAMPLES ON WHICH TO RUN THE CLOSURE TEST
-	//==================================
-	// std::vector<int> mcSamples;
-	// mcSamples.push_back(TTJets);
-	// mcSamples.push_back(TTJets_v1);
-	// mcSamples.push_back(TTJets_madgraph_v1);
-	// mcSamples.push_back(TTJets_madgraph_v2);
-	// mcSamples.push_back(WJets);
-	// mcSamples.push_back(WJets2);
-	// mcSamples.push_back(WbbJets);
-
-	///////////////////////////////////////////////////////////////////////////////////
-	// OBSERVATIONS ///////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////
-	float nt2_mm(0.), nt10_mm(0.), nt01_mm(0.), nt0_mm(0.);
-	float nt2_em(0.), nt10_em(0.), nt01_em(0.), nt0_em(0.);
-	float nt2_ee(0.), nt10_ee(0.), nt01_ee(0.), nt0_ee(0.);
-
-	// FR Predictions from event-by-event weights (pre stored)
-	float npp_mm(0.), npf_mm(0.), nfp_mm(0.), nff_mm(0.);
-	float npp_em(0.), npf_em(0.), nfp_em(0.), nff_em(0.);
-	float npp_ee(0.), npf_ee(0.), nfp_ee(0.), nff_ee(0.);
+	std::map<string, observation > obsMap;
+	std::map<string, observation > predMap;
 
 	FakeRatios *FR = new FakeRatios();
+	float f1(0.), f2(0.), p1(0.), p2(0.);
+	float npp(0.), npf(0.), nfp(0.), nff(0.);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	TFile *pFile = TFile::Open(fOutputFileName);
@@ -12256,14 +12313,22 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 	sigtree->SetBranchAddress("NbJmed",   &NbJmed);
 	sigtree->SetBranchAddress("PassZVeto",&passZVeto);
 	sigtree->SetBranchAddress("HLTSF",    &HLTSF);
+	sigtree->SetBranchAddress("Mll",      &mll);
 
 	for( int i = 0; i < sigtree->GetEntries(); i++ ){
-		showStatusBar(i, sigtree->GetEntries(), 10000);
+		// showStatusBar(i, sigtree->GetEntries(), 10000);
 		sigtree->GetEntry(i);
 
 		if ( flag != 0)    continue; // only get non-messed up events..
 		if ( Flavor > 2)   continue; // only SS events
 		if ( SType != 10)  continue; // only MC events that are not rare etc.
+			if ( *sname != "TTJets" && *sname != "WbbJets") continue; // for now just run on TTJets sample
+			// if ((*sname).find("TTJets") == string::npos && *sname != "WbbJets") continue; // for now just run on TTJets sample
+			// if (*sname == "TTbarWNLO"                 ) continue; // protection here...
+			// if (*sname == "DYJets"                    ) continue; // for all those samples where 
+			// if (*sname == "MuEnr15"                   ) continue; // for all those samples where 
+			// if ((*sname).find("QCD"  ) != string::npos) continue; // SType == 10 doesn't work
+			// if ((*sname).find("GJets") != string::npos) continue; // SType == 10 doesn't work
 		if ( mll < 8.)     continue; // apply selection
 		if ( HT  < minHT ) continue; // apply selection
 		if ( MET < minMET) continue; // apply selection
@@ -12289,39 +12354,218 @@ void SSDLPlotter::makeClosureTestSigEvents(float minHT, float minMET, int minNJ,
 		if (gApplyZVeto && Flavor < 3 && passZVeto == 0)  continue; // do not apply Z veto on OS
 
 		Sample *S = fSampleMap[*sname];
-		float scale = fLumiNorm / S->getLumi();
+		float scale  = fLumiNorm / S->getLumi();
 		float weight = puweight*HLTSF*scale;
 
+		// FIRST THE "OBSERVATIONS"
+
 		if( Flavor == 0 ) {
-			if      ( TLCat == 0 ) nt2_mm += weight;
-			else if ( TLCat == 1 ) nt10_mm+= weight;
-			else if ( TLCat == 2 ) nt01_mm+= weight;
-			else if ( TLCat == 3 ) nt0_mm += weight;
+			if      ( TLCat == 0 ) {obsMap[*sname].ntt_mm += weight; obsMap[*sname].ntt_mm_e2 += weight*weight;}
+			else if ( TLCat == 1 ) {obsMap[*sname].ntl_mm += weight; obsMap[*sname].ntl_mm_e2 += weight*weight;}
+			else if ( TLCat == 2 ) {obsMap[*sname].nlt_mm += weight; obsMap[*sname].nlt_mm_e2 += weight*weight;}
+			else if ( TLCat == 3 ) {obsMap[*sname].nll_mm += weight; obsMap[*sname].nll_mm_e2 += weight*weight;}
 		}
 		if( Flavor == 1 ) {
-			if      ( TLCat == 0 ) nt2_em += weight;
-			else if ( TLCat == 1 ) nt10_em+= weight;
-			else if ( TLCat == 2 ) nt01_em+= weight;
-			else if ( TLCat == 3 ) nt0_em += weight;
+			if      ( TLCat == 0 ) {obsMap[*sname].ntt_em += weight; obsMap[*sname].ntt_em_e2 += weight*weight;}
+			else if ( TLCat == 1 ) {obsMap[*sname].ntl_em += weight; obsMap[*sname].ntl_em_e2 += weight*weight;}
+			else if ( TLCat == 2 ) {obsMap[*sname].nlt_em += weight; obsMap[*sname].nlt_em_e2 += weight*weight;}
+			else if ( TLCat == 3 ) {obsMap[*sname].nll_em += weight; obsMap[*sname].nll_em_e2 += weight*weight;}
 		}
 		if( Flavor == 2 ) {
-			if      ( TLCat == 0 ) nt2_ee += weight;
-			else if ( TLCat == 1 ) nt10_ee+= weight;
-			else if ( TLCat == 2 ) nt01_ee+= weight;
-			else if ( TLCat == 3 ) nt0_ee += weight;
+			if      ( TLCat == 0 ) {obsMap[*sname].ntt_ee += weight; obsMap[*sname].ntt_ee_e2 += weight*weight;}
+			else if ( TLCat == 1 ) {obsMap[*sname].ntl_ee += weight; obsMap[*sname].ntl_ee_e2 += weight*weight;}
+			else if ( TLCat == 2 ) {obsMap[*sname].nlt_ee += weight; obsMap[*sname].nlt_ee_e2 += weight*weight;}
+			else if ( TLCat == 3 ) {obsMap[*sname].nll_ee += weight; obsMap[*sname].nll_ee_e2 += weight*weight;}
 		}
+
+		// AND NOW THE PREDICTIONS
+		f1 = getFRatio(chan, pT1, eta1, dataRatio?0:S->datamc);
+		f2 = getFRatio(chan, pT2, eta2, dataRatio?0:S->datamc);
+		p1 = getPRatio(chan, pT1, dataRatio?0:S->datamc);
+		p2 = getPRatio(chan, pT2, dataRatio?0:S->datamc);
+		if(chan == ElMu){
+			f1 = getFRatio(Muon, pT1, eta1, dataRatio?0:S->datamc);
+			f2 = getFRatio(Elec, pT2, eta2, dataRatio?0:S->datamc);
+			p1 = getPRatio(Muon, pT1, dataRatio?0:S->datamc);
+			p2 = getPRatio(Elec, pT2, dataRatio?0:S->datamc);
+		}
+
+		// if (chan == Muon) {
+		// 	cout << " -------------------------------------------- " << endl;
+		// 	cout << Form("pt1: %.4f  pt2: %.4f  eta1: %.4f  eta2: %.4f", pT1, pT2, eta1, eta2 ) << std::endl;
+		// 	cout << Form("f1: %.4f  f2: %.4f  p1: %.4f  p2: %.4f", f1, f2, p1, p2 ) << std::endl;
+		// 	if (dataRatio) {
+		// 		if (pT1 > 40.) cout << "f1 from fH2D_MufRatio: " << fH2D_MufRatio->GetBinContent( fH2D_MufRatio->FindBin(39., fabs(eta1)) ) << endl;
+		// 		else           cout << "f1 from fH2D_MufRatio: " << fH2D_MufRatio->GetBinContent( fH2D_MufRatio->FindBin(pT1, fabs(eta1)) )    << endl;
+		// 	}
+		// 	else {
+		// 		if (pT1 > 40.) cout << "f1 from fH2D_MufRatio_MC: " << fH2D_MufRatio_MC->GetBinContent( fH2D_MufRatio_MC->FindBin(39., fabs(eta1)) ) << endl;
+		// 		else           cout << "f1 from fH2D_MufRatio_MC: " << fH2D_MufRatio_MC->GetBinContent( fH2D_MufRatio_MC->FindBin(pT1, fabs(eta1)) )    << endl;
+		// 	}
+		// }
+
+		// Get the weights
+		npp = FR->getWpp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+		npf = FR->getWpf(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+		nfp = FR->getWfp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+		nff = FR->getWff(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+
+		// marcmarc npp_e = FR->getNppEStat(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+		// marcmarc npf_e = FR->getNpfEStat(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+		// marcmarc nfp_e = FR->getNfpEStat(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+		// marcmarc nff_e = FR->getNffEStat(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+
+		if( Flavor == 0 ) {
+			predMap[*sname].ntt_mm += weight*npp; predMap[*sname].ntt_mm_e2 += weight*npp*weight*npp;
+			predMap[*sname].ntl_mm += weight*npf; predMap[*sname].ntl_mm_e2 += weight*npf*weight*npf;
+			predMap[*sname].nlt_mm += weight*nfp; predMap[*sname].nlt_mm_e2 += weight*nfp*weight*nfp;
+			predMap[*sname].nll_mm += weight*nff; predMap[*sname].nll_mm_e2 += weight*nff*weight*nff;
+		}
+		if( Flavor == 1 ) {
+			predMap[*sname].ntt_em += weight*npp; predMap[*sname].ntt_em_e2 += weight*npp*weight*npp;
+			predMap[*sname].ntl_em += weight*npf; predMap[*sname].ntl_em_e2 += weight*npf*weight*npf;
+			predMap[*sname].nlt_em += weight*nfp; predMap[*sname].nlt_em_e2 += weight*nfp*weight*nfp;
+			predMap[*sname].nll_em += weight*nff; predMap[*sname].nll_em_e2 += weight*nff*weight*nff;
+		}
+		if( Flavor == 2 ) {
+			predMap[*sname].ntt_ee += weight*npp; predMap[*sname].ntt_ee_e2 += weight*npp*weight*npp;
+			predMap[*sname].ntl_ee += weight*npf; predMap[*sname].ntl_ee_e2 += weight*npf*weight*npf;
+			predMap[*sname].nlt_ee += weight*nfp; predMap[*sname].nlt_ee_e2 += weight*nfp*weight*nfp;
+			predMap[*sname].nll_ee += weight*nff; predMap[*sname].nll_ee_e2 += weight*nff*weight*nff;
+		}
+
 	}
 
-	fOUTSTREAM <<      " =================================================" << endl;
-	fOUTSTREAM <<      " ======  OBSERVATIONS IN MONTE CARLO  ============" << endl;
-	fOUTSTREAM <<      " =================================================" << endl;
-	fOUTSTREAM <<      " |         MuMu              |           ElMu            |           ElEl            |" << endl;
-	fOUTSTREAM <<      " |---------------------------|---------------------------|-------------------------- |" << endl;
-	fOUTSTREAM <<      " | ntt    ntl    nlt    nll  | ntt    ntl    nlt    nll  |  ntt    ntl    nlt    nll |" << endl;
-	fOUTSTREAM <<      " |---------------------------|---------------------------|-------------------------- |" << endl;
-	fOUTSTREAM << Form(" | %.2f   %.2f   %.2f  %.2f  |  %.2f   %.2f   %.2f  %.2f |  %.2f   %.2f   %.2f  %.2f |", 
 
+	std::map<string, observation >::const_iterator  obsIt  = obsMap.begin();
+	std::map<string, observation >::const_iterator  predIt = predMap.begin();
+
+	observation totPred, totObs;	
+
+	fOUTSTREAM <<      "                    =================================================================================================================================================" << endl;
+	fOUTSTREAM <<      "                    =================================================================  OBSERVATIONS IN MONTE CARLO  =================================================" << endl;
+	fOUTSTREAM <<      "                    =================================================================================================================================================" << endl;
+	fOUTSTREAM <<      "                    |                     MuMu                      |                       ElMu                    |                       ElEl                    |" << endl;
+	fOUTSTREAM <<      "                    |-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|" << endl;
+	fOUTSTREAM <<      "                    |  ntt           ntl          nlt         nll   |  ntt           ntl          nlt         nll   |  ntt           ntl          nlt         nll   |" << endl;
+	fOUTSTREAM <<      "                    |-----------------------------------------------|-----------------------------------------------|-----------------------------------------------|" << endl;
+	for (; obsIt != obsMap.end(); obsIt++) {
+		fOUTSTREAM << Form(" %18s | %4.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %4.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %4.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f |", 
+		(obsIt->first).c_str(), 
+	     obsIt->second.ntt_mm, TMath::Sqrt(obsIt->second.ntt_mm_e2), 
+	     obsIt->second.ntl_mm, TMath::Sqrt(obsIt->second.ntl_mm_e2), 
+	     obsIt->second.nlt_mm, TMath::Sqrt(obsIt->second.nlt_mm_e2), 
+	     obsIt->second.nll_mm, TMath::Sqrt(obsIt->second.nll_mm_e2), 
+	     obsIt->second.ntt_em, TMath::Sqrt(obsIt->second.ntt_em_e2), 
+	     obsIt->second.ntl_em, TMath::Sqrt(obsIt->second.ntl_em_e2), 
+	     obsIt->second.nlt_em, TMath::Sqrt(obsIt->second.nlt_em_e2), 
+	     obsIt->second.nll_em, TMath::Sqrt(obsIt->second.nll_em_e2), 
+	     obsIt->second.ntt_ee, TMath::Sqrt(obsIt->second.ntt_ee_e2), 
+	     obsIt->second.ntl_ee, TMath::Sqrt(obsIt->second.ntl_ee_e2), 
+	     obsIt->second.nlt_ee, TMath::Sqrt(obsIt->second.nlt_ee_e2), 
+	     obsIt->second.nll_ee, TMath::Sqrt(obsIt->second.nll_ee_e2)
+		) << endl;
+		// add central values
+		totObs.ntt_mm += obsIt->second.ntt_mm; totObs.ntl_mm += obsIt->second.ntl_mm; totObs.nlt_mm += obsIt->second.nlt_mm; totObs.nll_mm += obsIt->second.nll_mm;
+		totObs.ntt_em += obsIt->second.ntt_em; totObs.ntl_em += obsIt->second.ntl_em; totObs.nlt_em += obsIt->second.nlt_em; totObs.nll_em += obsIt->second.nll_em;
+		totObs.ntt_ee += obsIt->second.ntt_ee; totObs.ntl_ee += obsIt->second.ntl_ee; totObs.nlt_ee += obsIt->second.nlt_ee; totObs.nll_ee += obsIt->second.nll_ee;
+		// add squared weights
+		totObs.ntt_mm_e2 += obsIt->second.ntt_mm_e2; totObs.ntl_mm_e2 += obsIt->second.ntl_mm_e2; totObs.nlt_mm_e2 += obsIt->second.nlt_mm_e2; totObs.nll_mm_e2 += obsIt->second.nll_mm_e2;
+		totObs.ntt_em_e2 += obsIt->second.ntt_em_e2; totObs.ntl_em_e2 += obsIt->second.ntl_em_e2; totObs.nlt_em_e2 += obsIt->second.nlt_em_e2; totObs.nll_em_e2 += obsIt->second.nll_em_e2;
+		totObs.ntt_ee_e2 += obsIt->second.ntt_ee_e2; totObs.ntl_ee_e2 += obsIt->second.ntl_ee_e2; totObs.nlt_ee_e2 += obsIt->second.nlt_ee_e2; totObs.nll_ee_e2 += obsIt->second.nll_ee_e2;
+	}
+	fOUTSTREAM <<      "                     |----------------------------------------------------|----------------------------------------------------|----------------------------------------------------|" << endl;
+	fOUTSTREAM << Form("       TOTAL         | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f |", 
+	totObs.ntt_mm, TMath::Sqrt(totObs.ntt_mm_e2), 
+	totObs.ntl_mm, TMath::Sqrt(totObs.ntl_mm_e2), 
+	totObs.nlt_mm, TMath::Sqrt(totObs.nlt_mm_e2), 
+	totObs.nll_mm, TMath::Sqrt(totObs.nll_mm_e2), 
+	totObs.ntt_em, TMath::Sqrt(totObs.ntt_em_e2), 
+	totObs.ntl_em, TMath::Sqrt(totObs.ntl_em_e2), 
+	totObs.nlt_em, TMath::Sqrt(totObs.nlt_em_e2), 
+	totObs.nll_em, TMath::Sqrt(totObs.nll_em_e2), 
+	totObs.ntt_ee, TMath::Sqrt(totObs.ntt_ee_e2), 
+	totObs.ntl_ee, TMath::Sqrt(totObs.ntl_ee_e2), 
+	totObs.nlt_ee, TMath::Sqrt(totObs.nlt_ee_e2), 
+	totObs.nll_ee, TMath::Sqrt(totObs.nll_ee_e2)
 	) << endl;
+
+
+
+	fOUTSTREAM << endl << endl << endl;
+	fOUTSTREAM <<      "                    =============================================================================================================" << endl;
+	fOUTSTREAM <<      "                    =========================================  PREDICTIONS FROM MC RATIOS   =====================================" << endl;
+	fOUTSTREAM <<      "                    =============================================================================================================" << endl;
+	fOUTSTREAM <<      "                    |         MuMu                      |           ElMu                    |           ElEl                    |" << endl;
+	fOUTSTREAM <<      "                    |-----------------------------------|-----------------------------------|-----------------------------------|" << endl;
+	fOUTSTREAM <<      "                    |  npp       npf      nfp     nff   |  npp       npf      nfp     nff   |  npp       npf      nfp     nff   |" << endl;
+	fOUTSTREAM <<      "                    |-----------------------------------|-----------------------------------|-----------------------------------|" << endl;
+	for (; predIt != predMap.end(); predIt++) {
+		fOUTSTREAM << Form(" %18s | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f |", 
+		(predIt->first).c_str(), 
+	     predIt->second.ntt_mm, TMath::Sqrt(predIt->second.ntt_mm_e2), 
+	     predIt->second.ntl_mm, TMath::Sqrt(predIt->second.ntl_mm_e2), 
+	     predIt->second.nlt_mm, TMath::Sqrt(predIt->second.nlt_mm_e2), 
+	     predIt->second.nll_mm, TMath::Sqrt(predIt->second.nll_mm_e2), 
+	     predIt->second.ntt_em, TMath::Sqrt(predIt->second.ntt_em_e2), 
+	     predIt->second.ntl_em, TMath::Sqrt(predIt->second.ntl_em_e2), 
+	     predIt->second.nlt_em, TMath::Sqrt(predIt->second.nlt_em_e2), 
+	     predIt->second.nll_em, TMath::Sqrt(predIt->second.nll_em_e2), 
+	     predIt->second.ntt_ee, TMath::Sqrt(predIt->second.ntt_ee_e2), 
+	     predIt->second.ntl_ee, TMath::Sqrt(predIt->second.ntl_ee_e2), 
+	     predIt->second.nlt_ee, TMath::Sqrt(predIt->second.nlt_ee_e2), 
+	     predIt->second.nll_ee, TMath::Sqrt(predIt->second.nll_ee_e2)
+		) << endl;
+		// add central values to total
+		totPred.ntt_mm += predIt->second.ntt_mm; totPred.ntl_mm += predIt->second.ntl_mm; totPred.nlt_mm += predIt->second.nlt_mm; totPred.nll_mm += predIt->second.nll_mm;
+		totPred.ntt_em += predIt->second.ntt_em; totPred.ntl_em += predIt->second.ntl_em; totPred.nlt_em += predIt->second.nlt_em; totPred.nll_em += predIt->second.nll_em;
+		totPred.ntt_ee += predIt->second.ntt_ee; totPred.ntl_ee += predIt->second.ntl_ee; totPred.nlt_ee += predIt->second.nlt_ee; totPred.nll_ee += predIt->second.nll_ee;
+		// add central values to total
+		totPred.ntt_mm_e2 += predIt->second.ntt_mm_e2; totPred.ntl_mm_e2 += predIt->second.ntl_mm_e2; totPred.nlt_mm_e2 += predIt->second.nlt_mm_e2; totPred.nll_mm_e2 += predIt->second.nll_mm_e2;
+		totPred.ntt_em_e2 += predIt->second.ntt_em_e2; totPred.ntl_em_e2 += predIt->second.ntl_em_e2; totPred.nlt_em_e2 += predIt->second.nlt_em_e2; totPred.nll_em_e2 += predIt->second.nll_em_e2;
+		totPred.ntt_ee_e2 += predIt->second.ntt_ee_e2; totPred.ntl_ee_e2 += predIt->second.ntl_ee_e2; totPred.nlt_ee_e2 += predIt->second.nlt_ee_e2; totPred.nll_ee_e2 += predIt->second.nll_ee_e2;
+	}
+	fOUTSTREAM <<      "                     |----------------------------------------------------|----------------------------------------------------|----------------------------------------------------|" << endl;
+	fOUTSTREAM << Form("       TOTAL         | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f | %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f  %5.2f+-%.2f |", 
+	totPred.ntt_mm, TMath::Sqrt(totPred.ntt_mm_e2), 
+	totPred.ntl_mm, TMath::Sqrt(totPred.ntl_mm_e2), 
+	totPred.nlt_mm, TMath::Sqrt(totPred.nlt_mm_e2), 
+	totPred.nll_mm, TMath::Sqrt(totPred.nll_mm_e2), 
+	totPred.ntt_em, TMath::Sqrt(totPred.ntt_em_e2), 
+	totPred.ntl_em, TMath::Sqrt(totPred.ntl_em_e2), 
+	totPred.nlt_em, TMath::Sqrt(totPred.nlt_em_e2), 
+	totPred.nll_em, TMath::Sqrt(totPred.nll_em_e2), 
+	totPred.ntt_ee, TMath::Sqrt(totPred.ntt_ee_e2), 
+	totPred.ntl_ee, TMath::Sqrt(totPred.ntl_ee_e2), 
+	totPred.nlt_ee, TMath::Sqrt(totPred.nlt_ee_e2), 
+	totPred.nll_ee, TMath::Sqrt(totPred.nll_ee_e2)
+	) << endl;
+
+	float mm_fakes = totPred.ntl_mm + totPred.nlt_mm + totPred.nll_mm;
+	float em_fakes = totPred.ntl_em + totPred.nlt_em + totPred.nll_em;
+	float ee_fakes = totPred.ntl_ee + totPred.nlt_ee + totPred.nll_ee;
+
+	float mm_fakes_e2 = totPred.ntl_mm_e2 + totPred.nlt_mm_e2 + totPred.nll_mm_e2;
+	float em_fakes_e2 = totPred.ntl_em_e2 + totPred.nlt_em_e2 + totPred.nll_em_e2;
+	float ee_fakes_e2 = totPred.ntl_ee_e2 + totPred.nlt_ee_e2 + totPred.nll_ee_e2;
+
+	fOUTSTREAM << endl << endl << endl;
+	fOUTSTREAM <<      "                         =============================================================================================================" << endl;
+	fOUTSTREAM <<      "                         =========================================  CLOSURE TEST RESULTS         =====================================" << endl;
+	fOUTSTREAM <<      "                         =============================================================================================================" << endl;
+	fOUTSTREAM <<      "                         |         MuMu                      |           ElMu                    |           ElEl                    |" << endl;
+	fOUTSTREAM <<      "                         |-----------------------------------|-----------------------------------|-----------------------------------|" << endl;
+	fOUTSTREAM <<      "                         |  observed           fakes         |  observed           fakes         |  observed           fakes         |" << endl;
+	fOUTSTREAM <<      "                         |-----------------------------------|-----------------------------------|-----------------------------------|" << endl;
+	fOUTSTREAM << Form("                         | %5.2f+-%.2f       %5.2f+-%.2f     | %5.2f+-%.2f        %5.2f+-%.2f    | %5.2f+-%.2f      %5.2f+-%.2f      |", 
+	totObs.ntt_mm, TMath::Sqrt(totObs.ntt_mm_e2),
+	mm_fakes     , TMath::Sqrt(mm_fakes_e2)     ,
+	totObs.ntt_em, TMath::Sqrt(totObs.ntt_em_e2),
+	em_fakes     , TMath::Sqrt(em_fakes_e2)     ,
+	totObs.ntt_ee, TMath::Sqrt(totObs.ntt_ee_e2),
+	ee_fakes     , TMath::Sqrt(ee_fakes_e2)     );
+
+	
 
 	fOUTSTREAM.close();
 }
@@ -24335,7 +24579,264 @@ void SSDLPlotter::drawRegionSel(int reg){
 	// // if(     Region::minNbjets[reg] > 0 ) lat->DrawLatex(0.55,0.75, Form("N_{bTags} #geq %1d",         Region::minNbjets[reg]));
 	// if(     Region::minNbjmed[reg] > 0 ) lat->DrawLatex(0.55,0.80, Form("N_{bTags} (medium) #geq %1d",         Region::minNbjets[reg]));
 }
+class genLep{
+	public: 
+		int sgn;
+		int type; // 0 mu, 1 el
+		float pt;
+		float eta;
+		float phi;
+		float mass(){
+			if(type==0) return 0.1057;
+			if(type==1) return 0.0005;
+		}
+		bool passesFiducials(){
+			if(type == 0){
+				if(pt < 20.)        return false;
+				if(fabs(eta) > 2.4) return false;
+			}
+			else if(type == 1){
+				if(pt < 20.)        return false;
+				if(fabs(eta) > 2.4) return false;
+				if(fabs(eta) > 1.4442 && fabs(eta) < 1.566) return false;
+			}
+			else cout << "what the fuuuuuuuck " << endl;
+			return true;
+		}
 
+};
+float poisErr(int a, int b){
+	float k = a;
+	float n = b;
+	return TMath::Sqrt(k*(n+k)/(n*n*n));
+}
+float binoErr(int a, int b){
+	float k = a;
+	float n = b;
+	return (1/n)*TMath::Sqrt( k * (1-k/n) ); 
+}
+void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo){
+
+	cout << filestring << endl;
+
+	TFile * file_ = TFile::Open(filestring);
+	TTree * tree_ = (TTree *) file_->Get("Analysis");
+	tree_->ResetBranchAddresses();
+	Init(tree_);
+	Long64_t tot_events = tree_->GetEntriesFast();
+
+	TH1F * n_leptons = new TH1F("nleptons", "N_{leptons}",   5,   0,   5);
+	TH1F * ss_pts    = new TH1F("pts"     , "p_{T}"      ,  50,   0, 150);
+	TH1F * ss_etas   = new TH1F("etas"    , "|eta|"      ,  50,-2.5, 2.5);
+	TH1F * jetpts    = new TH1F("jetpts"  , "p_T_{jet}"  ,  50,  20, 250);
+	TH1F * bjetpts   = new TH1F("bjetpts" , "p_T_{b-jet}",  50,  20, 250);
+	TH1F * bjetdrs   = new TH1F("bjetdrs" , "dR_{b-jet}" , 100,   0, 1.0);
+	TH1F * hthist    = new TH1F("ht"      , "H_{T}"      ,  50,  20, 400);
+	TH1F * njethist  = new TH1F("njets"   , "N_{jets}"   ,  10,   0,  10);
+
+	int nTot          = 0;
+	int nSSGen        = 0;
+	int nPassFiducial = 0;
+	int nPassPt40     = 0;
+	int nPassNJ3      = 0;
+	int nPassHT155    = 0;
+	int nPassnNB1     = 0;
+
+	// loop on events
+	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
+		tree_->GetEntry(jentry);
+		printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
+		// nTot++;
+		if(amcnlo && GenWeight < 0) nTot--;
+		else nTot++;
+		std::vector<genLep> leps_p;
+		std::vector<genLep> leps_m;
+		std::vector<genLep> leps;
+		bool hasSSPair = false;
+		for(int i = 0 ; i < NGenLep; ++i){
+			// if((!amcnlo && GenLepStatus[i] != 3) || (amcnlo && GenLepStatus[i] != 3 && GenLepStatus[i] != 1 ) ) continue; // status 3 or NLO+status 1||3
+			if((!amcnlo && GenLepStatus[i] == 3) || (amcnlo && (GenLepStatus[i] == 3 || GenLepStatus[i] == 1)) ) {
+				if( (abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13) && (abs(GenLepMID[i]) == 24 || abs(GenLepMID[i]) == 15) ){
+					// if(GenLepPt [i] < 20.) continue;
+					// if(fabs(GenLepEta[i]) > 2.4) continue;
+					// if(abs(GenLepID[i]) == 11 && fabs(GenLepEta[i]) > 1.4442 && fabs(GenLepEta[i]) < 1.566) continue;
+					genLep tmpLep;
+					tmpLep.pt   = GenLepPt [i];
+					tmpLep.eta  = GenLepEta[i];
+					tmpLep.phi  = GenLepPhi[i];
+					tmpLep.sgn  = GenLepID[i] > 0 ? -1 : 1;
+					tmpLep.type = abs(GenLepID[i]) == 13 ? 0 : 1;
+					// tmpLep.vec.SetPtEtaPhiM(GenLepPt[i], GenLepEta[i], GenLepPhi[i], tmpLep.mass());
+					// cout << Form("id: %d  charge: %d    stat: %d   mo: %d   pt: %.2f",tmpLep.type , tmpLep.sgn, GenLepStatus[i] , GenLepMID[i] , tmpLep.pt) << endl;
+					if(tmpLep.sgn > 0) leps_p.push_back(tmpLep);
+					if(tmpLep.sgn < 0) leps_m.push_back(tmpLep);
+				}
+			}
+		}
+		n_leptons->Fill(leps_p.size() + leps_m.size());
+		if(leps_p.size() > 1 || leps_m.size() > 1) hasSSPair = true;
+		if(!hasSSPair) continue; // has one SS pair
+		if(amcnlo && GenWeight < 0) nSSGen--;
+		else nSSGen++;
+		leps = leps_p.size() > 1 ? leps_p : leps_m;
+		// see if leptons pass fiducial cuts (20 gev and eta cuts)
+		if(!(leps[0].passesFiducials()) || !(leps[1].passesFiducials())) continue;
+		// cout << "-------------------------------------------" << endl;
+		// cout << "Event: " << Event << " leps_p.size(): " << leps_p.size() << " leps_m.size(): " << leps_m.size() <<
+		// " leps.size(): " << leps.size() << endl
+		// << " leps[0].type: " << leps[0].type 
+		// << " leps[0].pt: " << leps[0].pt 
+		// << " fabs(leps[0].eta): "  << fabs(leps[0].eta) 
+		// << endl
+		// << " leps[1].type: " << leps[1].type 
+		// << " leps[1].pt: " << leps[1].pt 
+		// << " fabs(leps[1].eta): "  << fabs(leps[1].eta) << endl;
+		// fill lepton pts
+		ss_pts ->Fill(leps[0].pt);
+		ss_pts ->Fill(leps[1].pt);
+		ss_etas->Fill(leps[0].eta);
+		ss_etas->Fill(leps[1].eta);
+		(amcnlo && GenWeight < 0) ? nPassFiducial-- : nPassFiducial++; // both leptons pass 20 GeV and eta cuts
+		if(leps[0].pt < 40. || leps[1].pt < 40) continue;      // cut on pt > 40 GeV
+		(amcnlo && GenWeight < 0) ? nPassPt40-- : nPassPt40++;
+		// loop on jets
+		int njets(0), nbjets(0);
+		float ht(0.);
+		for(int i=0; i < NGenJets; ++i){
+			if(GenJetPt[i] < 30.) continue;
+			if(fabs(GenJetEta[i]) > 2.4) continue;
+			// if(Util::GetDeltaR(leps[0].eta, JetGenEta[i], leps[0].phi, JetGenPhi[i]) < 0.4 ||
+			//    Util::GetDeltaR(leps[1].eta, JetGenEta[i], leps[1].phi, JetGenPhi[i]) < 0.4  ) continue;
+			TLorentzVector jet, lep1, lep2;
+			jet.SetPtEtaPhiE(GenJetPt[i], GenJetEta[i], GenJetPhi[i], GenJetE[i]); //don't worry about pt and the mass
+			lep1.SetPtEtaPhiM(leps[0].pt, leps[0].eta, leps[0].eta, leps[0].mass());
+			lep2.SetPtEtaPhiM(leps[1].pt, leps[1].eta, leps[1].eta, leps[1].mass());
+			if(jet.DeltaR(lep1) < 0.4 || jet.DeltaR(lep2) < 0.4) continue;
+			// cout << "jetmass: " << jet.M() << endl;
+			njets++;
+			jetpts->Fill(GenJetPt[i]);
+			ht += GenJetPt[i];
+			float dr = isRealBJet(jet, 0.1, amcnlo);
+			if(dr < 0.) continue;
+			nbjets++;
+			bjetpts->Fill(GenJetPt[i]);
+			bjetdrs->Fill(dr);
+		} // end jet loop
+		hthist  ->Fill(ht);
+		njethist->Fill(njets);
+		if(njets <3) continue;
+		(amcnlo && GenWeight < 0) ? nPassNJ3-- : nPassNJ3++;
+		if(ht < 155.) continue;
+		(amcnlo && GenWeight < 0) ? nPassHT155-- : nPassHT155++;
+		if(nbjets < 1) continue;
+		(amcnlo && GenWeight < 0) ? nPassnNB1-- : nPassnNB1++;
+	}
+	
+	int nll(0), ntt20(0), ntt40(0), ntt3j(0), nttht(0), ntt1b(0);
+	int ngenR(0);
+	int nmm(0);
+
+	// for (Long64_t jentry=0; jentry<tot_events;jentry++) {
+	// 	setRegionCuts(0);
+	// 	tree_->GetEntry(jentry);
+	// 	printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
+	// 	// printRegionCuts(0);
+	// 	// if(jentry > 1) break;
+	// 	if(amcnlo && GenWeight < 0) ngenR--;
+	// 	else ngenR++;
+	// 	int i1(-1), i2(-1);
+	// 	// if(!isSSLLEvent(i1, i2)) continue;
+	// 	// resetHypLeptons();
+	// 	if(amcnlo && GenWeight < 0) nll--;
+	// 	else nll++;
+	// 	bool ismumu(false), iselel(false), iselmu(false);
+	// 	int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
+	// 	if( isSSLLMuEvent(m1, m2)) { 
+	// 		if(amcnlo && GenWeight < 0) nmm--;
+	// 		else nmm++;
+	// 		if(isTightMuon(m1) && isTightMuon(m2)){
+	// 			if(amcnlo && GenWeight < 0) ntt20--;
+	// 			else ntt20++;
+	// 			if(MuPt[m1] < 40. || MuPt[m2] < 40.){ resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) ntt40--;
+	// 			else ntt40++;
+	// 			if(getNJets(30.) < 3){resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) ntt3j--;
+	// 			else ntt3j++;
+	// 			if(getHT() < 155){resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) nttht--;
+	// 			else nttht++;
+	// 			if(getNBTagsMed() < 1){resetHypLeptons(); continue;}
+	// 			if(amcnlo && GenWeight < 0) ntt1b--;
+	// 			else ntt1b++;
+	// 		}
+	// 	}
+	// 	resetHypLeptons();
+	// 	//if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
+	// 	//resetHypLeptons();
+	// 	//if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
+	// 	//resetHypLeptons();
+	// 	//cout << ismumu << " " << iselel << " " << iselmu << endl;
+	// 	//if(!(ismumu || iselel || iselmu) ) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt20--;
+	// 	//else ntt20++;
+	// 	//if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt40--;
+	// 	//else ntt40++;
+	// 	//if(getNJets(30.) < 3) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt3j--;
+	// 	//else ntt3j++;
+	// 	//if(getHT() < 155) continue;
+	// 	//if(amcnlo && GenWeight < 0) nttht--;
+	// 	//else nttht++;
+	// 	//if(getNBTagsMed() < 1) continue;
+	// 	//if(amcnlo && GenWeight < 0) ntt1b--;
+	// 	//else ntt1b++;
+	// 	//resetHypLeptons();
+	// }
+
+
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "total generated ", nTot         , 100.*nTot         /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "has SS pair     ", nSSGen       , 100.*nSSGen       /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "pair passes fid ", nPassFiducial, 100.*nPassFiducial/(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "leps pass 40gev ", nPassPt40    , 100.*nPassPt40    /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "at least 3 jets ", nPassNJ3     , 100.*nPassNJ3     /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "ht > 155        ", nPassHT155   , 100.*nPassHT155   /(float)nSSGen ) << endl;
+	// cout << Form("%40s:  %10d   --  %7.2f\%", "nbjets >= 1     ", nPassnNB1    , 100.*nPassnNB1    /(float)nSSGen ) << endl;
+	cout << "===============================   GEN   ===============================" << endl;
+	cout << "total generated "<< nTot          <<"  -- "<< 100.*nTot         /(float)nSSGen<<" +- "<<100.*binoErr(nTot         ,nSSGen)<<" ("<<100.*poisErr(nTot         ,nSSGen)<<")"<<endl;
+	cout << "has SS pair     "<< nSSGen        <<"  -- "<< 100.*nSSGen       /(float)nSSGen<<" +- "<<100.*binoErr(nSSGen       ,nSSGen)<<" ("<<100.*poisErr(nSSGen       ,nSSGen)<<")"<<endl;
+	cout << "pair passes fid "<< nPassFiducial <<"  -- "<< 100.*nPassFiducial/(float)nSSGen<<" +- "<<100.*binoErr(nPassFiducial,nSSGen)<<" ("<<100.*poisErr(nPassFiducial,nSSGen)<<")"<<endl;
+	cout << "leps pass 40gev "<< nPassPt40     <<"  -- "<< 100.*nPassPt40    /(float)nSSGen<<" +- "<<100.*binoErr(nPassPt40    ,nSSGen)<<" ("<<100.*poisErr(nPassPt40    ,nSSGen)<<")"<<endl;
+	cout << "at least 3 jets "<< nPassNJ3      <<"  -- "<< 100.*nPassNJ3     /(float)nSSGen<<" +- "<<100.*binoErr(nPassNJ3     ,nSSGen)<<" ("<<100.*poisErr(nPassNJ3     ,nSSGen)<<")"<<endl;
+	cout << "ht > 155        "<< nPassHT155    <<"  -- "<< 100.*nPassHT155   /(float)nSSGen<<" +- "<<100.*binoErr(nPassHT155   ,nSSGen)<<" ("<<100.*poisErr(nPassHT155   ,nSSGen)<<")"<<endl;
+	cout << "nbjets >= 1     "<< nPassnNB1     <<"  -- "<< 100.*nPassnNB1    /(float)nSSGen<<" +- "<<100.*binoErr(nPassnNB1    ,nSSGen)<<" ("<<100.*poisErr(nPassnNB1    ,nSSGen)<<")"<<endl;
+	cout << "===============================  RECO   ===============================" << endl;
+	cout << "total generated " << ngenR          << "  -- " << 100.*ngenR  /(float)nll << endl;
+	cout << "has SSLL pair   " << nll            << "  -- " << 100.*nll    /(float)nll << endl;
+	cout << "has SSLL mumu   " << nmm            << "  -- " << 100.*nmm    /(float)nll << endl;
+	cout << "TT pair pt 20   " << ntt20          << "  -- " << 100.*ntt20  /(float)nll << endl;
+	cout << "leps pass 40gev " << ntt40          << "  -- " << 100.*ntt40  /(float)nll << endl;
+	cout << "at least 3 jets " << ntt3j          << "  -- " << 100.*ntt3j  /(float)nll << endl;
+	cout << "ht > 155        " << nttht          << "  -- " << 100.*nttht  /(float)nll << endl;
+	cout << "nbjets >= 1     " << ntt1b          << "  -- " << 100.*ntt1b  /(float)nll << endl;
+
+	file_->Close();
+
+	TFile * res_;
+	res_ = new TFile( (amcnlo ? "output_ngenstudues_amcnlo.root" : "output_ngenstudues_madgraph.root"), "RECREATE", "res_");
+	res_   -> cd();
+	n_leptons -> Write();
+	ss_pts    -> Write();
+	ss_etas   -> Write();
+	jetpts    -> Write();
+	bjetpts   -> Write();
+	bjetdrs   -> Write();
+	hthist    -> Write();
+	njethist  -> Write();
+	res_->Close();
+
+}
 void SSDLPlotter::msugraKfacs(TFile * results){
     ifstream IN("msugraSSDL/nlo_kfactors.txt");
 
@@ -24819,118 +25320,6 @@ void SSDLPlotter::scanSMS( const char * filestring, int reg){
 	//	delete S;
 	delete res_;
 }
-void SSDLPlotter::SUSYWorkshopPlots( TString sestring, int mgluino, int mlsp){
-
-	//SSDLDumper::setRegionCuts(reg);
-	SSDLDumper::setRegionCuts(0);
-
-	fC_minHT  =0;
-	cout<< "minHT     " << fC_minHT     << endl;
-	cout<< "maxHT     " << fC_maxHT     << endl;
-	fC_minMet =0.;
-	cout<< "minMet    " << fC_minMet    << endl;
-	cout<< "maxMet    " << fC_maxMet    << endl;
-	cout<< "minJetPt  " << fC_minJetPt  << endl;
-	fC_minNjets  =0;
-	cout<< "minNjets  " << fC_minNjets  << endl;
-	cout<< "maxNjets  " << fC_maxNjets  << endl;
-	cout<< "minNbjets " << fC_minNbjets << endl;
-	cout<< "maxNbjets " << fC_maxNbjets << endl;
-	cout<< "minNbjmed " << fC_minNbjmed << endl;
-	cout<< "maxNbjmed " << fC_maxNbjmed << endl;
-
-	TString name = "T1tttt";
-
-	// get the histo with the count for each point
-	TFile * file_ = TFile::Open(sestring); //, "READ", "file_");
-	// get the Analysis tree from the file, initialize it
-	TTree * tree_ = (TTree *) file_->Get("Analysis");
-	tree_->ResetBranchAddresses();
-	Init(tree_);
-	// just for counting, really
-	Long64_t tot_events = tree_->GetEntriesFast();
-
-	// TChain * c = new TChain("Analysis");
-	// c->Add(sestring+"/output*.root");
-	// c->ResetBranchAddresses();
-	// Init(c);
-	// Long64_t tot_events = c->GetEntriesFast();
-
-	TH1D * njets  = new TH1D("njets"  , "njets"  ,  20, 0,    20);
-	TH1D * nbjets = new TH1D("nbjets" , "nbjets" ,  10, 0,    10);
-	TH1D * nlepts = new TH1D("nlepts" , "nlepts" ,   5, 0,     5);
-	TH1D * nlepinc= new TH1D("nlepinc", "nlepinc",   5, 0,     5);
-	TH1D * met    = new TH1D("met"    , "met"    ,  28, 0,   700);
-	TH1D * ht     = new TH1D("ht"     , "ht"     ,  50, 0,  2500);
-	TH1D * l0pt   = new TH1D("l0pt"   , "l0pt"   ,  35, 0,   350);
-	TH1D * l1pt   = new TH1D("l1pt"   , "l1pt"   ,  35, 0,   350);
-	TH1D * j0pt   = new TH1D("j0pt"   , "j0pt"   ,  50, 0,  1000);
-	TH1D * j1pt   = new TH1D("j1pt"   , "j1pt"   ,  50, 0,  1000);
-
-	cout << "Total Number of entries: " << tot_events << endl;
-	// loop
-	for (Long64_t jentry=0; jentry<tree_->GetEntriesFast();jentry++) {
-		printProgress(jentry, tot_events, name+" Scan ");
-		tree_->GetEntry(jentry);
-		if (mGlu != mgluino) continue;
-		if (mlsp < 20) {if (mLSP > mlsp   ) continue;}
-		else if (mLSP != mlsp) continue;
-		
-		int nj = getNJets();
-		int nb = getNBTagsMed();
-		int nl = getNTightMuons() + getNTightElectrons();
-		int nli= NEls + NMus;
-		float mt = getMET();
-		float h  = getHT();
-		float l0 = getTightPt(0);
-		float l1 = getTightPt(1);
-		float j0 = getJetsPt(0);
-		float j1 = getJetsPt(1);
-		
-		if (nj  >  njets   -> GetXaxis() -> GetXmax() ) { njets   -> AddBinContent(njets   -> GetXaxis() -> GetNbins()) ;} else { njets   -> Fill(nj );}
-		if (nb  >  nbjets  -> GetXaxis() -> GetXmax() ) { nbjets  -> AddBinContent(nbjets  -> GetXaxis() -> GetNbins()) ;} else { nbjets  -> Fill(nb );}
-		if (nl  >  nlepts  -> GetXaxis() -> GetXmax() ) { nlepts  -> AddBinContent(nlepts  -> GetXaxis() -> GetNbins()) ;} else { nlepts  -> Fill(nl );}
-		if (nli >  nlepinc -> GetXaxis() -> GetXmax() ) { nlepinc -> AddBinContent(nlepinc -> GetXaxis() -> GetNbins()) ;} else { nlepinc -> Fill(nli);}
-		if (mt  >  met     -> GetXaxis() -> GetXmax() ) { met     -> AddBinContent(met     -> GetXaxis() -> GetNbins()) ;} else { met     -> Fill(mt );}
-		if (h   >  ht      -> GetXaxis() -> GetXmax() ) { ht      -> AddBinContent(ht      -> GetXaxis() -> GetNbins()) ;} else { ht      -> Fill(h  );}
-		if (l0  >  l0pt    -> GetXaxis() -> GetXmax() ) { l0pt    -> AddBinContent(l0pt    -> GetXaxis() -> GetNbins()) ;} else { l0pt    -> Fill(l0 );}
-		if (l1  >  l1pt    -> GetXaxis() -> GetXmax() ) { l1pt    -> AddBinContent(l1pt    -> GetXaxis() -> GetNbins()) ;} else { l1pt    -> Fill(l1 );}
-		if (j0  >  j0pt    -> GetXaxis() -> GetXmax() ) { j0pt    -> AddBinContent(j0pt    -> GetXaxis() -> GetNbins()) ;} else { j0pt    -> Fill(j0 );}
-		if (j1  >  j1pt    -> GetXaxis() -> GetXmax() ) { j1pt    -> AddBinContent(j1pt    -> GetXaxis() -> GetNbins()) ;} else { j1pt    -> Fill(j1 );}
-		// nbjets ->Fill(getNBTagsMed());
-		// nlepts ->Fill(getNTightMuons() + getNTightElectrons());
-		// nlepinc->Fill(NEls + NMus);
-		// met    ->Fill(getMET());
-		// ht     ->Fill(getHT());
-
-		// // fill lepton pts
-		// l0pt->Fill(getTightPt(0));
-		// l1pt->Fill(getTightPt(1));
-		// // fill jet pts
-		// j0pt->Fill(getJetsPt(0));
-		// j1pt->Fill(getJetsPt(1));
-
-
-	} // end loop on all events
-	file_->Close();
-
-	TFile * res_;
-	res_ = new TFile(Form(name+"_susyWorkshop_mglu%d_mlsp%d.root", mgluino, mlsp), "RECREATE", "res_");
-	res_   -> cd();
-
-	njets  ->Write();
-	nbjets ->Write();
-	nlepts ->Write();
-	nlepinc->Write();
-	met    ->Write();
-	ht     ->Write();
-	l0pt   ->Write();
-	l1pt   ->Write();
-	j0pt   ->Write();
-	j1pt   ->Write();
-
-	res_->Close();
-}
 void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString model, bool lowpt){
 
 	SSDLDumper::setRegionCuts(reg);
@@ -25100,30 +25489,41 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 
 	// PDF uncertainties 
 	// ===========================================================
-	int ncteq(40), nct10(52), nmstw(40);
-	TH2D  * Model_nTot_cteq_[ncteq];
-	TH2D  * Model_nTot_ct10_[nct10];
-	TH2D  * Model_nTot_mstw_[nmstw];
-	TH2D  * Model_nPass_cteq_[ncteq];
-	TH2D  * Model_nPass_ct10_[nct10];
-	TH2D  * Model_nPass_mstw_[nmstw];
-	for (int j = 0; j<ncteq; j++) {
-		Model_nTot_cteq_         [j] = new TH2D(model+Form("_nTot_cteq_%d",j) , model+Form("_nTot_cteq_%d",j) , nbins, min, max, nbins, min, max);
-		Model_nPass_cteq_        [j] = new TH2D(model+Form("_nPass_cteq_%d",j), model+Form("_nPass_cteq_%d",j), nbins, min, max, nbins, min, max);
-		Model_nTot_cteq_         [j]->Sumw2();
-		Model_nPass_cteq_        [j]->Sumw2();
+	tree_->GetEntry(1); // have to reload the entry for each systematic
+	TH2D  * Model_nTot_nom_;
+	TH2D  * Model_nTot_pdf1_[NPdf1];
+	TH2D  * Model_nTot_pdf2_[NPdf2];
+	TH2D  * Model_nTot_pdf3_[NPdf3];
+
+	TH2D  * Model_nPass_nom_;
+	TH2D  * Model_nPass_pdf1_[NPdf1];
+	TH2D  * Model_nPass_pdf2_[NPdf2];
+	TH2D  * Model_nPass_pdf3_[NPdf3];
+
+	Model_nTot_nom_    = new TH2D(model+Form("_nTot_nom_") , model+Form("_nTot_nom_") , nbins, min, max, nbins, min, max);
+	Model_nPass_nom_   = new TH2D(model+Form("_nPass_nom_"), model+Form("_nPass_nom_"), nbins, min, max, nbins, min, max);
+	Model_nTot_nom_   ->Sumw2();
+	Model_nPass_nom_  ->Sumw2();
+
+	cout << Form("npdf1: %d  npdf2: %d   npdf3: %d ", NPdf1, NPdf2, NPdf3) << endl;
+
+	for (int j = 0; j<NPdf1; j++) {
+		Model_nTot_pdf1_   [j] = new TH2D(model+Form("_nTot_pdf1_%d",j) , model+Form("_nTot_pdf1_%d",j) , nbins, min, max, nbins, min, max);
+		Model_nPass_pdf1_  [j] = new TH2D(model+Form("_nPass_pdf1_%d",j), model+Form("_nPass_pdf1_%d",j), nbins, min, max, nbins, min, max);
+		Model_nTot_pdf1_   [j]->Sumw2();
+		Model_nPass_pdf1_  [j]->Sumw2();
 	}
-	for (int j = 0; j<nct10; j++) {
-		Model_nTot_ct10_         [j] = new TH2D(model+Form("_nTot_ct10_%d",j) , model+Form("_nTot_ct10_%d",j) , nbins, min, max, nbins, min, max);
-		Model_nPass_ct10_        [j] = new TH2D(model+Form("_nPass_ct10_%d",j), model+Form("_nPass_ct10_%d",j), nbins, min, max, nbins, min, max);
-		Model_nTot_ct10_         [j]->Sumw2();
-		Model_nPass_ct10_        [j]->Sumw2();
+	for (int j = 0; j<NPdf2; j++) {
+		Model_nTot_pdf2_   [j] = new TH2D(model+Form("_nTot_pdf2_%d",j) , model+Form("_nTot_pdf2_%d",j) , nbins, min, max, nbins, min, max);
+		Model_nPass_pdf2_  [j] = new TH2D(model+Form("_nPass_pdf2_%d",j), model+Form("_nPass_pdf2_%d",j), nbins, min, max, nbins, min, max);
+		Model_nTot_pdf2_   [j]->Sumw2();
+		Model_nPass_pdf2_  [j]->Sumw2();
 	}
-	for (int j = 0; j<nmstw; j++) {
-		Model_nTot_mstw_         [j] = new TH2D(model+Form("_nTot_mstw_%d",j) , model+Form("_nTot_mstw_%d",j) , nbins, min, max, nbins, min, max);
-		Model_nPass_mstw_        [j] = new TH2D(model+Form("_nPass_mstw_%d",j), model+Form("_nPass_mstw_%d",j), nbins, min, max, nbins, min, max);
-		Model_nTot_mstw_         [j]->Sumw2();
-		Model_nPass_mstw_        [j]->Sumw2();
+	for (int j = 0; j<NPdf3; j++) {
+		Model_nTot_pdf3_   [j] = new TH2D(model+Form("_nTot_pdf3_%d",j) , model+Form("_nTot_pdf3_%d",j) , nbins, min, max, nbins, min, max);
+		Model_nPass_pdf3_  [j] = new TH2D(model+Form("_nPass_pdf3_%d",j), model+Form("_nPass_pdf3_%d",j), nbins, min, max, nbins, min, max);
+		Model_nTot_pdf3_   [j]->Sumw2();
+		Model_nPass_pdf3_  [j]->Sumw2();
 	}
 	// ===========================================================
 	// ===========================================================
@@ -25158,49 +25558,45 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 			// T7btw      scan: xvar = mGlu and yvar = mChi
 			// T1tttt     scan: xvar = mGlu and yvar = mLSP
 			// T5VV       scan: xvar = mGlu and yvar = mChi
-			xvar = mGlu;
-			yvar = mLSP;
+			xvar = 50; //mGlu;
+			yvar = 50; //mLSP;
 
 			// PDF uncertainties:
 			// =====================================================================
 			if ( i ==0) {
-				for (int j = 0; j<nct10; j++) {
-					if (j < 40 ) Model_nTot_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-					Model_nTot_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-					if (j < 40 ) Model_nTot_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-				}
+			    Model_nTot_nom_ ->Fill(xvar, yvar);
+				for(int j=0; j<NPdf1; ++j) Model_nTot_pdf1_  [j] ->Fill(xvar, yvar, WPdf1[j] );
+				for(int j=0; j<NPdf2; ++j) Model_nTot_pdf2_  [j] ->Fill(xvar, yvar, WPdf2[j] );
+				for(int j=0; j<NPdf3; ++j) Model_nTot_pdf3_  [j] ->Fill(xvar, yvar, WPdf3[j] );
 
 				int m1(-1), m2(-1);
 				if( isSSLLMuEvent(m1, m2) ){ // Same-sign loose-loose di muon event
 					if(isTightMuon(m1) &&  isTightMuon(m2) ){ // Tight-tight
 						if ( IsSignalMuon[m1] != 1 || IsSignalMuon[m2] != 1 ) continue;
-							for (int j = 0; j<nct10; j++) {
-								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-							}
+							Model_nPass_nom_ ->Fill(xvar, yvar);
+							for(int j=0; j<NPdf1; ++j) Model_nPass_pdf1_ [j] ->Fill(xvar, yvar, WPdf1[j]);
+							for(int j=0; j<NPdf2; ++j) Model_nPass_pdf2_ [j] ->Fill(xvar, yvar, WPdf2[j]);
+							for(int j=0; j<NPdf3; ++j) Model_nPass_pdf3_ [j] ->Fill(xvar, yvar, WPdf3[j]);
 					}
 				}
 				int m(-1), e(-1);
 				if( isSSLLElMuEvent(m, e) ){
 					if(  isTightElectron(e) &&  isTightMuon(m) ){ // Tight-tight
 						if ( IsSignalMuon[m] != 1 || IsSignalElectron[e] != 1 ) continue;
-							for (int j = 0; j<nct10; j++) {
-								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-							}
+							Model_nPass_nom_ ->Fill(xvar, yvar);
+							for(int j=0; j<NPdf1; ++j) Model_nPass_pdf1_ [j] ->Fill(xvar, yvar, WPdf1[j]);
+							for(int j=0; j<NPdf2; ++j) Model_nPass_pdf2_ [j] ->Fill(xvar, yvar, WPdf2[j]);
+							for(int j=0; j<NPdf3; ++j) Model_nPass_pdf3_ [j] ->Fill(xvar, yvar, WPdf3[j]);
 					}
 				}
 				int e1(-1), e2(-1);
 				if( isSSLLElEvent(e1, e2) ){
 					if(  isTightElectron(e1) &&  isTightElectron(e2) ){ // Tight-tight
 						if ( IsSignalElectron[e1] != 1 || IsSignalElectron[e2] != 1 ) continue;
-							for (int j = 0; j<nct10; j++) {
-								if (j < 40 ) Model_nPass_cteq_         [j] ->Fill(xvar, yvar, WPdfCTEQ[j]);
-								Model_nPass_ct10_         [j] ->Fill(xvar, yvar, WPdfCT10[j]);
-								if (j < 40 ) Model_nPass_mstw_         [j] ->Fill(xvar, yvar, WPdfMRST[j]);
-							}
+							Model_nPass_nom_ ->Fill(xvar, yvar);
+							for(int j=0; j<NPdf1; ++j) Model_nPass_pdf1_ [j] ->Fill(xvar, yvar, WPdf1[j]);
+							for(int j=0; j<NPdf2; ++j) Model_nPass_pdf2_ [j] ->Fill(xvar, yvar, WPdf2[j]);
+							for(int j=0; j<NPdf3; ++j) Model_nPass_pdf3_ [j] ->Fill(xvar, yvar, WPdf3[j]);
 					}
 				}
 				// =====================================================================
@@ -25221,8 +25617,10 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 			}
 
 			// float nloXsec      = xsecfit->Eval(xvar);
+			// marc for ttw int   nGenBin      = Model_nTot_->FindBin(xvar, yvar);
+			// marc for ttw float nGen         = Model_nTot_->GetBinContent(nGenBin);
 			int   nGenBin      = Model_nTot_->FindBin(xvar, yvar);
-			float nGen         = Model_nTot_->GetBinContent(nGenBin);
+			float nGen         = Model_nTot_->GetEntries();
 			float weight       = fLumiNorm / nGen;
 			float idsf(-999.), trigsf(-999.);
 			float lepsyst(0.);
@@ -25331,9 +25729,9 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 
 	fOUTSTREAM.close();
 
-	for (int i=0; i<nSyst;i++) {
-		Model_eff_ [i]->Divide(Model_nPass_[i], Model_nTot_ , 1. , 1.);
-	}
+	// marc for ttw for (int i=0; i<nSyst;i++) {
+	// marc for ttw 	Model_eff_ [i]->Divide(Model_nPass_[i], Model_nTot_ , 1. , 1.);
+	// marc for ttw }
 
 	TFile * res_;
 	res_ = new TFile(fOutputDir+model+"_results_"+gRegions[reg]->sname+".root", "RECREATE", "res_");
@@ -25366,15 +25764,19 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 		Model_isrUp_           [i]->Write();
 		Model_isrDn_           [i]->Write();
 	}
-	for (int i=0; i<nct10; ++i){
-		Model_nTot_ct10_ [i] ->Write();
-		Model_nPass_ct10_[i] ->Write();
-		if (i<40) {
-			Model_nTot_cteq_ [i] ->Write();
-			Model_nTot_mstw_ [i] ->Write();
-			Model_nPass_cteq_[i] ->Write();
-			Model_nPass_mstw_[i] ->Write();
-		}
+	Model_nTot_nom_  ->Write();
+	Model_nPass_nom_ ->Write();
+	for (int i=0; i<NPdf1; ++i){
+		Model_nTot_pdf1_ [i] ->Write();
+		Model_nPass_pdf1_[i] ->Write();
+	}
+	for (int i=0; i<NPdf2; ++i){
+		Model_nTot_pdf2_ [i] ->Write();
+		Model_nPass_pdf2_[i] ->Write();
+	}
+	for (int i=0; i<NPdf3; ++i){
+		Model_nTot_pdf3_ [i] ->Write();
+		Model_nPass_pdf3_[i] ->Write();
 	}
 	file_->Close();
 	res_->Close();
