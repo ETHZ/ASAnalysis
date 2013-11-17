@@ -11,7 +11,6 @@
 #include <TROOT.h>
 #include <TTree.h>
 #include <TChain.h>
-#include "TUUID.h"
 #include "TChainElement.h"
 #include "TString.h"
 
@@ -24,7 +23,7 @@ using namespace std;
 //________________________________________________________________________________________
 // Print out usage
 void usage( int status = 0 ) {
-	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-Y minthrpfphotoncandEB] [-y minthrpfphotoncandEE] [-s step] [-S input_directory_matchingtree_step2] [-l] file1 [... filen]" << endl;
+	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-Y minthrpfphotoncandEB] [-y minthrpfphotoncandEE] [-s step] [-S input_directory_matchingtree_step2] [-u UUID] [-l] file1 [... filen]" << endl;
 	cout << "  where:" << endl;
 	cout << "     dir      is the output directory               " << endl;
 	cout << "               default is current directory               " << endl;
@@ -62,10 +61,12 @@ int main(int argc, char* argv[]) {
 	TString input_filename = "";
 
 	Float_t kfactors[3]={1,1,1};
+	UInt_t uuid = 0;
+
 
 	// Parse options
 	char ch;
-	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:Y:y:s:S:lh?")) != -1 ) {
+	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:Y:y:s:S:u:lh?")) != -1 ) {
 	  switch (ch) {
 	  case 'N': nevtsindset = atoi(optarg); break;
 	  case 'G': kfactors[0] = atof(optarg); break;
@@ -88,6 +89,7 @@ int main(int argc, char* argv[]) {
 	  case 'y': minthrpfphotoncandEE = atof(optarg); break;
 	  case 's': atoi(optarg)==2 ? isstep2=true : isstep2=false; break;
 	  case 'S': input_filename=TString(optarg); break;
+	  case 'u': uuid=atoi(optarg); break;
 	  default:
 	    cerr << "*** Error: unknown option " << optarg << std::endl;
 	    usage(-1);
@@ -118,8 +120,6 @@ int main(int argc, char* argv[]) {
 	  }
 	}
 	
-	UInt_t uuid = 0; // TOFIX
-
 //	{
 //	TObjArray *fileElements=theChain->GetListOfFiles();
 //	TIter next(fileElements);

@@ -127,7 +127,7 @@ private:
 
   Float_t* kfactors;
 
-  EnergyCorrection *phocorr;
+  float getEtaCorrectionBarrel(float eta);
   TLorentzVector CorrPhoton(TreeReader *fTR, int i);
 	
   std::vector<int> ApplyPixelVeto(TreeReader *fTR, vector<int> passing, bool forelectron=0);
@@ -282,6 +282,13 @@ private:
   Float_t pholead_PhoSCRemovalPFIsoCombined;
   Float_t photrail_PhoSCRemovalPFIsoCombined;
 
+  Float_t pholead_PhoIso03Ecal;
+  Float_t pholead_PhoIso03Hcal;
+  Float_t pholead_PhoIso03TrkHollow;
+  Float_t photrail_PhoIso03Ecal;
+  Float_t photrail_PhoIso03Hcal;
+  Float_t photrail_PhoIso03TrkHollow;
+  
   Int_t pholead_PhoPassConversionVeto;
   Int_t photrail_PhoPassConversionVeto;
   Float_t pholead_GenPhotonIsoDR04;

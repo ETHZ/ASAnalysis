@@ -145,6 +145,13 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("pholead_PhoSCRemovalPFIsoCombined",&pholead_PhoSCRemovalPFIsoCombined,"pholead_PhoSCRemovalPFIsoCombined/F");
   OutputTree[i]->Branch("photrail_PhoSCRemovalPFIsoCombined",&photrail_PhoSCRemovalPFIsoCombined,"photrail_PhoSCRemovalPFIsoCombined/F");
 
+  OutputTree[i]->Branch("pholead_PhoIso03Ecal",&pholead_PhoIso03Ecal,"pholead_PhoIso03Ecal/F");
+  OutputTree[i]->Branch("pholead_PhoIso03Hcal",&pholead_PhoIso03Hcal,"pholead_PhoIso03Hcal/F");
+  OutputTree[i]->Branch("pholead_PhoIso03TrkHollow",&pholead_PhoIso03TrkHollow,"pholead_PhoIso03TrkHollow/F");
+  OutputTree[i]->Branch("photrail_PhoIso03Ecal",&photrail_PhoIso03Ecal,"photrail_PhoIso03Ecal/F");
+  OutputTree[i]->Branch("photrail_PhoIso03Hcal",&photrail_PhoIso03Hcal,"photrail_PhoIso03Hcal/F");
+  OutputTree[i]->Branch("photrail_PhoIso03TrkHollow",&photrail_PhoIso03TrkHollow,"photrail_PhoIso03TrkHollow/F");
+
   OutputTree[i]->Branch("pholead_PhoPassConversionVeto",&pholead_PhoPassConversionVeto,"pholead_PhoPassConversionVeto/I");
   OutputTree[i]->Branch("photrail_PhoPassConversionVeto",&photrail_PhoPassConversionVeto,"photrail_PhoPassConversionVeto/I");
 
@@ -1225,6 +1232,12 @@ std::vector<int> DiPhotonMiniTree::ApplyPixelVeto(TreeReader *fTR, vector<int> p
 
 };
 
+float DiPhotonMiniTree::getEtaCorrectionBarrel(float eta){
+  int iEta = (int)(TMath::Abs(eta)*(5/0.087));
+  if ( iEta < 40.2198 ) return 1;
+  return 1.0/(1 - 3.03103e-6*(iEta - 40.2198)*(iEta - 40.2198));
+};
+
 std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vector<int> passing){
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // SC matching
@@ -1244,7 +1257,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // Pt cut on RawEnCetaCorr
     float energy=fTR->SCRaw[fTR->PhotSCindex[*it]];
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
-    if (fabs(eta)<1.4442) energy*=phocorr->getEtaCorrectionBarrel(eta);
+    if (fabs(eta)<1.4442) energy*=getEtaCorrectionBarrel(eta);
     if (fabs(eta)>1.566) energy+=fTR->SCPre[fTR->PhotSCindex[*it]];
     if (energy/cosh(eta)<20) it=passing.erase(it); else it++;
   }
@@ -2385,6 +2398,9 @@ void DiPhotonMiniTree::FillLead(int index, std::vector<int> passing_jets){
   pholead_r9 = R9Rescale(fTR->SCR9[fTR->PhotSCindex[index]]);
   pholead_sieie = SieieRescale(fTR->PhoSigmaIetaIeta[index],(bool)(fabs(fTR->SCEta[fTR->PhotSCindex[index]])<1.4442));
   pholead_hoe = fTR->PhoHoverE[index];
+  pholead_PhoIso03Ecal = fTR->PhoIso03Ecal[index];
+  pholead_PhoIso03Hcal = fTR->PhoIso03Hcal[index];
+  pholead_PhoIso03TrkHollow = fTR->PhoIso03TrkHollow[index];
 
   if (do_recalc_isolation){
     isolations_struct isos = PFConeIsolation(fTR,index);
@@ -2497,6 +2513,9 @@ void DiPhotonMiniTree::FillTrail(int index, std::vector<int> passing_jets){
   photrail_r9 = R9Rescale(fTR->SCR9[fTR->PhotSCindex[index]]);
   photrail_sieie = SieieRescale(fTR->PhoSigmaIetaIeta[index],(bool)(fabs(fTR->SCEta[fTR->PhotSCindex[index]])<1.4442));
   photrail_hoe = fTR->PhoHoverE[index];
+  photrail_PhoIso03Ecal = fTR->PhoIso03Ecal[index];
+  photrail_PhoIso03Hcal = fTR->PhoIso03Hcal[index];
+  photrail_PhoIso03TrkHollow = fTR->PhoIso03TrkHollow[index];
 
   if (do_recalc_isolation){
     isolations_struct isos = PFConeIsolation(fTR,index);
@@ -2629,6 +2648,12 @@ void DiPhotonMiniTree::ResetVars(){
   photrail_sieie = -999;
   pholead_hoe = -999;
   photrail_hoe = -999;
+  pholead_PhoIso03Ecal = -999;
+  pholead_PhoIso03Hcal = -999;
+  pholead_PhoIso03TrkHollow = -999;
+  photrail_PhoIso03Ecal = -999;
+  photrail_PhoIso03Hcal = -999;
+  photrail_PhoIso03TrkHollow = -999;
   pholead_PhoSCRemovalPFIsoCharged = -999;
   photrail_PhoSCRemovalPFIsoCharged = -999;
   pholead_PhoSCRemovalPFIsoNeutral = -999;

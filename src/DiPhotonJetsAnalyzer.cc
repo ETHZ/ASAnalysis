@@ -27,7 +27,7 @@ void DiPhotonJetsAnalyzer::Loop(){
           !(fTR->AtEnd()) && (jentry<fMaxEvents || fMaxEvents<0); 
           ++(*fTR) ) 
         {
-            PrintProgress(jentry++);
+            PrintProgress(++jentry);
             if ( fCurRun != fTR->Run ) {
                 fCurRun = fTR->Run;
                 fDiPhotonMiniTree->BeginRun(fCurRun);
