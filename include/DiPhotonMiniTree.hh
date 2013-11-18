@@ -243,7 +243,9 @@ private:
 
   TString treename[18];
   bool is2d[18];
+  TFile* fOutputExtraFile;
   TTree* OutputTree[18];
+  TTree* OutputExtraTree[18];
   TTree* LightTreeGenReco;
 
   Float_t event_luminormfactor;

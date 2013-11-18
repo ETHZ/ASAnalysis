@@ -21,41 +21,6 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
 
   eegeom = TGeoPara(1,1,1,0,0,0);
 
-//  // 020616 no cleaning numbers (superseded: should be updated with new ones after removing pf ch iso from presel) XXX
-//  // EA SET TO ZERO HARDCODED BELOW, these values are ignored;
-//  float _binsdef_single_gamma_EB_eta[n_templates_EB+1] = {0,0.2,0.4,0.6,0.8,1,1.2,1.4442}; 
-//  float _binsdef_single_gamma_EE_eta[n_templates_EE+1] = {1.566,1.653,1.8,2,2.2,2.5};
-//  float _eff_areas_EB_photon_data[n_templates_EB] = {2.601118e-01,2.584915e-01,2.640072e-01,2.656851e-01,2.564615e-01,2.396511e-01,1.645776e-01};
-//  float _eff_areas_EE_photon_data[n_templates_EE] = {5.783452e-02,8.321881e-02,1.177009e-01,1.422445e-01,1.139434e-01};
-//  float _eff_areas_EB_charged_data[n_templates_EB] = {2.526058e-02,2.619860e-02,2.118318e-02,2.078713e-02,2.066629e-02,1.908721e-02,1.732135e-02};
-//  float _eff_areas_EE_charged_data[n_templates_EE] = {1.538706e-02,1.737151e-02,1.410831e-02,1.558452e-02,1.056310e-02};
-//  float _eff_areas_EB_neutral_data[n_templates_EB] = {9.534780e-02,8.826486e-02,8.199201e-02,8.729101e-02,1.018310e-01,1.244805e-01,1.542784e-01};
-//  float _eff_areas_EE_neutral_data[n_templates_EE] = {1.547500e-01,1.480421e-01,1.391524e-01,1.546148e-01,2.487922e-01};
-//  float _eff_areas_EB_photon_MC[n_templates_EB] = {2.728305e-01,2.747126e-01,2.742736e-01,2.689392e-01,2.642000e-01,2.430941e-01,1.701134e-01};
-//  float _eff_areas_EE_photon_MC[n_templates_EE] = {5.066866e-02,8.511977e-02,1.342678e-01,1.693861e-01,1.448627e-01};
-//  float _eff_areas_EB_charged_MC[n_templates_EB] = {2.333960e-02,2.682862e-02,2.747902e-02,2.494792e-02,2.206384e-02,1.864648e-02,2.470047e-02};
-//  float _eff_areas_EE_charged_MC[n_templates_EE] = {2.264766e-02,1.934945e-02,1.834243e-02,2.223225e-02,8.191396e-03};
-//  float _eff_areas_EB_neutral_MC[n_templates_EB] = {7.527103e-02,7.490141e-02,7.510347e-02,7.806471e-02,9.715760e-02,1.193150e-01,1.449191e-01};
-//  float _eff_areas_EE_neutral_MC[n_templates_EE] = {1.507419e-01,1.383201e-01,1.489503e-01,1.460166e-01,2.548731e-01};
-//
-//
-//
-//  binsdef_single_gamma_EB_eta.assign(_binsdef_single_gamma_EB_eta,_binsdef_single_gamma_EB_eta+n_templates_EB+1);
-//  binsdef_single_gamma_EE_eta.assign(_binsdef_single_gamma_EE_eta,_binsdef_single_gamma_EE_eta+n_templates_EE+1);
-//  eff_areas_EB_photon_data.assign(_eff_areas_EB_photon_data ,_eff_areas_EB_photon_data +n_templates_EB);
-//  eff_areas_EE_photon_data.assign(_eff_areas_EE_photon_data ,_eff_areas_EE_photon_data +n_templates_EE);
-//  eff_areas_EB_charged_data.assign(_eff_areas_EB_charged_data ,_eff_areas_EB_charged_data +n_templates_EB);
-//  eff_areas_EE_charged_data.assign(_eff_areas_EE_charged_data ,_eff_areas_EE_charged_data +n_templates_EE);
-//  eff_areas_EB_neutral_data.assign(_eff_areas_EB_neutral_data ,_eff_areas_EB_neutral_data +n_templates_EB);
-//  eff_areas_EE_neutral_data.assign(_eff_areas_EE_neutral_data ,_eff_areas_EE_neutral_data +n_templates_EE);
-//  eff_areas_EB_photon_MC.assign(_eff_areas_EB_photon_MC ,_eff_areas_EB_photon_MC +n_templates_EB);
-//  eff_areas_EE_photon_MC.assign(_eff_areas_EE_photon_MC ,_eff_areas_EE_photon_MC +n_templates_EE);
-//  eff_areas_EB_charged_MC.assign(_eff_areas_EB_charged_MC ,_eff_areas_EB_charged_MC +n_templates_EB);
-//  eff_areas_EE_charged_MC.assign(_eff_areas_EE_charged_MC ,_eff_areas_EE_charged_MC +n_templates_EE);
-//  eff_areas_EB_neutral_MC.assign(_eff_areas_EB_neutral_MC ,_eff_areas_EB_neutral_MC +n_templates_EB);
-//  eff_areas_EE_neutral_MC.assign(_eff_areas_EE_neutral_MC ,_eff_areas_EE_neutral_MC +n_templates_EE);
-//
-
 }
 
 DiPhotonMiniTree::~DiPhotonMiniTree(){
@@ -65,8 +30,6 @@ DiPhotonMiniTree::~DiPhotonMiniTree(){
 void DiPhotonMiniTree::Begin(){
 
   cout << "Begin" << endl;
-
-  fOutputFile->cd();
 
   treename[0] = TString("Tree_2Dstandard_selection");
   treename[1] = TString("Tree_1Drandomcone_template");
@@ -87,44 +50,71 @@ void DiPhotonMiniTree::Begin(){
   treename[16] = TString("Tree_2Drconeplusgenfake_template");
   treename[17] = TString("Tree_2Dgenpromptplussideband_template");
 
+  fOutputExtraFile = new TFile(TString(fOutputFile->GetName()).Append("_EXTRA").Data(),"recreate");
+
   for (int i=0; i<18; i++){
+    fOutputFile->cd();
     OutputTree[i] = new TTree(treename[i].Data(),treename[i].Data());
+    fOutputExtraFile->cd();
+    TString temp = treename[i];
+    temp.Append("_EXTRA");
+    OutputExtraTree[i] = new TTree(temp.Data(),temp.Data());
     is2d[i] = (treename[i].First("2")>-1);
   }
 
   for (int i=0; i<18; i++){
 
   OutputTree[i]->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
-
   OutputTree[i]->Branch("event_run",&event_run,"event_run/I");
   OutputTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
   OutputTree[i]->Branch("event_number",&event_number,"event_number/I");
+  OutputExtraTree[i]->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
+  OutputExtraTree[i]->Branch("event_run",&event_run,"event_run/I");
+  OutputExtraTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
+  OutputExtraTree[i]->Branch("event_number",&event_number,"event_number/I");
 
   OutputTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
+  OutputExtraTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
   OutputTree[i]->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
+  OutputExtraTree[i]->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
 
   OutputTree[i]->Branch("event_weight",&event_weight,"event_weight/F");
+  OutputExtraTree[i]->Branch("event_weight",&event_weight,"event_weight/F");
   OutputTree[i]->Branch("event_rho",&event_rho,"event_rho/F");
+  OutputExtraTree[i]->Branch("event_rho",&event_rho,"event_rho/F");
   OutputTree[i]->Branch("event_sigma",&event_sigma,"event_sigma/F");
+  OutputExtraTree[i]->Branch("event_sigma",&event_sigma,"event_sigma/F");
   OutputTree[i]->Branch("event_nPU",&event_nPU,"event_nPU/I");
   OutputTree[i]->Branch("event_nRecVtx",&event_nRecVtx,"event_nRecVtx/I");
   OutputTree[i]->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
+  OutputExtraTree[i]->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
 
   OutputTree[i]->Branch("dipho_mgg_photon",&dipho_mgg_photon,"dipho_mgg_photon/F");
 
   OutputTree[i]->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
+  OutputExtraTree[i]->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
   OutputTree[i]->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
+  OutputExtraTree[i]->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
   OutputTree[i]->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
+  OutputExtraTree[i]->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
   OutputTree[i]->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
+  OutputExtraTree[i]->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
   OutputTree[i]->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
+  OutputExtraTree[i]->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
   OutputTree[i]->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
+  OutputExtraTree[i]->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
   OutputTree[i]->Branch("pholead_energy",&pholead_energy,"pholead_energy/F");
+  OutputExtraTree[i]->Branch("pholead_energy",&pholead_energy,"pholead_energy/F");
   OutputTree[i]->Branch("photrail_energy",&photrail_energy,"photrail_energy/F");
-
+  OutputExtraTree[i]->Branch("photrail_energy",&photrail_energy,"photrail_energy/F");
   OutputTree[i]->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
+  OutputExtraTree[i]->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
   OutputTree[i]->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
+  OutputExtraTree[i]->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
   OutputTree[i]->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
+  OutputExtraTree[i]->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
   OutputTree[i]->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
+  OutputExtraTree[i]->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
   
   OutputTree[i]->Branch("pholead_PhoHasPixSeed",&pholead_PhoHasPixSeed,"pholead_PhoHasPixSeed/I");
   OutputTree[i]->Branch("photrail_PhoHasPixSeed",&photrail_PhoHasPixSeed,"photrail_PhoHasPixSeed/I");
@@ -223,13 +213,13 @@ void DiPhotonMiniTree::Begin(){
 //  OutputTree[i]->Branch("pholead_test_rotatedphotoniso",&pholead_test_rotatedphotoniso,"pholead_test_rotatedphotoniso[50]/F");
 //  OutputTree[i]->Branch("pholead_test_rotatedwithcheckphotoniso",&pholead_test_rotatedwithcheckphotoniso,"pholead_test_rotatedwithcheckphotoniso[50]/F");
 
-  OutputTree[i]->Branch("allphotonpfcand_count",&allphotonpfcand_count,"allphotonpfcand_count/I");
-  OutputTree[i]->Branch("allphotonpfcand_pt",&allphotonpfcand_pt,"allphotonpfcand_pt[allphotonpfcand_count]/F");
-  OutputTree[i]->Branch("allphotonpfcand_eta",&allphotonpfcand_eta,"allphotonpfcand_eta[allphotonpfcand_count]/F");
-  OutputTree[i]->Branch("allphotonpfcand_phi",&allphotonpfcand_phi,"allphotonpfcand_phi[allphotonpfcand_count]/F");
-  OutputTree[i]->Branch("allphotonpfcand_vx",&allphotonpfcand_vx,"allphotonpfcand_vx[allphotonpfcand_count]/F");
-  OutputTree[i]->Branch("allphotonpfcand_vy",&allphotonpfcand_vy,"allphotonpfcand_vy[allphotonpfcand_count]/F");
-  OutputTree[i]->Branch("allphotonpfcand_vz",&allphotonpfcand_vz,"allphotonpfcand_vz[allphotonpfcand_count]/F");
+  OutputExtraTree[i]->Branch("allphotonpfcand_count",&allphotonpfcand_count,"allphotonpfcand_count/I");
+  OutputExtraTree[i]->Branch("allphotonpfcand_pt",&allphotonpfcand_pt,"allphotonpfcand_pt[allphotonpfcand_count]/F");
+  OutputExtraTree[i]->Branch("allphotonpfcand_eta",&allphotonpfcand_eta,"allphotonpfcand_eta[allphotonpfcand_count]/F");
+  OutputExtraTree[i]->Branch("allphotonpfcand_phi",&allphotonpfcand_phi,"allphotonpfcand_phi[allphotonpfcand_count]/F");
+  OutputExtraTree[i]->Branch("allphotonpfcand_vx",&allphotonpfcand_vx,"allphotonpfcand_vx[allphotonpfcand_count]/F");
+  OutputExtraTree[i]->Branch("allphotonpfcand_vy",&allphotonpfcand_vy,"allphotonpfcand_vy[allphotonpfcand_count]/F");
+  OutputExtraTree[i]->Branch("allphotonpfcand_vz",&allphotonpfcand_vz,"allphotonpfcand_vz[allphotonpfcand_count]/F");
 
   OutputTree[i]->Branch("phoiso_template_1event_sigsig_1",&phoiso_template_1event_sigsig_1,Form("phoiso_template_1event_sigsig_1[%d]/F",nclosest));
   OutputTree[i]->Branch("phoiso_template_1event_sigsig_2",&phoiso_template_1event_sigsig_2,Form("phoiso_template_1event_sigsig_2[%d]/F",nclosest));
@@ -266,11 +256,11 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("rewinfo_template_2events_bkgbkg_1",&rewinfo_template_2events_bkgbkg_1,Form("rewinfo_template_2events_bkgbkg_1[%d]/F",nclosest*6));
   OutputTree[i]->Branch("rewinfo_template_2events_bkgbkg_2",&rewinfo_template_2events_bkgbkg_2,Form("rewinfo_template_2events_bkgbkg_2[%d]/F",nclosest*6));
 
-  OutputTree[i]->Branch("vetoobjects_count",&vetoobjects_count,"vetoobjects_count/I");
-  OutputTree[i]->Branch("vetoobjects_pt",&vetoobjects_pt,"vetoobjects_pt[vetoobjects_count]/F");
-  OutputTree[i]->Branch("vetoobjects_eta",&vetoobjects_eta,"vetoobjects_eta[vetoobjects_count]/F");
-  OutputTree[i]->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
-  OutputTree[i]->Branch("vetoobjects_type",&vetoobjects_type,"vetoobjects_type[vetoobjects_count]/I");
+  OutputExtraTree[i]->Branch("vetoobjects_count",&vetoobjects_count,"vetoobjects_count/I");
+  OutputExtraTree[i]->Branch("vetoobjects_pt",&vetoobjects_pt,"vetoobjects_pt[vetoobjects_count]/F");
+  OutputExtraTree[i]->Branch("vetoobjects_eta",&vetoobjects_eta,"vetoobjects_eta[vetoobjects_count]/F");
+  OutputExtraTree[i]->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
+  OutputExtraTree[i]->Branch("vetoobjects_type",&vetoobjects_type,"vetoobjects_type[vetoobjects_count]/I");
 
   OutputTree[i]->Branch("n_jets",&n_jets,"n_jets/I");
   OutputTree[i]->Branch("jet1_pt",&jet1_pt,"jet1_pt/F");
@@ -762,6 +752,7 @@ void DiPhotonMiniTree::Analyze(){
       float invmass = (CorrPhoton(fTR,passing.at(0))+CorrPhoton(fTR,passing.at(1))).M();
       dipho_mgg_photon = invmass;
       if (dofill) OutputTree[sel_cat]->Fill();
+      if (dofill && sel_cat==7) OutputExtraTree[sel_cat]->Fill();
     }
 
     else if (!is2d[sel_cat]){
@@ -848,6 +839,7 @@ void DiPhotonMiniTree::Analyze(){
       }
 
       if (dofill) OutputTree[sel_cat]->Fill();
+      if (dofill && (sel_cat==1 || sel_cat==2)) OutputExtraTree[sel_cat]->Fill();
       }
 
     }
@@ -1001,6 +993,8 @@ void DiPhotonMiniTree::Analyze(){
 };
 
 void DiPhotonMiniTree::End(){
+  fOutputExtraFile->cd();
+  for (int i=0; i<18; i++) OutputExtraTree[i]->Write();	
   fOutputFile->cd();
   for (int i=0; i<18; i++) OutputTree[i]->Write();	
   LightTreeGenReco->Write();
@@ -1011,6 +1005,7 @@ void DiPhotonMiniTree::End(){
   fHNumVtx->Write();
 	
   fOutputFile->Close();
+  fOutputExtraFile->Close();
 
 }
 

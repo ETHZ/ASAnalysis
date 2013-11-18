@@ -10,7 +10,7 @@ OUTFILES=
 
 # Output files to be copied to the SE
 # (as above the file path must be given relative to the working directory)
-SEOUTFILES="output_$1.root"
+SEOUTFILES="output_$1.root extra_output_$1.root"
 
 SOURCEFILES=sourcefile
 
@@ -149,15 +149,18 @@ export LD_LIBRARY_PATH=/swshare/glite/d-cache/dcap/lib/:$LD_LIBRARY_PATH
 rootoutfiles=""
 counter=0
 for f in $SOURCEFILES; do
-  output=${SEOUTFILES%.*}"_"$counter.root
+  output="output_$1_"$counter.root
   echo Running $exe $ARGUMENTS -o $output $f ...
   $exe $ARGUMENTS -o $output $f 
   if test -e $output; then rootoutfiles=$rootoutfiles" "$output; fi
+  if test -e ${output}_EXTRA; then rootoutfiles_EXTRA=$rootoutfiles_EXTRA" "${output}_EXTRA; fi
   let counter++
 done
 if test x"$rootoutfiles" != x; then
-  echo Running hadd $SEOUTFILES $rootoutfiles
-  hadd $SEOUTFILES $rootoutfiles
+  echo Running hadd output_$1.root $rootoutfiles
+  hadd output_$1.root $rootoutfiles
+  echo Running hadd extra_output_$1.root $rootoutfiles_EXTRA
+  hadd extra_output_$1.root $rootoutfiles_EXTRA
 fi
 
 #### RETRIEVAL OF OUTPUT FILES AND CLEANING UP ############################
