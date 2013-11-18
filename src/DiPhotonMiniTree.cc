@@ -440,8 +440,9 @@ void DiPhotonMiniTree::Analyze(){
       }
       passing = PhotonPreSelection(fTR,passing);
 
-      for (int i=0; i<fTR->NJets; i++) passing_jets.push_back(i);
+      for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(i);
       for (int i=0; i<(int)(passing_jets.size())-1; i++){
+	if (!(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)])) cout << event_run << ":" << event_lumi << ":" << event_number << " " << fTR->JPt[passing_jets.at(i)] << " " << fTR->JPt[passing_jets.at(i+1)] << endl;
         assert(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)]);
       }
       JetSelection(passing_jets);
@@ -1610,6 +1611,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   for (int i=0; i<fTR->NJets; i++){
     if (fTR->JPt[i]<20) continue;
+    if (fTR->JEcorr.at(i)<0) continue;
     //    cout << "vj " << fTR->JPt[i] << " " << fTR->JEta[i] << " " << fTR->JPhi[i] << endl;
     //    if (!(fTR->JPassPileupIDT0[fTR->JVrtxListStart[i]+0])) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
@@ -1664,6 +1666,7 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
   
   for (int i=0; i<fTR->NJets; i++){
     if (fTR->JPt[i]<20) continue;
+    if (fTR->JEcorr.at(i)<0) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
     TVector3 a;
@@ -3192,7 +3195,7 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
 
   // init ranking
   std::vector<std::pair<int,float> > ranking;
-  for (int i=0; i<fTR->NJets; i++) ranking.push_back(std::pair<int,float>(i,0));
+  for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) ranking.push_back(std::pair<int,float>(i,0));
   if (ranking.size()==0) {
     //    cout << "PFMatchPhotonToJet: no jets in the event! Returning error state" << endl;
     return out;
