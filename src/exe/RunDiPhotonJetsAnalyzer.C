@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 // Default options
 	bool isList = false;
 	TString outputdir = "./";
-	TString outputfile = "outfile.root";
+	TString outputfile = "output.root";
 	int verbose = 0;
 	
 	int maxEvents=-1;
