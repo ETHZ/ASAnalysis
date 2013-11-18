@@ -6,6 +6,8 @@
 //#include <boost/functional/hash.hpp>
 //#include <boost/algorithm/string.hpp>
 //#include <boost/algorithm/string/trim.hpp>
+#include <stdlib.h>
+
 
 // ROOT includes
 #include <TROOT.h>
@@ -23,7 +25,7 @@ using namespace std;
 //________________________________________________________________________________________
 // Print out usage
 void usage( int status = 0 ) {
-	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-Y minthrpfphotoncandEB] [-y minthrpfphotoncandEE] [-s step] [-S input_directory_matchingtree_step2] [-u UUID] [-l] file1 [... filen]" << endl;
+	cout << "Usage: RunDiPhotonJetsAnalyzer [-o outfile] [-f datamc] [-d dir] [-v verbose] [-p datapileup] [-P MCpileup] [-n MaxEvents] [-j jsonfile] [-x xsec(pb)] [-L nlumi(/fb)] [-N events_in_dset] [-G gg k factor] [-g gj k factor] [-J jj k factor] [-Y minthrpfphotoncandEB] [-y minthrpfphotoncandEE] [-s step] [-S input_directory_matchingtree_step2] [-l] file1 [... filen]" << endl;
 	cout << "  where:" << endl;
 	cout << "     dir      is the output directory               " << endl;
 	cout << "               default is current directory               " << endl;
@@ -66,7 +68,7 @@ int main(int argc, char* argv[]) {
 
 	// Parse options
 	char ch;
-	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:Y:y:s:S:u:lh?")) != -1 ) {
+	while ((ch = getopt(argc, argv, "N:G:g:J:o:f:d:v:j:p:P:n:x:L:Y:y:s:S:lh?")) != -1 ) {
 	  switch (ch) {
 	  case 'N': nevtsindset = atoi(optarg); break;
 	  case 'G': kfactors[0] = atof(optarg); break;
@@ -89,7 +91,6 @@ int main(int argc, char* argv[]) {
 	  case 'y': minthrpfphotoncandEE = atof(optarg); break;
 	  case 's': atoi(optarg)==2 ? isstep2=true : isstep2=false; break;
 	  case 'S': input_filename=TString(optarg); break;
-	  case 'u': uuid=atoi(optarg); break;
 	  default:
 	    cerr << "*** Error: unknown option " << optarg << std::endl;
 	    usage(-1);
@@ -145,6 +146,25 @@ int main(int argc, char* argv[]) {
 //		  }
 //	}
 //
+
+	cout << "getting uuid for " << fileList.at(0).c_str() << endl;
+	TString cmd_=Form("/shome/peruzzi/calc_hash.py %s",fileList.at(0).c_str());
+	FILE* pipe = popen(cmd_.Data(), "r");
+	assert (pipe);
+	char buffer[2048];
+	std::string result = "";
+	while(!feof(pipe)) {
+	  if(fgets(buffer, 2048, pipe) != NULL)
+	    result += buffer;
+	}
+	pclose(pipe);
+	cout << "str uuid " << result.c_str() << endl;
+	assert(result.length()<2048);
+	std::strcpy(buffer,result.c_str());
+	uuid = UInt_t(strtoul(buffer,NULL,0));
+	cout << "uuid " << uuid << endl;
+	
+
 	cout << "--------------" << endl;
 	cout << "OutputDir is:     " << outputdir << endl;
 	cout << "OutputFile is:    " << outputfile << endl;

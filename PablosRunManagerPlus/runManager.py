@@ -176,8 +176,8 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
   
   thisjobnumber=0
 
-  #cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+#  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
   if options.verbose: print cmd
   if options.dryrun: return thisjobnumber
 
@@ -461,9 +461,9 @@ if __name__ == '__main__' :
                 parser.print_usage()
                 sys.exit(-1)
         
-        timeleft=commands.getoutput("voms-proxy-info -valid -timeleft | grep timeleft | awk '{ print $3 }'")
-        timeleft=float(timeleft[:timeleft.find(':')])
-        
+        timeleft=float(commands.getoutput("voms-proxy-info -timeleft"))
+        timeleft=timeleft/3600
+	
         print "Seems like your proxy will be alive for another "+str(timeleft)+" hours"
         if timeleft>5 and timeleft<500:
 	  print "You should be ok, your proxy is still valid for a long time."
@@ -509,7 +509,7 @@ if __name__ == '__main__' :
            totaljobnumber=len(jobnumbers)
            counter=0
            print 'Total number of jobs:',totaljobnumber
-           while(len(jobnumbers)>0 and counter<300) :
+           while(len(jobnumbers)>0 and counter<700) :
               time.sleep(60)
               counter+=1
               currlist=[]
