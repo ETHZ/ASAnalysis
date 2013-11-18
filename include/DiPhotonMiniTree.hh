@@ -366,7 +366,7 @@ private:
 
   Int_t event_run;
   Int_t event_lumi;
-  Int_t event_number;
+  UInt_t event_number;
 
   Float_t pholead_GEN_eta, photrail_GEN_eta;
   Float_t pholead_GEN_phi, photrail_GEN_phi;
@@ -513,7 +513,7 @@ private:
   TTree *matchingtree;
   Int_t matchingtree_event_run;
   Int_t matchingtree_event_lumi;
-  Int_t matchingtree_event_number;
+  UInt_t matchingtree_event_number;
   Int_t matchingtree_index_1event_sigsig_1[nclosest_inputmatching];
   Int_t matchingtree_index_1event_sigsig_2[nclosest_inputmatching];
   Int_t matchingtree_index_1event_sigbkg_1[nclosest_inputmatching];

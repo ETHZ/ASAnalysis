@@ -10,7 +10,7 @@ OUTFILES=
 
 # Output files to be copied to the SE
 # (as above the file path must be given relative to the working directory)
-SEOUTFILES="output_$1.root extra_output_$1.root"
+SEOUTFILES="output_$1.root extra_$1.root"
 
 SOURCEFILES=sourcefile
 
@@ -150,17 +150,18 @@ rootoutfiles=""
 counter=0
 for f in $SOURCEFILES; do
   output="output_$1_"$counter.root
+  extra="extra_$1_"$counter.root
   echo Running $exe $ARGUMENTS -o $output $f ...
   $exe $ARGUMENTS -o $output $f 
   if test -e $output; then rootoutfiles=$rootoutfiles" "$output; fi
-  if test -e ${output}_EXTRA; then rootoutfiles_EXTRA=$rootoutfiles_EXTRA" "${output}_EXTRA; fi
+  if test -e $extra; then rootoutfiles_EXTRA=$rootoutfiles_EXTRA" "$extra; fi
   let counter++
 done
 if test x"$rootoutfiles" != x; then
   echo Running hadd output_$1.root $rootoutfiles
   hadd output_$1.root $rootoutfiles
-  echo Running hadd extra_output_$1.root $rootoutfiles_EXTRA
-  hadd extra_output_$1.root $rootoutfiles_EXTRA
+  echo Running hadd extra_$1.root $rootoutfiles_EXTRA
+  hadd extra_$1.root $rootoutfiles_EXTRA
 fi
 
 #### RETRIEVAL OF OUTPUT FILES AND CLEANING UP ############################
@@ -193,21 +194,17 @@ if test x"$OUTFILES" != x; then
    done
 fi
 
-if test -e $SEOUTFILES; then
-   if test 0"$DBG" -ge 2; then
-      srmdebug="-v"
-   fi
-   for n in $SEOUTFILES; do
-       if test ! -e $WORKDIR/$n; then
-          echo "WARNING: Cannot find output file $WORKDIR/$n. Ignoring it" >&2
-       else
-          lcg-cp -b -D srmv2 $srmdebug /$WORKDIR/$n $SERESULTDIR/$n
-          if test $? -ne 0; then
-             echo "ERROR: Failed to copy $WORKDIR/$n to $SERESULTDIR/$n" >&2
-          fi
-   fi
-   done
-fi
+for n in $SEOUTFILES; do
+    if test ! -e $WORKDIR/$n; then
+	echo "WARNING: Cannot find output file $WORKDIR/$n. Ignoring it" >&2
+    else
+	lcg-cp -b -D srmv2 $srmdebug /$WORKDIR/$n $SERESULTDIR/$n
+	if test $? -ne 0; then
+	    echo "ERROR: Failed to copy $WORKDIR/$n to $SERESULTDIR/$n" >&2
+	fi
+    fi
+done
+
 
 echo "Cleaning up $WORKDIR"
 rm -rf $WORKDIR

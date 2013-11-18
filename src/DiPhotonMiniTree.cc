@@ -50,7 +50,7 @@ void DiPhotonMiniTree::Begin(){
   treename[16] = TString("Tree_2Drconeplusgenfake_template");
   treename[17] = TString("Tree_2Dgenpromptplussideband_template");
 
-  fOutputExtraFile = new TFile(TString(fOutputFile->GetName()).Append("_EXTRA").Data(),"recreate");
+  fOutputExtraFile = new TFile(TString(fOutputFile->GetName()).ReplaceAll("output","extra").Data(),"recreate");
 
   for (int i=0; i<18; i++){
     fOutputFile->cd();
@@ -67,11 +67,11 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
   OutputTree[i]->Branch("event_run",&event_run,"event_run/I");
   OutputTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
-  OutputTree[i]->Branch("event_number",&event_number,"event_number/I");
+  OutputTree[i]->Branch("event_number",&event_number,"event_number/i");
   OutputExtraTree[i]->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
   OutputExtraTree[i]->Branch("event_run",&event_run,"event_run/I");
   OutputExtraTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
-  OutputExtraTree[i]->Branch("event_number",&event_number,"event_number/I");
+  OutputExtraTree[i]->Branch("event_number",&event_number,"event_number/i");
 
   OutputTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
   OutputExtraTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
@@ -278,7 +278,7 @@ void DiPhotonMiniTree::Begin(){
 
   LightTreeGenReco->Branch("event_run",&event_run,"event_run/I");
   LightTreeGenReco->Branch("event_lumi",&event_lumi,"event_lumi/I");
-  LightTreeGenReco->Branch("event_number",&event_number,"event_number/I");
+  LightTreeGenReco->Branch("event_number",&event_number,"event_number/i");
 
   LightTreeGenReco->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
   LightTreeGenReco->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");

@@ -176,8 +176,8 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
   
   thisjobnumber=0
 
-  cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-#  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+#  cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
   if options.verbose: print cmd
   if options.dryrun: return thisjobnumber
 
@@ -518,11 +518,11 @@ if __name__ == '__main__' :
                  currlist.append(int(line))
               checklist(jobnumbers,currlist)
 
-        # Merge the files
-        print "All jobs have finished - need to merge everything and place it in your scratch directory!"
-        check_directory(fusepath,uname)
-        if isdata==1 and result[2].find("RunJZBAnalyzer")>-1:
-                print "We're dealing with data - we still need to merge data files and check for duplicates!"
-                pipe=popen("/shome/buchmann/material/flash_remove_duplicates.exec -d /scratch/"+uname+"/ntuples/"+str(fusepath)+"/ -o /scratch/"+uname+"/"+fusepath+".root")
-                for l in pipe.readlines():
-                        print l
+#        # Merge the files
+#        print "All jobs have finished - need to merge everything and place it in your scratch directory!"
+#        check_directory(fusepath,uname)
+#        if isdata==1 and result[2].find("RunJZBAnalyzer")>-1:
+#                print "We're dealing with data - we still need to merge data files and check for duplicates!"
+#                pipe=popen("/shome/buchmann/material/flash_remove_duplicates.exec -d /scratch/"+uname+"/ntuples/"+str(fusepath)+"/ -o /scratch/"+uname+"/"+fusepath+".root")
+#                for l in pipe.readlines():
+#                        print l
