@@ -162,7 +162,7 @@ private:
   bool FindCloseJetsAndPhotons(std::vector<std::pair<float,float> > obj, float eta, float phi);
   std::set<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
 
-  void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing);
+  void FillPhoIso_NewTemplates(TreeReader *fTR, UInt_t *n1_arr, UInt_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing);
   void FillVetoObjects(TreeReader *fTR, int phoqi, TString mod);
   void InitInputTree();
 
@@ -442,6 +442,7 @@ private:
   Float_t jet2_eta;
   Float_t jet2_phi;
 
+  UInt_t  input_event_number;
   Int_t   input_allphotonpfcand_count;
   Float_t input_allphotonpfcand_pt[global_maxN_photonpfcandidates];
   Float_t input_allphotonpfcand_eta[global_maxN_photonpfcandidates];
@@ -462,6 +463,7 @@ private:
   Float_t input_vetoobjects_eta[global_maxN_vetoobjects];
   Float_t input_vetoobjects_phi[global_maxN_vetoobjects];
 
+  TBranch *b_input_event_number;
   TBranch *b_input_allphotonpfcand_count;
   TBranch *b_input_allphotonpfcand_pt   ;
   TBranch *b_input_allphotonpfcand_eta  ;
@@ -487,22 +489,22 @@ private:
   TBranch *b_matchingtree_event_run;
   TBranch *b_matchingtree_event_lumi;
   TBranch *b_matchingtree_event_number;
-  TBranch *b_matchingtree_index_1event_sigsig_1;
-  TBranch *b_matchingtree_index_1event_sigsig_2;
-  TBranch *b_matchingtree_index_1event_sigbkg_1;
-  TBranch *b_matchingtree_index_1event_sigbkg_2;
-  TBranch *b_matchingtree_index_1event_bkgsig_1;
-  TBranch *b_matchingtree_index_1event_bkgsig_2;
-  TBranch *b_matchingtree_index_1event_bkgbkg_1;
-  TBranch *b_matchingtree_index_1event_bkgbkg_2;
-  TBranch *b_matchingtree_index_2events_sigsig_1;
-  TBranch *b_matchingtree_index_2events_sigsig_2;
-  TBranch *b_matchingtree_index_2events_sigbkg_1;
-  TBranch *b_matchingtree_index_2events_sigbkg_2;
-  TBranch *b_matchingtree_index_2events_bkgsig_1;
-  TBranch *b_matchingtree_index_2events_bkgsig_2;
-  TBranch *b_matchingtree_index_2events_bkgbkg_1;
-  TBranch *b_matchingtree_index_2events_bkgbkg_2;
+  TBranch *b_matchingtree_evt_1event_sigsig_1;
+  TBranch *b_matchingtree_evt_1event_sigsig_2;
+  TBranch *b_matchingtree_evt_1event_sigbkg_1;
+  TBranch *b_matchingtree_evt_1event_sigbkg_2;
+  TBranch *b_matchingtree_evt_1event_bkgsig_1;
+  TBranch *b_matchingtree_evt_1event_bkgsig_2;
+  TBranch *b_matchingtree_evt_1event_bkgbkg_1;
+  TBranch *b_matchingtree_evt_1event_bkgbkg_2;
+  TBranch *b_matchingtree_evt_2events_sigsig_1;
+  TBranch *b_matchingtree_evt_2events_sigsig_2;
+  TBranch *b_matchingtree_evt_2events_sigbkg_1;
+  TBranch *b_matchingtree_evt_2events_sigbkg_2;
+  TBranch *b_matchingtree_evt_2events_bkgsig_1;
+  TBranch *b_matchingtree_evt_2events_bkgsig_2;
+  TBranch *b_matchingtree_evt_2events_bkgbkg_1;
+  TBranch *b_matchingtree_evt_2events_bkgbkg_2;
 
 
   bool isstep2;
@@ -514,22 +516,22 @@ private:
   Int_t matchingtree_event_run;
   Int_t matchingtree_event_lumi;
   UInt_t matchingtree_event_number;
-  Int_t matchingtree_index_1event_sigsig_1[nclosest_inputmatching];
-  Int_t matchingtree_index_1event_sigsig_2[nclosest_inputmatching];
-  Int_t matchingtree_index_1event_sigbkg_1[nclosest_inputmatching];
-  Int_t matchingtree_index_1event_sigbkg_2[nclosest_inputmatching];
-  Int_t matchingtree_index_1event_bkgsig_1[nclosest_inputmatching];
-  Int_t matchingtree_index_1event_bkgsig_2[nclosest_inputmatching];
-  Int_t matchingtree_index_1event_bkgbkg_1[nclosest_inputmatching];
-  Int_t matchingtree_index_1event_bkgbkg_2[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_sigsig_1[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_sigsig_2[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_sigbkg_1[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_sigbkg_2[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_bkgsig_1[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_bkgsig_2[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_bkgbkg_1[nclosest_inputmatching];
-  Int_t matchingtree_index_2events_bkgbkg_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_sigsig_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_sigsig_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_sigbkg_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_sigbkg_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_bkgsig_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_bkgsig_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_bkgbkg_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_1event_bkgbkg_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_sigsig_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_sigsig_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_sigbkg_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_sigbkg_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_bkgsig_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_bkgsig_2[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_bkgbkg_1[nclosest_inputmatching];
+  UInt_t matchingtree_evt_2events_bkgbkg_2[nclosest_inputmatching];
 
 
 

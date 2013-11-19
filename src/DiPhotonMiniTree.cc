@@ -700,23 +700,21 @@ void DiPhotonMiniTree::Analyze(){
 
 	if (!inputtree_isinitialized) InitInputTree();
 
-	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex(event_run*10000+event_lumi,event_number);
-	if (index_matchingtree<0) {cout << "NO MATCHING FOUND!!!" << endl; cout << event_run << " " << event_lumi << " " << event_number << endl; dofill=false;}
-	matchingtree->GetEntry(index_matchingtree);
-	if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING (including under/overflow)" << endl; dofill=false;}
+	if (!(matchingtree->GetEntryWithIndex(event_number)>0)) {cout << "NO MATCHING FOUND!!!" << endl; cout << event_run << " " << event_lumi << " " << event_number << endl; dofill=false;}
+	else if (event_run!=matchingtree_event_run || event_lumi!=matchingtree_event_lumi || event_number!=matchingtree_event_number){cout << "WRONG MATCHING (including under/overflow)" << endl; dofill=false;}
 
 	if (dofill){
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_sigsig_1,matchingtree_index_1event_sigsig_2,passing,kSigSig,k1Event);
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_sigbkg_1,matchingtree_index_1event_sigbkg_2,passing,kSigBkg,k1Event);
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_bkgsig_1,matchingtree_index_1event_bkgsig_2,passing,kBkgSig,k1Event);
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_1event_bkgbkg_1,matchingtree_index_1event_bkgbkg_2,passing,kBkgBkg,k1Event);
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_sigsig_1,matchingtree_index_2events_sigsig_2,passing,kSigSig,k2Events);
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_sigbkg_1,matchingtree_index_2events_sigbkg_2,passing,kSigBkg,k2Events);
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_bkgsig_1,matchingtree_index_2events_bkgsig_2,passing,kBkgSig,k2Events);
-	  FillPhoIso_NewTemplates(fTR,matchingtree_index_2events_bkgbkg_1,matchingtree_index_2events_bkgbkg_2,passing,kBkgBkg,k2Events);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_1event_sigsig_1,matchingtree_evt_1event_sigsig_2,passing,kSigSig,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_1event_sigbkg_1,matchingtree_evt_1event_sigbkg_2,passing,kSigBkg,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_1event_bkgsig_1,matchingtree_evt_1event_bkgsig_2,passing,kBkgSig,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_1event_bkgbkg_1,matchingtree_evt_1event_bkgbkg_2,passing,kBkgBkg,k1Event);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_2events_sigsig_1,matchingtree_evt_2events_sigsig_2,passing,kSigSig,k2Events);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_2events_sigbkg_1,matchingtree_evt_2events_sigbkg_2,passing,kSigBkg,k2Events);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_2events_bkgsig_1,matchingtree_evt_2events_bkgsig_2,passing,kBkgSig,k2Events);
+	  FillPhoIso_NewTemplates(fTR,matchingtree_evt_2events_bkgbkg_1,matchingtree_evt_2events_bkgbkg_2,passing,kBkgBkg,k2Events);
 	}
 
-//	for (int l=0; l<nclosest; l++) cout << matchingtree_index_sigsig_1[l] << endl;
+//	for (int l=0; l<nclosest; l++) cout << matchingtree_evt_sigsig_1[l] << endl;
 //	for (int l=0; l<nclosest; l++) cout << phoiso_template_sigsig_1[l] << endl;
 
 
@@ -1011,7 +1009,7 @@ void DiPhotonMiniTree::End(){
 }
 
 
-void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing){
+void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, UInt_t *n1_arr, UInt_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing){
 
   //  if (mixing!=k1Event || mode!=kSigBkg) return;
 
@@ -1050,7 +1048,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 //	  cout << "pho1 " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]] << endl;
 //
 	  if (n1>=0){
-	    if (InputTree[m1]->GetEntry(n1)<=0) continue;
+	    if (InputTree[m1]->GetEntryWithIndex(n1)<=0) continue;
 	    if (m1==1 && input_event_pass12whoissiglike==0) {
 	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
 	      input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi; input_pholead_pt = input_photrail_pt;
@@ -1090,7 +1088,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 	  skip_EBEE = false;
 
 	  if (n2>=0){
-	    if (InputTree[m2]->GetEntry(n2)<=0) continue;
+	    if (InputTree[m2]->GetEntryWithIndex(n2)<=0) continue;
 	    if (m2==1 && input_event_pass12whoissiglike==0) {
 	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
 	      input_pholead_SCeta = input_photrail_SCeta; input_pholead_SCphi = input_photrail_SCphi; input_pholead_pt = input_photrail_pt;
@@ -3119,9 +3117,10 @@ void DiPhotonMiniTree::InitInputTree(){
     TString title = Form("%s/matchingtree_%u.root",input_filename.Data(),uuid);
     cout << "opening " << title.Data() << endl;
     f_input = TFile::Open(title.Data(),"read");
-    f_input->GetObject("Tree_1Drandomcone_template",InputTree[0]);
-    f_input->GetObject("Tree_2Drandomconesideband_template",InputTree[1]);
+    f_input->GetObject("Tree_1Drandomcone_template_EXTRA",InputTree[0]);
+    f_input->GetObject("Tree_2Drandomconesideband_template_EXTRA",InputTree[1]);
     for (int m=0; m<2; m++){
+      InputTree[m]->SetBranchAddress("event_number", &input_event_number, &b_input_event_number);
       InputTree[m]->SetBranchAddress("allphotonpfcand_count", &input_allphotonpfcand_count, &b_input_allphotonpfcand_count);
       InputTree[m]->SetBranchAddress("allphotonpfcand_pt", input_allphotonpfcand_pt   , &b_input_allphotonpfcand_pt   );
       InputTree[m]->SetBranchAddress("allphotonpfcand_eta", input_allphotonpfcand_eta  , &b_input_allphotonpfcand_eta  );
@@ -3141,30 +3140,30 @@ void DiPhotonMiniTree::InitInputTree(){
       InputTree[m]->SetBranchAddress("vetoobjects_count",&input_vetoobjects_count,&b_input_vetoobjects_count);
       InputTree[m]->SetBranchAddress("vetoobjects_eta", input_vetoobjects_eta, &b_input_vetoobjects_eta);
       InputTree[m]->SetBranchAddress("vetoobjects_phi", input_vetoobjects_phi, &b_input_vetoobjects_phi);
+      InputTree[m]->BuildIndex("event_number");
     }
 
     f_input->GetObject("matchingtree",matchingtree);
     matchingtree->SetBranchAddress("matchingtree_event_run",&matchingtree_event_run,&b_matchingtree_event_run);
     matchingtree->SetBranchAddress("matchingtree_event_lumi",&matchingtree_event_lumi,&b_matchingtree_event_lumi);
     matchingtree->SetBranchAddress("matchingtree_event_number",&matchingtree_event_number,&b_matchingtree_event_number);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_sigsig_1",matchingtree_index_1event_sigsig_1,&b_matchingtree_index_1event_sigsig_1);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_sigsig_2",matchingtree_index_1event_sigsig_2,&b_matchingtree_index_1event_sigsig_2);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_sigbkg_1",matchingtree_index_1event_sigbkg_1,&b_matchingtree_index_1event_sigbkg_1);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_sigbkg_2",matchingtree_index_1event_sigbkg_2,&b_matchingtree_index_1event_sigbkg_2);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_bkgsig_1",matchingtree_index_1event_bkgsig_1,&b_matchingtree_index_1event_bkgsig_1);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_bkgsig_2",matchingtree_index_1event_bkgsig_2,&b_matchingtree_index_1event_bkgsig_2);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_bkgbkg_1",matchingtree_index_1event_bkgbkg_1,&b_matchingtree_index_1event_bkgbkg_1);
-    matchingtree->SetBranchAddress("matchingtree_index_1event_bkgbkg_2",matchingtree_index_1event_bkgbkg_2,&b_matchingtree_index_1event_bkgbkg_2);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_sigsig_1",matchingtree_index_2events_sigsig_1,&b_matchingtree_index_2events_sigsig_1);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_sigsig_2",matchingtree_index_2events_sigsig_2,&b_matchingtree_index_2events_sigsig_2);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_sigbkg_1",matchingtree_index_2events_sigbkg_1,&b_matchingtree_index_2events_sigbkg_1);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_sigbkg_2",matchingtree_index_2events_sigbkg_2,&b_matchingtree_index_2events_sigbkg_2);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_bkgsig_1",matchingtree_index_2events_bkgsig_1,&b_matchingtree_index_2events_bkgsig_1);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_bkgsig_2",matchingtree_index_2events_bkgsig_2,&b_matchingtree_index_2events_bkgsig_2);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_bkgbkg_1",matchingtree_index_2events_bkgbkg_1,&b_matchingtree_index_2events_bkgbkg_1);
-    matchingtree->SetBranchAddress("matchingtree_index_2events_bkgbkg_2",matchingtree_index_2events_bkgbkg_2,&b_matchingtree_index_2events_bkgbkg_2);
-
-    matchingtree->BuildIndex("matchingtree_event_run*10000+matchingtree_event_lumi","matchingtree_event_number");
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_sigsig_1",matchingtree_evt_1event_sigsig_1,&b_matchingtree_evt_1event_sigsig_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_sigsig_2",matchingtree_evt_1event_sigsig_2,&b_matchingtree_evt_1event_sigsig_2);
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_sigbkg_1",matchingtree_evt_1event_sigbkg_1,&b_matchingtree_evt_1event_sigbkg_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_sigbkg_2",matchingtree_evt_1event_sigbkg_2,&b_matchingtree_evt_1event_sigbkg_2);
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_bkgsig_1",matchingtree_evt_1event_bkgsig_1,&b_matchingtree_evt_1event_bkgsig_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_bkgsig_2",matchingtree_evt_1event_bkgsig_2,&b_matchingtree_evt_1event_bkgsig_2);
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_bkgbkg_1",matchingtree_evt_1event_bkgbkg_1,&b_matchingtree_evt_1event_bkgbkg_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_1event_bkgbkg_2",matchingtree_evt_1event_bkgbkg_2,&b_matchingtree_evt_1event_bkgbkg_2);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_sigsig_1",matchingtree_evt_2events_sigsig_1,&b_matchingtree_evt_2events_sigsig_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_sigsig_2",matchingtree_evt_2events_sigsig_2,&b_matchingtree_evt_2events_sigsig_2);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_sigbkg_1",matchingtree_evt_2events_sigbkg_1,&b_matchingtree_evt_2events_sigbkg_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_sigbkg_2",matchingtree_evt_2events_sigbkg_2,&b_matchingtree_evt_2events_sigbkg_2);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_bkgsig_1",matchingtree_evt_2events_bkgsig_1,&b_matchingtree_evt_2events_bkgsig_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_bkgsig_2",matchingtree_evt_2events_bkgsig_2,&b_matchingtree_evt_2events_bkgsig_2);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_bkgbkg_1",matchingtree_evt_2events_bkgbkg_1,&b_matchingtree_evt_2events_bkgbkg_1);
+    matchingtree->SetBranchAddress("matchingtree_evt_2events_bkgbkg_2",matchingtree_evt_2events_bkgbkg_2,&b_matchingtree_evt_2events_bkgbkg_2);
+    matchingtree->BuildIndex("matchingtree_event_number");
 
     inputtree_isinitialized = true;
 
