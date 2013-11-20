@@ -268,12 +268,9 @@ void DiPhotonMiniTree::Begin(){
   OutputExtraTree[i]->Branch("vetoobjects_type",&vetoobjects_type,"vetoobjects_type[vetoobjects_count]/I");
 
   OutputTree[i]->Branch("n_jets",&n_jets,"n_jets/I");
-  OutputTree[i]->Branch("jet1_pt",&jet1_pt,"jet1_pt/F");
-  OutputTree[i]->Branch("jet1_eta",&jet1_eta,"jet1_eta/F");
-  OutputTree[i]->Branch("jet1_phi",&jet1_phi,"jet1_phi/F");
-  OutputTree[i]->Branch("jet2_pt",&jet2_pt,"jet2_pt/F");
-  OutputTree[i]->Branch("jet2_eta",&jet2_eta,"jet2_eta/F");
-  OutputTree[i]->Branch("jet2_phi",&jet2_phi,"jet2_phi/F");
+  OutputTree[i]->Branch("jet_pt",&jet_pt,"jet_pt[n_jets]/F");
+  OutputTree[i]->Branch("jet_eta",&jet_eta,"jet_eta[n_jets]/F");
+  OutputTree[i]->Branch("jet_phi",&jet_phi,"jet_phi[n_jets]/F");
 
   }
 
@@ -2584,12 +2581,11 @@ void DiPhotonMiniTree::FillTrail(int index, std::vector<int> passing_jets){
 void DiPhotonMiniTree::FillJetsInfo(std::vector<int> passing, std::vector<int> passing_jets){
 
   n_jets = passing_jets.size();
-  jet1_pt = (passing_jets.size()>0) ? fTR->JPt[passing_jets.at(0)] : -999;
-  jet1_eta = (passing_jets.size()>0) ? fTR->JEta[passing_jets.at(0)] : -999;
-  jet1_phi = (passing_jets.size()>0) ? fTR->JPhi[passing_jets.at(0)] : -999;
-  jet2_pt = (passing_jets.size()>1) ? fTR->JPt[passing_jets.at(1)] : -999;
-  jet2_eta = (passing_jets.size()>1) ? fTR->JEta[passing_jets.at(1)] : -999;
-  jet2_phi = (passing_jets.size()>1) ? fTR->JPhi[passing_jets.at(1)] : -999;
+  for (size_t i=0; i<passing_jets.size(); i++){
+    jet_pt[i] =  fTR->JPt[passing_jets.at(i)];
+    jet_eta[i] = fTR->JEta[passing_jets.at(i)];
+    jet_phi[i] = fTR->JPhi[passing_jets.at(i)];
+  }
 
 };
 
@@ -2802,12 +2798,11 @@ void DiPhotonMiniTree::ResetVars(){
   }
 
   n_jets = -999;
-  jet1_pt = -999;
-  jet1_eta = -999;
-  jet1_phi = -999;
-  jet2_pt = -999;
-  jet2_eta = -999;
-  jet2_phi = -999;
+  for (int i=0; i<global_maxN_jets; i++){
+    jet_pt[i] = -999;
+    jet_eta[i] = -999;
+    jet_phi[i] = -999;
+  }
 
 };
 

@@ -51,6 +51,7 @@ const bool global_is2012 = false;
 
 const int global_maxN_photonpfcandidates = 2000;
 const int global_maxN_vetoobjects = 200;
+const int global_maxN_jets = 200;
 
 const int global_size_pfcandarrays = 30;
 
@@ -438,12 +439,9 @@ private:
   Int_t vetoobjects_type[global_maxN_vetoobjects];
 
   Int_t n_jets;
-  Float_t jet1_pt;
-  Float_t jet1_eta;
-  Float_t jet1_phi;
-  Float_t jet2_pt;
-  Float_t jet2_eta;
-  Float_t jet2_phi;
+  Float_t jet_pt[global_maxN_jets];
+  Float_t jet_eta[global_maxN_jets];
+  Float_t jet_phi[global_maxN_jets];
 
   UInt_t  input_event_number;
   Int_t   input_allphotonpfcand_count;
