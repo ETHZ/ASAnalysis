@@ -6,54 +6,62 @@ if (isdata){
 
   long run=fTR->Run;
 
-  if (run>=160404 && run <=161176){
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon26_IsoVL_Photon18_IsoVL_v");
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_v");
-    nametriggers.push_back("HLT_Photon26_IsoVL_Photon18_v");
+  if (global_is2011){
+
+    if (run>=160404 && run <=161176){
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon26_IsoVL_Photon18_IsoVL_v");
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_v");
+      nametriggers.push_back("HLT_Photon26_IsoVL_Photon18_v");
+    }
+    else if (run>=161216 && run<=165633){
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon20_R9Id_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_v");
+    }
+    else if (run>=165970 && run<=166967){
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon26_R9Id_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_CaloId_IsoVL_Photon22_R9Id_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
+    }
+    else if (run>=167039 && run<=173198){
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon26_R9Id_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
+    }
+    else if (run>=173236 && run<=178380){
+      nametriggers.push_back("HLT_Photon26_CaloIdXL_IsoXL_Photon18_CaloIdXL_IsoXL_v");
+      nametriggers.push_back("HLT_Photon26_CaloIdXL_IsoXL_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdXL_IsoXL_v");
+      nametriggers.push_back("HLT_Photon26_R9Id_Photon18_R9Id_v");
+      nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
+    }
+    else if (run>=178420 && run<=180252){
+      nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
+      nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
+    }
+
   }
-  else if (run>=161216 && run<=165633){
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon20_R9Id_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_v");
-  }
-  else if (run>=165970 && run<=166967){
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon26_R9Id_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_CaloId_IsoVL_Photon22_R9Id_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
-  }
-  else if (run>=167039 && run<=173198){
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon26_CaloIdL_IsoVL_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon26_R9Id_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
-  }
-  else if (run>=173236 && run<=178380){
-    nametriggers.push_back("HLT_Photon26_CaloIdXL_IsoXL_Photon18_CaloIdXL_IsoXL_v");
-    nametriggers.push_back("HLT_Photon26_CaloIdXL_IsoXL_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon26_R9Id_Photon18_CaloIdXL_IsoXL_v");
-    nametriggers.push_back("HLT_Photon26_R9Id_Photon18_R9Id_v");
-    nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
-  }
-  else if (run>=178420 && run<=180252){
-    nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_CaloIdL_IsoVL_Photon22_R9Id_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_CaloIdL_IsoVL_v");
-    nametriggers.push_back("HLT_Photon36_R9Id_Photon22_R9Id_v");
+
+  if (global_is2012){
+    nametriggers.push_back("HLT_Photon36_R9Id85_OR_CaloId10_Iso50_Photon22_R9Id85_OR_CaloId10_Iso50_v");
   }
 
  }
@@ -62,6 +70,7 @@ if (isdata){
 if (!isdata){
 
   // MC triggers from DiPhotonJets madgraph Fall11 (TURNED OFF ALSO IN DIPHOTONMINITREE.CC
+// 2011
 //nametriggers.push_back("HLT_Photon20_R9Id_Photon18_R9Id_v");
 //nametriggers.push_back("HLT_Photon26_Photon18_v");
 //nametriggers.push_back("HLT_Photon26_IsoVL_Photon18_v");

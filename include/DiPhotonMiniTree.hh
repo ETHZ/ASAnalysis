@@ -46,6 +46,9 @@ enum ChoiceMixingTemplates {
   k2Events = 1
 };
 
+const bool global_is2011 = true;
+const bool global_is2012 = false;
+
 const int global_maxN_photonpfcandidates = 2000;
 const int global_maxN_vetoobjects = 200;
 
@@ -173,7 +176,7 @@ private:
   Int_t Choose_bin_eta(float eta, int region);
 
   float SieieRescale(float sieie, bool isbarrel);
-  float R9Rescale(float r9);
+  float R9Rescale(float r9, bool isbarrel);
   float CalculateSCArea(TreeReader *fTR, int scindex);
   float GetPUEnergy(TreeReader *fTR, TString mode, float eta);
 

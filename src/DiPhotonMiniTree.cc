@@ -21,6 +21,9 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
 
   eegeom = TGeoPara(1,1,1,0,0,0);
 
+  assert (!(global_is2011 && global_is2012));
+  assert (global_is2011 || global_is2012);
+
 }
 
 DiPhotonMiniTree::~DiPhotonMiniTree(){
@@ -50,7 +53,9 @@ void DiPhotonMiniTree::Begin(){
   treename[16] = TString("Tree_2Drconeplusgenfake_template");
   treename[17] = TString("Tree_2Dgenpromptplussideband_template");
 
-  fOutputExtraFile = new TFile(TString(fOutputFile->GetName()).ReplaceAll("output","extra").Data(),"recreate");
+
+  // fOutputExtraFile = new TFile(TString(fOutputFile->GetName()).ReplaceAll("output","extra").Data(),"recreate");
+  fOutputExtraFile = new TFile(Form("extrainfo_%d.root",uuid),"recreate");
 
   for (int i=0; i<18; i++){
     fOutputFile->cd();
@@ -394,10 +399,14 @@ void DiPhotonMiniTree::Analyze(){
 
   bool passtrigger = TriggerSelection();
 
-  photon_jet_matching.clear();
-  if (passtrigger){
-    for (int i=0; i<fTR->NPhotons; i++) photon_jet_matching.push_back(PFMatchPhotonToJet(i));
+  // rescale shower shapes
+  for (int i=0; i<fTR->NPhotons; i++){
+    fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
+    fTR->PhoSigmaIetaIeta[i] = SieieRescale(fTR->PhoSigmaIetaIeta[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
   }
+
+  photon_jet_matching.clear();
+  for (int i=0; i<fTR->NPhotons; i++) photon_jet_matching.push_back(PFMatchPhotonToJet(i));
 
   std::vector<int> passing_selection[18];
   std::vector<int> passing_selection_jets[18];
@@ -1265,7 +1274,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   // MVA presel from Hgg
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // HoverE cut
-    float r9=R9Rescale(fTR->SCR9[fTR->PhotSCindex[*it]]);
+    float r9=fTR->PhoR9[*it];
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
     float hoe=fTR->PhoHoverE[*it];
     bool pass=0;
@@ -1278,7 +1287,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
 	
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // sieie cut
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
-    float sieie=SieieRescale(fTR->PhoSigmaIetaIeta[*it],(bool)(fabs(eta)<1.4442));
+    float sieie=fTR->PhoSigmaIetaIeta[*it];
     bool pass=0;
     if (fabs(eta)<1.4442 && sieie<0.014 && sieie>0.001) pass=1; // to add sigmaiphiphi>0.001 in the future
     if (fabs(eta)>1.566 && sieie<0.034) pass=1;
@@ -1286,7 +1295,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   }
 	
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // isolation cuts (trigger)
-    float r9=R9Rescale(fTR->SCR9[fTR->PhotSCindex[*it]]);
+    float r9=fTR->PhoR9[*it];
     bool pass=0;
     float etcorrecaliso=fTR->PhoIso03Ecal[*it]-0.012*fTR->PhoPt[*it];
     float etcorrhcaliso=fTR->PhoIso03Hcal[*it]-0.005*fTR->PhoPt[*it];
@@ -1374,7 +1383,7 @@ std::vector<int> DiPhotonMiniTree::PhotonSelection(TreeReader *fTR, std::vector<
 	
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // sieie cut
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
-    float sieie=SieieRescale(fTR->PhoSigmaIetaIeta[*it],(bool)(fabs(eta)<1.4442));
+    float sieie=fTR->PhoSigmaIetaIeta[*it];
     bool pass=0;
     if (mode=="invert_sieie_cut"){ // sieie sideband
       if (fabs(eta)<1.4442 && sieie>0.011 && sieie<0.014) pass=1;
@@ -2391,8 +2400,8 @@ void DiPhotonMiniTree::FillLead(int index, std::vector<int> passing_jets){
   pholead_SCeta = fTR->SCEta[fTR->PhotSCindex[index]];
   pholead_SCphi = fTR->SCPhi[fTR->PhotSCindex[index]];
   pholead_PhoHasPixSeed=fTR->PhoHasPixSeed[index];
-  pholead_r9 = R9Rescale(fTR->SCR9[fTR->PhotSCindex[index]]);
-  pholead_sieie = SieieRescale(fTR->PhoSigmaIetaIeta[index],(bool)(fabs(fTR->SCEta[fTR->PhotSCindex[index]])<1.4442));
+  pholead_r9 = fTR->PhoR9[index];
+  pholead_sieie = fTR->PhoSigmaIetaIeta[index];
   pholead_hoe = fTR->PhoHoverE[index];
   pholead_PhoIso03Ecal = fTR->PhoIso03Ecal[index];
   pholead_PhoIso03Hcal = fTR->PhoIso03Hcal[index];
@@ -2489,12 +2498,14 @@ void DiPhotonMiniTree::FillLead(int index, std::vector<int> passing_jets){
 
 float DiPhotonMiniTree::SieieRescale(float sieie, bool isbarrel){
   if (isdata) return sieie; // rescale sieie only in MC
-  return isbarrel ? 0.87*sieie+0.0011 : 0.99*sieie;
+  return sieie;
+  //  SIEIE NOT SCALED NEITHER IN CIC NOR MVA -> TO BE REDERIVED;
 };
 
-float DiPhotonMiniTree::R9Rescale(float r9){
+float DiPhotonMiniTree::R9Rescale(float r9, bool isbarrel){
   if (isdata) return r9; // rescale r9 only in MC
-  return 1.005*r9;
+  if (global_is2011) return isbarrel ? 1.00153*r9+0.0008543 : 1.0005*r9+0.001231; // 2011 legacy, from globe
+  if (global_is2012) return isbarrel ? 1.00793*r9+(-0.00532538) : 1.00017*r9+(-0.0016474); // 2012 legacy, from globe
 };
 
 void DiPhotonMiniTree::FillTrail(int index, std::vector<int> passing_jets){
@@ -2506,8 +2517,8 @@ void DiPhotonMiniTree::FillTrail(int index, std::vector<int> passing_jets){
   photrail_SCeta = fTR->SCEta[fTR->PhotSCindex[index]];
   photrail_SCphi = fTR->SCPhi[fTR->PhotSCindex[index]];
   photrail_PhoHasPixSeed=fTR->PhoHasPixSeed[index];
-  photrail_r9 = R9Rescale(fTR->SCR9[fTR->PhotSCindex[index]]);
-  photrail_sieie = SieieRescale(fTR->PhoSigmaIetaIeta[index],(bool)(fabs(fTR->SCEta[fTR->PhotSCindex[index]])<1.4442));
+  photrail_r9 = fTR->PhoR9[index];
+  photrail_sieie = fTR->PhoSigmaIetaIeta[index];
   photrail_hoe = fTR->PhoHoverE[index];
   photrail_PhoIso03Ecal = fTR->PhoIso03Ecal[index];
   photrail_PhoIso03Hcal = fTR->PhoIso03Hcal[index];

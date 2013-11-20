@@ -160,6 +160,8 @@ done
 if test x"$rootoutfiles" != x; then
   echo Running hadd output_$1.root $rootoutfiles
   hadd output_$1.root $rootoutfiles
+fi
+if test x"$rootoutfiles_EXTRA" != x; then
   echo Running hadd extra_$1.root $rootoutfiles_EXTRA
   hadd extra_$1.root $rootoutfiles_EXTRA
 fi
@@ -193,6 +195,10 @@ if test x"$OUTFILES" != x; then
    fi
    done
 fi
+
+for n in $(ls extrainfo*root); do
+    SEOUTFILES="$SEOUTFILES $n"
+done
 
 for n in $SEOUTFILES; do
     if test ! -e $WORKDIR/$n; then
