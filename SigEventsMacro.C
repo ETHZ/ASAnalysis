@@ -193,9 +193,9 @@ int loopTree(){
 			nrare++;
 		}
 		else if (*sname == "TTJets"             ||
-		         *sname == "TTJets_v1"          ||
+		         /**sname == "TTJets_v1"          ||
 		         *sname == "TTJets_madgraph_v1" ||
-		         *sname == "TTJets_madgraph_v2" ||
+		         *sname == "TTJets_madgraph_v2" ||*/
 		         *sname == "SingleT_t"          ||
 		         *sname == "SingleT_tW"         ||
 		         *sname == "SingleT_s"          ||
@@ -247,7 +247,7 @@ int loopTree(){
 	
 	// pt of all b jets
 	THStack * BPT_tt_stack = new THStack("bpt_stack", "p_{T}^{b}");
-	BPT_tt_ttj->Scale(BPT_tt_dat->Integral()/BPT_tt_ttj->Integral());
+	// BPT_tt_ttj->Scale(BPT_tt_dat->Integral()/BPT_tt_ttj->Integral());
 	BPT_tt_stack->Add(BPT_tt_ttj);
 	BPT_tt_stack->Add(BPT_tt_rar);
 	BPT_tt_stack->Add(BPT_tt_ttw);
@@ -260,7 +260,7 @@ int loopTree(){
 	
 	// pt of the first b jet
 	THStack * B1PT_tt_stack = new THStack("b1pt_stack", "p_{T}^{b1}");
-	B1PT_tt_ttj->Scale(B1PT_tt_dat->Integral()/B1PT_tt_ttj->Integral());
+	// B1PT_tt_ttj->Scale(B1PT_tt_dat->Integral()/B1PT_tt_ttj->Integral());
 	B1PT_tt_stack->Add(B1PT_tt_ttj);
 	B1PT_tt_stack->Add(B1PT_tt_rar);
 	B1PT_tt_stack->Add(B1PT_tt_ttw);
@@ -273,7 +273,7 @@ int loopTree(){
 
 	// pt of the second b jet
 	THStack * B2PT_tt_stack = new THStack("b2pt_stack", "p_{T}^{b2}");
-	B2PT_tt_ttj->Scale(B2PT_tt_dat->Integral()/B2PT_tt_ttj->Integral());
+	// B2PT_tt_ttj->Scale(B2PT_tt_dat->Integral()/B2PT_tt_ttj->Integral());
 	B2PT_tt_stack->Add(B2PT_tt_ttj);
 	B2PT_tt_stack->Add(B2PT_tt_rar);
 	B2PT_tt_stack->Add(B2PT_tt_ttw);

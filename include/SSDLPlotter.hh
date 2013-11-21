@@ -12,52 +12,70 @@
 #include "TLorentzVector.h"
 
 
+struct observation{
+	float ntt_mm;
+	float ntl_mm;
+	float nlt_mm;
+	float nll_mm;
 
-struct SSDLPrediction {
+	float ntt_em;
+	float ntl_em;
+	float nlt_em;
+	float nll_em;
 
-	float bg;
-	float bg_err;
+	float ntt_ee;
+	float ntl_ee;
+	float nlt_ee;
+	float nll_ee;
 
-	float bg_mm;
-	float bg_em;
-	float bg_ee;
+	float ntt_mm_e2;
+	float ntl_mm_e2;
+	float nlt_mm_e2;
+	float nll_mm_e2;
 
-	float bg_mm_err;
-	float bg_em_err;
-	float bg_ee_err;
+	float ntt_em_e2;
+	float ntl_em_e2;
+	float nlt_em_e2;
+	float nll_em_e2;
 
-	float s_ttwz;
-	float s_ttwz_mm;
-	float s_ttwz_em;
-	float s_ttwz_ee;
+	float ntt_ee_e2;
+	float ntl_ee_e2;
+	float nlt_ee_e2;
+	float nll_ee_e2;
 
-	float s_ttw;
-	float s_ttw_mm;
-	float s_ttw_em;
-	float s_ttw_ee;
+	observation()
+	{
+		ntt_mm = 0.;
+		ntl_mm = 0.;
+		nlt_mm = 0.;
+		nll_mm = 0.;
 
-	float s_ttz;
-	float s_ttz_mm;
-	float s_ttz_em;
-	float s_ttz_ee;
+		ntt_em = 0.;
+		ntl_em = 0.;
+		nlt_em = 0.;
+		nll_em = 0.;
 
-	int ns_ttw_mm;
-	int ns_ttw_em;
-	int ns_ttw_ee;
+		ntt_ee = 0.;
+		ntl_ee = 0.;
+		nlt_ee = 0.;
+		nll_ee = 0.;
 
-	int ns_ttz_mm;
-	int ns_ttz_em;
-	int ns_ttz_ee;
+		ntt_mm_e2 = 0.;
+		ntl_mm_e2 = 0.;
+		nlt_mm_e2 = 0.;
+		nll_mm_e2 = 0.;
+		
+		ntt_em_e2 = 0.;
+		ntl_em_e2 = 0.;
+		nlt_em_e2 = 0.;
+		nll_em_e2 = 0.;
+		
+		ntt_ee_e2 = 0.;
+		ntl_ee_e2 = 0.;
+		nlt_ee_e2 = 0.;
+		nll_ee_e2 = 0.;
 
-	float s_mm;
-	float s_em;
-	float s_ee;
-
-	int obs_mm;
-	int obs_em;
-	int obs_ee;
-	int obs;
-
+	}
 };
 
 struct TTWZPrediction {
@@ -273,7 +291,6 @@ public:
 	virtual void doSMSscans(TString, TString, TString);
 	virtual void doAnalysis();
 	virtual void sandBox();
-	virtual void SUSYWorkshopPlots(TString, int , int);
 	virtual void pythiaMadgraph(bool pyhia);
 	virtual void makeROCCurve();
 	virtual void genEfficiencies(const char *, bool);

@@ -1922,6 +1922,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	fSETree_NM = getNTightMuons();
 	fSETree_NE = getNTightElectrons();
 
+	if (S->datamc != 0) fSETree_GenWeight = GenWeight;
+	else fSETree_GenWeight = 1.;
 
 	// for testing!!!! fChargeSwitch = 1;
 	
@@ -3259,6 +3261,7 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("xsec",        &fSETree_xsec    , "xsec/F");
 	fSigEv_Tree->Branch("SName",       &fSETree_SName);
 	fSigEv_Tree->Branch("SType",       &fSETree_SType   , "SType/I");
+	fSigEv_Tree->Branch("GenWeight",   &fSETree_GenWeight, "GenWeight/F");
 	fSigEv_Tree->Branch("Run",         &fSETree_Run     , "Run/I");
 	fSigEv_Tree->Branch("LS",          &fSETree_LS      , "LS/I");
 	fSigEv_Tree->Branch("Event",       &fSETree_Event   , "Event/I");
@@ -3314,6 +3317,7 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_xsec     = -1.;
 	fSETree_SName    = "?";
 	fSETree_SType    = -1;
+	fSETree_GenWeight= -999.9;
 	fSETree_Run      = -1;
 	fSETree_LS       = -1;
 	fSETree_Event    = -1;
@@ -5019,19 +5023,10 @@ void SSDLDumper::smearJetPts(Sample *S, int flag){
 			float sigmaMC  = getErrPt(JetPt[*it], JetEta[*it])/JetPt[*it];      // get the resolution
 			float jerScale = getJERScale(*it);                                  // get JER scale factors
 			float factor = fRand3->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
-			if (flag==3 && Event == 15713329) {
-				cout << Form("  jerScale: %.3f sigmaMC: %.3f", jerScale, sigmaMC) << endl;
-				cout << Form("  arg: %.3f", sqrt(jerScale*jerScale -1)*sigmaMC ) << endl;
-				cout << Form("  factor: %.3f", factor ) << endl;
-				cout << Form("  seed: %d", fRand3->GetSeed() ) << endl;
-			}
 			JetPt[*it] = JetPt[*it] * factor; // smear for flag 3
 		}
 		tmp.SetPtEtaPhiE(JetPt[*it], JetEta[*it], JetPhi[*it], JetEnergy[*it]); // set tmp to the scaled/smeared jet
 		jets += tmp;                                                            // add scaled/smeared jet to the new jets
-		if (flag==3 && Event == 15713329) {
-			cout << Form("after: jeti: %d jetpt: %.2f jeteta %.2f jetphi: %.2f", *it, JetPt[*it], JetEta[*it], JetPhi[*it]) << endl;
-		}
 	}
 	propagateMET(jets, ojets);                                                  // propagate this change to the MET
 }
@@ -5175,6 +5170,17 @@ int SSDLDumper::getNJets(float pt, bool doLepCleaning){
 	int njets(0);
 	for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i, pt, doLepCleaning)) njets++;
 	return njets;
+}
+float SSDLDumper::isRealBJet(TLorentzVector jet, float maxdr, bool amcnlo){
+	for(int i=0; i<NGenLep; ++i){
+		if(abs(GenLepID[i]) != 5 || GenLepStatus[i] != 3) continue;
+		TLorentzVector testb;
+		testb.SetPtEtaPhiM(GenLepPt[i], GenLepEta[i], GenLepPhi[i], 4.18);
+		float dr = jet.DeltaR(testb);
+		// if(dr > maxdr) cout << GenLepMID[i] << endl;
+		if(dr < maxdr) return dr;
+	}
+	return -1;
 }
 int SSDLDumper::getNBTags(float pt, bool doLepCleaning){
 	int ntags(0);

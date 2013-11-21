@@ -19,7 +19,7 @@ def predOF(p1, f1, p2, f2, ntt, ntl, nlt, nll):
 	nfp = ((f1-p1)*(f2-p2))**(-1) * ( ntt*(1-p1)*(f2-1) + ntl*(1-p1)*f2 - nlt*p1*(f2-1) - nll*p1*f2 )
 	nff = ((f1-p1)*(f2-p2))**(-1) * ( ntt*(1-p1)*(1-p2) - ntl*(1-p1)*p2 - nlt*p1*(1-p2) + nll*p1*p2 )
 	s = p1*f2*npf + f1*p2*nfp + f1*f2*nff
-	return s, p1*p2*npp, p1*f1*npf, p2*f1*nfp, f1*f2*nff
+	return s, p1*p2*npp, p1*f2*npf, p2*f1*nfp, f1*f2*nff
 
 
 
@@ -27,13 +27,19 @@ def predOF(p1, f1, p2, f2, ntt, ntl, nlt, nll):
 ## fe, pe = 0.1    , 0.845
 ## fm, pm = 0.06 , 0.92
 ## fe, pe = 0.076    , 0.85
-fm, pm = 0.023 , 0.80
-fe, pe = 0.040 , 0.76
+fm, pm = 0.016, 0.85
+fe, pe = 0.016, 0.85
+
+## fm, pm = 0.0409, 0.804
+## fe, pe = 0.07  , 0.751
+## mmntt, mmntl       , mmnll = 65 ,    696 ,    310
+## emntt, emntl, emnlt, emnll = 101,    546 ,    639 ,    643
+## eentt, eentl       , eenll = 75 ,    441 ,    482
 
 ## preselection
-mmntt, mmntl       , mmnll = 3.553 , 478.511         , 128.565
-emntt, emntl, emnlt, emnll = 14.877, 446.092, 477.401, 242.697
-eentt, eentl       , eenll = 8.660 , 401.683, 119.905
+mmntt, mmntl       , mmnll = 0.81,   157.52+39.20    ,   40.40
+emntt, emntl, emnlt, emnll = 6.38,   266.54,   211.77,  101.22
+eentt, eentl       , eenll = 4.82,   171.60+78.56    ,   68.55 
 
 ## ## selection
 ## mmntt, mmntl       , mmnll = 0.000, 66.836         , 12.657
@@ -49,16 +55,18 @@ emfakes = empred[0]
 eefakes = eepred[0]
 
 mmnpp = mmpred[1]
-emnpp = empred[1]
-eenpp = eepred[1]
-
 mmnpf = mmpred[2]
+mmnff = mmpred[3]
+
+
+emnpp = empred[1]
 emnpf = empred[2]
 emnfp = empred[3]
-eenpf = eepred[2]
-
-mmnff = mmpred[3]
 emnff = empred[4]
+
+
+eenpp = eepred[1]
+eenpf = eepred[2]
 eenff = eepred[3]
 
 tot = mmfakes + emfakes + eefakes
@@ -66,6 +74,16 @@ tot = mmfakes + emfakes + eefakes
 ## print 'Predicted npp, npf and nff'
 ## print '%4s | %4s | %4s   ||  %4s | %4s | %4s  ||  %4s | %4s | %4s' %('npp' , 'npf', 'nff', 'npp' , 'npf', 'nff', 'npp' , 'npf', 'nff')
 ## print '%.2f | %.2f | %.2f   ||  %.2f | %.2f | %.2f | %.2f  ||  %.2f | %.2f | %.2f' %(mmnpp, mmnpf, mmnff, emnpp, emnpf, emnfp, emnff, eenpp, eenpf, eenff)
+print 
+print 'mmntt: %6.2f mmntl: %6.2f mmnll: %6.2f  |  emntt: %6.2f emntl: %6.2f emnlt: %6.2f emnll: %6.2f | eentt: %6.2f eentl: %6.2f eenll: %6.2f |'            %(
+mmntt, mmntl, mmnll, emntt, emntl, emnlt, emnll,  eentt, eentl, eenll)
+## print 'mmnpp: %6.2f mmnpf: %6.2f mmnff: %6.2f  |  emnpp: %6.2f emnpf: %6.2f emnfp: %6.2f emnff: %6.2f | eenpp: %6.2f eenpf: %6.2f eenff: %6.2f | unweighted' %(
+## mmnpp/(pm*pm), mmnpf/(fm*pm), mmnff/(fm*fm), emnpp/(pe*pm), emnpf/(pm*fe), emnfp/(pe*fm), emnff/(fm*fe),  eenpp/(pe*pe), eenpf/(pe*fe), eenff/(fe*fe))
+print 'mmnpp: %6.2f mmnpf: %6.2f mmnff: %6.2f  |  emnpp: %6.2f emnpf: %6.2f emnfp: %6.2f emnff: %6.2f | eenpp: %6.2f eenpf: %6.2f eenff: %6.2f | weighted'   %(
+       mmnpp,       mmnpf,       mmnff,           emnpp,       emnpf,       emnfp,       emnff,         eenpp,       eenpf,       eenff)
+
+print ''
+print ''
 print 'Predicted fakes:'
 print '----------------'
 print '%4s | %4s | %4s' %('mumu' , 'emu'  , 'ee')
