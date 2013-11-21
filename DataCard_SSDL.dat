@@ -64,6 +64,7 @@ WJets1			lbaeni/SSDLTrees/2013/Aug15/MC/WJetsToLNu-TuneZ2Star-8TeV-madgraph-tarb
 WJets2			mdunser/SSDLTrees/2013/Oct04/WJetsToLNu-TuneZ2Star-8TeV-madgraph-tarball-Summer12-DR53X-PU-S10-START53-V7A-v2/			1	-1	37509.0
 WbbJets			mdunser/SSDLTrees/2013/Oct04/WbbJetsToLNu-Massive-TuneZ2star-8TeV-madgraph-pythia6-tauola--Summer12-DR53X-PU-S10-START53-V7A-v1--AODSIM/	1	-1	211.3
 DYJets			lbaeni/SSDLTrees/2013/Aug15/MC/DYJetsToLL-M-50-TuneZ2Star-8TeV-madgraph-tarball-Summer12-DR53X-PU-S10-START53-V7A-v1/		1	-1	3532.8
+#DYJets10To50	lbaeni/SSDLTrees/2013/Nov14/MC/DYJetsToLL-M-10To50filter-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1/					1	-1	876.8
 GJets200		lbaeni/SSDLTrees/2013/Aug15/MC/GJets-HT-200To400-8TeV-madgraph-v2-Summer12-DR53X-PU-S10-START53-V7A-v1-2ndShot/			1	-1	960.5
 GJets400		lbaeni/SSDLTrees/2013/Aug15/MC/GJets-HT-400ToInf-8TeV-madgraph-v3-Summer12-DR53X-PU-S10-START53-V7C-v1-2ndShot/			1	-1	107.5
 ## not here yet. MA GJets200		mdunser/SSDLTrees/2013/Mar16/MC/GJets-HT-200To400-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root	1	-1	960.5
