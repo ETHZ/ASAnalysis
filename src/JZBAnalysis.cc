@@ -2600,7 +2600,6 @@ void JZBAnalysis::Analyze() {
   TLorentzVector CHSMetvector(nEvent.fact*CHSMETpx,nEvent.fact*CHSMETpy,0,0);
   TLorentzVector Cleantype1METvector(type1METpx,type1METpy,0,0);
   TLorentzVector Cleantype1METvector_JS(type1METpx,type1METpy,0,0);
-  Cleantype1METvector_JS+=(UnSmearedJet-SmearedJets);
   
   TLorentzVector sumOfPFJets(0,0,0,0);
   float ScalarSumOfJets=0;
@@ -2699,6 +2698,8 @@ void JZBAnalysis::Analyze() {
       //JZB case!!!
       if(jpt>40 && isJetID) nEvent.pfJetGoodNum40CHS++;
     }
+
+  Cleantype1METvector_JS+=(UnSmearedJets-SmearedJets);
 
   nEvent.pfJetNum=0;
   nEvent.pfJetGoodNum30=0;
