@@ -12,7 +12,7 @@
 #include <cstdlib>
 using namespace std;
 
-bool UseForZPlusB=false;
+bool UseForZPlusB=true;
 
 
 
@@ -2614,7 +2614,7 @@ void JZBAnalysis::Analyze() {
   
   TLorentzVector UnSmearedJets(0,0,0,0);
   TLorentzVector SmearedJets(0,0,0,0);
-  for(int i =0 ; i<fTR->PFCHSNJets;i++) // PF jet loop
+  for(int i =0 ; i<fTR->PFCHSNJets && UseForZPlusB;i++) // PF jet loop
     {
       if(i==jMax){cout<<"max Num of jets (CHS) was reached"<<endl; break;}
       float jpt = fTR->PFCHSJPt[i];
@@ -3119,7 +3119,7 @@ void JZBAnalysis::Analyze() {
   nEvent.met[PFRECOILMET] = (sumOfPFJets + s1 + s2).Pt(); 
   nEvent.met[RECOILMET] = 0.;//kicked (recoil + s1 + s2).Pt();
   
-  ComputeD2MT2(nEvent.d2,nEvent.mt2);
+  if(!UseForZPlusB) ComputeD2MT2(nEvent.d2,nEvent.mt2);
   
   //******** missing mt2j
   
