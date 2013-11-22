@@ -332,7 +332,8 @@ void DiPhotonMiniTree::Analyze(){
   //  cout << endl << "-----------------------" << endl;
 
   float weight;
-  if (!isdata) weight = GetPUWeight(fTR->PUnumInteractions);
+  if (!isdata) weight = GetPUWeight(fTR->PUnumTrueInteractions); // TRUE
+  //  if (!isdata) weight = GetPUWeight(fTR->PUnumInteractions); // OBSERVED
   else weight=1;
   
   event_luminormfactor=AddWeight;
@@ -654,7 +655,7 @@ void DiPhotonMiniTree::Analyze(){
 	  else{
 	    pholead_phi = fTR->PhoSCRemovalRConePhi[passing.at(0)];
 	    pholead_SCphi = fTR->PhoSCRemovalRConePhi[passing.at(0)];
-	    pholead_PhoSCRemovalPFIsoCharged = fTR->PhoSCRemovalPFIsoChargedRCone[passing.at(0)];
+	    pholead_PhoSCRemovalPFIsoCharged = fTR->PhoSCRemovalPFIsoChargedPrimVtxRCone[passing.at(0)];
 	    pholead_PhoSCRemovalPFIsoNeutral = fTR->PhoSCRemovalPFIsoNeutralRCone[passing.at(0)];
 	    pholead_PhoSCRemovalPFIsoPhoton = fTR->PhoSCRemovalPFIsoPhotonRCone[passing.at(0)];
 	    pholead_PhoSCRemovalPFIsoCombined = pholead_PhoSCRemovalPFIsoCharged+pholead_PhoSCRemovalPFIsoNeutral+pholead_PhoSCRemovalPFIsoPhoton;
@@ -692,7 +693,7 @@ void DiPhotonMiniTree::Analyze(){
 	else{
 	  photrail_phi = fTR->PhoSCRemovalRConePhi[passing.at(1)];
 	  photrail_SCphi = fTR->PhoSCRemovalRConePhi[passing.at(1)];
-	  photrail_PhoSCRemovalPFIsoCharged = fTR->PhoSCRemovalPFIsoChargedRCone[passing.at(1)];
+	  photrail_PhoSCRemovalPFIsoCharged = fTR->PhoSCRemovalPFIsoChargedPrimVtxRCone[passing.at(1)];
 	  photrail_PhoSCRemovalPFIsoNeutral = fTR->PhoSCRemovalPFIsoNeutralRCone[passing.at(1)];
 	  photrail_PhoSCRemovalPFIsoPhoton = fTR->PhoSCRemovalPFIsoPhotonRCone[passing.at(1)];
 	  photrail_PhoSCRemovalPFIsoCombined = photrail_PhoSCRemovalPFIsoCharged+photrail_PhoSCRemovalPFIsoNeutral+photrail_PhoSCRemovalPFIsoPhoton;
@@ -799,7 +800,7 @@ void DiPhotonMiniTree::Analyze(){
 	else{
 	pholead_phi = fTR->PhoSCRemovalRConePhi[passing.at(i)];
 	pholead_SCphi = fTR->PhoSCRemovalRConePhi[passing.at(i)];
-	pholead_PhoSCRemovalPFIsoCharged = fTR->PhoSCRemovalPFIsoChargedRCone[passing.at(i)];
+	pholead_PhoSCRemovalPFIsoCharged = fTR->PhoSCRemovalPFIsoChargedPrimVtxRCone[passing.at(i)];
 	pholead_PhoSCRemovalPFIsoNeutral = fTR->PhoSCRemovalPFIsoNeutralRCone[passing.at(i)];
 	pholead_PhoSCRemovalPFIsoPhoton = fTR->PhoSCRemovalPFIsoPhotonRCone[passing.at(i)];
 	pholead_PhoSCRemovalPFIsoCombined = pholead_PhoSCRemovalPFIsoCharged+pholead_PhoSCRemovalPFIsoNeutral+pholead_PhoSCRemovalPFIsoPhoton;
@@ -2430,7 +2431,7 @@ void DiPhotonMiniTree::FillLead(int index, std::vector<int> passing_jets){
   for (int i=0; i<pholead_Npfcandneutralincone && i<global_size_pfcandarrays; i++) pholead_neutralpfcanddphis[i] = isos.neutralcanddphis.at(i);
   }
   else{
-    pholead_PhoSCRemovalPFIsoCharged=fTR->PhoSCRemovalPFIsoCharged[index];
+    pholead_PhoSCRemovalPFIsoCharged=fTR->PhoSCRemovalPFIsoChargedPrimVtx[index];
     pholead_PhoSCRemovalPFIsoNeutral=fTR->PhoSCRemovalPFIsoNeutral[index];
     pholead_PhoSCRemovalPFIsoPhoton=fTR->PhoSCRemovalPFIsoPhoton[index];
     pholead_PhoSCRemovalPFIsoCombined=pholead_PhoSCRemovalPFIsoCharged+pholead_PhoSCRemovalPFIsoNeutral+pholead_PhoSCRemovalPFIsoPhoton;
@@ -2544,7 +2545,7 @@ void DiPhotonMiniTree::FillTrail(int index, std::vector<int> passing_jets){
   for (int i=0; i<photrail_Npfcandneutralincone && i<global_size_pfcandarrays; i++) photrail_neutralpfcanddphis[i] = isos.neutralcanddphis.at(i);
   }
   else{
-    photrail_PhoSCRemovalPFIsoCharged=fTR->PhoSCRemovalPFIsoCharged[index];
+    photrail_PhoSCRemovalPFIsoCharged=fTR->PhoSCRemovalPFIsoChargedPrimVtx[index];
     photrail_PhoSCRemovalPFIsoNeutral=fTR->PhoSCRemovalPFIsoNeutral[index];
     photrail_PhoSCRemovalPFIsoPhoton=fTR->PhoSCRemovalPFIsoPhoton[index];
     photrail_PhoSCRemovalPFIsoCombined=photrail_PhoSCRemovalPFIsoCharged+photrail_PhoSCRemovalPFIsoNeutral+photrail_PhoSCRemovalPFIsoPhoton;
