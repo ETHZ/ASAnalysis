@@ -55,7 +55,7 @@ void DiPhotonMiniTree::Begin(){
 
 
   // fOutputExtraFile = new TFile(TString(fOutputFile->GetName()).ReplaceAll("output","extra").Data(),"recreate");
-  fOutputExtraFile = new TFile(Form("extrainfo_%d.root",uuid),"recreate");
+  fOutputExtraFile = new TFile(Form("extrainfo_%u.root",uuid),"recreate");
 
   for (int i=0; i<18; i++){
     fOutputFile->cd();
