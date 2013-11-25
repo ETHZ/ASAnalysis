@@ -476,9 +476,9 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 void SSDLPlotter::doAnalysis(){
   // sandBox();         
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
-  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genJets.root", false);
-  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo.root", true);
-  return;
+//  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genJets.root", false);
+//  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo.root", true);
+//  return;
 
 
   cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
@@ -517,22 +517,24 @@ void SSDLPlotter::doAnalysis(){
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
-//  makeTTWIntPredictionsSigEvent();
+  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+  makeTTWIntPredictionsSigEvent();
+  cout << "...done ===" << endl;
+
+
+//  cout << "=== Going to call makeTTWKinPlotsSigEvent..." << endl;  
+//  makeTTWKinPlotsSigEvent(); // BM: what is this for ??
 //  cout << "...done ===" << endl;
-
-
-  //makeTTWKinPlotsSigEvent(); // BM: what is this for ??
   
   //-- Perhaps Marc needs this
   //makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
   // storeWeightedPred(gRegion[gBaseRegion]);
-  makeClosureTestSigEvents(  0., 0., 2, 0, 20., 20.);
-  makeClosureTestSigEvents(150., 0., 2, 0, 30., 30.);
-
-
-
-	makeTTWNLOPlots();
+//  makeClosureTestSigEvents(  0., 0., 2, 0, 20., 20.);
+//  makeClosureTestSigEvents(150., 0., 2, 0, 30., 30.);
+//
+//
+//
+//	makeTTWNLOPlots();
 
 
 
@@ -18249,7 +18251,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	for( int i = 0; i < sigtree->GetEntries(); i++ ){
 		if (!verbose) showStatusBar(i, sigtree->GetEntries(), 10000);
 		sigtree->GetEntry(i);
-		
+//		puweight = 1.;
 		//		if (tmp_samplename == "init") tmp_samplename = *sname;
 		if (verbose && tmp_samplename != *sname) {
 			if (tmp_samplename == samplename || tmp_samplename == "init") {
@@ -18485,7 +18487,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		
 		h_top  [i]->SetFillColor(46);
 		h_zjets[i]->SetFillColor(49);
-		h_wjets[i]->SetFillColor(kOrange);
+		h_wjets[i]->SetFillColor(36);
 		h_gjets[i]->SetFillColor(kGreen);
 		h_mc   [i]->SetFillColor(40);
 		h_rare [i]->SetFillColor(38);
@@ -18690,7 +18692,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 		if (flavor_sel ==  4) lat->DrawLatex(0.14,0.85, "e#mu (OS)");
 		if (flavor_sel ==  5) lat->DrawLatex(0.14,0.85, "ee (OS)");
 		
-		drawTopLineSim(0.56, 0.8);
+		drawTopLine(0.56, 0.8);
 		
 		
 		
