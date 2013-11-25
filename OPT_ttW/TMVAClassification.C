@@ -634,7 +634,9 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 
    if (Use["Cuts"] || Use["CutsGA"]) {
 
-    for( unsigned iEff=1; iEff<21; ++iEff ) {
+	int nEff = 20;
+
+    for( unsigned iEff=1; iEff<nEff+1; ++iEff ) {
 
        TMVA::IMethod* method;
        if (Use["Cuts"]) method = (TMVA::IMethod*)factory->GetMethod("Cuts");
@@ -646,14 +648,14 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
        system(mkdir_command.c_str());
        char cutsFileName[500];
        if (Use["Cuts"])
-         sprintf( cutsFileName, "%s/cuts_Seff%d.txt", optcutsdir.c_str(), 5*iEff );
+         sprintf( cutsFileName, "%s/cuts_Seff%d.txt"  , optcutsdir.c_str(), 100/nEff*iEff );
        if (Use["CutsGA"])
-         sprintf( cutsFileName, "%s/cutsGA_Seff%d.txt", optcutsdir.c_str(), 5*iEff );
+         sprintf( cutsFileName, "%s/cutsGA_Seff%d.txt", optcutsdir.c_str(), 100/nEff*iEff );
 
        ofstream ofs(cutsFileName);
 
        std::vector<Double_t> cutsMin, cutsMax;
-       cuts->GetCuts((float)iEff*0.05, cutsMin, cutsMax);
+       cuts->GetCuts((float)iEff/((float)nEff), cutsMin, cutsMax);
 
        bool found_pT1 = false;
        bool found_pT2 = false;
