@@ -7323,18 +7323,26 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	TH2D *h_HT_MinPt_madgraph, *h_HT_MinPt_aMCatNLO;
 	TH2D *h_HT_MinPt_madgraph_eff, *h_HT_MinPt_aMCatNLO_eff;
 	TH2D *h_HT_MinPt_syst;
-	h_HT_MinPt_madgraph     = new TH2D("HT_MinPt_madgraph"    , "HT_MinPt_madgraph"    , 40, 0., 1000., 30, 20., 170.);
-	h_HT_MinPt_aMCatNLO     = new TH2D("HT_MinPt_aMCatNLO"    , "HT_MinPt_aMCatNLO"    , 40, 0., 1000., 30, 20., 170.);
-	h_HT_MinPt_madgraph_eff = new TH2D("HT_MinPt_madgraph_eff", "HT_MinPt_madgraph_eff", 40, 0., 1000., 30, 20., 170.);
-	h_HT_MinPt_aMCatNLO_eff = new TH2D("HT_MinPt_aMCatNLO_eff", "HT_MinPt_aMCatNLO_eff", 40, 0., 1000., 30, 20., 170.);
-	h_HT_MinPt_syst         = new TH2D("HT_MinPt_syst"        , "HT_MinPt_syst"        , 40, 0., 1000., 30, 20., 170.);
+	TH2D *h_HT_MinPt_top;
+	TH2D *h_HT_MinPt_top_eff;
+	int   nHTbins(60);
+	float HTmin(0.), HTmax(600.);
+	int   nPtbins(20);
+	float Ptmin(20.), Ptmax(100.);
+	h_HT_MinPt_madgraph     = new TH2D("HT_MinPt_madgraph"    , "HT_MinPt_madgraph"    , nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
+	h_HT_MinPt_aMCatNLO     = new TH2D("HT_MinPt_aMCatNLO"    , "HT_MinPt_aMCatNLO"    , nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
+	h_HT_MinPt_madgraph_eff = new TH2D("HT_MinPt_madgraph_eff", "HT_MinPt_madgraph_eff", nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
+	h_HT_MinPt_aMCatNLO_eff = new TH2D("HT_MinPt_aMCatNLO_eff", "HT_MinPt_aMCatNLO_eff", nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
+	h_HT_MinPt_syst         = new TH2D("HT_MinPt_syst"        , "HT_MinPt_syst"        , nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
+	h_HT_MinPt_top          = new TH2D("HT_MinPt_top"         , "HT_MinPt_top"         , nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
+	h_HT_MinPt_top_eff      = new TH2D("HT_MinPt_top_eff"     , "HT_MinPt_top_eff"     , nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
 	
 	for( int i = 0; i < sigtree->GetEntries(); i++ ){
 		showStatusBar(i, sigtree->GetEntries(), 10000);
 		sigtree->GetEntry(i);
 		
 		if( flag != systflag ) continue;
-		if (*sname != "TTbarW" && *sname != "TTbarWNLO") continue;
+		if (*sname != "TTbarW" && *sname != "TTbarWNLO" && *sname != "TTJets_v1" && *sname != "TTJets_v2" && *sname != "TTJets_madgraph_v1" && *sname != "TTJets_madgraph_v2") continue;
 		
 		if (chVeto && charge != chVeto ) continue;
 
@@ -7413,6 +7421,11 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 				h_TTWNLO_HT[var]->Fill(diffVar, weight);
 				if (var == 0) h_HT_MinPt_aMCatNLO->Fill(HT, TMath::Min(pT1, pT2), weight);
 			}
+			if (var == 0 && (*sname == "TTJets_v1" || *sname == "TTJets_v2" || *sname == "TTJets_madgraph_v1" || *sname == "TTJets_madgraph_v2")) {
+				int ngenTop = fSampleMap["TTJets_v1"]->ngen + fSampleMap["TTJets_v2"]->ngen + fSampleMap["TTJets_madgraph_v1"]->ngen + fSampleMap["TTJets_madgraph_v2"]->ngen;
+				weight = puweight * HLTSF / (float)ngenTop;
+				h_HT_MinPt_top->Fill(HT, TMath::Min(pT1, pT2), weight);
+			}
 		}
 	}
 	
@@ -7444,38 +7457,65 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	for (int htbin = 1; htbin < h_HT_MinPt_madgraph->GetNbinsX()+1; htbin++) {
 		for (int ptbin = 1; ptbin < h_HT_MinPt_madgraph->GetNbinsY()+1; ptbin++) {
 			float eff_madgraph = h_HT_MinPt_madgraph->Integral(htbin, h_HT_MinPt_madgraph->GetNbinsX()+1, ptbin, h_HT_MinPt_madgraph->GetNbinsY()+1);
-			h_HT_MinPt_madgraph_eff->SetBinContent(htbin, ptbin, eff_madgraph);
 			float eff_aMCatNLO = h_HT_MinPt_aMCatNLO->Integral(htbin, h_HT_MinPt_aMCatNLO->GetNbinsX()+1, ptbin, h_HT_MinPt_aMCatNLO->GetNbinsY()+1);
+			float eff_top      = h_HT_MinPt_top     ->Integral(htbin, h_HT_MinPt_top     ->GetNbinsX()+1, ptbin, h_HT_MinPt_top     ->GetNbinsY()+1);
+			h_HT_MinPt_madgraph_eff->SetBinContent(htbin, ptbin, eff_madgraph);
 			h_HT_MinPt_aMCatNLO_eff->SetBinContent(htbin, ptbin, eff_aMCatNLO);
+			h_HT_MinPt_top_eff     ->SetBinContent(htbin, ptbin, eff_top     );
 			h_HT_MinPt_syst->SetBinContent(htbin, ptbin, eff_aMCatNLO / eff_madgraph - 1.);
 		}
 	}
 
 	h_HT_MinPt_madgraph_eff->SetXTitle("H_{T} cut (GeV)");
 	h_HT_MinPt_aMCatNLO_eff->SetXTitle("H_{T} cut (GeV)");
+	h_HT_MinPt_top_eff     ->SetXTitle("H_{T} cut (GeV)");
 	h_HT_MinPt_syst        ->SetXTitle("H_{T} cut (GeV)");
 	h_HT_MinPt_madgraph_eff->SetYTitle("lepton p_{T} cut (GeV)");
 	h_HT_MinPt_aMCatNLO_eff->SetYTitle("lepton p_{T} cut (GeV)");
+	h_HT_MinPt_top_eff     ->SetYTitle("lepton p_{T} cut (GeV)");
 	h_HT_MinPt_syst        ->SetYTitle("lepton p_{T} cut (GeV)");
+
+	h_HT_MinPt_madgraph_eff->GetXaxis()->SetTitleOffset(1.2);
+	h_HT_MinPt_aMCatNLO_eff->GetXaxis()->SetTitleOffset(1.2);
+	h_HT_MinPt_top_eff     ->GetXaxis()->SetTitleOffset(1.2);
+	h_HT_MinPt_syst        ->GetXaxis()->SetTitleOffset(1.2);
+	h_HT_MinPt_madgraph_eff->GetYaxis()->SetTitleOffset(1.2);
+	h_HT_MinPt_aMCatNLO_eff->GetYaxis()->SetTitleOffset(1.2);
+	h_HT_MinPt_top_eff     ->GetYaxis()->SetTitleOffset(1.2);
+	h_HT_MinPt_syst        ->GetYaxis()->SetTitleOffset(1.2);
+
+	h_HT_MinPt_madgraph_eff->SetMinimum(0.);
+	h_HT_MinPt_aMCatNLO_eff->SetMinimum(0.);
+	h_HT_MinPt_top_eff     ->SetMinimum(0.);
 
 	TCanvas *c_temp = new TCanvas("C_HTPlot", "HT", 0, 0, 600, 600);
 	c_temp->cd();
+	TLatex *lat = new TLatex();
+	lat->SetNDC(kTRUE);
+	lat->SetTextColor(kBlack);
+	lat->SetTextSize(0.04);
+	gPad->SetRightMargin(0.15);
 	h_HT_MinPt_syst->Draw("colz");
-	drawTopLineSim();
+	drawTopLineSim(0.56, 0.8);
 	Util::PrintPDF(c_temp, "systematic" + chargeString, fOutputDir + fOutputSubDir);
 	Util::PrintPNG(c_temp, "systematic" + chargeString, fOutputDir + fOutputSubDir);
 
 	h_HT_MinPt_madgraph_eff->Draw("colz");
-	drawTopLineSim();
+	drawTopLineSim(0.56, 0.8);
 	Util::PrintPDF(c_temp, "madgraph_sigeff" + chargeString, fOutputDir + fOutputSubDir);
 	Util::PrintPNG(c_temp, "madgraph_sigeff" + chargeString, fOutputDir + fOutputSubDir);
 
 	h_HT_MinPt_aMCatNLO_eff->Draw("colz");
-	drawTopLineSim();
+	drawTopLineSim(0.56, 0.8);
 	Util::PrintPDF(c_temp, "aMCatNLO_sigeff" + chargeString, fOutputDir + fOutputSubDir);
 	Util::PrintPNG(c_temp, "aMCatNLO_sigeff" + chargeString, fOutputDir + fOutputSubDir);
 
-	delete c_temp;
+	h_HT_MinPt_top_eff     ->Draw("colz");
+	drawTopLineSim(0.56, 0.8);
+	Util::PrintPDF(c_temp, "top_BGeff" + chargeString, fOutputDir + fOutputSubDir);
+	Util::PrintPNG(c_temp, "top_BGeff" + chargeString, fOutputDir + fOutputSubDir);
+
+	delete c_temp, lat;
 	
 	for (int i = 0; i < diffVarName.size(); i++) {
 		
