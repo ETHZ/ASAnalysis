@@ -138,6 +138,7 @@ public :
    Float_t         GenLepPt[20];   //[NGenLep]
    Float_t         GenLepEta[20];   //[NGenLep]
    Float_t         GenLepPhi[20];   //[NGenLep]
+   Int_t           GenLepFromW[20];   //[NGenLep]
    Int_t           NGenJets;
    Float_t         GenJetPt[20];   //[NGenJets]
    Float_t         GenJetE[20];   //[NGenJets]
@@ -298,6 +299,7 @@ public :
    TBranch        *b_GenLepPt;   //!
    TBranch        *b_GenLepEta;   //!
    TBranch        *b_GenLepPhi;   //!
+   TBranch        *b_GenLepFromW;   //!
    TBranch        *b_NGenJets;   //!
    TBranch        *b_GenJetPt;   //!
    TBranch        *b_GenJetE;   //!
@@ -527,6 +529,7 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("GenLepPt", GenLepPt, &b_GenLepPt);
    fChain->SetBranchAddress("GenLepEta", GenLepEta, &b_GenLepEta);
    fChain->SetBranchAddress("GenLepPhi", GenLepPhi, &b_GenLepPhi);
+   fChain->SetBranchAddress("GenLepFromW", GenLepFromW, &b_GenLepFromW);
    fChain->SetBranchAddress("NGenJets", &NGenJets, &b_NGenJets);
    fChain->SetBranchAddress("GenJetPt", GenJetPt, &b_GenJetPt);
    fChain->SetBranchAddress("GenJetE", GenJetE, &b_GenJetE);

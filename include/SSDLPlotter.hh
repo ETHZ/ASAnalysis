@@ -293,7 +293,7 @@ public:
 	virtual void sandBox();
 	virtual void pythiaMadgraph(bool pyhia);
 	virtual void makeROCCurve();
-	virtual void genEfficiencies(const char *, bool);
+	virtual void genEfficiencies(const char *, bool, bool);
 	virtual void msugraKfacs(TFile *);
 	virtual void msugraLOxsecs(TFile *);
 	virtual void msugraNLOxsecs(TFile *);
