@@ -78,6 +78,8 @@ public:
   bool IsThisDY(vector<string>);
   int IsThisTTbar(vector<string>);
   void FillLHEInfo();
+
+  void CalcRazor(float& MR, float& MRT, float& R, TLorentzVector& met);
   
   string outputFileName_; // public name of the output file name
   

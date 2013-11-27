@@ -266,6 +266,7 @@ public:
   float sjzb[jzbtype_max]; // smeared JZB
   float dphi_sumJetVSZ[jzbtype_max];
   float sumJetPt[jzbtype_max];
+  float MR,MRT,Razor;
 
   float weight;
   float weight_2BJets;
@@ -763,6 +764,9 @@ void nanoEvent::reset()
   ml1b=-9;
   ml2b=-9;
   st=0;
+  MR = -9;
+  MRT = -9;
+  Razor = -9;
   weight = 1.0;
   PUweight = 1.0;
   PUweightUP = 1.0;
@@ -1019,6 +1023,81 @@ TH1F *weight_histo;
 
 nanoEvent nEvent;
   
+
+void JZBAnalysis::CalcRazor(float& MR, float& MRT, float& R, TLorentzVector& met) {
+
+  // Calculate Razor variables.
+  // More info: https://twiki.cern.ch/twiki/bin/view/CMSPublic/RazorLikelihoodHowTo
+
+  // 1. Get list of jets from event and make TLoretzVectors out of it
+  std::vector<TLorentzVector> jets;
+  for ( size_t ijet = 0; ijet<nEvent.pfJetGoodNum40; ++ijet ) {
+    TLorentzVector ajet;
+    ajet.SetPtEtaPhiE( nEvent.pfJetGoodPt[ijet], nEvent.pfJetGoodEta[ijet],
+                       nEvent.pfJetGoodPhi[ijet], nEvent.pfJetGoodE[ijet] );
+    jets.push_back( ajet );
+  }
+
+  // 2. Get the two Megajets from the jets only
+  TLorentzVector j1, j2;
+  int N_comb = TMath::Power(2.0,static_cast<int>(jets.size()));
+  double M_min = DBL_MAX;
+  int j_count;
+  for(int i = 1; i < N_comb-1; i++){
+    TLorentzVector j_temp1, j_temp2;
+    int itemp = i;
+    j_count = N_comb/2;
+    int count = 0;
+    while(j_count > 0){
+      if(itemp/j_count == 1){
+        j_temp1 += jets[count];
+      } else {
+        j_temp2 += jets[count];
+      }
+      itemp -= j_count*(itemp/j_count);
+      j_count /= 2;
+      count++;
+    }
+    double M_temp = j_temp1.M2()+j_temp2.M2();
+    // smallest mass
+    if(M_temp < M_min){
+      M_min = M_temp;
+      j1 = j_temp1;
+      j2 = j_temp2;
+    }
+  }
+  // Order by decreasing pt
+  if (j2.Pt() > j1.Pt()) std::swap(j1,j2);
+
+  // 3. Compute MR
+  double A = j1.P();
+  double B = j2.P();
+  double az = j1.Pz();
+  double bz = j2.Pz();
+  TVector3 j1T, j2T;
+  j1T.SetXYZ(j1.Px(),j1.Py(),0.0);
+  j2T.SetXYZ(j2.Px(),j2.Py(),0.0);
+  double ATBT = (j1T+j2T).Mag2();
+  float _MR = sqrt((A+B)*(A+B)-(az+bz)*(az+bz)-
+                     (j2T.Dot(j2T)-j1T.Dot(j1T))*(j2T.Dot(j2T)-j1T.Dot(j1T))/(j1T+j2T).Mag2());
+  double mybeta = (j2T.Dot(j2T)-j1T.Dot(j1T))/sqrt(ATBT*((A+B)*(A+B)-(az+bz)*(az+bz)));
+  double mygamma = 1./sqrt(1.-mybeta*mybeta);
+  //gamma times MRstar                                                                                                                                     \
+  _MR *= mygamma;
+
+  // 4. Compute MRT
+  float _MRT = met.Vect().Mag()*(j1.Pt()+j2.Pt()) - met.Vect().Dot(j1.Vect()+j2.Vect());
+  _MRT /= 2.;
+  _MRT = sqrt(_MRT);
+
+  if ( not isnan(_MR) ) MR = _MR;
+  if ( not isnan(_MRT) ) MRT = _MRT;
+  
+  if ( MR>0 && MRT>0 ) {
+    R = MRT/MR;
+  }
+
+}
 
 Double_t JZBAnalysis::CalcMT2(double testmass, bool massive, TLorentzVector visible1, TLorentzVector visible2, TLorentzVector MET ){
   double pa[3];
@@ -1638,6 +1717,10 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("mt2j",&nEvent.mt2j,"mt2j/F");
   myTree->Branch("ml1b",&nEvent.ml1b,"ml1b/F");
   myTree->Branch("ml2b",&nEvent.ml2b,"ml2b/F");
+
+  myTree->Branch("MR",   &nEvent.MR,   "MR/F");
+  myTree->Branch("MRT",  &nEvent.MRT,  "MRT/F");
+  myTree->Branch("Razor",&nEvent.Razor,"Razor/F");
   
   myTree->Branch("weight", &nEvent.weight,"weight/F");
   myTree->Branch("PUweight",&nEvent.PUweight,"PUweight/F");
@@ -2146,8 +2229,9 @@ void JZBAnalysis::Analyze() {
   nEvent.runNum    = fTR->Run;
   nEvent.lumi      = fTR->LumiSection;
  
-
-
+  if ( nEvent.eventNum == 95800878 ) {
+    std::cout << __LINE__ << ": Here I am!" << std::endl;
+  }
  
   if(fDataType_ == "mc") // only do this for MC; for data nEvent.reset() has already set both weights to 1
     {
@@ -2923,8 +3007,8 @@ void JZBAnalysis::Analyze() {
       ME .push_back(aJet.E());
       
       hemiobjs.index.push_back(i);
-      hemiobjs.type.push_back("jet"),
-        hemiobjs.hemisphere.push_back(0);
+      hemiobjs.type.push_back("jet");
+      hemiobjs.hemisphere.push_back(0);
       
       // Flag good jets failing ID
       if (!isJetID) { 
@@ -3145,14 +3229,14 @@ void JZBAnalysis::Analyze() {
     }
   }
   delete hemisp;
-  
-  TLorentzVector MET(fTR->PFType1METpx,fTR->PFType1METpy,0,0);
-  
+    
   float testmass=0;
   float massive=0;
-  nEvent.mt2j = CalcMT2(testmass, massive, pseudojet1, pseudojet2, MET);
+  nEvent.mt2j = CalcMT2(testmass, massive, pseudojet1, pseudojet2, pfMETvector);
   
-  
+  // Razor
+  CalcRazor(nEvent.MR,nEvent.MRT,nEvent.Razor,pfMETvector);
+
   for(int jl=0;jl<sortedGoodLeptons.size();jl++) {
     float factor=1.0;
     if(sortedGoodLeptons[jl].type==0) {
