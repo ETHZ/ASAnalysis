@@ -1520,12 +1520,12 @@ bool DiPhotonMiniTree::StandardEventSelection(TreeReader *fTR, std::vector<int> 
   //  if (invmass0<80) return false;
   if (dR<global_dR_cut_acceptance) return false;
 
-  VetoJetPhotonOverlap(passing,passing_jets);
+  if (VetoJetPhotonOverlap(passing,passing_jets)) return false;
 
   return true;
 };
 
-void DiPhotonMiniTree::VetoJetPhotonOverlap(std::vector<int> &passing, std::vector<int> &passing_jets){
+bool DiPhotonMiniTree::VetoJetPhotonOverlap(std::vector<int> &passing, std::vector<int> &passing_jets){
 
   // remove jets that coincide with selected photons
   for (size_t i=0; i<passing.size(); i++){
@@ -1535,13 +1535,17 @@ void DiPhotonMiniTree::VetoJetPhotonOverlap(std::vector<int> &passing, std::vect
     }
   }
 
+  bool out=false;
+
   // minimum dR between photon and jet
   for (size_t i=0; i<passing.size(); i++){
     for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
       float dR = Util::GetDeltaR(fTR->PhoEta[passing.at(i)],fTR->JEta[*it],fTR->PhoPhi[passing.at(i)],fTR->JPhi[*it]);
-      if (dR<0) it=passing_jets.erase(it); else it++;
+      if (dR<0) {out=true; it=passing_jets.erase(it);} else it++; // XXX DEBUG FOR NOW SET TO 0
     }
   }
+
+  return out;
 
 };
 

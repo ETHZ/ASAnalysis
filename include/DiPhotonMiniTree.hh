@@ -144,7 +144,7 @@ private:
   std::vector<int> GetPFCandRemovals(TreeReader *fTR, int phoqi);
   bool SinglePhotonEventSelection(TreeReader *fTR, std::vector<int> &passing);
   bool StandardEventSelection(TreeReader *fTR, std::vector<int> &passing, std::vector<int> &passing_jets);
-  void VetoJetPhotonOverlap(std::vector<int> &passing, std::vector<int> &passing_jets);
+  bool VetoJetPhotonOverlap(std::vector<int> &passing, std::vector<int> &passing_jets);
   void JetSelection(std::vector<int> &passing_jets);
   bool TriggerSelection();
   int Count_part_isrfsr_gamma(TreeReader *fTR);
