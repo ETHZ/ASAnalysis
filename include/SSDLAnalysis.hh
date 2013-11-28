@@ -258,6 +258,7 @@ private:
 	float fTGenLepPt   [fMaxNGenLep];
 	float fTGenLepEta  [fMaxNGenLep];
 	float fTGenLepPhi  [fMaxNGenLep];
+	int   fTGenLepFromW[fMaxNGenLep];
 
 	// generator jet properties
 	int fTNGenJets;
