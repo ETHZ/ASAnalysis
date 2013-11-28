@@ -273,6 +273,7 @@ void DiPhotonMiniTree::Begin(){
   OutputTree[i]->Branch("jet_pt",&jet_pt,"jet_pt[n_jets]/F");
   OutputTree[i]->Branch("jet_eta",&jet_eta,"jet_eta[n_jets]/F");
   OutputTree[i]->Branch("jet_phi",&jet_phi,"jet_phi[n_jets]/F");
+  OutputTree[i]->Branch("jet_energy",&jet_energy,"jet_energy[n_jets]/F");
 
   }
 
@@ -2590,6 +2591,7 @@ void DiPhotonMiniTree::FillJetsInfo(std::vector<int> passing, std::vector<int> p
     jet_pt[i] =  fTR->JPt[passing_jets.at(i)];
     jet_eta[i] = fTR->JEta[passing_jets.at(i)];
     jet_phi[i] = fTR->JPhi[passing_jets.at(i)];
+    jet_energy[i] = fTR->JE[passing_jets.at(i)];
   }
 
 };
@@ -2807,6 +2809,7 @@ void DiPhotonMiniTree::ResetVars(){
     jet_pt[i] = -999;
     jet_eta[i] = -999;
     jet_phi[i] = -999;
+    jet_energy[i] = -999;
   }
 
 };

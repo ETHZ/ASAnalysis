@@ -442,6 +442,7 @@ private:
   Float_t jet_pt[global_maxN_jets];
   Float_t jet_eta[global_maxN_jets];
   Float_t jet_phi[global_maxN_jets];
+  Float_t jet_energy[global_maxN_jets];
 
   UInt_t  input_event_number;
   Int_t   input_allphotonpfcand_count;
