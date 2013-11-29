@@ -361,6 +361,7 @@ public:
   int ZbCHS3015_pfJetGoodNum;
   float ZbCHS3015_pfJetDphiZ[jMax];
   float ZbCHS3015_pfJetGoodPt[jMax];
+  float ZbCHS3015_pfJetGoodUnsmearedPt[jMax];
   float ZbCHS3015_pfJetSum;
   float ZbCHS3015_pfBJetDphiZ[jMax];
 
@@ -832,6 +833,7 @@ void nanoEvent::reset()
     ZbCHS3015_pfJetGoodEta[i] = 0;
     ZbCHS3015_pfJetDphiZ[i] = 0;
     ZbCHS3015_pfJetGoodPt[i] = 0;
+    ZbCHS3015_pfJetGoodUnsmearedPt[i] = 0;
     ZbCHS3015_pfBJetDphiZ[i] = 0;
   }
   
@@ -1679,6 +1681,7 @@ void JZBAnalysis::Begin(TFile *f){
     myTree->Branch("ZbCHS3015_BTagWgtL",&nEvent.ZbCHS3015_BTagWgtLDown,"ZbCHS3015_BTagWgtLDown/F");
 
     myTree->Branch("ZbCHS3015_pfJetGoodNum",&nEvent.ZbCHS3015_pfJetGoodNum,"ZbCHS3015_pfJetGoodNum/I");
+    myTree->Branch("ZbCHS3015_pfJetGoodUnsmearedPt",nEvent.ZbCHS3015_pfJetGoodUnsmearedPt,"ZbCHS3015_pfJetGoodUnsmearedPt[ZbCHS3015_pfJetGoodNum]/F");
     myTree->Branch("ZbCHS3015_pfJetGoodNumBtag",&nEvent.ZbCHS3015_pfJetGoodNumBtag,"ZbCHS3015_pfJetGoodNumBtag/I");
     myTree->Branch("ZbCHS3015_bTagProbCSVBP",nEvent.ZbCHS3015_bTagProbCSVBP,"ZbCHS3015_bTagProbCSVBP[ZbCHS3015_pfJetGoodNum]/F");
     myTree->Branch("ZbCHS3015_pfJetGoodEta",nEvent.ZbCHS3015_pfJetGoodEta,"ZbCHS3015_pfJetGoodEta[ZbCHS3015_pfJetGoodNum]/F");
@@ -2707,6 +2710,7 @@ void JZBAnalysis::Analyze() {
       float jenergy = fTR->PFCHSJE[i];
       bool isJetID = fTR->PFCHSJIDLoose[i];
       
+      float unsmeared_jpt=jpt;
       float smeared_jpt_up,smeared_jpt_dn;
       float smeared_jpt = smearedJetPt(jpt,jeta,jphi,smeared_jpt_up,smeared_jpt_dn);
       
@@ -2774,6 +2778,8 @@ void JZBAnalysis::Analyze() {
 	nEvent.ZbCHS3015_pfJetGoodEta[nEvent.ZbCHS3015_pfJetGoodNum]=jeta;
 	nEvent.ZbCHS3015_pfJetDphiZ[nEvent.ZbCHS3015_pfJetGoodNum]=aJet.DeltaPhi(zVector);
 	nEvent.ZbCHS3015_pfJetGoodPt[nEvent.ZbCHS3015_pfJetGoodNum]=jpt;
+	nEvent.ZbCHS3015_pfJetGoodUnsmearedPt[nEvent.ZbCHS3015_pfJetGoodNum]=unsmeared_jpt;
+	
 	nEvent.ZbCHS3015_L5corr=1.0;
 	if(isMC) nEvent.ZbCHS3015_L5corr = GetL5Correction(i);
 	nEvent.ZbCHS3015_pfJetGoodNum++;
