@@ -1089,12 +1089,12 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, UInt_t *n1_arr, 
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(0)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 	    
-	    if (skip_EBEE) {
-	      cout << "EB/EE migration, skipping1 " << m1 << " " << m2 << " " << l << endl; 
-	      cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
-	      cout << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << input_pholead_SCeta << endl;
-	      continue;
-	    }
+//	    if (skip_EBEE) {
+//	      cout << "EB/EE migration, skipping1 " << m1 << " " << m2 << " " << l << endl; 
+//	      cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
+//	      cout << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << input_pholead_SCeta << endl;
+//	      continue;
+//	    }
 	  }
 	  
 	  skip_EBEE = false;
@@ -1130,12 +1130,12 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, UInt_t *n1_arr, 
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])<1.4442) && (fabs(input_pholead_SCeta) > 1.4442)) skip_EBEE=true;
 	    if ((fabs(fTR->SCEta[fTR->PhotSCindex[passing.at(1)]])>1.4442) && (fabs(input_pholead_SCeta) < 1.4442)) skip_EBEE=true;
 	    
-	    if (skip_EBEE) {
-	      cout << "EB/EE migration, skipping2 " << m1 << " " << m2 << " " << l << endl; 
-	      cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
-	      cout << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << input_pholead_SCeta << endl;
-	      continue;
-	    }
+//	    if (skip_EBEE) {
+//	      cout << "EB/EE migration, skipping2 " << m1 << " " << m2 << " " << l << endl; 
+//	      cout << fTR->Run << " " << fTR->LumiSection << " " << fTR->Event << endl;
+//	      cout << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << input_pholead_SCeta << endl;
+//	      continue;
+//	    }
 	  }
 
 //	  cout << "filled " << found << endl;
