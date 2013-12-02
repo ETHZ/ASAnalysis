@@ -476,10 +476,10 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 void SSDLPlotter::doAnalysis(){
   // sandBox();         
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
-//	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root"       , false, false);
-//	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1.root" , true , false);
-	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genInfo_newest.root"    , false, false);
-	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo_newest.root"        , true , false);
+	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root"       , false, false);
+	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1.root" , true , false);
+//	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genInfo_newest.root"    , false, false);
+//	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo_newest.root"        , true , false);
 //  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_madgraph/ttbar_madgraph_genInfo_new.root", false, true );
 //  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_powheg/ttbar_powheg_genInfo_new.root"    , true , true );
   return;
@@ -25034,7 +25034,7 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		if (nGenLepFromWFromTop == 2) n2LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop == 3) n3LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop >  3) nMoreLepFromWFromTop += genw;
-//		if (nGenLepFromWFromTop <  3) genw = genw * TMath::Power(0.972, nGenLepFromWFromTop) * TMath::Power(1.014, 2-nGenLeptFromWFromTop);
+		if (nGenLepFromWFromTop <  3) genw = genw * TMath::Power(0.972, nGenLepFromWFromTop) * TMath::Power(1.014, 2-nGenLepFromWFromTop);
 
 		nTot += genw;
 		std::vector<genLep> leps_p;
