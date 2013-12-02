@@ -318,7 +318,10 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("GenLepPt"    ,   &fTGenLepPt    ,   "GenLepPt[NGenLep]/F");
 	fAnalysisTree->Branch("GenLepEta"   ,   &fTGenLepEta   ,   "GenLepEta[NGenLep]/F");
 	fAnalysisTree->Branch("GenLepPhi"   ,   &fTGenLepPhi   ,   "GenLepPhi[NGenLep]/F");
+	fAnalysisTree->Branch("GenLepMass"  ,   &fTGenLepMass  ,   "GenLepMass[NGenLep]/F");
 	fAnalysisTree->Branch("GenLepFromW" ,   &fTGenLepFromW ,   "GenLepFromW[NGenLep]/I");
+	fAnalysisTree->Branch("GenLepFromTau",   &fTGenLepFromTau ,   "GenLepFromTau[NGenLep]/I");
+	fAnalysisTree->Branch("GenLepFromTop",   &fTGenLepFromTop ,   "GenLepFromTop[NGenLep]/I");
 
 	fAnalysisTree->Branch("NGenW"     ,   &fTNGenW     ,   "NGenW/I");
 	fAnalysisTree->Branch("GenWID"    ,   &fTGenWID    ,   "GenWID[NGenW]/I");
@@ -823,11 +826,12 @@ void SSDLAnalysis::FillAnalysisTree(){
 		for (int ind = 0; ind < fTR->genInfoId.size(); ++ind){
 			if (fTR->genInfoPt[ind] < 10.) continue;
 			// let's store also the b's here. why not.
-			if (fabs(fTR->genInfoId[ind]) != 11 && fabs(fTR->genInfoId[ind]) != 13 && fabs(fTR->genInfoId[ind]) != 15 && fabs(fTR->genInfoId[ind]) != 5) continue;
+			if (fabs(fTR->genInfoId[ind]) != 11 && fabs(fTR->genInfoId[ind]) != 13 && fabs(fTR->genInfoId[ind]) != 15 && fabs(fTR->genInfoId[ind]) != 5 && fabs(fTR->genInfoId[ind]) != 24) continue;
 			fTNGenLep++;
 			bool fromW = false;
 			int  WInd  = -1;
-//			bool fromTop = false;
+			bool fromTau = false;
+			bool fromTop = false;
 			fTGenLepID     [fTNGenLep-1] = fTR->genInfoId    [ind];
 			fTGenLepMID    [fTNGenLep-1] = fTR->genInfoId[fTR->genInfoMo1[ind]];
 			fTGenLepGMID   [fTNGenLep-1] = fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[ind]]];
@@ -836,6 +840,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 			fTGenLepPt     [fTNGenLep-1] = fTR->genInfoPt    [ind];
 			fTGenLepEta    [fTNGenLep-1] = fTR->genInfoEta   [ind];
 			fTGenLepPhi    [fTNGenLep-1] = fTR->genInfoPhi   [ind];
+			fTGenLepMass   [fTNGenLep-1] = fTR->genInfoM     [ind];
 			if(!fromW) {
 				if     (abs( fTGenLepMID [fTNGenLep-1]) == 24) {fromW = true; WInd = fTR->genInfoMo1[ind];}
 				else if(!fromW && abs( fTGenLepGMID[fTNGenLep-1]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[ind]];}
@@ -856,7 +861,20 @@ void SSDLAnalysis::FillAnalysisTree(){
 					}
 				}
 			}
-			fTGenLepFromW[fTNGenLep-1] = fromW;
+			if(!fromTau) {
+				if     (abs( fTGenLepMID [fTNGenLep-1]) == 15) fromTau = true;
+				else if(!fromTau && abs( fTGenLepGMID[fTNGenLep-1]) == 15) fromTau = true;
+				else if(!fromTau && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]) == 15) fromTau = true;
+				else if(!fromTau && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]) == 15) fromTau = true;
+				else if(!fromTau && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]]) == 15) fromTau = true;
+			}
+			if(!fromTop) {
+				if     (abs( fTGenLepMID [fTNGenLep-1]) == 6) fromTop = true;
+				else if(!fromTop && abs( fTGenLepGMID[fTNGenLep-1]) == 6) fromTop = true;
+				else if(!fromTop && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]) == 6) fromTop = true;
+				else if(!fromTop && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]) == 6) fromTop = true;
+				else if(!fromTop && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]]) == 6) fromTop = true;
+			}
 //			if (fromW) {
 //				if     (abs( fTR->genInfoId[fTR->genInfoMo1[WInd]] ) == 6) fromTop = true;
 //				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]] ) == 6) fromTop = true;
@@ -865,6 +883,9 @@ void SSDLAnalysis::FillAnalysisTree(){
 //				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]]]]] ) == 6) fromTop = true;
 //			}
 //			fTGenLepFromWFromTop[fTNGenLep-1] = fromTop;
+			fTGenLepFromW  [fTNGenLep-1] = fromW;
+			fTGenLepFromTau[fTNGenLep-1] = fromTau;
+			fTGenLepFromTop[fTNGenLep-1] = fromTop;
 		}
 		// store W properties
 		for (int ind = 0; ind < fTR->genInfoId.size(); ++ind) {
@@ -894,7 +915,7 @@ void SSDLAnalysis::FillAnalysisTree(){
 				mother = fTR->genInfoMo1[mother];
 				if (abs(fTR->genInfoId[mother]) == 6) fromTop = true;
 			}
-			fTGenWFromTop[fTNGenW-1] = fromTop;
+			fTGenWFromTop  [fTNGenW  -1] = fromTop;
 		}
 		// dump generator jet properties
 		for(int ind = 0; ind < fTR->NGenJets; ind++){
@@ -1049,7 +1070,10 @@ void SSDLAnalysis::ResetTree(){
 		fTGenLepPt     [i]= -999;
 		fTGenLepEta    [i]= -999;
 		fTGenLepPhi    [i]= -999;
+		fTGenLepMass   [i]= -999;
 		fTGenLepFromW  [i]= -999;
+		fTGenLepFromTau[i]= -999;
+		fTGenLepFromTop[i]= -999;
 	}
 	// gen W properties
 	fTNGenW = 0;

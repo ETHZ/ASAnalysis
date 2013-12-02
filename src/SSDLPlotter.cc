@@ -476,8 +476,10 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 void SSDLPlotter::doAnalysis(){
   // sandBox();         
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
-  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genInfo_new.root"    , false, false);
-  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo_new.root"        , true , false);
+//	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root"       , false, false);
+//	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1.root" , true , false);
+	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genInfo_newest.root"    , false, false);
+	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo_newest.root"        , true , false);
 //  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_madgraph/ttbar_madgraph_genInfo_new.root", false, true );
 //  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_powheg/ttbar_powheg_genInfo_new.root"    , true , true );
   return;
@@ -24965,6 +24967,13 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	TH1F * njethist  = new TH1F("njets"   , "N_{jets}"   ,  10,   0,  10);
 	TH1F * lepdphis  = new TH1F("lepdphis", "#Delta#phi" ,  25,  0., TMath::Pi());
 
+	TH1F * wpts_all      = new TH1F("wpts_all    ", "p_{T}^{W} - all"      ,  50,  0., 250.);
+	TH1F * wpts_fromtop  = new TH1F("wpts_fromtop", "p_{T}^{W} - from top" ,  50,  0., 250.);
+	TH1F * wpts_prompt   = new TH1F("wpts_prompt ", "p_{T}^{W} - prompt"   ,  50,  0., 250.);
+
+	TH1F * wmass_fromtop  = new TH1F("wmasss_fromtop", "m_{W} - from top" ,  240.,  0., 120.);
+	TH1F * wmass_prompt   = new TH1F("wmasss_prompt ", "m_{W} - prompt"   ,  240.,  0., 120.);
+
 	TH1F * reco_leppts    = new TH1F("reco_pts"     , "RECO: p_{T}"      ,  50,   0, 150);
 	TH1F * reco_lepetas   = new TH1F("reco_etas"    , "RECO: |eta|"      ,  50,-2.5, 2.5);
 	TH1F * reco_jetpts    = new TH1F("reco_jetpts"  , "RECO: p_{T,jet}"  ,  50,  20, 250);
@@ -24986,6 +24995,12 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	float n3LepFromW    = 0;
 	float nMoreLepFromW = 0;
 
+	float n0LepFromWFromTop    = 0;
+	float n1LepFromWFromTop    = 0;
+	float n2LepFromWFromTop    = 0;
+	float n3LepFromWFromTop    = 0;
+	float nMoreLepFromWFromTop = 0;
+
 	// loop on events
 	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
 		tree_->GetEntry(jentry);
@@ -25003,12 +25018,23 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 					nGenLepFromW++;
 			}
 		}
-		if (nGenLepFromW <  4) genw = genw * TMath::Power(0.972, nGenLepFromW) * TMath::Power(1.014, 3-nGenLepFromW);
+//		if (nGenLepFromW <  4) genw = genw * TMath::Power(0.972, nGenLepFromW) * TMath::Power(1.014, 3-nGenLepFromW);
 		if (nGenLepFromW == 0) n0LepFromW    += genw;
 		if (nGenLepFromW == 1) n1LepFromW    += genw;
 		if (nGenLepFromW == 2) n2LepFromW    += genw;
 		if (nGenLepFromW == 3) n3LepFromW    += genw;
 		if (nGenLepFromW >  3) nMoreLepFromW += genw;
+
+		int nGenLepFromWFromTop(0);
+		for (int i = 0; i < NGenW; ++i) {
+			if (GenWFromTop[i] > 0 && GenWLept[i] == 1) nGenLepFromWFromTop++;
+		}
+		if (nGenLepFromWFromTop == 0) n0LepFromWFromTop    += genw;
+		if (nGenLepFromWFromTop == 1) n1LepFromWFromTop    += genw;
+		if (nGenLepFromWFromTop == 2) n2LepFromWFromTop    += genw;
+		if (nGenLepFromWFromTop == 3) n3LepFromWFromTop    += genw;
+		if (nGenLepFromWFromTop >  3) nMoreLepFromWFromTop += genw;
+//		if (nGenLepFromWFromTop <  3) genw = genw * TMath::Power(0.972, nGenLepFromWFromTop) * TMath::Power(1.014, 2-nGenLeptFromWFromTop);
 
 		nTot += genw;
 		std::vector<genLep> leps_p;
@@ -25018,7 +25044,7 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		for(int i = 0 ; i < NGenLep; ++i){
 			if(GenLepStatus[i] == 1 && GenLepFromW[i] > 0) {
 			// oldif((!amcnlo && GenLepStatus[i] == 3) || (amcnlo && (GenLepStatus[i] == 3 || GenLepStatus[i] == 1)) ) {
-				if( (abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13)){
+				if( (abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13) && abs(GenLepMID[i]) != 15 && abs(GenLepMID[i]) != 15){
 					genLep tmpLep;
 					tmpLep.pt   = GenLepPt [i];
 					tmpLep.eta  = GenLepEta[i];
@@ -25034,6 +25060,11 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 					if(ttbar) leps.push_back(tmpLep);
 				}
 //				nGenLepFromW++;
+			}
+			if( abs(GenLepID[i]) == 24 && GenLepStatus[i] == 3 ){
+				wpts_all     -> Fill(GenLepPt[i],genw);
+				if( GenLepFromTop[i]) {wpts_fromtop -> Fill(GenLepPt[i],genw); wmass_fromtop -> Fill(GenLepMass[i],genw); }
+				if(!GenLepFromTop[i]) {wpts_prompt  -> Fill(GenLepPt[i],genw); wmass_prompt  -> Fill(GenLepMass[i],genw); }
 			}
 		}
 		// cout << "Event: " << Event << " nleps: " << nleps << "  leps.size(): " << leps.size() << endl;
@@ -25247,6 +25278,14 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	cout << "3 x W->e/mu/tau: " << n3LepFromW    << "  --  " << 100.*n3LepFromW   /(float)nTot << " +- " << 100.*binoErr(n3LepFromW   ,nTot) << " (" << 100.*poisErr(n3LepFromW   ,nTot) << ")" << endl;
 	cout << "> 3 W->e/mu/tau: " << nMoreLepFromW << "  --  " << 100.*nMoreLepFromW/(float)nTot << " +- " << 100.*binoErr(nMoreLepFromW,nTot) << " (" << 100.*poisErr(nMoreLepFromW,nTot) << ")" << endl;
 
+	cout << "===============================  t -> W -> .. ========================" << endl;
+	cout <
+	cout << "0 x t->W->e/mu/tau: " << n0LepFromWFromTop    << "  --  " << 100.*n0LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n0LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n0LepFromWFromTop   ,nTot) << ")" << endl;
+	cout << "1 x t->W->e/mu/tau: " << n1LepFromWFromTop    << "  --  " << 100.*n1LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n1LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n1LepFromWFromTop   ,nTot) << ")" << endl;
+	cout << "2 x t->W->e/mu/tau: " << n2LepFromWFromTop    << "  --  " << 100.*n2LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n2LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n2LepFromWFromTop   ,nTot) << ")" << endl;
+	cout << "3 x t->W->e/mu/tau: " << n3LepFromWFromTop    << "  --  " << 100.*n3LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n3LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n3LepFromWFromTop   ,nTot) << ")" << endl;
+	cout << "> 3 t->W->e/mu/tau: " << nMoreLepFromWFromTop << "  --  " << 100.*nMoreLepFromWFromTop/(float)nTot << " +- " << 100.*binoErr(nMoreLepFromWFromTop,nTot) << " (" << 100.*poisErr(nMoreLepFromWFromTop,nTot) << ")" << endl;
+
 	file_->Close();
 
 	TFile * res_;
@@ -25270,6 +25309,13 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	hthist    -> Write();
 	njethist  -> Write();
 	lepdphis  -> Write();
+
+	wpts_all      -> Write();
+	wpts_fromtop  -> Write();
+	wpts_prompt   -> Write();
+
+	wmass_fromtop  -> Write();
+	wmass_prompt   -> Write();
 
 	reco_leppts    ->Write();
 	reco_lepetas   ->Write();

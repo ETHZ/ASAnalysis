@@ -74,7 +74,7 @@ private:
 	static const int fMaxNmus  = 8;
 	static const int fMaxNeles = 8;
 	static const int fMaxNtaus = 5;
-	static const int fMaxNGenLep  = 25;
+	static const int fMaxNGenLep  = 50;
 	static const int fMaxNGenW    = 10;
 	static const int fMaxNGenJets = 40;
 	static const int fPdf1 = 100;
@@ -259,7 +259,10 @@ private:
 	float fTGenLepPt   [fMaxNGenLep];
 	float fTGenLepEta  [fMaxNGenLep];
 	float fTGenLepPhi  [fMaxNGenLep];
+	float fTGenLepMass [fMaxNGenLep];
 	int   fTGenLepFromW[fMaxNGenLep];
+	int   fTGenLepFromTau[fMaxNGenLep];
+	int   fTGenLepFromTop[fMaxNGenLep];
 
 	// generator W properties
 	int fTNGenW;
