@@ -478,8 +478,8 @@ void SSDLPlotter::doAnalysis(){
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
   genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genInfo_new.root"    , false, false);
   genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo_new.root"        , true , false);
-  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_madgraph/ttbar_madgraph_genInfo_new.root", false, true );
-  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_powheg/ttbar_powheg_genInfo_new.root"    , true , true );
+//  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_madgraph/ttbar_madgraph_genInfo_new.root", false, true );
+//  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_powheg/ttbar_powheg_genInfo_new.root"    , true , true );
   return;
 
 
@@ -24972,13 +24972,19 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	TH1F * reco_hthist    = new TH1F("reco_ht"      , "RECO: H_{T}"      ,  30,  20, 600);
 	TH1F * reco_njethist  = new TH1F("reco_njets"   , "RECO: N_{jets}"   ,  10,   0,  10);
 
-	int nTot          = 0;
-	int nSSGen        = 0;
-	int nPassFiducial = 0;
-	int nPassPt40     = 0;
-	int nPassNJ3      = 0;
-	int nPassHT155    = 0;
-	int nPassnNB1     = 0;
+	float nTot          = 0;
+	float nSSGen        = 0;
+	float nPassFiducial = 0;
+	float nPassPt40     = 0;
+	float nPassNJ3      = 0;
+	float nPassHT155    = 0;
+	float nPassnNB1     = 0;
+
+	float n0LepFromW    = 0;
+	float n1LepFromW    = 0;
+	float n2LepFromW    = 0;
+	float n3LepFromW    = 0;
+	float nMoreLepFromW = 0;
 
 	// loop on events
 	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
@@ -24986,8 +24992,25 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		// printProgress(jentry, tot_events, (amcnlo) ? "amc@nlo ttw" : "madgraph ttw");
 		// nTot++;
 		float genw = 1.;
-		if(amcnlo && GenWeight < 0) {genw = -1.; nTot--;}
-		else nTot++;
+		if(amcnlo && GenWeight < 0) genw = -1.;
+
+		// re-weight W -> lep BR
+		int nGenLepFromW(0);
+		for(int i = 0 ; i < NGenLep; ++i){
+			if (GenLepFromW[i] > 0) {
+				if( ((abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13) && GenLepStatus[i] == 1 && abs(GenLepMID[i]) != 15 && abs(GenLepGMID[i]) != 15) ||	// el, mu without taus
+					(abs(GenLepID[i]) == 15 && GenLepStatus[i] == 2) )	// taus
+					nGenLepFromW++;
+			}
+		}
+		if (nGenLepFromW <  4) genw = genw * TMath::Power(0.972, nGenLepFromW) * TMath::Power(1.014, 3-nGenLepFromW);
+		if (nGenLepFromW == 0) n0LepFromW    += genw;
+		if (nGenLepFromW == 1) n1LepFromW    += genw;
+		if (nGenLepFromW == 2) n2LepFromW    += genw;
+		if (nGenLepFromW == 3) n3LepFromW    += genw;
+		if (nGenLepFromW >  3) nMoreLepFromW += genw;
+
+		nTot += genw;
 		std::vector<genLep> leps_p;
 		std::vector<genLep> leps_m;
 		std::vector<genLep> leps;
@@ -25010,6 +25033,7 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 					}
 					if(ttbar) leps.push_back(tmpLep);
 				}
+//				nGenLepFromW++;
 			}
 		}
 		// cout << "Event: " << Event << " nleps: " << nleps << "  leps.size(): " << leps.size() << endl;
@@ -25029,8 +25053,7 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		if(!ttbar && (leps_p.size() > 1 || leps_m.size() > 1)) hasSSPair = true;
 		else if (ttbar && leps.size() > 1) hasSSPair = true;
 		if(!hasSSPair) continue; // has one SS pair
-		if(amcnlo && GenWeight < 0) nSSGen--;
-		else nSSGen++;
+		nSSGen += genw;
 		if(!ttbar) leps = leps_p.size() > 1 ? leps_p : leps_m;
 		// fill lepton pts
 		ss_pts ->Fill(leps[0].pt, genw);
@@ -25040,9 +25063,9 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		// fill lepton etas
 		ss_etas->Fill(leps[0].eta, genw);
 		ss_etas->Fill(leps[1].eta, genw);
-		(amcnlo && GenWeight < 0) ? nPassFiducial-- : nPassFiducial++; // both leptons pass 20 GeV and eta cuts
+		nPassFiducial += genw; // both leptons pass 20 GeV and eta cuts
 		if(leps[0].pt < 40. || leps[1].pt < 40) continue;      // cut on pt > 40 GeV
-		(amcnlo && GenWeight < 0) ? nPassPt40-- : nPassPt40++;
+		nPassPt40 += genw;
 		// loop on jets
 		int njets(0), nbjets(0);
 		float ht(0.);
@@ -25066,11 +25089,11 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		hthist  ->Fill(ht, genw);
 		njethist->Fill(njets, genw);
 		if(njets <3) continue;
-		(amcnlo && GenWeight < 0) ? nPassNJ3-- : nPassNJ3++;
+		nPassNJ3 += genw;
 		if(ht < 155.) continue;
-		(amcnlo && GenWeight < 0) ? nPassHT155-- : nPassHT155++;
+		nPassHT155 += genw;
 		if(nbjets < 1) continue;
-		(amcnlo && GenWeight < 0) ? nPassnNB1-- : nPassnNB1++;
+		nPassnNB1 += genw;
 	}
 
 	// -----------------------------------------------------------------------
@@ -25214,6 +25237,15 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	cout << "ht > 155            : " << nttht     << "  -- " << 100.*nttht  /(float)ngenR << " +- " << 100.*binoErr(nttht  ,ngenR) << endl;
 	cout << "nbjets >= 1         : " << ntt1b     << "  -- " << 100.*ntt1b  /(float)ngenR << " +- " << 100.*binoErr(ntt1b  ,ngenR) << endl;
 	cout << endl << endl;
+
+//	nTot = n1LepFromW + n2LepFromW + n3LepFromW;
+	cout << "===============================  W -> .. =============================" << endl;
+	cout <
+	cout << "0 x W->e/mu/tau: " << n0LepFromW    << "  --  " << 100.*n0LepFromW   /(float)nTot << " +- " << 100.*binoErr(n0LepFromW   ,nTot) << " (" << 100.*poisErr(n0LepFromW   ,nTot) << ")" << endl;
+	cout << "1 x W->e/mu/tau: " << n1LepFromW    << "  --  " << 100.*n1LepFromW   /(float)nTot << " +- " << 100.*binoErr(n1LepFromW   ,nTot) << " (" << 100.*poisErr(n1LepFromW   ,nTot) << ")" << endl;
+	cout << "2 x W->e/mu/tau: " << n2LepFromW    << "  --  " << 100.*n2LepFromW   /(float)nTot << " +- " << 100.*binoErr(n2LepFromW   ,nTot) << " (" << 100.*poisErr(n2LepFromW   ,nTot) << ")" << endl;
+	cout << "3 x W->e/mu/tau: " << n3LepFromW    << "  --  " << 100.*n3LepFromW   /(float)nTot << " +- " << 100.*binoErr(n3LepFromW   ,nTot) << " (" << 100.*poisErr(n3LepFromW   ,nTot) << ")" << endl;
+	cout << "> 3 W->e/mu/tau: " << nMoreLepFromW << "  --  " << 100.*nMoreLepFromW/(float)nTot << " +- " << 100.*binoErr(nMoreLepFromW,nTot) << " (" << 100.*poisErr(nMoreLepFromW,nTot) << ")" << endl;
 
 	file_->Close();
 

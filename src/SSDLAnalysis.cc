@@ -320,6 +320,18 @@ void SSDLAnalysis::BookTree(){
 	fAnalysisTree->Branch("GenLepPhi"   ,   &fTGenLepPhi   ,   "GenLepPhi[NGenLep]/F");
 	fAnalysisTree->Branch("GenLepFromW" ,   &fTGenLepFromW ,   "GenLepFromW[NGenLep]/I");
 
+	fAnalysisTree->Branch("NGenW"     ,   &fTNGenW     ,   "NGenW/I");
+	fAnalysisTree->Branch("GenWID"    ,   &fTGenWID    ,   "GenWID[NGenW]/I");
+	fAnalysisTree->Branch("GenWMID"   ,   &fTGenWMID   ,   "GenWMID[NGenW]/I");
+	fAnalysisTree->Branch("GenWGMID"  ,   &fTGenWGMID  ,   "GenWGMID[NGenW]/I");
+	fAnalysisTree->Branch("GenWStatus",   &fTGenWStatus,   "GenWStatus[NGenW]/I");
+	fAnalysisTree->Branch("GenWMStatus",  &fTGenWMStatus,  "GenWMStatus[NGenW]/I");
+	fAnalysisTree->Branch("GenWPt"    ,   &fTGenWPt    ,   "GenWPt[NGenW]/F");
+	fAnalysisTree->Branch("GenWEta"   ,   &fTGenWEta   ,   "GenWEta[NGenW]/F");
+	fAnalysisTree->Branch("GenWPhi"   ,   &fTGenWPhi   ,   "GenWPhi[NGenW]/F");
+	fAnalysisTree->Branch("GenWLept"   ,   &fTGenWLept   ,   "GenWLept[NGenW]/I");
+	fAnalysisTree->Branch("GenWFromTop",   &fTGenWFromTop,   "GenWFromTop[NGenW]/I");
+
 	fAnalysisTree->Branch("NGenJets"    ,   &fTNGenJets    ,   "NGenJets/I");
 	fAnalysisTree->Branch("GenJetPt"    ,   &fTGenJetPt    ,   "GenJetPt[NGenJets]/F");
 	fAnalysisTree->Branch("GenJetE"     ,   &fTGenJetE     ,   "GenJetE[NGenJets]/F");
@@ -806,12 +818,16 @@ void SSDLAnalysis::FillAnalysisTree(){
 	fTNGenLep = 0;
 	fTNGenJets = 0;
 	if(fIsData == false && gSaveGenInfo){ // mc truth information		
+		vector< pair<int,int> > leptonicWs;
+		leptonicWs.clear();
 		for (int ind = 0; ind < fTR->genInfoId.size(); ++ind){
 			if (fTR->genInfoPt[ind] < 10.) continue;
 			// let's store also the b's here. why not.
 			if (fabs(fTR->genInfoId[ind]) != 11 && fabs(fTR->genInfoId[ind]) != 13 && fabs(fTR->genInfoId[ind]) != 15 && fabs(fTR->genInfoId[ind]) != 5) continue;
 			fTNGenLep++;
 			bool fromW = false;
+			int  WInd  = -1;
+//			bool fromTop = false;
 			fTGenLepID     [fTNGenLep-1] = fTR->genInfoId    [ind];
 			fTGenLepMID    [fTNGenLep-1] = fTR->genInfoId[fTR->genInfoMo1[ind]];
 			fTGenLepGMID   [fTNGenLep-1] = fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[ind]]];
@@ -821,13 +837,64 @@ void SSDLAnalysis::FillAnalysisTree(){
 			fTGenLepEta    [fTNGenLep-1] = fTR->genInfoEta   [ind];
 			fTGenLepPhi    [fTNGenLep-1] = fTR->genInfoPhi   [ind];
 			if(!fromW) {
-				if     (abs( fTGenLepMID [fTNGenLep-1]) == 24) fromW = true;
-				else if(!fromW && abs( fTGenLepGMID[fTNGenLep-1]) == 24) fromW = true;
-				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]) == 24) fromW = true;
-				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]) == 24) fromW = true;
-				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]]) == 24) fromW = true;
+				if     (abs( fTGenLepMID [fTNGenLep-1]) == 24) {fromW = true; WInd = fTR->genInfoMo1[ind];}
+				else if(!fromW && abs( fTGenLepGMID[fTNGenLep-1]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[ind]];}
+				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]];}
+				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]];}
+				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]];}
+				if (WInd > -1) leptonicWs.push_back(make_pair(WInd, 1));
+				// tag all leptonic W
+				if (fromW) {
+					bool isW;
+					int mother = WInd;
+					while (isW) {
+						mother = fTR->genInfoMo1[mother];
+						if (abs(fTR->genInfoId[mother]) == 24) {
+							leptonicWs.push_back(make_pair(mother, 2));
+						}
+						else isW = false;
+					}
+				}
 			}
 			fTGenLepFromW[fTNGenLep-1] = fromW;
+//			if (fromW) {
+//				if     (abs( fTR->genInfoId[fTR->genInfoMo1[WInd]] ) == 6) fromTop = true;
+//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]] ) == 6) fromTop = true;
+//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]]] ) == 6) fromTop = true;
+//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]]]] ) == 6) fromTop = true;
+//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]]]]] ) == 6) fromTop = true;
+//			}
+//			fTGenLepFromWFromTop[fTNGenLep-1] = fromTop;
+		}
+		// store W properties
+		for (int ind = 0; ind < fTR->genInfoId.size(); ++ind) {
+			if (fabs(fTR->genInfoId[ind]) != 24) continue;
+			int leptW = 0;
+			for (int i = 0; i < leptonicWs.size(); i++) {
+				if (leptonicWs[i].first == ind) {
+					leptW = leptonicWs[i].second;
+//					cout << "are we getting here?" << endl;
+//					break;
+				}
+			}
+			fTNGenW++;
+			fTGenWID     [fTNGenW-1] = fTR->genInfoId    [ind];
+			fTGenWMID    [fTNGenW-1] = fTR->genInfoId[fTR->genInfoMo1[ind]];
+			fTGenWGMID   [fTNGenW-1] = fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[ind]]];
+			fTGenWStatus [fTNGenW-1] = fTR->genInfoStatus[ind];
+			fTGenWMStatus[fTNGenW-1] = fTR->genInfoStatus[fTR->genInfoMo1[ind]];
+			fTGenWPt     [fTNGenW-1] = fTR->genInfoPt    [ind];
+			fTGenWEta    [fTNGenW-1] = fTR->genInfoEta   [ind];
+			fTGenWPhi    [fTNGenW-1] = fTR->genInfoPhi   [ind];
+			fTGenWLept   [fTNGenW-1] = leptW;
+//			if (leptW) cout << "leptW: " << leptW <<  " fTGenWLept   ["<<fTNGenW-1<<"] : " << fTGenWLept   [fTNGenW-1] << endl;
+			bool fromTop = false;
+			int mother = ind;
+			while (mother > -1) {
+				mother = fTR->genInfoMo1[mother];
+				if (abs(fTR->genInfoId[mother]) == 6) fromTop = true;
+			}
+			fTGenWFromTop[fTNGenW-1] = fromTop;
 		}
 		// dump generator jet properties
 		for(int ind = 0; ind < fTR->NGenJets; ind++){
@@ -984,7 +1051,21 @@ void SSDLAnalysis::ResetTree(){
 		fTGenLepPhi    [i]= -999;
 		fTGenLepFromW  [i]= -999;
 	}
-	// gen lepton properties
+	// gen W properties
+	fTNGenW = 0;
+	for(int i = 0; i < fMaxNGenW; i++){
+		fTGenWID     [i]= -999;
+		fTGenWMID    [i]= -999;
+		fTGenWGMID   [i]= -999;
+		fTGenWStatus [i]= -999;
+		fTGenWMStatus[i]= -999;
+		fTGenWPt     [i]= -999;
+		fTGenWEta    [i]= -999;
+		fTGenWPhi    [i]= -999;
+		fTGenWLept   [i]= -999;
+		fTGenWFromTop[i]= -999;
+	}
+	// gen jet properties
 	fTNGenJets = 0;
 	for(int i = 0; i < fMaxNGenJets; i++){
 		fTGenJetPt     [i]= -999;

@@ -75,6 +75,7 @@ private:
 	static const int fMaxNeles = 8;
 	static const int fMaxNtaus = 5;
 	static const int fMaxNGenLep  = 25;
+	static const int fMaxNGenW    = 10;
 	static const int fMaxNGenJets = 40;
 	static const int fPdf1 = 100;
 	static const int fPdf2 = 100;
@@ -259,6 +260,19 @@ private:
 	float fTGenLepEta  [fMaxNGenLep];
 	float fTGenLepPhi  [fMaxNGenLep];
 	int   fTGenLepFromW[fMaxNGenLep];
+
+	// generator W properties
+	int fTNGenW;
+	int fTGenWID     [fMaxNGenW];
+	int fTGenWMID    [fMaxNGenW];
+	int fTGenWGMID   [fMaxNGenW];
+	int fTGenWStatus [fMaxNGenW];
+	int fTGenWMStatus[fMaxNGenW];
+	float fTGenWPt   [fMaxNGenW];
+	float fTGenWEta  [fMaxNGenW];
+	float fTGenWPhi  [fMaxNGenW];
+	int fTGenWLept   [fMaxNGenW];
+	int fTGenWFromTop[fMaxNGenW];
 
 	// generator jet properties
 	int fTNGenJets;
