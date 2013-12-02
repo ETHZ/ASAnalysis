@@ -1018,6 +1018,8 @@ void DiPhotonMiniTree::End(){
   fOutputFile->Close();
   if (isdata && !isstep2) fOutputExtraFile->Close();
 
+  cout << "FINISHED: processed correctly uuid " << uuid << endl;
+
 }
 
 
@@ -1034,8 +1036,8 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, UInt_t *n1_arr, 
 
 	for (int l=0; l<nclosest_inputmatching; l++){
 	  if (found==nclosest) break;
-	  int n1 = n1_arr[l];
-	  int n2 = n2_arr[l];
+	  UInt_t n1 = n1_arr[l];
+	  UInt_t n2 = n2_arr[l];
 	  if (m1==m2 && n1==n2) {cout << "Same event for axis 1 and 2, skipping" << endl; continue;}
 	  bool skip_EBEE = false;
 
@@ -1059,7 +1061,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, UInt_t *n1_arr, 
 //	  cout << "pho0 " << fTR->SCEta[fTR->PhotSCindex[passing.at(0)]] << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(0)]] << endl;
 //	  cout << "pho1 " << fTR->SCEta[fTR->PhotSCindex[passing.at(1)]] << " " << fTR->SCPhi[fTR->PhotSCindex[passing.at(1)]] << endl;
 //
-	  if (n1>=0){
+	  if (n1>0){
 	    if (InputTree[m1]->GetEntryWithIndex(n1)<=0) continue;
 	    if (m1==1 && input_event_pass12whoissiglike==0) {
 	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
@@ -1099,7 +1101,7 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, UInt_t *n1_arr, 
 	  
 	  skip_EBEE = false;
 
-	  if (n2>=0){
+	  if (n2>0){
 	    if (InputTree[m2]->GetEntryWithIndex(n2)<=0) continue;
 	    if (m2==1 && input_event_pass12whoissiglike==0) {
 	      float input_photemp_SCeta = input_pholead_SCeta; float input_photemp_SCphi = input_pholead_SCphi; float input_photemp_pt = input_pholead_pt;
