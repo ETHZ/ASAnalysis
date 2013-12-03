@@ -25145,15 +25145,15 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		fC_invertZVeto = false;
 		if(ttbar) fChargeSwitch = 1;
 		float genw = 1.;
-		if(amcnlo && GenWeight < 0) {genw = -1.; ngenR--;}
+		if(amcnlo && GenWeight < 0) {genw = -1.;}
 		else ngenR++;
+		ngenR += genw;
 		int i1(-1), i2(-1);
 		if(!ttbar){
 			if(!isSSLLEvent(i1, i2)) continue;
 			resetHypLeptons();
 		}
-		if(amcnlo && GenWeight < 0) nll--;
-		else nll++;
+		nll += genw;
 		bool ismumu(false), iselel(false), iselmu(false);
 		int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
 			// if( isSSLLMuEvent(m1, m2)) { if(isTightMuon(m1) && isTightMuon(m2))         ismumu = true;}
@@ -25170,59 +25170,46 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		if( isSSLLElMuEvent(m, e))  iselmu = true;
 		resetHypLeptons();
 		if(!(ismumu || iselel || iselmu) ) continue;
-		if(amcnlo && GenWeight < 0) nll20--;
-		else nll20++;
+		nll20 += genw;
 		if(ismumu){
 			if(MuPFIso[m1] > 0.05     || MuPFIso[m2] > 0.05)     continue;
-			if(amcnlo && GenWeight < 0) nlliso --;
-			else nlliso++;
+			nlliso += genw;
 			if(fabs(MuD0[m1]) > 0.005 || fabs(MuD0[m2]) > 0.005) continue;
-			if(amcnlo && GenWeight < 0) nllip --;
-			else nllip++;
+			nllip += genw;
 			if(!isTightMuon(m1)       || !isTightMuon(m2))       continue;
-			if(amcnlo && GenWeight < 0) nllid --;
-			else nllid++;
+			nllid += genw;
 			reco_leppts ->Fill(MuPt[m1], genw);
 			reco_leppts ->Fill(MuPt[m2], genw);
 			if(MuPt[m1] < 40. || MuPt[m2] < 40.) continue;
-			if(amcnlo && GenWeight < 0) ntt40--;
-			else ntt40++;
+			ntt40 += genw;
 			reco_lepetas->Fill(MuEta[m1], genw);
 			reco_lepetas->Fill(MuEta[m2], genw);
 		}
 		else if(iselmu){
 			if(MuPFIso[m] > 0.05     || ElPFIso[e] > 0.05)     continue;
-			if(amcnlo && GenWeight < 0) nlliso --;
-			else nlliso++;
+			nlliso += genw;
 			if(fabs(MuD0[m]) > 0.005 || fabs(ElD0[m]) > 0.01) continue;
-			if(amcnlo && GenWeight < 0) nllip --;
-			else nllip++;
+			nllip += genw;
 			if(!isTightMuon(m)       || !isTightElectron(e))       continue;
-			if(amcnlo && GenWeight < 0) nllid --;
-			else nllid++;
+			nllid += genw;
 			reco_leppts ->Fill(MuPt[m], genw);
 			reco_leppts ->Fill(ElPt[e], genw);
 			if(MuPt[m] < 40. || ElPt[e] < 40.) continue;
-			if(amcnlo && GenWeight < 0) ntt40--;
-			else ntt40++;
+			ntt40 += genw;
 			reco_lepetas->Fill(MuEta[m], genw);
 			reco_lepetas->Fill(ElEta[e], genw);
 		}
 		if(iselel){
 			if(ElPFIso[e1] > 0.05     || ElPFIso[e2] > 0.05)     continue;
-			if(amcnlo && GenWeight < 0) nlliso --;
-			else nlliso++;
+			nlliso += genw;
 			if(fabs(ElD0[e1]) > 0.01 || fabs(ElD0[e2]) > 0.01) continue;
-			if(amcnlo && GenWeight < 0) nllip --;
-			else nllip++;
+			nllip += genw;
 			if(!isTightElectron(e1)       || !isTightElectron(e2))       continue;
-			if(amcnlo && GenWeight < 0) nllid --;
-			else nllid++;
+			nllid += genw;
 			reco_leppts ->Fill(ElPt[e1], genw);
 			reco_leppts ->Fill(ElPt[e2], genw);
 			if(ElPt[e1] < 40. || ElPt[e2] < 40.) continue;
-			if(amcnlo && GenWeight < 0) ntt40--;
-			else ntt40++;
+			ntt40 += genw;
 			reco_lepetas->Fill(ElEta[e1], genw);
 			reco_lepetas->Fill(ElEta[e2], genw);
 		}
@@ -25231,16 +25218,13 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		// else ntt40++;
 		reco_njethist->Fill(getNJets(), genw);
 		if(getNJets(30.) < 3) continue;
-		if(amcnlo && GenWeight < 0) ntt3j--;
-		else ntt3j++;
+		ntt3j += genw;
 		for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i, 30.)) reco_jetpts->Fill(JetPt[i], genw);
 		reco_hthist->Fill(getHT(), genw);
 		if(getHT() < 155) continue;
-		if(amcnlo && GenWeight < 0) nttht--;
-		else nttht++;
+		nttht += genw;
 		if(getNBTagsMed() < 1) continue;
-		if(amcnlo && GenWeight < 0) ntt1b--;
-		else ntt1b++;
+		ntt1b += genw;
 		resetHypLeptons();
 	}
 	// for (int i = 0; i < fMMCutNames.size(); i++) {
