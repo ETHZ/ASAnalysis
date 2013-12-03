@@ -7,7 +7,7 @@
 
 using namespace std;
 
-DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE, bool _isstep2, TString _input_filename, UInt_t _uuid) : UserAnalysisBase(tr), fDataType_(dataType), AddWeight(aw), kfactors(_kfac), global_minthrpfphotoncandEB(_minthrpfphotoncandEB), global_minthrpfphotoncandEE(_minthrpfphotoncandEE), isstep2(_isstep2), input_filename(_input_filename), uuid(_uuid){
+DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE, bool _isstep2, TString _input_filename, UInt_t _uuid, int _year) : UserAnalysisBase(tr), fDataType_(dataType), AddWeight(aw), kfactors(_kfac), global_minthrpfphotoncandEB(_minthrpfphotoncandEB), global_minthrpfphotoncandEE(_minthrpfphotoncandEE), isstep2(_isstep2), input_filename(_input_filename), uuid(_uuid), year(_year){
   Util::SetStyle();	
   if (fDataType_ == "mc") isdata=false;
   else if (fDataType_ == "data") isdata=true; 
@@ -21,8 +21,10 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
 
   eegeom = TGeoPara(1,1,1,0,0,0);
 
-  assert (!(global_is2011 && global_is2012));
-  assert (global_is2011 || global_is2012);
+  global_is2011=false;
+  global_is2012=false;
+  if (year==2011) global_is2011=true;
+  if (year==2012) global_is2012=true;
 
 }
 
@@ -710,9 +712,9 @@ void DiPhotonMiniTree::Analyze(){
 
 	if (!inputtree_isinitialized) InitInputTree();
 
-	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex(event_number);
+	Long64_t index_matchingtree = matchingtree->GetEntryNumberWithIndex(event_number%2,event_number>>1);
 	if (index_matchingtree<0) {
-	  //	  cout << "NO MATCHING FOUND (including under/overflow in templ. variable)" << endl; cout << event_run << " " << event_lumi << " " << event_number << endl; 
+	  cout << "NO MATCHING FOUND (including under/overflow in templ. variable)" << endl; cout << event_run << " " << event_lumi << " " << event_number << endl; 
 	  dofill=false;
 	}
 	else{
@@ -3192,7 +3194,7 @@ void DiPhotonMiniTree::InitInputTree(){
     matchingtree->SetBranchAddress("matchingtree_index_2events_bkgbkg_1",matchingtree_index_2events_bkgbkg_1,&b_matchingtree_index_2events_bkgbkg_1);
     matchingtree->SetBranchAddress("matchingtree_index_2events_bkgbkg_2",matchingtree_index_2events_bkgbkg_2,&b_matchingtree_index_2events_bkgbkg_2);
 
-    matchingtree->BuildIndex("matchingtree_event_number");
+    matchingtree->BuildIndex("matchingtree_event_number%2","matchingtree_event_number>>1");
 
     inputtree_isinitialized = true;
 

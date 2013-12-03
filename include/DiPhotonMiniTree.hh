@@ -46,9 +46,6 @@ enum ChoiceMixingTemplates {
   k2Events = 1
 };
 
-const bool global_is2011 = true;
-const bool global_is2012 = false;
-
 const int global_maxN_photonpfcandidates = 2000;
 const int global_maxN_vetoobjects = 200;
 const int global_maxN_jets = 200;
@@ -114,7 +111,7 @@ typedef struct {
 
 class DiPhotonMiniTree : public UserAnalysisBase{
 public:
-  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid=0);
+  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid=0, int year=-1);
   virtual ~DiPhotonMiniTree();
 
   void Begin();
@@ -126,6 +123,10 @@ private:
   float global_linkbyrechit_enlargement;
   float global_minthrpfphotoncandEB;
   float global_minthrpfphotoncandEE;
+
+  int year;
+  bool global_is2011;
+  bool global_is2012;
 
   TGeoPara eegeom;
 
