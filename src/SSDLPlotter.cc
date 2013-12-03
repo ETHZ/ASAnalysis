@@ -25029,12 +25029,12 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		for (int i = 0; i < NGenW; ++i) {
 			if (GenWFromTop[i] > 0 && GenWLept[i] == 1) nGenLepFromWFromTop++;
 		}
+		if (nGenLepFromWFromTop <  3) genw = genw * TMath::Power(0.972, nGenLepFromWFromTop) * TMath::Power(1.014, 2-nGenLepFromWFromTop);
 		if (nGenLepFromWFromTop == 0) n0LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop == 1) n1LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop == 2) n2LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop == 3) n3LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop >  3) nMoreLepFromWFromTop += genw;
-		if (nGenLepFromWFromTop <  3) genw = genw * TMath::Power(0.972, nGenLepFromWFromTop) * TMath::Power(1.014, 2-nGenLepFromWFromTop);
 
 		nTot += genw;
 		std::vector<genLep> leps_p;

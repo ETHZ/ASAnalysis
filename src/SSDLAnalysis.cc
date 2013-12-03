@@ -847,9 +847,9 @@ void SSDLAnalysis::FillAnalysisTree(){
 				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]];}
 				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]];}
 				else if(!fromW && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]]) == 24) {fromW = true; WInd = fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]];}
-				if (WInd > -1) leptonicWs.push_back(make_pair(WInd, 1));
+				if (WInd > -1 && fabs(fTR->genInfoId[ind]) != 5 && fabs(fTR->genInfoId[ind]) != 24) leptonicWs.push_back(make_pair(WInd, 1));
 				// tag all leptonic W
-				if (fromW) {
+				if (fromW && fabs(fTR->genInfoId[ind]) != 5 && fabs(fTR->genInfoId[ind]) != 24) {
 					bool isW;
 					int mother = WInd;
 					while (isW) {
@@ -875,14 +875,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 				else if(!fromTop && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]) == 6) fromTop = true;
 				else if(!fromTop && abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[ind]]]]]]) == 6) fromTop = true;
 			}
-//			if (fromW) {
-//				if     (abs( fTR->genInfoId[fTR->genInfoMo1[WInd]] ) == 6) fromTop = true;
-//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]] ) == 6) fromTop = true;
-//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]]] ) == 6) fromTop = true;
-//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]]]] ) == 6) fromTop = true;
-//				else if(abs( fTR->genInfoId[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[fTR->genInfoMo1[WInd]]]]]] ) == 6) fromTop = true;
-//			}
-//			fTGenLepFromWFromTop[fTNGenLep-1] = fromTop;
 			fTGenLepFromW  [fTNGenLep-1] = fromW;
 			fTGenLepFromTau[fTNGenLep-1] = fromTau;
 			fTGenLepFromTop[fTNGenLep-1] = fromTop;
@@ -894,8 +886,6 @@ void SSDLAnalysis::FillAnalysisTree(){
 			for (int i = 0; i < leptonicWs.size(); i++) {
 				if (leptonicWs[i].first == ind) {
 					leptW = leptonicWs[i].second;
-//					cout << "are we getting here?" << endl;
-//					break;
 				}
 			}
 			fTNGenW++;
