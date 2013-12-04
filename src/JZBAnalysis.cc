@@ -70,6 +70,7 @@ public:
   bool  isConv1; // Photon conversion flag
   bool  isConv2;
   bool softMuon;
+  bool softMuon_Loose;
   bool softMuonMC;
 
   int NgenLeps;
@@ -522,6 +523,7 @@ void nanoEvent::reset()
   isConv1 = false;
   isConv2 = false;
   softMuon = false;
+  softMuon_Loose = false;
   softMuonMC = false;
   
   NgenZs=0;
@@ -1460,6 +1462,7 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("iso1",&nEvent.iso1,"iso1/F");
   myTree->Branch("iso2",&nEvent.iso2,"iso2/F");
   myTree->Branch("softMuon",&nEvent.softMuon,"softMuon/O");
+  myTree->Branch("softMuon_Loose",&nEvent.softMuon_Loose,"softMuon_Loose/O");
   myTree->Branch("softMuonMC",&nEvent.softMuonMC,"softMuonMC/O");
   
   myTree->Branch("lheV_pt",&nEvent.lheV_pt,"lheV_pt/F");
@@ -2196,9 +2199,7 @@ void JZBAnalysis::Analyze() {
         nGenParticles=0;
       }
 
-
       ContainsSoftLepton();
-
 
       bool wecare=false;
       for(int i=0;i<nGenParticles;i++) {
@@ -2628,13 +2629,18 @@ void JZBAnalysis::Analyze() {
     float lepweight=GetLeptonWeight(nEvent.id1,nEvent.pt1,nEvent.eta1,nEvent.id2,nEvent.pt2,nEvent.eta2,lepweightErr);
     
     bool softMuon = false;
+    bool softMuon_Loose = false;
     for(int muIndex=0;muIndex<fTR->NMus;muIndex++) {
       if(IsSoftMuon(muIndex)) {
 	softMuon = true;
-	break;
+      }
+      if(IsSoftMuonLoose(muIndex)) {
+	softMuon_Loose = true;
       }
     }
     nEvent.softMuon = softMuon;
+    nEvent.softMuon_Loose = softMuon_Loose;
+
     if (isMC) {
       bool softMuonMC = false;
       for(int muIndex=0;muIndex<fTR->NMus;muIndex++) {
@@ -3471,6 +3477,22 @@ const bool JZBAnalysis::IsSoftMuon(const int index) {
 
 }
 
+const bool JZBAnalysis::IsSoftMuonLoose(const int index) {
+
+  if ( !fTR->MuIsTrackerMuon[index] )       return false;
+  if ( !fTR->MuIsTMLSTight[index])          return false;
+  if ( !(fabs(fTR->MuEta[index])<2.4) )     return false;
+  if ( !(fTR->MuNSiLayers[index] > 5) )     return false;
+  if ( !(fabs(fTR->MuD0PV[index]) < 0.2) )  return false;
+  if ( !(fabs(fTR->MuDzPV[index]) < 0.1 ) ) return false;
+
+  double Iso = MuPFIso(index);
+  if (!(fTR->MuPt[index] <= 20 || (fTR->MuPt[index] > 20 && Iso > 0.15)) ) return false;
+
+  return true;
+
+}
+
 const bool JZBAnalysis::IsCustomMu2012(const int index){
 
   // Basic muon cleaning and ID
@@ -4197,7 +4219,7 @@ void JZBAnalysis::GeneratorInfo(void) {
     }//end of if there are any gleptons
 }
      
-    
+
 int JZBAnalysis::DetermineFlavor(bool fdoGenInfo,TreeReader *fTR) {
   int flavorCounter[7];
   for(int i=0;i<7;i++) flavorCounter[i]=0;
