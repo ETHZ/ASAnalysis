@@ -484,6 +484,11 @@ public:
   float mergedpfchargedhadiso;
   float mergedpfneutralhadiso;
   float mergedpfphotoniso;
+  
+  float SL_pt;
+  float SL_eta;
+  bool SL_Accept;
+  int SL_id;
 
 };
 
@@ -525,6 +530,12 @@ void nanoEvent::reset()
   softMuon = false;
   softMuon_Loose = false;
   softMuonMC = false;
+  
+  SL_pt=0;
+  SL_eta=0;
+  SL_Accept=false;
+  SL_id=0;
+
   
   NgenZs=0;
   NgenLeps=0;
@@ -1535,6 +1546,11 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("chid1",&nEvent.chid1,"chid1/I");
   myTree->Branch("chid2",&nEvent.chid2,"chid2/I");
   
+  myTree->Branch("SL_pt",&nEvent.SL_pt,"SL_pt/F");
+  myTree->Branch("SL_eta",&nEvent.SL_eta,"SL_eta/F");
+  myTree->Branch("SL_id",&nEvent.SL_id,"SL_id/I");
+  myTree->Branch("SL_Accept",&nEvent.SL_Accept,"SL_Accept/O");
+  
   myTree->Branch("leptonNum",&nEvent.leptonNum,"leptonNum/I");
   myTree->Branch("leptonPt",nEvent.leptonPt,"leptonPt[leptonNum]/F");
   myTree->Branch("leptonEta",nEvent.leptonEta,"leptonEta[leptonNum]/F");
@@ -2490,7 +2506,17 @@ void JZBAnalysis::Analyze() {
 
   // Sort the leptons by Pt and select the two opposite-signed ones with highest Pt
   vector<lepton> sortedGoodLeptons = sortLeptonsByPt(leptons);
+  nEvent.leptonNum = int(sortedGoodLeptons.size());
 
+  //SingleLepton analysis
+  if(sortedGoodLeptons.size()>0 && sortedGoodLeptons[0].p.Pt() >= firstLeptonPtCut) {
+    nEvent.SL_eta    = sortedGoodLeptons[0].p.Eta();
+    nEvent.SL_pt     = sortedGoodLeptons[0].p.Pt();
+    nEvent.SL_id     = sortedGoodLeptons[0].type;
+    nEvent.SL_Accept = true;
+    if(sortedGoodLeptons.size()>1 && sortedGoodLeptons[1].p.Pt()>secondLeptonPtCut) nEvent.SL_Accept=false; // there is another lepton
+  }
+  
   if(sortedGoodLeptons.size() < 2) {
     if (isMC&&!fmakeSmall) myTree->Fill();
     return;
@@ -2586,8 +2612,6 @@ void JZBAnalysis::Analyze() {
   }
   
 
-  
-  
   //***************//
   
   // Preselection
@@ -3256,7 +3280,6 @@ void JZBAnalysis::Analyze() {
 
 
   // --- store number of good leptons in the event 
-  nEvent.leptonNum = int(sortedGoodLeptons.size());
   for ( size_t i=0; i<sortedGoodLeptons.size(); ++i ) {
     TLorentzVector lp(sortedGoodLeptons[i].p);
     nEvent.leptonPt[i] = lp.Pt();
