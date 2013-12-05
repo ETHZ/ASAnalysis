@@ -2174,7 +2174,9 @@ float JZBAnalysis::GetSFLight(const float jpt, const float jeta, string WP, floa
 
 float JZBAnalysis::GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert) {
   if(abs(JetFlavor)==4||abs(JetFlavor)==5) { // b of c
-    PosUncert = SFb_Uncertainty(JetPt, WP);
+    float factor=1.0;
+    if(abs(JetFlavor)==4) factor=2.0; // twice the uncertainty for c-jets
+    PosUncert = factor*SFb_Uncertainty(JetPt, WP);
     NegUncert = PosUncert;
     return SFb(JetPt, WP);
   } else {
