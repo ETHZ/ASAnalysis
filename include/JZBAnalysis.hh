@@ -73,12 +73,17 @@ public:
   bool MatchTrigger(lepton *);
   int DetermineFlavor(bool, TreeReader*);
   int ExtractFileNumber(string fileName);
-  float GetBWeight(string WP,int JetFlavor, float JetPt, float JetEta, float &Uncert);
+  float GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert);
   float smearedJetPt(float, float, float, float&, float&);
   int FindGenJetIndex(float jpt, float jeta, float jphi);
   bool IsThisDY(vector<string>);
   int IsThisTTbar(vector<string>);
   void FillLHEInfo();
+  float SFb_Uncertainty(const float pt, const string csvtype);
+  float SFb(const float pt, const string csvtype);
+  void InitializeScalingFactors();
+  void DeleteScalingFactors();
+  float GetSFLight(const float jpt, const float jeta, string WP, float &PosUncert, float &NegUncert);
 
   void CalcRazor(float& MR, float& MRT, float& R, TLorentzVector& met);
   

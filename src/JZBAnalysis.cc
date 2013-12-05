@@ -2,6 +2,7 @@
 #include "helper/Davismt2.h"
 #include "helper/Hemisphere.hh"
 #include "SolveTTbarNew.hh"
+#include "SFlightFuncs_EPS2013.hh"
 #include "JZBAnalysis.hh"
 #include "TH1.h"
 #include <time.h>
@@ -30,6 +31,43 @@ TF1 *L5corr_bJ;
 TF1 *L5corr_qJ;
 TF1 *L5corr_cJ;
 TF1 *L5corr_gJ;
+
+TF1 *CSVL__SFlight_0p0_to_0p5;
+TF1 *CSVL__SFlight_0p5_to_1p0;
+TF1 *CSVL__SFlight_1p0_to_1p5;
+TF1 *CSVL__SFlight_1p5_to_2p4;
+
+TF1 *CSVM__SFlight_0p0_to_0p8;
+TF1 *CSVM__SFlight_0p8_to_1p6;
+TF1 *CSVM__SFlight_1p6_to_2p4;
+TF1 *CSVT__SFlight;
+
+TF1 *lowCSVL__SFlight_0p0_to_0p5;
+TF1 *lowCSVL__SFlight_0p5_to_1p0;
+TF1 *lowCSVL__SFlight_1p0_to_1p5;
+TF1 *lowCSVL__SFlight_1p5_to_2p4;
+
+TF1 *lowCSVM__SFlight_0p0_to_0p8;
+TF1 *lowCSVM__SFlight_0p8_to_1p6;
+TF1 *lowCSVM__SFlight_1p6_to_2p4;
+
+TF1 *lowCSVT__SFlight;
+
+TF1 *highCSVL__SFlight_0p0_to_0p5;
+TF1 *highCSVL__SFlight_0p5_to_1p0;
+TF1 *highCSVL__SFlight_1p0_to_1p5;
+TF1 *highCSVL__SFlight_1p5_to_2p4;
+
+TF1 *highCSVM__SFlight_0p0_to_0p8;
+TF1 *highCSVM__SFlight_0p8_to_1p6;
+TF1 *highCSVM__SFlight_1p6_to_2p4;
+
+TF1 *highCSVT__SFlight;
+
+TF1 *CSVL_SFb;
+TF1 *CSVM_SFb;
+TF1 *CSVT_SFb;
+
 
 SolveTTbarNew *solver;
 
@@ -355,6 +393,7 @@ public:
   float ZbCHS3015_alphaDown;
   float ZbCHS3015_alphaL5;
   float ZbCHS3015_L5corr;
+  int ZbCHS3015_JetFlavor;
   
   float ZbCHS3015_bTagProbCSVBP[jMax]; 
   int ZbCHS3015_pfJetGoodNumBtag; 
@@ -826,6 +865,7 @@ void nanoEvent::reset()
   ZbCHS3015_alpha=0;
   ZbCHS3015_alphaL5=0;
   ZbCHS3015_L5corr=0;
+  ZbCHS3015_JetFlavor=0;
   ZbCHS3015_alphaUp=0;
   ZbCHS3015_alphaDown=0;
   mpf=0;
@@ -1395,33 +1435,146 @@ const bool JZBAnalysis::passFilters( int& bits ) {
 
 }
 
+float JZBAnalysis::SFb(const float rpt, const string csvtype) {
+  float pt= (rpt>800) ? 800 : rpt;
+  if(csvtype=="CSVL") return CSVL_SFb->Eval(pt);
+  if(csvtype=="CSVM") return CSVM_SFb->Eval(pt); 
+  if(csvtype=="CSVT") return CSVT_SFb->Eval(pt); 
+  cerr << "Oops, encountered a problem with pt=" << pt << " and type " << csvtype << endl;
+  assert(0);
+}
+
+float JZBAnalysis::SFb_Uncertainty(const float pt, const string csvtype) {
+  //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2012_Data_and_MC_EPS13_prescript
+  float CSVL_error[] = {
+    0.033299,
+    0.0146768,
+    0.013803,
+    0.0170145,
+    0.0166976,
+    0.0137879,
+    0.0149072,
+    0.0153068,
+    0.0133077,
+    0.0123737,
+    0.0157152,
+    0.0175161,
+    0.0209241,
+    0.0278605,
+    0.0346928,
+    0.0350099 };
+
+  float CSVM_error[] = {
+    0.0415707,
+    0.0204209,
+    0.0223227,
+    0.0206655,
+    0.0199325,
+    0.0174121,
+    0.0202332,
+    0.0182446,
+    0.0159777,
+    0.0218531,
+    0.0204688,
+    0.0265191,
+    0.0313175,
+    0.0415417,
+    0.0740446,
+    0.0596716 };
+
+  float CSVT_error[] = {
+    0.0515703,
+    0.0264008,
+    0.0272757,
+    0.0275565,
+    0.0248745,
+    0.0218456,
+    0.0253845,
+    0.0239588,
+    0.0271791,
+    0.0273912,
+    0.0379822,
+    0.0411624,
+    0.0786307,
+    0.0866832,
+    0.0942053,
+    0.102403 };
+
+  int ibin=-1;
+  float ptmin[16] = {20, 30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500, 600};
+  float ptmax[16] = {30, 40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 600, 800};
+  
+  for(int i=0;i<16;i++) {
+    if(ptmin[i]<=pt && pt<=ptmax[i] ) {
+      ibin=i;
+      break;
+    }
+  }
+  if(ibin=-1) {
+    //for pt > ptmax: use the SFlight value at ptmax with twice the quoted uncertainty 
+    if(csvtype=="CSVL") return 2*CSVL_error[15];
+    if(csvtype=="CSVM") return 2*CSVM_error[15];
+    if(csvtype=="CSVT") return 2*CSVT_error[15];
+  }
+  
+  if(csvtype=="CSVL") return CSVL_error[ibin];
+  if(csvtype=="CSVM") return CSVM_error[ibin];
+  if(csvtype=="CSVT") return CSVT_error[ibin];
+  
+  cerr << "PROBLEM, RECEIVED PT=" << pt <<" and type " << csvtype << endl;
+  assert(0);
+}
+
 //________________________________________________________________________________________
 JZBAnalysis::~JZBAnalysis(){}
+
+void JZBAnalysis::InitializeScalingFactors() {
+  CSVL__SFlight_0p0_to_0p5 = GetSFlmean("CSV","L",0.0, 0.5, "ABCD");
+  CSVL__SFlight_0p5_to_1p0 = GetSFlmean("CSV","L",0.5, 1.0, "ABCD");
+  CSVL__SFlight_1p0_to_1p5 = GetSFlmean("CSV","L",1.0, 1.5, "ABCD");
+  CSVL__SFlight_1p5_to_2p4 = GetSFlmean("CSV","L",1.5, 2.4, "ABCD");
+
+  CSVM__SFlight_0p0_to_0p8 = GetSFlmean("CSV","M",0.0, 0.8, "ABCD");
+  CSVM__SFlight_0p8_to_1p6 = GetSFlmean("CSV","M",0.8, 1.6, "ABCD");
+  CSVM__SFlight_1p6_to_2p4 = GetSFlmean("CSV","M",1.6, 2.4, "ABCD");
+
+  CSVT__SFlight            = GetSFlmean("CSV","T",0.0, 2.4, "ABCD");
+
+  lowCSVL__SFlight_0p0_to_0p5 = GetSFlmin("CSV","L",0.0, 0.5, "ABCD");
+  lowCSVL__SFlight_0p5_to_1p0 = GetSFlmin("CSV","L",0.5, 1.0, "ABCD");
+  lowCSVL__SFlight_1p0_to_1p5 = GetSFlmin("CSV","L",1.0, 1.5, "ABCD");
+  lowCSVL__SFlight_1p5_to_2p4 = GetSFlmin("CSV","L",1.5, 2.4, "ABCD");
+
+  lowCSVM__SFlight_0p0_to_0p8 = GetSFlmin("CSV","M",0.0, 0.8, "ABCD");
+  lowCSVM__SFlight_0p8_to_1p6 = GetSFlmin("CSV","M",0.8, 1.6, "ABCD");
+  lowCSVM__SFlight_1p6_to_2p4 = GetSFlmin("CSV","M",1.6, 2.4, "ABCD");
+
+  lowCSVT__SFlight            = GetSFlmin("CSV","T",0.0, 2.4, "ABCD");
+
+  highCSVL__SFlight_0p0_to_0p5 = GetSFlmax("CSV","L",0.0, 0.5, "ABCD");
+  highCSVL__SFlight_0p5_to_1p0 = GetSFlmax("CSV","L",0.5, 1.0, "ABCD");
+  highCSVL__SFlight_1p0_to_1p5 = GetSFlmax("CSV","L",1.0, 1.5, "ABCD");
+  highCSVL__SFlight_1p5_to_2p4 = GetSFlmax("CSV","L",1.5, 2.4, "ABCD");
+
+  highCSVM__SFlight_0p0_to_0p8 = GetSFlmax("CSV","M",0.0, 0.8, "ABCD");
+  highCSVM__SFlight_0p8_to_1p6 = GetSFlmax("CSV","M",0.8, 1.6, "ABCD");
+  highCSVM__SFlight_1p6_to_2p4 = GetSFlmax("CSV","M",1.6, 2.4, "ABCD");
+
+  highCSVT__SFlight            = GetSFlmax("CSV","T",0.0, 2.4, "ABCD");
+
+  CSVL_SFb = new TF1("CSVL_SFb","0.997942*((1.+(0.00923753*x))/(1.+(0.0096119*x)));",0,800);
+  CSVM_SFb = new TF1("CSVM_SFb","(0.938887+(0.00017124*x))+(-2.76366e-07*(x*x))",0,800);
+  CSVT_SFb = new TF1("CSVT_SFb","(0.927563+(1.55479e-05*x))+(-1.90666e-07*(x*x))",0,800);
+}
 
 //________________________________________________________________________________________
 void JZBAnalysis::Begin(TFile *f){
 
   solver = new SolveTTbarNew();
   minuit = new TMinuit();
-  
-  CSVT_CorrectionFile = new TFile("/shome/buchmann/material/Corrections/CSVT_Complete.root");
-  CSVT_EfficiencyCorrection = (TH2F*)CSVT_CorrectionFile->Get("EfficiencyCorrection");
-  CSVT_EfficiencyCorrectionUncert = (TH2F*)CSVT_CorrectionFile->Get("EfficiencyCorrectionUncertainty");
-  CSVT_MisTagCorrection = (TH2F*)CSVT_CorrectionFile->Get("MisTag");
-  CSVT_MisTagCorrectionUncert = (TH2F*)CSVT_CorrectionFile->Get("MisTagUncertainty");
 
-  CSVM_CorrectionFile = new TFile("/shome/buchmann/material/Corrections/CSVM_Complete.root");
-  CSVM_EfficiencyCorrection = (TH2F*)CSVM_CorrectionFile->Get("EfficiencyCorrection");
-  CSVM_EfficiencyCorrectionUncert = (TH2F*)CSVM_CorrectionFile->Get("EfficiencyCorrectionUncertainty");
-  CSVM_MisTagCorrection = (TH2F*)CSVM_CorrectionFile->Get("MisTag");
-  CSVM_MisTagCorrectionUncert = (TH2F*)CSVM_CorrectionFile->Get("MisTagUncertainty");
+  if(UseForZPlusB) InitializeScalingFactors();
 
-  CSVL_CorrectionFile = new TFile("/shome/buchmann/material/Corrections/CSVL_Complete.root");
-  CSVL_EfficiencyCorrection = (TH2F*)CSVL_CorrectionFile->Get("EfficiencyCorrection");
-  CSVL_EfficiencyCorrectionUncert = (TH2F*)CSVL_CorrectionFile->Get("EfficiencyCorrectionUncertainty");
-  CSVL_MisTagCorrection = (TH2F*)CSVL_CorrectionFile->Get("MisTag");
-  CSVL_MisTagCorrectionUncert = (TH2F*)CSVL_CorrectionFile->Get("MisTagUncertainty");
-  
   f->cd();
 
   rand_ = new TRandom();
@@ -1712,6 +1865,7 @@ void JZBAnalysis::Begin(TFile *f){
     myTree->Branch("ZbCHS3015_alpha",&nEvent.ZbCHS3015_alpha,"ZbCHS3015_alpha/F");
     myTree->Branch("ZbCHS3015_alphaL5",&nEvent.ZbCHS3015_alphaL5,"ZbCHS3015_alphaL5/F");
     myTree->Branch("ZbCHS3015_L5corr",&nEvent.ZbCHS3015_L5corr,"ZbCHS3015_L5corr/F");
+    myTree->Branch("ZbCHS3015_JetFlavor",&nEvent.ZbCHS3015_JetFlavor,"ZbCHS3015_JetFlavor/I");
     myTree->Branch("ZbCHS3015_alphaUp",&nEvent.ZbCHS3015_alphaUp,"ZbCHS3015_alphaUp/F");
     myTree->Branch("ZbCHS3015_alphaDown",&nEvent.ZbCHS3015_alphaDown,"ZbCHS3015_alphaDown/F");
     myTree->Branch("mpf",&nEvent.mpf,"mpf/F");
@@ -1956,71 +2110,80 @@ const float JZBAnalysis::GetL5Correction(const int jindex) {
   return 1.0;
 }
 
-float JZBAnalysis::GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &Uncert) {
-  Uncert=0.0;
-  TH2F *CSV_EfficiencyCorrection;
-  TH2F *CSV_EfficiencyCorrectionUncert;
-  TH2F *CSV_MisTagCorrection;
-  TH2F *CSV_MisTagCorrectionUncert;
+float JZBAnalysis::GetSFLight(const float jpt, const float jeta, string WP, float &PosUncert, float &NegUncert) {
+  float eta=abs(jeta);
+  float pt=jpt;
   
-  bool assigned=false;
-  if(WP=="Tight") {
-    assigned=true;
-    CSV_EfficiencyCorrection       = CSVT_EfficiencyCorrection;
-    CSV_EfficiencyCorrectionUncert = CSVT_EfficiencyCorrectionUncert;
-    CSV_MisTagCorrection           = CSVT_MisTagCorrection;
-    CSV_MisTagCorrectionUncert     = CSVT_MisTagCorrectionUncert;
-  }
-  if(WP=="Medium") {
-    assigned=true;
-    CSV_EfficiencyCorrection       = CSVM_EfficiencyCorrection;
-    CSV_EfficiencyCorrectionUncert = CSVM_EfficiencyCorrectionUncert;
-    CSV_MisTagCorrection           = CSVM_MisTagCorrection;
-    CSV_MisTagCorrectionUncert     = CSVM_MisTagCorrectionUncert;
-  }
-  if(WP=="Loose") {
-    assigned=true;
-    CSV_EfficiencyCorrection       = CSVL_EfficiencyCorrection;
-    CSV_EfficiencyCorrectionUncert = CSVL_EfficiencyCorrectionUncert;
-    CSV_MisTagCorrection           = CSVL_MisTagCorrection;
-    CSV_MisTagCorrectionUncert     = CSVL_MisTagCorrectionUncert;
-  }
-  if(!assigned) {
-    cout << "You requested the " << WP << " working point. Unfortunately that is not one of the options ... bye bye." << endl;
-    assert(assigned);
-  }
+  float mean=0;
+  float high=0;
+  float low=0;
   
-  
+  if(WP=="CSVL") {
+    if(jpt>800) pt=800;
     
-  
-  if(abs(JetFlavor)==4||abs(JetFlavor)==5) {
-    //return weight from efficiency correction
-    int Bin = CSV_EfficiencyCorrection->FindBin(JetPt,JetEta);
-    float weight = CSV_EfficiencyCorrection->GetBinContent(Bin);
-    Bin=CSV_EfficiencyCorrectionUncert->FindBin(JetPt,JetEta);
-    Uncert=CSV_EfficiencyCorrectionUncert->GetBinContent(Bin);
-    if(Uncert<0) Uncert=0.0;
-    if(weight<0) {
-      Uncert=0.0;
-      return 1.0;
+    if(0.0<=eta && eta<=0.5) {
+      mean = CSVL__SFlight_0p0_to_0p5->Eval(pt);
+      low  = lowCSVL__SFlight_0p0_to_0p5->Eval(pt);
+      high = highCSVL__SFlight_0p0_to_0p5->Eval(pt);
     }
-    else return weight;
-  } else {
-    //return weight from mistag correction
-    int Bin = CSV_MisTagCorrection->FindBin(JetPt,JetEta);
-    float weight = CSV_MisTagCorrection->GetBinContent(Bin);
-    Bin = CSV_MisTagCorrectionUncert->FindBin(JetPt,JetEta);
-    Uncert=CSV_MisTagCorrectionUncert->GetBinContent(Bin);
-    if(Uncert<0) Uncert=0.0;
-    if(weight<=0) {
-      Uncert=0.0;
-      return 1.0;
-    } else {
-      return weight;
+    if(0.5<=eta && eta<=1.0) {
+      mean = CSVL__SFlight_0p5_to_1p0->Eval(pt);
+      low  = lowCSVL__SFlight_0p5_to_1p0->Eval(pt);
+      high = highCSVL__SFlight_0p5_to_1p0->Eval(pt);
+    }
+    if(1.0<=eta && eta<=1.5) {
+      mean = CSVL__SFlight_1p0_to_1p5->Eval(pt);
+      low  = lowCSVL__SFlight_1p0_to_1p5->Eval(pt);
+      high = highCSVL__SFlight_1p0_to_1p5->Eval(pt);
+    }
+    if(1.5<=eta && eta<=2.4) {
+      mean = CSVL__SFlight_1p5_to_2p4->Eval(pt);
+      low  = lowCSVL__SFlight_1p5_to_2p4->Eval(pt);
+      high = highCSVL__SFlight_1p5_to_2p4->Eval(pt);
     }
   }
+  
+  if(WP=="CSVM") {
+    if(0.0<=eta && eta<=0.8) {
+      mean = CSVM__SFlight_0p0_to_0p8->Eval(pt);
+      low  = lowCSVM__SFlight_0p0_to_0p8->Eval(pt);
+      high = highCSVM__SFlight_0p0_to_0p8->Eval(pt);
+    }
+    if(0.0<=eta && eta<=0.8) {
+      mean = CSVM__SFlight_0p8_to_1p6->Eval(pt);
+      low  = lowCSVM__SFlight_0p8_to_1p6->Eval(pt);
+      high = highCSVM__SFlight_0p8_to_1p6->Eval(pt);
+    }
+    if(0.0<=eta && eta<=0.8) {
+      mean = CSVM__SFlight_1p6_to_2p4->Eval(pt);
+      low  = lowCSVM__SFlight_1p6_to_2p4->Eval(pt);
+      high = highCSVM__SFlight_1p6_to_2p4->Eval(pt);
+    }
+  }
+  
+  if(WP=="CSVT") {
+    mean = CSVT__SFlight->Eval(pt);
+    low  = lowCSVT__SFlight->Eval(pt);
+    high = highCSVT__SFlight->Eval(pt);
+  }
+  
+  PosUncert=high-mean;
+  NegUncert=mean-low;
+  return mean;
 }
 
+float JZBAnalysis::GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert) {
+  if(abs(JetFlavor)==4||abs(JetFlavor)==5) { // b of c
+    PosUncert = SFb_Uncertainty(JetPt, WP);
+    NegUncert = PosUncert;
+    return SFb(JetPt, WP);
+  } else {
+    // light flavor
+    float SFlight = GetSFLight(JetPt,JetEta,WP,PosUncert, NegUncert);
+    return SFlight;
+  }
+  cerr << "Something's wrong in " << __FUNCTION__ << " with input " << WP << " , " << JetFlavor << " , " << JetPt << " , " << JetEta << endl;
+}
 
 //------------------------------------------------------------------------------
 vector<lepton> JZBAnalysis::sortLeptonsByPt(vector<lepton>& leptons) {
@@ -2775,18 +2938,19 @@ void JZBAnalysis::Analyze() {
       if( (nEvent.ZbCHS3015_pfJetGoodNum==0 && jpt>30 && isJetID && abs(jeta)<2.4) || (nEvent.ZbCHS3015_pfJetGoodNum>0 && jpt>15 && isJetID && abs(jeta)<2.4)) {
 	//Z+b selection with 30 GeV leading jet, 10 GeV sub-leading jet
 	if(nEvent.ZbCHS3015_pfJetGoodNum==0 && isMC) {
-	  float Uncert;
-	  nEvent.ZbCHS3015_BTagWgtT     = GetBWeight("Tight",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),Uncert);
-	  nEvent.ZbCHS3015_BTagWgtTDown = nEvent.ZbCHS3015_BTagWgtT-Uncert;
-	  nEvent.ZbCHS3015_BTagWgtTUp   = nEvent.ZbCHS3015_BTagWgtT+Uncert;
-	  nEvent.ZbCHS3015_BTagWgtM     = GetBWeight("Medium",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),Uncert);
-	  nEvent.ZbCHS3015_BTagWgtMDown = nEvent.ZbCHS3015_BTagWgtM-Uncert;
-	  nEvent.ZbCHS3015_BTagWgtMUp   = nEvent.ZbCHS3015_BTagWgtM+Uncert;
-	  nEvent.ZbCHS3015_BTagWgtL     = GetBWeight("Loose",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),Uncert);
-	  nEvent.ZbCHS3015_BTagWgtLDown = nEvent.ZbCHS3015_BTagWgtL-Uncert;
-	  nEvent.ZbCHS3015_BTagWgtLUp   = nEvent.ZbCHS3015_BTagWgtL+Uncert;
+	  float PosUncert, NegUncert;
+	  nEvent.ZbCHS3015_BTagWgtT     = GetBWeight("CSVT",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert);
+	  nEvent.ZbCHS3015_BTagWgtTDown = nEvent.ZbCHS3015_BTagWgtT-NegUncert;
+	  nEvent.ZbCHS3015_BTagWgtTUp   = nEvent.ZbCHS3015_BTagWgtT+PosUncert;
+	  nEvent.ZbCHS3015_BTagWgtM     = GetBWeight("CSVM",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert);
+	  nEvent.ZbCHS3015_BTagWgtMDown = nEvent.ZbCHS3015_BTagWgtM-NegUncert;
+	  nEvent.ZbCHS3015_BTagWgtMUp   = nEvent.ZbCHS3015_BTagWgtM+PosUncert;
+	  nEvent.ZbCHS3015_BTagWgtL     = GetBWeight("CSVL",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert);
+	  nEvent.ZbCHS3015_BTagWgtLDown = nEvent.ZbCHS3015_BTagWgtL-NegUncert;
+	  nEvent.ZbCHS3015_BTagWgtLUp   = nEvent.ZbCHS3015_BTagWgtL+PosUncert;
 	  
 	  nEvent.ZbCHS3015_LeadingJetIsPu=IsPUJet(jpt,jeta,jphi);
+	  nEvent.ZbCHS3015_JetFlavor=fTR->PFCHSJFlavour[i];
 	}
 
 	if(nEvent.ZbCHS3015_pfJetGoodNum==1) {
@@ -3455,9 +3619,49 @@ void JZBAnalysis::Analyze() {
   myTree->Fill();
 }
 
+void JZBAnalysis::DeleteScalingFactors() {
+  delete CSVL__SFlight_0p0_to_0p5;
+  delete CSVL__SFlight_0p5_to_1p0;
+  delete CSVL__SFlight_1p0_to_1p5;
+  delete CSVL__SFlight_1p5_to_2p4;
+
+  delete CSVM__SFlight_0p0_to_0p8;
+  delete CSVM__SFlight_0p8_to_1p6;
+  delete CSVM__SFlight_1p6_to_2p4;
+
+  delete CSVT__SFlight;
+
+  delete lowCSVL__SFlight_0p0_to_0p5;
+  delete lowCSVL__SFlight_0p5_to_1p0;
+  delete lowCSVL__SFlight_1p0_to_1p5;
+  delete lowCSVL__SFlight_1p5_to_2p4;
+
+  delete lowCSVM__SFlight_0p0_to_0p8;
+  delete lowCSVM__SFlight_0p8_to_1p6;
+  delete lowCSVM__SFlight_1p6_to_2p4;
+
+  delete lowCSVT__SFlight;
+
+  delete highCSVL__SFlight_0p0_to_0p5;
+  delete highCSVL__SFlight_0p5_to_1p0;
+  delete highCSVL__SFlight_1p0_to_1p5;
+  delete highCSVL__SFlight_1p5_to_2p4;
+
+  delete highCSVM__SFlight_0p0_to_0p8;
+  delete highCSVM__SFlight_0p8_to_1p6;
+  delete highCSVM__SFlight_1p6_to_2p4;
+
+  delete highCSVT__SFlight;
+
+  delete CSVL_SFb;
+  delete CSVM_SFb;
+  delete CSVT_SFb;
+}
+
 void JZBAnalysis::End(TFile *f){
   f->cd();	
   
+  if(UseForZPlusB) DeleteScalingFactors();
   delete solver;
 
   myTree->Write();
