@@ -386,6 +386,7 @@ public:
   
   float mpf;
   float mpf_JS;
+  float mpf_L5;
   float fake_mpf;
   
   float ZbCHS3015_alpha;
@@ -864,12 +865,13 @@ void nanoEvent::reset()
   //Z+b variables
   ZbCHS3015_alpha=0;
   ZbCHS3015_alphaL5=0;
-  ZbCHS3015_L5corr=0;
+  ZbCHS3015_L5corr=1.0;
   ZbCHS3015_JetFlavor=0;
   ZbCHS3015_alphaUp=0;
   ZbCHS3015_alphaDown=0;
   mpf=0;
   mpf_JS=0;
+  mpf_L5=0;
   fake_mpf=0;
   
   HasSoftLepton=false;
@@ -1870,6 +1872,7 @@ void JZBAnalysis::Begin(TFile *f){
     myTree->Branch("ZbCHS3015_alphaDown",&nEvent.ZbCHS3015_alphaDown,"ZbCHS3015_alphaDown/F");
     myTree->Branch("mpf",&nEvent.mpf,"mpf/F");
     myTree->Branch("mpf_JS",&nEvent.mpf_JS,"mpf_JS/F");
+    myTree->Branch("mpf_L5",&nEvent.mpf_L5,"mpf_L5/F");
     myTree->Branch("fake_mpf",&nEvent.fake_mpf,"fake_mpf/F");
 
     myTree->Branch("HasSoftLepton",&nEvent.HasSoftLepton,"HasSoftLepton/O");
@@ -2882,7 +2885,8 @@ void JZBAnalysis::Analyze() {
   TLorentzVector CHSMetvector(nEvent.fact*CHSMETpx,nEvent.fact*CHSMETpy,0,0);
   TLorentzVector Cleantype1METvector(type1METpx,type1METpy,0,0);
   TLorentzVector Cleantype1METvector_JS(type1METpx,type1METpy,0,0);
-  
+  TLorentzVector Cleantype1METvector_L5(type1METpx,type1METpy,0,0);
+
   TLorentzVector sumOfPFJets(0,0,0,0);
   float ScalarSumOfJets=0;
   TLorentzVector zVector;
@@ -2896,6 +2900,7 @@ void JZBAnalysis::Analyze() {
   
   TLorentzVector UnSmearedJets(0,0,0,0);
   TLorentzVector SmearedJets(0,0,0,0);
+  TLorentzVector L5Jets(0,0,0,0);
   for(int i =0 ; i<fTR->PFCHSNJets && UseForZPlusB;i++) // PF jet loop
     {
       if(i==jMax){cout<<"max Num of jets (CHS) was reached"<<endl; break;}
@@ -2920,7 +2925,11 @@ void JZBAnalysis::Analyze() {
       aJet.SetPtEtaPhiE(jpt, jeta, jphi, jenergy);
       
       SmearedJets+=aJet;
-      
+      float l5correction=1.0;
+      if(isMC) l5correction = GetL5Correction(i);
+      TLorentzVector l5Jet(0,0,0,0);
+      l5Jet.SetPtEtaPhiE(jpt*l5correction, jeta, jphi, jenergy);
+      L5Jets+=l5Jet;
 
       // lepton-jet cleaning
       if ( fFullCleaning_ ) {
@@ -2965,6 +2974,8 @@ void JZBAnalysis::Analyze() {
 	    nEvent.ZbCHS3015_alphaUp = 10e7;
 	    nEvent.ZbCHS3015_alphaDown = 10e7;
 	  }
+	  nEvent.ZbCHS3015_L5corr=1.0;
+	  if(isMC) nEvent.ZbCHS3015_L5corr = l5correction;
 	}
 	nEvent.ZbCHS3015_bTagProbCSVBP[nEvent.ZbCHS3015_pfJetGoodNum]=fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i];
 	if(nEvent.ZbCHS3015_bTagProbCSVBP[nEvent.ZbCHS3015_pfJetGoodNum]>0.244) {
@@ -2976,8 +2987,6 @@ void JZBAnalysis::Analyze() {
 	nEvent.ZbCHS3015_pfJetGoodPt[nEvent.ZbCHS3015_pfJetGoodNum]=jpt;
 	nEvent.ZbCHS3015_pfJetGoodUnsmearedPt[nEvent.ZbCHS3015_pfJetGoodNum]=unsmeared_jpt;
 	
-	nEvent.ZbCHS3015_L5corr=1.0;
-	if(isMC) nEvent.ZbCHS3015_L5corr = GetL5Correction(i);
 	nEvent.ZbCHS3015_pfJetGoodNum++;
       }
       
@@ -2986,6 +2995,7 @@ void JZBAnalysis::Analyze() {
     }
 
   Cleantype1METvector_JS+=(UnSmearedJets-SmearedJets);
+  Cleantype1METvector_L5+=(UnSmearedJets-L5Jets);
 
   nEvent.pfJetNum=0;
   nEvent.pfJetGoodNum30=0;
@@ -3215,7 +3225,7 @@ void JZBAnalysis::Analyze() {
       if ( jpt>50. )  nEvent.pfJetGoodNum50++;
       if ( jpt>60. )  nEvent.pfJetGoodNum60++;
     }
-    
+
   if(nEvent.ZbCHS3015_pfJetGoodNum>0) {
     nEvent.ZbCHS3015_alpha=nEvent.ZbCHS3015_pfJetGoodPt[1]/nEvent.pt;
     nEvent.ZbCHS3015_alphaL5=nEvent.ZbCHS3015_L5corr*nEvent.ZbCHS3015_pfJetGoodPt[1]/nEvent.pt;
@@ -3226,6 +3236,7 @@ void JZBAnalysis::Analyze() {
   nEvent.mpf=1+(Cleantype1METvector.Vect()*zVector.Vect())/(zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());
   nEvent.fake_mpf=1+((Cleantype1METvector.Vect()+( 1.0 / 1.05  -  1 )*zVector.Vect())*zVector.Vect())/(1.05*zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());//we simulate a missing correction of 10%
   nEvent.mpf_JS=1+(Cleantype1METvector_JS.Vect()*zVector.Vect())/(zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());
+  nEvent.mpf_L5=1+(Cleantype1METvector_L5.Vect()*zVector.Vect())/(zVector.Px()*zVector.Px()+zVector.Py()*zVector.Py());
     
     
   TLorentzVector leadingJet(0,0,0,0);
