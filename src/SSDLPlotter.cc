@@ -25180,9 +25180,6 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		if (leps.size() != 2) continue;
 		ndenominator += genw;
 
-
-
-
 		setRegionCuts(0);   // TODO: why is this setting fC_invertZVeto true?
 		fC_invertZVeto = false;
 		fChargeSwitch = 1;
@@ -25194,55 +25191,45 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		nll += genw;
 		bool ismumu(false), iselel(false), iselmu(false);
 		int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1), lep1(-1), lep2(-1);
-			// if( isSSLLMuEvent(m1, m2)) { if(isTightMuon(m1) && isTightMuon(m2))         ismumu = true;}
-			// resetHypLeptons();
-			// if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
-			// resetHypLeptons();
-			// if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
-			// resetHypLeptons();
-		// check if it has a loose - loose ss pair
-//		if( isSSLLMuEvent(m1, m2))  ismumu = true;
-//		resetHypLeptons();
-//		if( isSSLLElEvent(e1, e2))  iselel = true;
-//		resetHypLeptons();
-//		if( isSSLLElMuEvent(m, e))  iselmu = true;
-//		resetHypLeptons();
-//		if(!(ismumu || iselel || iselmu) ) continue;
 
+		vector<int> matchedmus, matchedels;
+		for(size_t i = 0; i < NMus; ++i) {
+			if(isLooseMuon(i)) {
+				std::vector<genLep>::const_iterator it;
+				for (it = leps.begin(); it != leps.end(); it++) {
+					if (Util::GetDeltaR(it->eta, MuEta[i], it->phi, MuPhi[i]) < 0.1   // DeltaR < 0.1
+							&& fabs(it->pt/MuPt[i]-1) < 0.15
+							&& it->type == 0) {
+						matchedmus.push_back(i);
+					}
+				}
+			}
+		}
+		for(size_t i = 0; i < NEls; ++i) {
+			if(isLooseElectron(i) && ElIsGoodElId_MediumWP[i] == 1) {
+				std::vector<genLep>::const_iterator it;
+				for (it = leps.begin(); it != leps.end(); it++) {
+					if (Util::GetDeltaR(it->eta, ElEta[i], it->phi, ElPhi[i]) < 0.1   // DeltaR < 0.1
+							&& fabs(it->pt/ElPt[i]-1) < 0.15
+							&& it->type == 1) {
+						matchedels.push_back(i);
+					}
+				}
+			}
+		}
 
 
 		int nMus(0), nEls(0);
-		resetHypLeptons();
-		nMus = hasLooseMuons(m1, m2);
-		resetHypLeptons();
-		nEls = hasLooseElectrons(e1, e2);
-		resetHypLeptons();
-
+		nMus = matchedmus.size();
+		nEls = matchedels.size();
 		if (nMus + nEls != 2) continue;
-		if (nMus == 2) ismumu = true;
-		if (nEls == 2) iselel = true;
-		if (nMus == 1 && nEls == 1) iselmu = true;
-
-
-
+		if (nMus == 2)              {ismumu = true; m1 = matchedmus[0]; m2 = matchedmus[1];}
+		if (nEls == 2)              {iselel = true; e1 = matchedels[0]; e2 = matchedels[1];}
+		if (nMus == 1 && nEls == 1) {iselmu = true; e1 = matchedels[0]; m1 = matchedmus[0];}
 
 		if (ismumu) {
-			bool matched1 = false;
-			bool matched2 = false;
-			std::vector<genLep>::const_iterator it;
-			for (it = leps.begin(); it != leps.end(); it++) {
-				if (Util::GetDeltaR(it->eta, MuEta[m1], it->phi, MuPhi[m1]) < 0.1   // DeltaR < 0.1
-				   && fabs(it->pt/MuPt[m1]-1) < 0.15
-				   && it->type == 0) matched1 = true;
-				if (Util::GetDeltaR(it->eta, MuEta[m2], it->phi, MuPhi[m2]) < 0.1   // DeltaR < 0.1
-				   && fabs(it->pt/MuPt[m2]-1) < 0.15
-				   && it->type == 0) matched2 = true;
-			}
-			if (!matched1 || !matched2) continue;
 			nll20 += genw;
 			nMuMull20 += genw;
-//			if (MuEMVetoEt [m1] > 4.0 || MuEMVetoEt [m2] > 4.0)  continue;
-//			if (MuHadVetoEt[m1] > 6.0 || MuHadVetoEt[m2] > 6.0)  continue;
 			nllip  += genw;
 			nMuMullip  += genw;
 			if(!isTightMuon(m1)       || !isTightMuon(m2))       continue;
@@ -25250,38 +25237,12 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 			nMuMulliso += genw;
 		}
 		else if (iselmu) {
-			bool matched1 = false;
-			bool matched2 = false;
-			std::vector<genLep>::const_iterator it;
-			for (it = leps.begin(); it != leps.end(); it++) {
-				if (Util::GetDeltaR(it->eta, MuEta[m1], it->phi, MuPhi[m1]) < 0.1   // DeltaR < 0.1
-				   && fabs(it->pt/MuPt[m1]-1) < 0.15
-				   && it->type == 0) matched1 = true;
-				if (Util::GetDeltaR(it->eta, ElEta[e1], it->phi, ElPhi[e1]) < 0.1   // DeltaR < 0.1
-				   && fabs(it->pt/ElPt[e1]-1) < 0.15
-				   && it->type == 1) matched2 = true;
-			}
-			if (!matched1 || !matched2) continue;
 			nll20 += genw;
-			if (MuEMVetoEt [m] > 4.0)  continue;
-			if (MuHadVetoEt[m] > 6.0)  continue;
 			nllip  += genw;
 			if(!isTightMuon(m1)       || !isTightElectron(e1))       continue;
 			nlliso += genw;
 		}
 		else if (iselel) {
-			bool matched1 = false;
-			bool matched2 = false;
-			std::vector<genLep>::const_iterator it;
-			for (it = leps.begin(); it != leps.end(); it++) {
-				if (Util::GetDeltaR(it->eta, ElEta[e1], it->phi, ElPhi[e1]) < 0.1   // DeltaR < 0.1
-				   && fabs(it->pt/ElPt[e1]-1) < 0.15
-				   && it->type == 1) matched1 = true;
-				if (Util::GetDeltaR(it->eta, ElEta[e2], it->phi, ElPhi[e2]) < 0.1   // DeltaR < 0.1
-				   && fabs(it->pt/ElPt[e2]-1) < 0.15
-				   && it->type == 1) matched2 = true;
-			}
-			if (!matched1 || !matched2) continue;
 			nll20 += genw;
 			nllip  += genw;
 			if(!isTightElectron(e1)       || !isTightElectron(e2))       continue;
@@ -25295,7 +25256,6 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		ntt2bl += genw;
 		if (getNJets(30.)  < 4) continue;
 		ntt3j += genw;
-
 //		if(ismumu){
 //			if(MuPFIso[m1] > 0.05     || MuPFIso[m2] > 0.05)     continue;
 //			nlliso += genw;
