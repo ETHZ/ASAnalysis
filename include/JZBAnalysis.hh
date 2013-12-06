@@ -28,6 +28,7 @@ struct lepton {
   int index;
   float genPt;
   float iso;
+  float dz,d0;
   bool ElCInfoIsGsfCtfCons;
   bool ElCInfoIsGsfCtfScPixCons;
   bool ElCInfoIsGsfScPixCons;
