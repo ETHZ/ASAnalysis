@@ -53,6 +53,7 @@ const int global_maxN_jets = 200;
 const int global_size_pfcandarrays = 30;
 
 const float global_dR_cut_acceptance = 0.45;
+const float global_mindR_photon_jet = 1.0;
 
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;
@@ -133,7 +134,7 @@ private:
   Float_t* kfactors;
 
   float getEtaCorrectionBarrel(float eta);
-  TLorentzVector CorrPhoton(TreeReader *fTR, int i);
+  void CorrPhoton(TreeReader *fTR, int i);
 	
   std::vector<int> ApplyPixelVeto(TreeReader *fTR, vector<int> passing, bool forelectron=0);
   std::vector<int> PhotonPreSelection(TreeReader *fTR, vector<int> passing);

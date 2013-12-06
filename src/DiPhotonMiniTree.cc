@@ -402,10 +402,11 @@ void DiPhotonMiniTree::Analyze(){
 
   bool passtrigger = TriggerSelection();
 
-  // rescale shower shapes
+  // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
     fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
     fTR->PhoSigmaIetaIeta[i] = SieieRescale(fTR->PhoSigmaIetaIeta[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
+    CorrPhoton(fTR,i);
   }
 
   photon_jet_matching.clear();
@@ -771,7 +772,9 @@ void DiPhotonMiniTree::Analyze(){
       }
 
 
-      float invmass = (CorrPhoton(fTR,passing.at(0))+CorrPhoton(fTR,passing.at(1))).M();
+      TLorentzVector pho1(fTR->PhoPx[passing.at(0)],fTR->PhoPy[passing.at(0)],fTR->PhoPz[passing.at(0)],fTR->PhoEnergy[passing.at(0)]);
+      TLorentzVector pho2(fTR->PhoPx[passing.at(1)],fTR->PhoPy[passing.at(1)],fTR->PhoPz[passing.at(1)],fTR->PhoEnergy[passing.at(1)]);
+      float invmass = (pho1+pho2).M();
       dipho_mgg_photon = invmass;
       if (dofill) OutputTree[sel_cat]->Fill();
       if (dofill && sel_cat==7) if (isdata && !isstep2) OutputExtraTree[sel_cat]->Fill();
@@ -1231,13 +1234,13 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 };
 
 
-TLorentzVector DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i){
-  TLorentzVector corr;
-  corr.SetPtEtaPhiE(fTR->PhoPt[i],fTR->PhoEta[i],fTR->PhoPhi[i],fTR->PhoEnergy[i]); 
-  float corre = fTR->PhoRegrEnergy[i];
-  corr.SetE(corre);
-  corr.SetRho(corre);
-  return corr;
+void DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i){
+  float corr = fTR->PhoRegrEnergy[i]/fTR->PhoEnergy[i];
+  fTR->PhoPt[i]*=corr;
+  fTR->PhoPx[i]*=corr;
+  fTR->PhoPy[i]*=corr;
+  fTR->PhoPz[i]*=corr;
+  fTR->PhoEnergy[i]*=corr;
 };
 
 std::vector<int> DiPhotonMiniTree::ApplyPixelVeto(TreeReader *fTR, vector<int> passing, bool forelectron){
@@ -1498,7 +1501,9 @@ std::vector<int> DiPhotonMiniTree::DiPhotonInvariantMassCutSelection(TreeReader 
 
   passing.resize(2);
 
-  float invmass0 = (CorrPhoton(fTR,passing.at(0))+CorrPhoton(fTR,passing.at(1))).M();
+  TLorentzVector pho1(fTR->PhoPx[passing.at(0)],fTR->PhoPy[passing.at(0)],fTR->PhoPz[passing.at(0)],fTR->PhoEnergy[passing.at(0)]);
+  TLorentzVector pho2(fTR->PhoPx[passing.at(1)],fTR->PhoPy[passing.at(1)],fTR->PhoPz[passing.at(1)],fTR->PhoEnergy[passing.at(1)]);
+  float invmass0 = (pho1+pho2).M();
   if (fabs(invmass0-91.2)>10) return std::vector<int>();
 
   return passing;
@@ -1525,7 +1530,9 @@ bool DiPhotonMiniTree::StandardEventSelection(TreeReader *fTR, std::vector<int> 
 
   passing.resize(2); // keep only the first two
 
-  float invmass0 = (CorrPhoton(fTR,passing.at(0))+CorrPhoton(fTR,passing.at(1))).M();
+  TLorentzVector pho1(fTR->PhoPx[passing.at(0)],fTR->PhoPy[passing.at(0)],fTR->PhoPz[passing.at(0)],fTR->PhoEnergy[passing.at(0)]);
+  TLorentzVector pho2(fTR->PhoPx[passing.at(1)],fTR->PhoPy[passing.at(1)],fTR->PhoPz[passing.at(1)],fTR->PhoEnergy[passing.at(1)]);
+  float invmass0 = (pho1+pho2).M();
   float deta=fTR->PhoEta[passing.at(0)]-fTR->PhoEta[passing.at(1)];
   float dphi=Util::DeltaPhi(fTR->PhoPhi[passing.at(0)],fTR->PhoPhi[passing.at(1)]);
   double dR=sqrt(dphi*dphi+deta*deta);
@@ -1556,7 +1563,7 @@ bool DiPhotonMiniTree::VetoJetPhotonOverlap(std::vector<int> &passing, std::vect
   for (size_t i=0; i<passing.size(); i++){
     for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
       float dR = Util::GetDeltaR(fTR->PhoEta[passing.at(i)],fTR->JEta[*it],fTR->PhoPhi[passing.at(i)],fTR->JPhi[*it]);
-      if (dR<0) {out=true; it=passing_jets.erase(it);} else it++; // XXX DEBUG FOR NOW SET TO 0
+      if (dR<global_mindR_photon_jet) {out=true; it=passing_jets.erase(it);} else it++;
     }
   }
 
@@ -2618,8 +2625,8 @@ void DiPhotonMiniTree::JetSelection(std::vector<int> &passing_jets){
     float pt = fTR->JPt[*it];
     float eta = fTR->JEta[*it];
     bool pass=1;
-    if (pt<30) pass=0;
-    if (fabs(eta)>2.4) pass=0;
+    if (pt<20) pass=0;
+    if (fabs(eta)>4.7) pass=0;
     if (!(fTR->JPassPileupIDM0[fTR->JVrtxListStart[*it]+0])) pass=0; // pileup ID medium cut-based
     if (!pass) it=passing_jets.erase(it); else it++;
   }
