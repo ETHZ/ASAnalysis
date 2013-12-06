@@ -24930,7 +24930,7 @@ class genLep{
 			else if(type == 1){
 				if(pt < 20.)        return false;
 				if(fabs(eta) > 2.4) return false;
-				if(fabs(eta) > 1.4442 && fabs(eta) < 1.566) return false;
+//				if(fabs(eta) > 1.4442 && fabs(eta) < 1.566) return false;
 			}
 			else cout << "what the fuuuuuuuck " << endl;
 			return true;
@@ -24948,6 +24948,8 @@ float binoErr(int a, int b){
 	return (1/n)*TMath::Sqrt( k * (1-k/n) ); 
 }
 void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttbar){
+
+	ttbar = true;
 
 	cout << filestring << endl;
 
@@ -24984,6 +24986,7 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	float nTot          = 0;
 	float nSSGen        = 0;
 	float nPassFiducial = 0;
+	float nMuMuPassFiducial = 0;
 	float nPassPt40     = 0;
 	float nPassNJ3      = 0;
 	float nPassHT155    = 0;
@@ -25029,7 +25032,7 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		for (int i = 0; i < NGenW; ++i) {
 			if (GenWFromTop[i] > 0 && GenWLept[i] == 1) nGenLepFromWFromTop++;
 		}
-		if (nGenLepFromWFromTop <  3) genw = genw * TMath::Power(0.972, nGenLepFromWFromTop) * TMath::Power(1.014, 2-nGenLepFromWFromTop);
+//		if (nGenLepFromWFromTop <  3) genw = genw * TMath::Power(0.972, nGenLepFromWFromTop) * TMath::Power(1.014, 2-nGenLepFromWFromTop);
 		if (nGenLepFromWFromTop == 0) n0LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop == 1) n1LepFromWFromTop    += genw;
 		if (nGenLepFromWFromTop == 2) n2LepFromWFromTop    += genw;
@@ -25095,6 +25098,7 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 		ss_etas->Fill(leps[0].eta, genw);
 		ss_etas->Fill(leps[1].eta, genw);
 		nPassFiducial += genw; // both leptons pass 20 GeV and eta cuts
+		if (leps[0].type == 0 && leps[1].type == 0) nMuMuPassFiducial += genw;
 		if(leps[0].pt < 40. || leps[1].pt < 40) continue;      // cut on pt > 40 GeV
 		nPassPt40 += genw;
 		// loop on jets
@@ -25131,9 +25135,11 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	// --- MOVING ON TO THE RECO PART ----------------------------------------
 	// -----------------------------------------------------------------------
 
-	int nll(0), nll20(0), nlliso(0), nllip(0), nllid(0), ntt40(0), ntt3j(0), nttht(0), ntt1b(0);
+	int nll(0), nll20(0), nlliso(0), nllip(0), nllid(0), ntt40(0), ntt3j(0), nttht(0), ntt1b(0), ntt2bl(0);
+	int nMuMull(0), nMuMull20(0), nMuMulliso(0), nMuMullip(0), nMuMullid(0), nMuMutt40(0), nMuMutt3j(0), nMuMuttht(0), nMuMutt1b(0), nMuMutt2bl(0);
 	int ngenR(0);
 	int nmm(0);
+	int ndenominator(0);
 
 //	initCounters();
 //	fDoCounting = true;
@@ -25141,21 +25147,53 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 
 	for (Long64_t jentry=0; jentry<tot_events;jentry++) {
 		tree_->GetEntry(jentry);
-		setRegionCuts(0);   // TODO: why is this setting fC_invertZVeto true?
-		fC_invertZVeto = false;
-		if(ttbar) fChargeSwitch = 1;
+
 		float genw = 1.;
 		if(amcnlo && GenWeight < 0) {genw = -1.;}
-		else ngenR++;
 		ngenR += genw;
-		int i1(-1), i2(-1);
-		if(!ttbar){
-			if(!isSSLLEvent(i1, i2)) continue;
-			resetHypLeptons();
+
+		// store gen leptons for matching
+		std::vector<genLep> leps_p;
+		std::vector<genLep> leps_m;
+		std::vector<genLep> leps;
+		bool hasSSPair = false;
+		bool hasLepPair = false;
+		for(int i = 0 ; i < NGenLep; ++i){
+			if(GenLepStatus[i] == 1 && GenLepFromW[i] > 0) {
+			// oldif((!amcnlo && GenLepStatus[i] == 3) || (amcnlo && (GenLepStatus[i] == 3 || GenLepStatus[i] == 1)) ) {
+				if( (abs(GenLepID[i]) == 11 || abs(GenLepID[i]) == 13) && abs(GenLepMID[i]) != 15 && abs(GenLepMID[i]) != 15){
+					genLep tmpLep;
+					tmpLep.pt   = GenLepPt [i];
+					tmpLep.eta  = GenLepEta[i];
+					tmpLep.phi  = GenLepPhi[i];
+					tmpLep.sgn  = GenLepID[i] > 0 ? -1 : 1;
+					tmpLep.type = abs(GenLepID[i]) == 13 ? 0 : 1;
+					tmpLep.stat = GenLepStatus[i];
+					tmpLep.gmo  = abs(GenLepGMID[i]);
+					if (tmpLep.passesFiducials()) leps.push_back(tmpLep); // see if leptons pass fiducial cuts (20 gev and eta cuts)
+				}
+			}
 		}
+//		if (leps.size() == 2) hasLepPair = true;
+//		if (hasLepPair) ndenominator += genw;
+
+		if (leps.size() != 2) continue;
+		ndenominator += genw;
+
+
+
+
+		setRegionCuts(0);   // TODO: why is this setting fC_invertZVeto true?
+		fC_invertZVeto = false;
+		fChargeSwitch = 1;
+//		int i1(-1), i2(-1);
+//		if(!ttbar){
+//			if(!isSSLLEvent(i1, i2)) continue;
+//			resetHypLeptons();
+//		}
 		nll += genw;
 		bool ismumu(false), iselel(false), iselmu(false);
-		int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1);
+		int m1(-1), m2(-1), e1(-1), e2(-1), m(-1), e(-1), lep1(-1), lep2(-1);
 			// if( isSSLLMuEvent(m1, m2)) { if(isTightMuon(m1) && isTightMuon(m2))         ismumu = true;}
 			// resetHypLeptons();
 			// if( isSSLLElEvent(e1, e2)) { if(isTightElectron(e1) && isTightElectron(e2)) iselel = true;}
@@ -25163,68 +25201,155 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 			// if( isSSLLElMuEvent(m, e)) { if(isTightMuon(m) && isTightElectron(e))       iselmu = true;}
 			// resetHypLeptons();
 		// check if it has a loose - loose ss pair
-		if( isSSLLMuEvent(m1, m2))  ismumu = true;
+//		if( isSSLLMuEvent(m1, m2))  ismumu = true;
+//		resetHypLeptons();
+//		if( isSSLLElEvent(e1, e2))  iselel = true;
+//		resetHypLeptons();
+//		if( isSSLLElMuEvent(m, e))  iselmu = true;
+//		resetHypLeptons();
+//		if(!(ismumu || iselel || iselmu) ) continue;
+
+
+
+		int nMus(0), nEls(0);
 		resetHypLeptons();
-		if( isSSLLElEvent(e1, e2))  iselel = true;
+		nMus = hasLooseMuons(m1, m2);
 		resetHypLeptons();
-		if( isSSLLElMuEvent(m, e))  iselmu = true;
+		nEls = hasLooseElectrons(e1, e2);
 		resetHypLeptons();
-		if(!(ismumu || iselel || iselmu) ) continue;
-		nll20 += genw;
-		if(ismumu){
-			if(MuPFIso[m1] > 0.05     || MuPFIso[m2] > 0.05)     continue;
-			nlliso += genw;
-			if(fabs(MuD0[m1]) > 0.005 || fabs(MuD0[m2]) > 0.005) continue;
-			nllip += genw;
+
+		if (nMus + nEls != 2) continue;
+		if (nMus == 2) ismumu = true;
+		if (nEls == 2) iselel = true;
+		if (nMus == 1 && nEls == 1) iselmu = true;
+
+
+
+
+		if (ismumu) {
+			bool matched1 = false;
+			bool matched2 = false;
+			std::vector<genLep>::const_iterator it;
+			for (it = leps.begin(); it != leps.end(); it++) {
+				if (Util::GetDeltaR(it->eta, MuEta[m1], it->phi, MuPhi[m1]) < 0.1   // DeltaR < 0.1
+				   && fabs(it->pt/MuPt[m1]-1) < 0.15
+				   && it->type == 0) matched1 = true;
+				if (Util::GetDeltaR(it->eta, MuEta[m2], it->phi, MuPhi[m2]) < 0.1   // DeltaR < 0.1
+				   && fabs(it->pt/MuPt[m2]-1) < 0.15
+				   && it->type == 0) matched2 = true;
+			}
+			if (!matched1 || !matched2) continue;
+			nll20 += genw;
+			nMuMull20 += genw;
+//			if (MuEMVetoEt [m1] > 4.0 || MuEMVetoEt [m2] > 4.0)  continue;
+//			if (MuHadVetoEt[m1] > 6.0 || MuHadVetoEt[m2] > 6.0)  continue;
+			nllip  += genw;
+			nMuMullip  += genw;
 			if(!isTightMuon(m1)       || !isTightMuon(m2))       continue;
-			nllid += genw;
-			reco_leppts ->Fill(MuPt[m1], genw);
-			reco_leppts ->Fill(MuPt[m2], genw);
-			if(MuPt[m1] < 40. || MuPt[m2] < 40.) continue;
-			ntt40 += genw;
-			reco_lepetas->Fill(MuEta[m1], genw);
-			reco_lepetas->Fill(MuEta[m2], genw);
-		}
-		else if(iselmu){
-			if(MuPFIso[m] > 0.05     || ElPFIso[e] > 0.05)     continue;
 			nlliso += genw;
-			if(fabs(MuD0[m]) > 0.005 || fabs(ElD0[m]) > 0.01) continue;
-			nllip += genw;
-			if(!isTightMuon(m)       || !isTightElectron(e))       continue;
-			nllid += genw;
-			reco_leppts ->Fill(MuPt[m], genw);
-			reco_leppts ->Fill(ElPt[e], genw);
-			if(MuPt[m] < 40. || ElPt[e] < 40.) continue;
-			ntt40 += genw;
-			reco_lepetas->Fill(MuEta[m], genw);
-			reco_lepetas->Fill(ElEta[e], genw);
+			nMuMulliso += genw;
 		}
-		if(iselel){
-			if(ElPFIso[e1] > 0.05     || ElPFIso[e2] > 0.05)     continue;
+		else if (iselmu) {
+			bool matched1 = false;
+			bool matched2 = false;
+			std::vector<genLep>::const_iterator it;
+			for (it = leps.begin(); it != leps.end(); it++) {
+				if (Util::GetDeltaR(it->eta, MuEta[m1], it->phi, MuPhi[m1]) < 0.1   // DeltaR < 0.1
+				   && fabs(it->pt/MuPt[m1]-1) < 0.15
+				   && it->type == 0) matched1 = true;
+				if (Util::GetDeltaR(it->eta, ElEta[e1], it->phi, ElPhi[e1]) < 0.1   // DeltaR < 0.1
+				   && fabs(it->pt/ElPt[e1]-1) < 0.15
+				   && it->type == 1) matched2 = true;
+			}
+			if (!matched1 || !matched2) continue;
+			nll20 += genw;
+			if (MuEMVetoEt [m] > 4.0)  continue;
+			if (MuHadVetoEt[m] > 6.0)  continue;
+			nllip  += genw;
+			if(!isTightMuon(m1)       || !isTightElectron(e1))       continue;
 			nlliso += genw;
-			if(fabs(ElD0[e1]) > 0.01 || fabs(ElD0[e2]) > 0.01) continue;
-			nllip += genw;
+		}
+		else if (iselel) {
+			bool matched1 = false;
+			bool matched2 = false;
+			std::vector<genLep>::const_iterator it;
+			for (it = leps.begin(); it != leps.end(); it++) {
+				if (Util::GetDeltaR(it->eta, ElEta[e1], it->phi, ElPhi[e1]) < 0.1   // DeltaR < 0.1
+				   && fabs(it->pt/ElPt[e1]-1) < 0.15
+				   && it->type == 1) matched1 = true;
+				if (Util::GetDeltaR(it->eta, ElEta[e2], it->phi, ElPhi[e2]) < 0.1   // DeltaR < 0.1
+				   && fabs(it->pt/ElPt[e2]-1) < 0.15
+				   && it->type == 1) matched2 = true;
+			}
+			if (!matched1 || !matched2) continue;
+			nll20 += genw;
+			nllip  += genw;
 			if(!isTightElectron(e1)       || !isTightElectron(e2))       continue;
-			nllid += genw;
-			reco_leppts ->Fill(ElPt[e1], genw);
-			reco_leppts ->Fill(ElPt[e2], genw);
-			if(ElPt[e1] < 40. || ElPt[e2] < 40.) continue;
-			ntt40 += genw;
-			reco_lepetas->Fill(ElEta[e1], genw);
-			reco_lepetas->Fill(ElEta[e2], genw);
+			nlliso += genw;
 		}
-		// if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
-		// if(amcnlo && GenWeight < 0) ntt40--;
-		// else ntt40++;
-		reco_njethist->Fill(getNJets(), genw);
-		if(getNJets(30.) < 3) continue;
-		ntt3j += genw;
-		for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i, 30.)) reco_jetpts->Fill(JetPt[i], genw);
-		reco_hthist->Fill(getHT(), genw);
-		if(getHT() < 155) continue;
-		nttht += genw;
-		if(getNBTagsMed() < 1) continue;
+		if (getNBTagsMed() < 1) continue;
 		ntt1b += genw;
+		if (ismumu) nMuMutt1b += genw;
+		if (ismumu && getNJets(30.) > 2) nMuMutt3j += genw;
+		if (getNBTags()    < 2) continue;
+		ntt2bl += genw;
+		if (getNJets(30.)  < 4) continue;
+		ntt3j += genw;
+
+//		if(ismumu){
+//			if(MuPFIso[m1] > 0.05     || MuPFIso[m2] > 0.05)     continue;
+//			nlliso += genw;
+//			if(fabs(MuD0[m1]) > 0.005 || fabs(MuD0[m2]) > 0.005) continue;
+//			nllip += genw;
+//			if(!isTightMuon(m1)       || !isTightMuon(m2))       continue;
+//			nllid += genw;
+//			reco_leppts ->Fill(MuPt[m1], genw);
+//			reco_leppts ->Fill(MuPt[m2], genw);
+//			if(MuPt[m1] < 40. || MuPt[m2] < 40.) continue;
+//			ntt40 += genw;
+//			reco_lepetas->Fill(MuEta[m1], genw);
+//			reco_lepetas->Fill(MuEta[m2], genw);
+//		}
+//		else if(iselmu){
+//			if(MuPFIso[m] > 0.05     || ElPFIso[e] > 0.05)     continue;
+//			nlliso += genw;
+//			if(fabs(MuD0[m]) > 0.005 || fabs(ElD0[m]) > 0.01) continue;
+//			nllip += genw;
+//			if(!isTightMuon(m)       || !isTightElectron(e))       continue;
+//			nllid += genw;
+//			reco_leppts ->Fill(MuPt[m], genw);
+//			reco_leppts ->Fill(ElPt[e], genw);
+//			if(MuPt[m] < 40. || ElPt[e] < 40.) continue;
+//			ntt40 += genw;
+//			reco_lepetas->Fill(MuEta[m], genw);
+//			reco_lepetas->Fill(ElEta[e], genw);
+//		}
+//		if(iselel){
+//			if(ElPFIso[e1] > 0.05     || ElPFIso[e2] > 0.05)     continue;
+//			nlliso += genw;
+//			if(fabs(ElD0[e1]) > 0.01 || fabs(ElD0[e2]) > 0.01) continue;
+//			nllip += genw;
+//			if(!isTightElectron(e1)       || !isTightElectron(e2))       continue;
+//			nllid += genw;
+//			reco_leppts ->Fill(ElPt[e1], genw);
+//			reco_leppts ->Fill(ElPt[e2], genw);
+//			if(ElPt[e1] < 40. || ElPt[e2] < 40.) continue;
+//			ntt40 += genw;
+//			reco_lepetas->Fill(ElEta[e1], genw);
+//			reco_lepetas->Fill(ElEta[e2], genw);
+//		}
+//		// if( !( (ismumu && MuPt[m1] > 40. && MuPt[m2] > 40.) || (iselel && ElPt[e1] > 40. && ElPt[e2] > 40.) || (iselmu && ElPt[e] > 40. && MuPt[m] > 40.)) ) continue;
+//		// if(amcnlo && GenWeight < 0) ntt40--;
+//		// else ntt40++;
+//		reco_njethist->Fill(getNJets(), genw);
+//		if(getNJets(30.) < 3) continue;
+//		ntt3j += genw;
+//		for(size_t i = 0; i < NJets; ++i) if(isGoodJet(i, 30.)) reco_jetpts->Fill(JetPt[i], genw);
+//		reco_hthist->Fill(getHT(), genw);
+//		if(getHT() < 155) continue;
+//		nttht += genw;
+//		if(getNBTagsMed() < 1) continue;
+//		ntt1b += genw;
 		resetHypLeptons();
 	}
 	// for (int i = 0; i < fMMCutNames.size(); i++) {
@@ -25243,32 +25368,46 @@ void SSDLPlotter::genEfficiencies(const char * filestring, bool amcnlo, bool ttb
 	cout << endl << endl;
 	cout << "===============================  RECO   ===============================" << endl;
 	cout << "total generated     : " << ngenR     << "  -- " << 100.*ngenR  /(float)ngenR << " +- " << 100.*binoErr(ngenR  ,ngenR) << endl;
-	cout << "has SSLL pair > 20  : " << nll20     << "  -- " << 100.*nll20  /(float)ngenR << " +- " << 100.*binoErr(nll20  ,ngenR) << endl;
-	cout << ".. passes islation  : " << nlliso    << "  -- " << 100.*nlliso /(float)ngenR << " +- " << 100.*binoErr(nlliso ,ngenR) << endl;
-	cout << ".. passes IP        : " << nllip     << "  -- " << 100.*nllip  /(float)ngenR << " +- " << 100.*binoErr(nllip  ,ngenR) << endl;
-	cout << ".. passes full ID   : " << nllid     << "  -- " << 100.*nllid  /(float)ngenR << " +- " << 100.*binoErr(nllid  ,ngenR) << endl;
-	cout << "tight pair > 40     : " << ntt40     << "  -- " << 100.*ntt40  /(float)ngenR << " +- " << 100.*binoErr(ntt40  ,ngenR) << endl;
-	cout << "at least 3 jets     : " << ntt3j     << "  -- " << 100.*ntt3j  /(float)ngenR << " +- " << 100.*binoErr(ntt3j  ,ngenR) << endl;
-	cout << "ht > 155            : " << nttht     << "  -- " << 100.*nttht  /(float)ngenR << " +- " << 100.*binoErr(nttht  ,ngenR) << endl;
-	cout << "nbjets >= 1         : " << ntt1b     << "  -- " << 100.*ntt1b  /(float)ngenR << " +- " << 100.*binoErr(ntt1b  ,ngenR) << endl;
+	cout << "gen pair passes fid : "<< ndenominator <<"  -- "<< 100.*ndenominator/(float)ndenominator<<" +- "<<100.*binoErr(ndenominator,ndenominator)<<" ("<<100.*poisErr(ndenominator,ndenominator)<<")"<<endl;
+//	cout << "has SSLL pair > 20  : " << nll20     << "  -- " << 100.*nll20  /(float)ndenominator << " +- " << 100.*binoErr(nll20  ,ndenominator) << endl;
+	cout << ".. passes IP        : " << nllip     << "  -- " << 100.*nllip  /(float)ndenominator << " +- " << 100.*binoErr(nllip  ,ndenominator) << endl;
+	cout << ".. passes isolation : " << nlliso    << "  -- " << 100.*nlliso /(float)ndenominator << " +- " << 100.*binoErr(nlliso ,ndenominator) << endl;
+//	cout << ".. passes full ID   : " << nllid     << "  -- " << 100.*nllid  /(float)ndenominator << " +- " << 100.*binoErr(nllid  ,ndenominator) << endl;
+//	cout << "tight pair > 40     : " << ntt40     << "  -- " << 100.*ntt40  /(float)ndenominator << " +- " << 100.*binoErr(ntt40  ,ndenominator) << endl;
+	cout << "nbjets >= 1         : " << ntt1b     << "  -- " << 100.*ntt1b  /(float)ndenominator << " +- " << 100.*binoErr(ntt1b  ,ndenominator) << endl;
+	cout << "nloosebjets >= 2    : " << ntt2bl    << "  -- " << 100.*ntt2bl /(float)ndenominator << " +- " << 100.*binoErr(ntt2bl ,ndenominator) << endl;
+	cout << "at least 4 jets     : " << ntt3j     << "  -- " << 100.*ntt3j  /(float)ndenominator << " +- " << 100.*binoErr(ntt3j  ,ndenominator) << endl;
+//	cout << "ht > 155            : " << nttht     << "  -- " << 100.*nttht  /(float)ndenominator << " +- " << 100.*binoErr(nttht  ,ndenominator) << endl;
+	cout << endl << endl;
+	cout << "===============================  RECO MuMu   ==========================" << endl;
+	cout << "total generated     : " << ngenR     << "  -- " << 100.*ngenR  /(float)ngenR << " +- " << 100.*binoErr(ngenR  ,ngenR) << endl;
+	cout << "gen pair passes fid : "<< nMuMuPassFiducial <<"  -- "<< 100.*nMuMuPassFiducial/(float)nMuMuPassFiducial<<" +- "<<100.*binoErr(nMuMuPassFiducial,nMuMuPassFiducial)<<" ("<<100.*poisErr(nMuMuPassFiducial,nMuMuPassFiducial)<<")"<<endl;
+	cout << "has LL pair > 20    : " << nMuMull20     << "  -- " << 100.*nMuMull20  /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMull20  ,nMuMuPassFiducial) << endl;
+	cout << ".. passes IP        : " << nMuMullip     << "  -- " << 100.*nMuMullip  /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMullip  ,nMuMuPassFiducial) << endl;
+	cout << ".. passes islation  : " << nMuMulliso    << "  -- " << 100.*nMuMulliso /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMulliso ,nMuMuPassFiducial) << endl;
+//	cout << ".. passes full ID   : " << nMuMullid     << "  -- " << 100.*nMuMullid  /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMullid  ,nMuMuPassFiducial) << endl;
+//	cout << "tight pair > 40     : " << nMuMutt40     << "  -- " << 100.*nMuMutt40  /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMutt40  ,nMuMuPassFiducial) << endl;
+	cout << "nbjets >= 1         : " << nMuMutt1b     << "  -- " << 100.*nMuMutt1b  /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMutt1b  ,nMuMuPassFiducial) << endl;
+	cout << "at least 3 jets     : " << nMuMutt3j     << "  -- " << 100.*nMuMutt3j  /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMutt3j  ,nMuMuPassFiducial) << endl;
+//	cout << "ht > 155            : " << nMuMuttht     << "  -- " << 100.*nMuMuttht  /(float)nMuMuPassFiducial << " +- " << 100.*binoErr(nMuMuttht  ,nMuMuPassFiducial) << endl;
 	cout << endl << endl;
 
 //	nTot = n1LepFromW + n2LepFromW + n3LepFromW;
-	cout << "===============================  W -> .. =============================" << endl;
-	cout <
-	cout << "0 x W->e/mu/tau: " << n0LepFromW    << "  --  " << 100.*n0LepFromW   /(float)nTot << " +- " << 100.*binoErr(n0LepFromW   ,nTot) << " (" << 100.*poisErr(n0LepFromW   ,nTot) << ")" << endl;
-	cout << "1 x W->e/mu/tau: " << n1LepFromW    << "  --  " << 100.*n1LepFromW   /(float)nTot << " +- " << 100.*binoErr(n1LepFromW   ,nTot) << " (" << 100.*poisErr(n1LepFromW   ,nTot) << ")" << endl;
-	cout << "2 x W->e/mu/tau: " << n2LepFromW    << "  --  " << 100.*n2LepFromW   /(float)nTot << " +- " << 100.*binoErr(n2LepFromW   ,nTot) << " (" << 100.*poisErr(n2LepFromW   ,nTot) << ")" << endl;
-	cout << "3 x W->e/mu/tau: " << n3LepFromW    << "  --  " << 100.*n3LepFromW   /(float)nTot << " +- " << 100.*binoErr(n3LepFromW   ,nTot) << " (" << 100.*poisErr(n3LepFromW   ,nTot) << ")" << endl;
-	cout << "> 3 W->e/mu/tau: " << nMoreLepFromW << "  --  " << 100.*nMoreLepFromW/(float)nTot << " +- " << 100.*binoErr(nMoreLepFromW,nTot) << " (" << 100.*poisErr(nMoreLepFromW,nTot) << ")" << endl;
-
-	cout << "===============================  t -> W -> .. ========================" << endl;
-	cout <
-	cout << "0 x t->W->e/mu/tau: " << n0LepFromWFromTop    << "  --  " << 100.*n0LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n0LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n0LepFromWFromTop   ,nTot) << ")" << endl;
-	cout << "1 x t->W->e/mu/tau: " << n1LepFromWFromTop    << "  --  " << 100.*n1LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n1LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n1LepFromWFromTop   ,nTot) << ")" << endl;
-	cout << "2 x t->W->e/mu/tau: " << n2LepFromWFromTop    << "  --  " << 100.*n2LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n2LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n2LepFromWFromTop   ,nTot) << ")" << endl;
-	cout << "3 x t->W->e/mu/tau: " << n3LepFromWFromTop    << "  --  " << 100.*n3LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n3LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n3LepFromWFromTop   ,nTot) << ")" << endl;
-	cout << "> 3 t->W->e/mu/tau: " << nMoreLepFromWFromTop << "  --  " << 100.*nMoreLepFromWFromTop/(float)nTot << " +- " << 100.*binoErr(nMoreLepFromWFromTop,nTot) << " (" << 100.*poisErr(nMoreLepFromWFromTop,nTot) << ")" << endl;
+//	cout << "===============================  W -> .. =============================" << endl;
+//	cout <
+//	cout << "0 x W->e/mu/tau: " << n0LepFromW    << "  --  " << 100.*n0LepFromW   /(float)nTot << " +- " << 100.*binoErr(n0LepFromW   ,nTot) << " (" << 100.*poisErr(n0LepFromW   ,nTot) << ")" << endl;
+//	cout << "1 x W->e/mu/tau: " << n1LepFromW    << "  --  " << 100.*n1LepFromW   /(float)nTot << " +- " << 100.*binoErr(n1LepFromW   ,nTot) << " (" << 100.*poisErr(n1LepFromW   ,nTot) << ")" << endl;
+//	cout << "2 x W->e/mu/tau: " << n2LepFromW    << "  --  " << 100.*n2LepFromW   /(float)nTot << " +- " << 100.*binoErr(n2LepFromW   ,nTot) << " (" << 100.*poisErr(n2LepFromW   ,nTot) << ")" << endl;
+//	cout << "3 x W->e/mu/tau: " << n3LepFromW    << "  --  " << 100.*n3LepFromW   /(float)nTot << " +- " << 100.*binoErr(n3LepFromW   ,nTot) << " (" << 100.*poisErr(n3LepFromW   ,nTot) << ")" << endl;
+//	cout << "> 3 W->e/mu/tau: " << nMoreLepFromW << "  --  " << 100.*nMoreLepFromW/(float)nTot << " +- " << 100.*binoErr(nMoreLepFromW,nTot) << " (" << 100.*poisErr(nMoreLepFromW,nTot) << ")" << endl;
+//
+//	cout << "===============================  t -> W -> .. ========================" << endl;
+//	cout <
+//	cout << "0 x t->W->e/mu/tau: " << n0LepFromWFromTop    << "  --  " << 100.*n0LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n0LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n0LepFromWFromTop   ,nTot) << ")" << endl;
+//	cout << "1 x t->W->e/mu/tau: " << n1LepFromWFromTop    << "  --  " << 100.*n1LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n1LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n1LepFromWFromTop   ,nTot) << ")" << endl;
+//	cout << "2 x t->W->e/mu/tau: " << n2LepFromWFromTop    << "  --  " << 100.*n2LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n2LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n2LepFromWFromTop   ,nTot) << ")" << endl;
+//	cout << "3 x t->W->e/mu/tau: " << n3LepFromWFromTop    << "  --  " << 100.*n3LepFromWFromTop   /(float)nTot << " +- " << 100.*binoErr(n3LepFromWFromTop   ,nTot) << " (" << 100.*poisErr(n3LepFromWFromTop   ,nTot) << ")" << endl;
+//	cout << "> 3 t->W->e/mu/tau: " << nMoreLepFromWFromTop << "  --  " << 100.*nMoreLepFromWFromTop/(float)nTot << " +- " << 100.*binoErr(nMoreLepFromWFromTop,nTot) << " (" << 100.*poisErr(nMoreLepFromWFromTop,nTot) << ")" << endl;
 
 	file_->Close();
 
