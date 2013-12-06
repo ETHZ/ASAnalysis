@@ -48,6 +48,8 @@ def process(file,opt):
    else:
       print '*** FATAL: Couldn\'t get job id for',file
       sys.exit(-1)
+   log = file.replace('myScript','job').replace('.sh','.out')
+   elog = file.replace('myScript','job').replace('.sh','.err')
 
    print "Getting remote file name",
    sefile = getSeFile(file,id,opt)             
@@ -58,8 +60,7 @@ def process(file,opt):
 
    # 1. Remove remote files
    # Check existence of file
-   direct = sefile.replace('srm://t3se01.psi.ch:8443/srm/managerv2?SFN=','')
-   cmd = ['ls',direct]
+   cmd = ['srmls',sefile]
    err = subprocess.call(cmd)
    if err:
       print '*** File does not seem to exist:',err
@@ -80,8 +81,7 @@ def process(file,opt):
   
    # 2. Remove local file
    answ = 'y'
-   log = file.replace('myScript','job').replace('sh','out')
-   cmd = ['rm','-f','-v',log]
+   cmd = ['rm','-f','-v',log,elog]
    if opt.verb>1: print "CMD =",' '.join(cmd)
    if not opt.force: 
       answ = raw_input('Remove local output file? [y/n] ')
@@ -95,11 +95,12 @@ def process(file,opt):
       print "--> Removed local file"
 
    # 3. Resubmit
-   cmd = ['qsub','-q','all.q','-N',"RMG"+str(id)+'resub','-o',log,'-j','y',file,str(id)]
+   cmd = ['qsub','-q','all.q','-N',"RMG"+str(id)+'resub','-o',log,'-e',elog,file,str(id)]
    if opt.verb>1: print "CMD =",' '.join(cmd)
    if options.dryrun:
       return id
    err = subprocess.call(cmd)
+   return err
 
 if __name__ == '__main__' :
    usage = """%prog <myScript_1> [... <myScript_n>]
