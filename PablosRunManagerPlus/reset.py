@@ -54,12 +54,13 @@ def getListOfFiles(dir):
 def process(dir,opt):
    print "Getting remote directory name",
    sedir = getSeDir(dir,opt)             
-   print sedir
+   if not opt.quiet: print sedir
    
    print "Getting list of files to remove"
    list = getListOfFiles(sedir)
      
-   print "Files to remove:",list
+   if not opt.quiet: print "Files to remove:",list
+
    if opt.dryrun: return
 
    # 1. Remove remote files
@@ -115,6 +116,8 @@ if __name__ == '__main__' :
    parser = OptionParser(usage=usage)
    parser.add_option("-v","--verbose",dest="verb",metavar="LEVEL",default=0,
                      help="Turn on verbosity")
+   parser.add_option("-q","--quiet",dest="quiet",action="store_true",default=False,
+                     help="Turn off useless info")
    parser.add_option("-n","--dry-run",dest="dryrun",action="store_true",default=False,
                      help="Do not actually remove the files: just list them")
    parser.add_option("-f","--force",dest="force",action="store_true",default=False,
