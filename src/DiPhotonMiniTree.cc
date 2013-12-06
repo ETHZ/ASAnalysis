@@ -402,13 +402,16 @@ void DiPhotonMiniTree::Analyze(){
 
   bool passtrigger = TriggerSelection();
 
+  std::vector<std::pair<int,float> > ordering;
   // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
     fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
     fTR->PhoSigmaIetaIeta[i] = SieieRescale(fTR->PhoSigmaIetaIeta[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
     CorrPhoton(fTR,i);
+    ordering.push_back(std::pair<int,float>(i,fTR->PhoPt[i]));
   }
-
+  std::sort(ordering.begin(),ordering.end(),indexComparator);
+  
   photon_jet_matching.clear();
   for (int i=0; i<fTR->NPhotons; i++) photon_jet_matching.push_back(PFMatchPhotonToJet(i));
 
@@ -446,7 +449,7 @@ void DiPhotonMiniTree::Analyze(){
     }
     else {
       for (int i=0; i<fTR->NPhotons; i++){
-	passing.push_back(i);
+	passing.push_back(ordering.at(i).first);
       }
       for (int i=0; i<(int)(passing.size())-1; i++){
 	assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
