@@ -53,7 +53,7 @@ const int global_maxN_jets = 200;
 const int global_size_pfcandarrays = 30;
 
 const float global_dR_cut_acceptance = 0.45;
-const float global_mindR_photon_jet = 1.0;
+// const float global_mindR_photon_jet = 1.0; unused
 
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;

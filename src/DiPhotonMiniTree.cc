@@ -1562,13 +1562,13 @@ bool DiPhotonMiniTree::VetoJetPhotonOverlap(std::vector<int> &passing, std::vect
 
   bool out=false;
 
-  // minimum dR between photon and jet
-  for (size_t i=0; i<passing.size(); i++){
-    for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
-      float dR = Util::GetDeltaR(fTR->PhoEta[passing.at(i)],fTR->JEta[*it],fTR->PhoPhi[passing.at(i)],fTR->JPhi[*it]);
-      if (dR<global_mindR_photon_jet) {out=true; it=passing_jets.erase(it);} else it++;
-    }
-  }
+//  // minimum dR between photon and jet
+//  for (size_t i=0; i<passing.size(); i++){
+//    for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
+//      float dR = Util::GetDeltaR(fTR->PhoEta[passing.at(i)],fTR->JEta[*it],fTR->PhoPhi[passing.at(i)],fTR->JPhi[*it]);
+//      if (dR<global_mindR_photon_jet) {out=true; it=passing_jets.erase(it);} else it++;
+//    }
+//  }
 
   return out;
 
