@@ -55,6 +55,8 @@ const int global_size_pfcandarrays = 30;
 const float global_dR_cut_acceptance = 0.45;
 // const float global_mindR_photon_jet = 1.0; unused
 
+const bool islighttreerun = false; // set this to true to run the efficiency/unfolding light tree
+
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;
 
@@ -148,6 +150,7 @@ private:
   bool StandardEventSelection(TreeReader *fTR, std::vector<int> &passing, std::vector<int> &passing_jets);
   bool VetoJetPhotonOverlap(std::vector<int> &passing, std::vector<int> &passing_jets);
   void JetSelection(std::vector<int> &passing_jets);
+  void GenJetSelection(std::vector<int> &passing_gen_jets);
   bool TriggerSelection();
   int Count_part_isrfsr_gamma(TreeReader *fTR);
   void ResetVars();
@@ -186,6 +189,7 @@ private:
   void FillLead(int index, std::vector<int> passing_jets);
   void FillTrail(int index, std::vector<int> passing_jets);
   void FillJetsInfo(std::vector<int> passing, std::vector<int> passing_jets);
+  void FillGenJetsInfo(std::vector<int> passing_gen, std::vector<int> passing_gen_jets);
 
   //  double etaTransformation(float EtaParticle, float Zvertex);
   double phiNorm(float phi);
@@ -382,12 +386,19 @@ private:
   Float_t pholead_GEN_pt, photrail_GEN_pt;
   Float_t pholead_GEN_energy, photrail_GEN_energy;
 
-  Bool_t tree_reco_has_matched_gen_no_acceptance;
-  Bool_t tree_reco_has_matched_gen_within_acceptance;
-  Bool_t tree_reco_has_matched_gen_outside_acceptance;
+  Int_t n_GEN_jets;
+  Float_t jet_GEN_pt[global_maxN_jets];
+  Float_t jet_GEN_eta[global_maxN_jets];
+  Float_t jet_GEN_phi[global_maxN_jets];
+  Float_t jet_GEN_energy[global_maxN_jets];
+
+  Bool_t tree_gen_exists;
+  Bool_t tree_reco_exists;
   Bool_t tree_gen_in_acc;
-  Bool_t tree_gen_in_acc_has_matched_reco;
-  Bool_t tree_gen_in_acc_has_no_matched_reco;
+  Bool_t tree_reco_in_acc;
+  Bool_t tree_matched;
+  Bool_t tree_gen_matches_other_reco_pair;
+  Bool_t tree_reco_matches_other_gen_pair;
 
   Float_t pholead_test_rotatedphotoniso[50];
   Float_t pholead_test_rotatedwithcheckphotoniso[50];
