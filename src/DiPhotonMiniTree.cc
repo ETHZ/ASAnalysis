@@ -888,7 +888,7 @@ void DiPhotonMiniTree::Analyze(){
   }
   
 
-  { // lightweight tree for efficiency and unfolding studies
+  if (islighttreerun) { // lightweight tree for efficiency and unfolding studies
 
     ResetVars(); 
 
@@ -899,6 +899,8 @@ void DiPhotonMiniTree::Analyze(){
     for (int i=0; i<(int)(passing.size())-1; i++){
       assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
     }
+    passing = PhotonPreSelection(fTR,passing);
+    passing = PhotonSelection(fTR,passing);
     
     std::vector<int> passing_jets;
     for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(i);
@@ -906,7 +908,10 @@ void DiPhotonMiniTree::Analyze(){
       assert(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)]);
     }
     JetSelection(passing_jets);
-    
+
+    bool tree_reco_in_acc = passtrigger && StandardEventSelection(fTR,passing,passing_jets);
+    if (!tree_reco_in_acc) {passing.clear(); passing_jets.clear();}
+
     std::vector<int> passing_gen;
     {
       std::vector<std::pair<int,float> > ordering_gen;
@@ -925,12 +930,6 @@ void DiPhotonMiniTree::Analyze(){
     }
     GenJetSelection(passing_gen_jets);
 
-    passing = PhotonPreSelection(fTR,passing);
-    passing = PhotonSelection(fTR,passing);
-    bool tree_reco_in_acc = passtrigger && StandardEventSelection(fTR,passing,passing_jets);
-    if (!tree_reco_in_acc) {passing.clear(); passing_jets.clear();}
-
-
     for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
       bool pass=0;
       if ( (fabs(fTR->GenPhotonEta[*it])<1.4442) || (fabs(fTR->GenPhotonEta[*it])>1.566 && fabs(fTR->GenPhotonEta[*it])<2.5)  ) pass=1;
@@ -947,7 +946,7 @@ void DiPhotonMiniTree::Analyze(){
       if (!pass) it=passing_gen.erase(it); else it++;
     }
     for (size_t i=0; i<passing_gen.size(); i++){
-      for (vector<int>::iterator it = passing_jets.begin(); it != passing_jets.end(); ){
+      for (vector<int>::iterator it = passing_gen_jets.begin(); it != passing_gen_jets.end(); ){
 	bool match = false;
 	if (Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(i)],fTR->GenJetEta[*it],fTR->GenPhotonPhi[passing_gen.at(i)],fTR->GenJetPhi[*it])>0.3) match=true;
 	if (match) it=passing_gen_jets.erase(it); else it++;
