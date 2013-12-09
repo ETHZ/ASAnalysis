@@ -430,7 +430,7 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
-    if (islighttreerun) continue;
+    if (do_only_light_tree) continue;
 
     if (isstep2 && sel_cat!=0) continue;
 
@@ -602,7 +602,7 @@ void DiPhotonMiniTree::Analyze(){
 
   for (int sel_cat=0; sel_cat<18; sel_cat++){
 
-    if (islighttreerun) continue;
+    if (do_only_light_tree) continue;
 
     if (isstep2 && sel_cat!=0) continue;
 
@@ -888,7 +888,7 @@ void DiPhotonMiniTree::Analyze(){
   }
   
 
-  if (islighttreerun) { // lightweight tree for efficiency and unfolding studies
+  if (!isdata) { // lightweight tree for efficiency and unfolding studies
 
     ResetVars(); 
 
@@ -909,7 +909,7 @@ void DiPhotonMiniTree::Analyze(){
     }
     JetSelection(passing_jets);
 
-    bool tree_reco_in_acc = passtrigger && StandardEventSelection(fTR,passing,passing_jets);
+    tree_reco_in_acc = passtrigger && StandardEventSelection(fTR,passing,passing_jets);
     if (!tree_reco_in_acc) {passing.clear(); passing_jets.clear();}
 
     std::vector<int> passing_gen;
@@ -948,13 +948,13 @@ void DiPhotonMiniTree::Analyze(){
     for (size_t i=0; i<passing_gen.size(); i++){
       for (vector<int>::iterator it = passing_gen_jets.begin(); it != passing_gen_jets.end(); ){
 	bool match = false;
-	if (Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(i)],fTR->GenJetEta[*it],fTR->GenPhotonPhi[passing_gen.at(i)],fTR->GenJetPhi[*it])>0.3) match=true;
+	if (Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(i)],fTR->GenJetEta[*it],fTR->GenPhotonPhi[passing_gen.at(i)],fTR->GenJetPhi[*it])<0.3) match=true;
 	if (match) it=passing_gen_jets.erase(it); else it++;
       }
     }
     if (passing_gen.size()>0 && fTR->GenPhotonPt[passing_gen.at(0)]<=40) passing_gen.clear();
-    if (passing_gen.size()>=2 && Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])>global_dR_cut_acceptance) passing_gen.clear();
-    bool tree_gen_in_acc = (passing_gen.size()>=2);
+    if (passing_gen.size()>=2 && Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])<global_dR_cut_acceptance) passing_gen.clear();
+    tree_gen_in_acc = (passing_gen.size()>=2);
     if (!tree_gen_in_acc) {passing_gen.clear(); passing_gen_jets.clear();}
 
     tree_matched = false;
@@ -970,6 +970,10 @@ void DiPhotonMiniTree::Analyze(){
       FillLead(passing.at(0),passing_jets);
       FillTrail(passing.at(1),passing_jets);
       FillJetsInfo(passing,passing_jets);
+      TLorentzVector pho1(fTR->PhoPx[passing.at(0)],fTR->PhoPy[passing.at(0)],fTR->PhoPz[passing.at(0)],fTR->PhoEnergy[passing.at(0)]);
+      TLorentzVector pho2(fTR->PhoPx[passing.at(1)],fTR->PhoPy[passing.at(1)],fTR->PhoPz[passing.at(1)],fTR->PhoEnergy[passing.at(1)]);
+      float invmass = (pho1+pho2).M();
+      dipho_mgg_photon = invmass;
     }
 
     if (tree_gen_in_acc){
@@ -2771,14 +2775,9 @@ void DiPhotonMiniTree::ResetVars(){
   pholead_GEN_pt = -999;
   photrail_GEN_pt = -999;
 
-  tree_gen_exists = false;
-  tree_reco_exists = false;
   tree_gen_in_acc = false;
   tree_reco_in_acc = false;
   tree_matched = false;
-  tree_gen_matches_other_reco_pair = false;
-  tree_reco_matches_other_gen_pair = false;
-
 
   allphotonpfcand_count = 0;
   for (int i=0; i<global_maxN_photonpfcandidates; i++){
