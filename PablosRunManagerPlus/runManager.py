@@ -400,12 +400,21 @@ def join_directory(path,filelist,username) :
 	cleanpath=path;
 	if (cleanpath[len(cleanpath)-1]=="/") : # remove trailing slash
 		cleanpath=cleanpath[0:len(cleanpath)-2]
-	fusecommand="hadd -f /scratch/"+username+"/ntuples/"+cleanpath+".root > /dev/null "
+	fusecommand="hadd -f /scratch/"+username+"/ntuples/"+cleanpath+".root "
 	for item in filelist:
 		copycommand="dccp dcap://t3se01.psi.ch:22125/pnfs/psi.ch/cms/trivcat/store/user/"+username+"/"+item+" /scratch/"+username+"/ntuples/"+item
-		commands.getstatusoutput(copycommand)
+		(status,output) = commands.getstatusoutput(copycommand)
+                if status != 0: print '*** Error in dccp:',output
 		fusecommand=fusecommand+" /scratch/"+username+"/ntuples/"+item
-	print commands.getoutput(fusecommand)
+        # Make extra sure all files were transferred
+        lscommand = 'ls -1 '+localpath+' | wc -l'
+        (status,output) = commands.getstatusoutput(lscommand)
+        if status != 0: print '*** Error in ls:',output
+        else:
+                if int(output) != len(filelist):
+                        print '*** Error: not all files have been transferred! (',output,',',len(filelist),')'
+                        sys.exit(-1)
+	print commands.getoutput(fusecommand+' > /dev/null')
 	deletecommand="rm -r /scratch/"+username+"/ntuples/"+path+"/" 
 	print commands.getoutput(deletecommand)
 		
@@ -425,8 +434,9 @@ def check_directory(path,username) :
 			if(currentline.count(path) > 0) :
 				supposedtobejoined=True
 				listoffiles.append(currentline[currentline.find(path):])
-	## MARC don't join on /scratch if supposedtobejoined==True:
-	## MARC don't join on /scratch 	join_directory(path,listoffiles,username)
+	if supposedtobejoined==True:
+                print '\033[1;34m  --> Going to join',len(listoffiles),'files'
+		join_directory(path,listoffiles,username)
 
 
 ##################################################################################

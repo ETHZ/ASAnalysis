@@ -105,6 +105,8 @@ public:
   float pt2;
   float iso1;
   float iso2;
+  float dz1, dz2;
+  float d01, d02;
   bool  isConv1; // Photon conversion flag
   bool  isConv2;
   bool softMuon;
@@ -298,6 +300,7 @@ public:
   float mt2j;
   float ml1b;
   float ml2b;
+  float drl1b, drl2b;
   float mjl[jMax];
   float mjll[jMax];
   float st;
@@ -562,6 +565,10 @@ void nanoEvent::reset()
   l1l2dR=-99.9;
   pt1=0;
   pt2=0;
+  dz1=0;
+  dz2=0;
+  d01=0;
+  d02=0;
   iso1=0;
   iso2=0;
   isConv1 = false;
@@ -785,6 +792,8 @@ void nanoEvent::reset()
   mt2j=-9;
   ml1b=-9;
   ml2b=-9;
+  drl1b=-9;
+  drl2b=-9;
   st=0;
   MR = -9;
   MRT = -9;
@@ -1425,11 +1434,13 @@ const bool JZBAnalysis::passFilters( int& bits ) {
   // Check event filters
   bits = 0;
   if ( !fTR->HBHENoiseFilterResult ) bits |= 1;
+  if ( fTR->manystripclus53X || fTR->toomanystripclus53X || fTR->logErrorTooManyClusters ) bits |= (1<<1);
   if ( !fTR->hcalLaserEventFilter )  bits |= (1<<2);
   if ( !fTR->EcalDeadCellTriggerPrimitiveFilter ) bits |= (1<<3);
   if ( !fTR->trackingFailureFilter ) bits |= (1<<4);
   if ( !fTR->eeBadScFilter )         bits |= (1<<5);
   if ( !fTR->CSCTightHaloID )        bits |= (1<<6);
+  
 
   return (bits==0);
 
@@ -1625,6 +1636,10 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("l1l2dR",&nEvent.l1l2dR,"l1l2dR/F");
   myTree->Branch("iso1",&nEvent.iso1,"iso1/F");
   myTree->Branch("iso2",&nEvent.iso2,"iso2/F");
+  myTree->Branch("dz1",&nEvent.dz1,"dz1/F");
+  myTree->Branch("dz2",&nEvent.dz2,"dz2/F");
+  myTree->Branch("d01",&nEvent.d01,"d01/F");
+  myTree->Branch("d02",&nEvent.d02,"d02/F");
   myTree->Branch("softMuon",&nEvent.softMuon,"softMuon/O");
   myTree->Branch("softMuonMC",&nEvent.softMuonMC,"softMuonMC/O");
   
@@ -1825,6 +1840,8 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("mt2j",&nEvent.mt2j,"mt2j/F");
   myTree->Branch("ml1b",&nEvent.ml1b,"ml1b/F");
   myTree->Branch("ml2b",&nEvent.ml2b,"ml2b/F");
+  myTree->Branch("drl1b",&nEvent.drl1b,"drl1b/F");
+  myTree->Branch("drl2b",&nEvent.drl2b,"drl2b/F");
 
   myTree->Branch("MR",   &nEvent.MR,   "MR/F");
   myTree->Branch("MRT",  &nEvent.MRT,  "MRT/F");
@@ -2630,6 +2647,8 @@ void JZBAnalysis::Analyze() {
           tmpLepton.charge = tmpCharge;
           tmpLepton.index = muIndex;
           tmpLepton.iso   = muonIso;
+          tmpLepton.dz    = fTR->MuDzPV[muIndex];
+          tmpLepton.d0    = fTR->MuD0PV[muIndex];
           tmpLepton.type = 1;
           tmpLepton.genPt = 0.;
           tmpLepton.ElCInfoIsGsfCtfCons=true;
@@ -2660,6 +2679,8 @@ void JZBAnalysis::Analyze() {
           tmpLepton.charge = tmpCharge;
           tmpLepton.index = elIndex;
           tmpLepton.iso = pfIso;
+          tmpLepton.dz    = fTR->ElDzPV[elIndex];
+          tmpLepton.d0    = fTR->ElD0PV[elIndex];
           tmpLepton.type = 0;
           tmpLepton.genPt = 0.;
           tmpLepton.ElCInfoIsGsfCtfCons=fTR->ElCInfoIsGsfCtfCons[elIndex];
@@ -2786,7 +2807,9 @@ void JZBAnalysis::Analyze() {
     nEvent.iso1 = sortedGoodLeptons[PosLepton1].iso;
     nEvent.phi1 = sortedGoodLeptons[PosLepton1].p.Phi();
     nEvent.ch1 = sortedGoodLeptons[PosLepton1].charge;
-    nEvent.id1 = sortedGoodLeptons[PosLepton1].type; //??????
+    nEvent.dz1 = sortedGoodLeptons[PosLepton1].dz;
+    nEvent.d01 = sortedGoodLeptons[PosLepton1].d0;
+    nEvent.id1 = sortedGoodLeptons[PosLepton1].type;
     nEvent.chid1 = (sortedGoodLeptons[PosLepton1].type+1)*sortedGoodLeptons[PosLepton1].charge;
     nEvent.rho = fTR->RhoForIso; 
     //    nEvent.isConv1 = IsConvertedPhoton(sortedGoodLeptons[PosLepton1].index);
@@ -2796,7 +2819,9 @@ void JZBAnalysis::Analyze() {
     nEvent.iso2 = sortedGoodLeptons[PosLepton2].iso;
     nEvent.phi2 = sortedGoodLeptons[PosLepton2].p.Phi();
     nEvent.ch2 = sortedGoodLeptons[PosLepton2].charge;
-    nEvent.id2 = sortedGoodLeptons[PosLepton2].type; //??????
+    nEvent.id2 = sortedGoodLeptons[PosLepton2].type;
+    nEvent.dz2 = sortedGoodLeptons[PosLepton2].dz;
+    nEvent.d02 = sortedGoodLeptons[PosLepton2].d0;
     nEvent.chid2 = (sortedGoodLeptons[PosLepton2].type+1)*sortedGoodLeptons[PosLepton2].charge;
     //    nEvent.isConv2 = IsConvertedPhoton(sortedGoodLeptons[PosLepton2].index);
     
@@ -3164,6 +3189,12 @@ void JZBAnalysis::Analyze() {
           float ml2b_cand=(aJet+sortedGoodLeptons[PosLepton2].p).M();
           if(nEvent.ml2b<0) nEvent.ml2b=ml2b_cand;
           else if(ml2b_cand<nEvent.ml2b) nEvent.ml2b=ml2b_cand;
+
+          // Delta-R between leading b-jet and leptons
+          float drl1b_cand = aJet.DeltaR(sortedGoodLeptons[PosLepton1].p);
+          float drl2b_cand = aJet.DeltaR(sortedGoodLeptons[PosLepton2].p);
+          if ( nEvent.drl1b<0 || nEvent.drl1b>drl1b_cand ) nEvent.drl1b = drl1b_cand;
+          if ( nEvent.drl2b<0 || nEvent.drl2b>drl2b_cand ) nEvent.drl2b = drl2b_cand;
         }
 
 	if(nEvent.bTagProbCSVBP[nEvent.pfJetGoodNum40] > 0.244) nEvent.pfJetGoodNumBtag40CSVBPLoose++; 
@@ -3251,7 +3282,6 @@ void JZBAnalysis::Analyze() {
     nEvent.pfJetGoodMlBtag[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).M();
     nEvent.pfJetGoodPtlBtag[jcounter] = (sortedGoodLeptons[PosLepton1].p+sortedGoodLeptons[PosLepton2].p+j1).Pt();
     nEvent.pfJetGoodMBtag[jcounter] = (j1+leadingBJet).M();
-
   }
 
   if(fDataType_== "mc") {
