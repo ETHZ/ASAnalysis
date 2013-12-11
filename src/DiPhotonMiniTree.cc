@@ -291,6 +291,7 @@ void DiPhotonMiniTree::Begin(){
   LightTreeGenReco->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
   LightTreeGenReco->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
   LightTreeGenReco->Branch("event_weight",&event_weight,"event_weight/F");
+  LightTreeGenReco->Branch("dataset_id",&mydataset_id,"dataset_id/I");
 
   LightTreeGenReco->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
   LightTreeGenReco->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
