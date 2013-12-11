@@ -55,7 +55,7 @@ const int global_size_pfcandarrays = 30;
 const float global_dR_cut_acceptance = 0.45;
 // const float global_mindR_photon_jet = 1.0; unused
 
-const bool do_only_light_tree = false; // set this to true to run the efficiency/unfolding light tree
+const bool do_only_light_tree = false; // set this to true to run only the efficiency/unfolding light tree
 
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;
@@ -114,7 +114,7 @@ typedef struct {
 
 class DiPhotonMiniTree : public UserAnalysisBase{
 public:
-  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid=0, int year=-1);
+  DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid=0, int year=-1, int dataset_id=0);
   virtual ~DiPhotonMiniTree();
 
   void Begin();
@@ -127,6 +127,7 @@ private:
   float global_minthrpfphotoncandEB;
   float global_minthrpfphotoncandEE;
 
+  int dataset_id;
   int year;
   bool global_is2011;
   bool global_is2012;
@@ -377,6 +378,7 @@ private:
   Int_t event_run;
   Int_t event_lumi;
   UInt_t event_number;
+  Int_t mydataset_id;
 
   Float_t pholead_GEN_eta, photrail_GEN_eta;
   Float_t pholead_GEN_phi, photrail_GEN_phi;

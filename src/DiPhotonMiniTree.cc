@@ -7,7 +7,7 @@
 
 using namespace std;
 
-DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE, bool _isstep2, TString _input_filename, UInt_t _uuid, int _year) : UserAnalysisBase(tr), fDataType_(dataType), AddWeight(aw), kfactors(_kfac), global_minthrpfphotoncandEB(_minthrpfphotoncandEB), global_minthrpfphotoncandEE(_minthrpfphotoncandEE), isstep2(_isstep2), input_filename(_input_filename), uuid(_uuid), year(_year){
+DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t aw, Float_t* _kfac, Float_t _minthrpfphotoncandEB, Float_t _minthrpfphotoncandEE, bool _isstep2, TString _input_filename, UInt_t _uuid, int _year, int dataset_id_) : UserAnalysisBase(tr), fDataType_(dataType), AddWeight(aw), kfactors(_kfac), global_minthrpfphotoncandEB(_minthrpfphotoncandEB), global_minthrpfphotoncandEE(_minthrpfphotoncandEE), isstep2(_isstep2), input_filename(_input_filename), uuid(_uuid), year(_year), dataset_id(dataset_id_){
   Util::SetStyle();	
   if (fDataType_ == "mc") isdata=false;
   else if (fDataType_ == "data") isdata=true; 
@@ -25,6 +25,9 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
   global_is2012=false;
   if (year==2011) global_is2011=true;
   if (year==2012) global_is2012=true;
+
+  if (isdata) assert(dataset_id==0);
+  else assert(dataset_id!=0);
 
 }
 
@@ -81,6 +84,8 @@ void DiPhotonMiniTree::Begin(){
   if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_run",&event_run,"event_run/I");
   if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
   if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_number",&event_number,"event_number/i");
+  OutputTree[i]->Branch("dataset_id",&mydataset_id,"dataset_id/I");
+  if (isdata && !isstep2) OutputExtraTree[i]->Branch("dataset_id",&mydataset_id,"dataset_id/I");
 
   OutputTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
   if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
@@ -356,6 +361,7 @@ void DiPhotonMiniTree::Analyze(){
   event_run = fTR->Run;
   event_lumi = fTR->LumiSection;
   event_number = fTR->Event;
+  mydataset_id = dataset_id;
 
   if (!isdata) {
     fHNumPU->Fill(fTR->PUnumInteractions,weight);
@@ -888,7 +894,7 @@ void DiPhotonMiniTree::Analyze(){
   }
   
 
-  if (!isdata) { // lightweight tree for efficiency and unfolding studies
+  if (!isdata && dataset_id<0) { // lightweight tree for efficiency and unfolding studies
 
     ResetVars(); 
 
