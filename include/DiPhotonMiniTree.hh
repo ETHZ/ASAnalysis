@@ -112,6 +112,18 @@ typedef struct {
   float jetpt_m_frac_PhoComp;
 } jetmatching_struct;
 
+typedef struct {
+  float meta;
+  float Meta;
+  float mr9;
+  float Mr9;
+  int mrun;
+  int Mrun;
+  float val;
+  float err;
+} struct_escale_item;
+
+
 class DiPhotonMiniTree : public UserAnalysisBase{
 public:
   DiPhotonMiniTree(TreeReader *tr = NULL, std::string dataType="data", Float_t aw=-999, Float_t* _kfac=NULL, Float_t _minthrpfphotoncandEB=0, Float_t _minthrpfphotoncandEE=0, bool _isstep2 = false, TString _input_filename = "", UInt_t _uuid=0, int year=-1, int dataset_id=0);
@@ -186,6 +198,11 @@ private:
   float R9Rescale(float r9, bool isbarrel);
   float CalculateSCArea(TreeReader *fTR, int scindex);
   float GetPUEnergy(TreeReader *fTR, TString mode, float eta);
+
+  std::vector<struct_escale_item> energyScaleDatabase;
+  float EnergyScaleOffset(float eta, float r9, int run);
+  void InitEnergyScaleDatabase();
+  void InsertEnergyScaleItem(float meta, float Meta, float mr9, float Mr9, int mrun, int Mrun, float val, float err);
 
   void FillLead(int index, std::vector<int> passing_jets);
   void FillTrail(int index, std::vector<int> passing_jets);
