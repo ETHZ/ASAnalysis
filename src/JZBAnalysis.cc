@@ -4,6 +4,7 @@
 #include "SolveTTbarNew.hh"
 #include "SFlightFuncs_EPS2013.hh"
 #include "JZBAnalysis.hh"
+#include "rochcor2012v2.h"
 #include "TH1.h"
 #include <time.h>
 #include <TRandom.h>
@@ -27,6 +28,7 @@ enum JZBTYPE { jzbtype_min, TYPEONECORRPFMETJZB = jzbtype_min, PFJZB, RECOILJZB,
 string sjzbversion="$Revision: 1.70.2.132 $";
 string sjzbinfo="";
 TRandom3 *r;
+rochcor2012 *rmcor;
 TF1 *L5corr_bJ;
 TF1 *L5corr_qJ;
 TF1 *L5corr_cJ;
@@ -103,6 +105,9 @@ public:
   float l1l2dR;
   float pt1; // leading leptons
   float pt2;
+  float Ropt1; // Rochester corrected lepton
+  float Ropt2; // Rochester corrected lepton
+  float Romll; // Rochester corrected di-lepton mass
   float iso1;
   float iso2;
   float dz1, dz2;
@@ -539,6 +544,7 @@ void nanoEvent::reset()
 {
 
   mll=0; // di-lepton system
+  Romll=0; 
   minc=0;
   pt=0;
   phi=0;
@@ -565,6 +571,8 @@ void nanoEvent::reset()
   l1l2dR=-99.9;
   pt1=0;
   pt2=0;
+  Ropt1=0;
+  Ropt2=0;
   dz1=0;
   dz2=0;
   d01=0;
@@ -1426,6 +1434,10 @@ JZBAnalysis::JZBAnalysis(TreeReader *tr, std::string dataType, std::string globa
   fBTagSFup = new BTagSF();
   fBTagSFdn = new BTagSF();
   fRand3Normal = new TRandom3(10);
+  
+  //To get the central value of the momentum correction
+  rmcor = new rochcor2012(); // make the pointer of rochcor2012 class
+
 }
 
 //________________________________________________________________________________________
@@ -1626,6 +1638,7 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("NTupleNumber",&fFile,"NTupleNumber/I");
   myTree->Branch("is_data",&nEvent.is_data,"is_data/O");
   myTree->Branch("mll",&nEvent.mll,"mll/F");
+  myTree->Branch("Romll",&nEvent.Romll,"Romll/F");
   myTree->Branch("minc",&nEvent.minc,"minc/F");
   myTree->Branch("pt",&nEvent.pt,"pt/F");
   myTree->Branch("phi",&nEvent.phi,"phi/F");
@@ -1633,6 +1646,8 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("E",&nEvent.E,"E/F");
   myTree->Branch("pt1",&nEvent.pt1,"pt1/F");
   myTree->Branch("pt2",&nEvent.pt2,"pt2/F");
+  myTree->Branch("Ropt1",&nEvent.Ropt1,"Ropt1/F");
+  myTree->Branch("Ropt2",&nEvent.Ropt2,"Ropt2/F");
   myTree->Branch("l1l2dR",&nEvent.l1l2dR,"l1l2dR/F");
   myTree->Branch("iso1",&nEvent.iso1,"iso1/F");
   myTree->Branch("iso2",&nEvent.iso2,"iso2/F");
@@ -2812,6 +2827,8 @@ void JZBAnalysis::Analyze() {
     nEvent.id1 = sortedGoodLeptons[PosLepton1].type;
     nEvent.chid1 = (sortedGoodLeptons[PosLepton1].type+1)*sortedGoodLeptons[PosLepton1].charge;
     nEvent.rho = fTR->RhoForIso; 
+    nEvent.Ropt1 = nEvent.pt1;
+      
     //    nEvent.isConv1 = IsConvertedPhoton(sortedGoodLeptons[PosLepton1].index);
       
     nEvent.eta2 = sortedGoodLeptons[PosLepton2].p.Eta();
@@ -2824,9 +2841,10 @@ void JZBAnalysis::Analyze() {
     nEvent.d02 = sortedGoodLeptons[PosLepton2].d0;
     nEvent.chid2 = (sortedGoodLeptons[PosLepton2].type+1)*sortedGoodLeptons[PosLepton2].charge;
     //    nEvent.isConv2 = IsConvertedPhoton(sortedGoodLeptons[PosLepton2].index);
+    nEvent.Ropt2 = nEvent.pt2;
+
     
     nEvent.l1l2dR=sortedGoodLeptons[PosLepton1].p.DeltaR(sortedGoodLeptons[PosLepton2].p);
-    
     nEvent.minc=sortedGoodLeptons[PosLepton2].p.Pt()+sortedGoodLeptons[PosLepton1].p.Pt();
     nEvent.mll=(sortedGoodLeptons[PosLepton2].p+sortedGoodLeptons[PosLepton1].p).M();
     nEvent.phi=(sortedGoodLeptons[PosLepton2].p+sortedGoodLeptons[PosLepton1].p).Phi();
@@ -2838,6 +2856,22 @@ void JZBAnalysis::Analyze() {
     nEvent.ElCInfoIsGsfCtfCons=sortedGoodLeptons[PosLepton2].ElCInfoIsGsfCtfCons&&sortedGoodLeptons[PosLepton1].ElCInfoIsGsfCtfCons;
     nEvent.ElCInfoIsGsfCtfScPixCons=sortedGoodLeptons[PosLepton2].ElCInfoIsGsfCtfScPixCons&&sortedGoodLeptons[PosLepton1].ElCInfoIsGsfCtfScPixCons;
     nEvent.ElCInfoIsGsfScPixCons=sortedGoodLeptons[PosLepton2].ElCInfoIsGsfScPixCons&&sortedGoodLeptons[PosLepton1].ElCInfoIsGsfScPixCons;
+
+    TLorentzVector Rol1(sortedGoodLeptons[PosLepton1].p);
+    float qter=0.0; // don't need the muon momentum uncertainty requested by H->ZZ group so setting this to zero
+    if(nEvent.id1==1) {
+      //need to apply rochester corrections
+      rmcor->momcor_data(Rol1, (float)nEvent.ch1, 1, qter); // last argument is run option, either 0=2012ABC, or 1=2012D. testing this on D.
+      nEvent.Ropt1 = Rol1.Pt();
+    }
+    TLorentzVector Rol2(sortedGoodLeptons[PosLepton2].p);
+    if(nEvent.id2==1) {
+      //need to apply rochester corrections
+      rmcor->momcor_data(Rol2, (float)nEvent.ch2, 1, qter); // last argument is run option, either 0=2012ABC, or 1=2012D. testing this on D.
+      nEvent.Ropt2 = Rol2.Pt();
+    }
+
+    nEvent.Romll=(Rol1+Rol2).M();
 
     float lepweightErr;
     float lepweight=GetLeptonWeight(nEvent.id1,nEvent.pt1,nEvent.eta1,nEvent.id2,nEvent.pt2,nEvent.eta2,lepweightErr);
