@@ -895,7 +895,7 @@ void DiPhotonMiniTree::Analyze(){
   }
   
 
-  if (!isdata && dataset_id<0) { // lightweight tree for efficiency and unfolding studies
+  if (!isdata) { // lightweight tree for efficiency and unfolding studies
 
     ResetVars(); 
 
