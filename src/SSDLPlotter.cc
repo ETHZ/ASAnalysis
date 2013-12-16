@@ -17815,10 +17815,10 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	leg->AddEntry(h_obs,        "Observed","p");
 	leg->AddEntry(h_pred_fake , "Fakes","f");
 	leg->AddEntry(h_pred_chmid, "Charge MisID","f");
-	leg->AddEntry(h_pred_mc,    "Irreducible (MC)","f");
-	leg->AddEntry(h_pred_wz,    "WZ Production","f");
-	leg->AddEntry(h_pred_ttz,   "ttZ Production","f");
-	leg->AddEntry(h_pred_ttw,   "ttW Production","f");
+	leg->AddEntry(h_pred_mc,    "Rare SM","f");
+	leg->AddEntry(h_pred_wz,    "WZ","f");
+	leg->AddEntry(h_pred_ttz,   "t#bar{t} + Z","f");
+	leg->AddEntry(h_pred_ttw,   "t#bar{t} + W","f");
 	//leg->AddEntry(h_pred_tot,   "Total Uncertainty","f");
 	leg->SetFillStyle(0);
 	leg->SetTextFont(42);
