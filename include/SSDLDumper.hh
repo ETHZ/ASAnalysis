@@ -579,6 +579,7 @@ public:
 			if( (sname.Contains("DYJets")) ||
 			    (sname.Contains("GJets"))  ||
 			    (sname) == "WJets"  ||
+				(sname) == "WJets1" ||
 				(sname) == "WJets2" ||
 				(sname) == "WbbJets" )   return 3;
 			if( (sname) == "HWW"    ||
