@@ -13804,6 +13804,58 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	makeSystPlot("Syst_Bg_Lept"    + chargeString, "Lepton Scale", h_bg_nom, h_bg_lu, h_bg_ld);
 	makeSystPlot("Syst_Bg_JER"     + chargeString, "JER",          h_bg_nom, h_bg_js);
 	makeSystPlot("Syst_Bg_Pileup"  + chargeString, "Pileup",       h_bg_nom, h_bg_pu, h_bg_pd);
+
+	TString syst_table     = outputdir + "SystTable" + chargeString + ".tex";
+	fOUTSTREAM.open(syst_table.Data(), ios::trunc);
+	fOUTSTREAM << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	fOUTSTREAM << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM << "\\begin{tabular}{l|r@{$\\,\\pm\\,$}lr@{$\\,\\pm\\,$}lr@{$\\,\\pm\\,$}l}" << endl;
+	fOUTSTREAM << "\\hline\\hline" << endl;
+	fOUTSTREAM << "& \\multicolumn{2}{c}{$\\mu\\mu$} & \\multicolumn{2}{c}{$e\\mu$} & \\multicolumn{2}{c}{$ee$} \\\\" << endl;
+	fOUTSTREAM << "\\hline" << endl;
+	fOUTSTREAM << Form("Nominal           & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["Normal"].ttw_mm, ttwzpreds["Normal"].ttw_err_mm,
+					ttwzpreds["Normal"].ttw_em, ttwzpreds["Normal"].ttw_err_em,
+					ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttw_err_ee);
+	fOUTSTREAM << Form("JES up            & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["JetUp"].ttw_mm, ttwzpreds["JetUp"].ttw_err_mm,
+					ttwzpreds["JetUp"].ttw_em, ttwzpreds["JetUp"].ttw_err_em,
+					ttwzpreds["JetUp"].ttw_ee, ttwzpreds["JetUp"].ttw_err_ee);
+	fOUTSTREAM << Form("JES down          & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["JetDown"].ttw_mm, ttwzpreds["JetDown"].ttw_err_mm,
+					ttwzpreds["JetDown"].ttw_em, ttwzpreds["JetDown"].ttw_err_em,
+					ttwzpreds["JetDown"].ttw_ee, ttwzpreds["JetDown"].ttw_err_ee);
+	fOUTSTREAM << Form("JER               & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["JetSmear"].ttw_mm, ttwzpreds["JetSmear"].ttw_err_mm,
+					ttwzpreds["JetSmear"].ttw_em, ttwzpreds["JetSmear"].ttw_err_em,
+					ttwzpreds["JetSmear"].ttw_ee, ttwzpreds["JetSmear"].ttw_err_ee);
+	fOUTSTREAM << Form("b-tag up          & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["BUp"].ttw_mm, ttwzpreds["BUp"].ttw_err_mm,
+					ttwzpreds["BUp"].ttw_em, ttwzpreds["BUp"].ttw_err_em,
+					ttwzpreds["BUp"].ttw_ee, ttwzpreds["BUp"].ttw_err_ee);
+	fOUTSTREAM << Form("b-tag down        & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["BDown"].ttw_mm, ttwzpreds["BDown"].ttw_err_mm,
+					ttwzpreds["BDown"].ttw_em, ttwzpreds["BDown"].ttw_err_em,
+					ttwzpreds["BDown"].ttw_ee, ttwzpreds["BDown"].ttw_err_ee);
+	fOUTSTREAM << Form("Lepton scale up   & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["LepUp"].ttw_mm, ttwzpreds["LepUp"].ttw_err_mm,
+					ttwzpreds["LepUp"].ttw_em, ttwzpreds["LepUp"].ttw_err_em,
+					ttwzpreds["LepUp"].ttw_ee, ttwzpreds["LepUp"].ttw_err_ee);
+	fOUTSTREAM << Form("Lepton scale down & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["LepDown"].ttw_mm, ttwzpreds["LepDown"].ttw_err_mm,
+					ttwzpreds["LepDown"].ttw_em, ttwzpreds["LepDown"].ttw_err_em,
+					ttwzpreds["LepDown"].ttw_ee, ttwzpreds["LepDown"].ttw_err_ee);
+	fOUTSTREAM << Form("Pileup up         & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["PileupUp"].ttw_mm, ttwzpreds["PileupUp"].ttw_err_mm,
+					ttwzpreds["PileupUp"].ttw_em, ttwzpreds["PileupUp"].ttw_err_em,
+					ttwzpreds["PileupUp"].ttw_ee, ttwzpreds["PileupUp"].ttw_err_ee);
+	fOUTSTREAM << Form("Pileup down       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
+					ttwzpreds["PileupDown"].ttw_mm, ttwzpreds["PileupDown"].ttw_err_mm,
+					ttwzpreds["PileupDown"].ttw_em, ttwzpreds["PileupDown"].ttw_err_em,
+					ttwzpreds["PileupDown"].ttw_ee, ttwzpreds["PileupDown"].ttw_err_ee);
+	fOUTSTREAM << "\\hline" << endl;
+	fOUTSTREAM << "\\end{tabular}" << endl;
+	fOUTSTREAM.close();
 	
 //	return ttwzpreds["Normal"];
 	return ttwzpreds;
