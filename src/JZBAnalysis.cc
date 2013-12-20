@@ -14,7 +14,7 @@
 #include <cstdlib>
 using namespace std;
 
-bool UseForZPlusB=true;
+bool UseForZPlusB=false;
 
 
 
@@ -115,7 +115,6 @@ public:
   bool  isConv1; // Photon conversion flag
   bool  isConv2;
   bool softMuon;
-  bool softMuonMC;
 
   int NgenLeps;
   int NgenZs;
@@ -582,7 +581,6 @@ void nanoEvent::reset()
   isConv1 = false;
   isConv2 = false;
   softMuon = false;
-  softMuonMC = false;
   
   SL_pt=0;
   SL_eta=0;
@@ -1656,7 +1654,6 @@ void JZBAnalysis::Begin(TFile *f){
   myTree->Branch("d01",&nEvent.d01,"d01/F");
   myTree->Branch("d02",&nEvent.d02,"d02/F");
   myTree->Branch("softMuon",&nEvent.softMuon,"softMuon/O");
-  myTree->Branch("softMuonMC",&nEvent.softMuonMC,"softMuonMC/O");
   
   myTree->Branch("lheV_pt",&nEvent.lheV_pt,"lheV_pt/F");
   myTree->Branch("lheV_mll",&nEvent.lheV_mll,"lheV_mll/F");
@@ -2885,17 +2882,6 @@ void JZBAnalysis::Analyze() {
     }
     nEvent.softMuon = softMuon;
 
-    if (isMC) {
-      bool softMuonMC = false;
-      for(int muIndex=0;muIndex<fTR->NMus;muIndex++) {
-	if(fabs(fTR->MuGenMID[muIndex]) == 24 && fabs(fTR->MuGenGMID[muIndex]) == 5) {
-	  softMuonMC = true;
-	  break;
-	}
-      }
-      nEvent.softMuonMC = softMuonMC;
-    }
-    
     if (isMC) {
       //      nEvent.weight=nEvent.weight*lepweight;
       nEvent.weightEffDown=nEvent.weight*(lepweight-lepweightErr);
