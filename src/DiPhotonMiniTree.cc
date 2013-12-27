@@ -16,6 +16,7 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
     assert(1==0);
   }
   randomgen = new TRandom3(0);
+  randomgen_forEsmearing = new TRandom3(0);
 
   global_linkbyrechit_enlargement = 0.25; // xtal_size_eff = (1+global_linkbyrechit_enlargement)*xtal_size
 
@@ -33,6 +34,7 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
 
 DiPhotonMiniTree::~DiPhotonMiniTree(){
   delete randomgen;
+  delete randomgen_forEsmearing;
 }
 
 void DiPhotonMiniTree::Begin(){
@@ -342,7 +344,7 @@ void DiPhotonMiniTree::Begin(){
 	
   cout << "Trees and histos created" << endl;
 
-  InitEnergyScaleDatabase();
+  InitEnergyScalesAndSmearingsDatabase();
 
 }
 
@@ -418,11 +420,15 @@ void DiPhotonMiniTree::Analyze(){
   bool passtrigger = TriggerSelection();
 
   std::vector<std::pair<int,float> > ordering;
+  std::vector<float> unscaled_r9;
+  std::vector<float> unscaled_sieie;
   // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
+    unscaled_r9.push_back(fTR->PhoR9[i]);
+    unscaled_sieie.push_back(fTR->PhoSigmaIetaIeta[i]);
     fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
     fTR->PhoSigmaIetaIeta[i] = SieieRescale(fTR->PhoSigmaIetaIeta[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
-    CorrPhoton(fTR,i);
+    CorrPhoton(fTR,i,&unscaled_r9);
     ordering.push_back(std::pair<int,float>(i,fTR->PhoPt[i]));
   }
   std::sort(ordering.begin(),ordering.end(),indexComparator);
@@ -1225,9 +1231,20 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 };
 
 
-void DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i){
+void DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i, std::vector<float> *unscaled_r9){
   float corr = fTR->PhoRegrEnergy[i]/fTR->PhoEnergy[i];
   if (isdata) corr*=EnergyScaleOffset(fTR->PhoSCEta[i],fTR->PhoR9[i],fTR->Run);
+  if (!isdata) {
+    float r9forsmearing = (year==2012) ? unscaled_r9->at(i) : fTR->PhoR9[i];
+    float width = EnergySmearingCorrection(fTR->PhoSCEta[i],r9forsmearing,fTR->Run)/100;
+    // implements deterministic smearing
+    UInt_t seedBase = (UInt_t) fTR->Event + (UInt_t) fTR->Run + (UInt_t) fTR->LumiSection;
+    UInt_t seed1    = seedBase + 100000*(UInt_t) (TMath::Abs(100.*fTR->PhoPhi[i])) + 1000*(UInt_t) (TMath::Abs(100.*fTR->PhoEta[i]));
+    float mycorr = 1;
+    randomgen_forEsmearing->SetSeed(seed1);
+    if (width>0) randomgen_forEsmearing->Gaus(1.,width);
+    corr*=mycorr;
+  }
   fTR->PhoPt[i]*=corr;
   fTR->PhoPx[i]*=corr;
   fTR->PhoPy[i]*=corr;
@@ -3302,9 +3319,27 @@ float DiPhotonMiniTree::EnergyScaleOffset(float eta, float r9, int run){
   return it->val;
 };
 
-void DiPhotonMiniTree::InitEnergyScaleDatabase(){
+float DiPhotonMiniTree::EnergySmearingCorrection(float eta, float r9, int run){
+  assert(!isdata);
+  assert(energySmearingDatabase.size()>0);
+  std::vector<struct_escale_item>::const_iterator it;
+  for (it = energySmearingDatabase.begin(); it!=energySmearingDatabase.end(); it++){
+    if (run<it->mrun) continue;
+    if (run>it->Mrun) continue;
+    if (fabs(eta)<it->meta) continue;
+    if (fabs(eta)>=it->Meta) continue;
+    if (r9<it->mr9) continue;
+    if (r9>=it->Mr9) continue;
+    break;
+  }
+  if (it==energySmearingDatabase.end()) {cout << "WRONG: energy smearing item not found " << run << " " << fabs(eta) << " " << r9 << endl; return 1;}
+  return it->val;
+};
+
+void DiPhotonMiniTree::InitEnergyScalesAndSmearingsDatabase(){
 
   assert (energyScaleDatabase.size()==0);
+  assert (energySmearingDatabase.size()==0);
 
   if (year==2011){
   // https://twiki.cern.ch/twiki/pub/CMS/ECALELF/21Jun2012_7TeV-step2-invMass_SC_regrCorrSemiPar7TeVtrainV8_pho-loose-Et_25-noPF-HggRunEtaR9.dat
@@ -3372,6 +3407,17 @@ void DiPhotonMiniTree::InitEnergyScaleDatabase(){
   InsertEnergyScaleItem(2,3,0.94,999,176841,177775,0.9949,0.0007);
   InsertEnergyScaleItem(2,3,0.94,999,177776,178723,0.9961,0.0007);
   InsertEnergyScaleItem(2,3,0.94,999,178724,180252,0.9950,0.0008);
+
+  // https://twiki.cern.ch/twiki/pub/CMS/ECALELF/21Jun2012_7TeV-outProfile-scaleStep2smearing-Et_25-noPF-FitResult.config
+  InsertEnergySmearingItem(0,1,-999,0.94,0,999999,0.96,0.03);
+  InsertEnergySmearingItem(0,1,0.94,999,0,999999,0.68,0.04);
+  InsertEnergySmearingItem(1,1.5,-999,0.94,0,999999,1.85,0.04);
+  InsertEnergySmearingItem(1,1.5,0.94,999,0,999999,1.01,0.14);
+  InsertEnergySmearingItem(1.5,2,-999,0.94,0,999999,1.85,0.07);
+  InsertEnergySmearingItem(1.5,2,0.94,999,0,999999,1.58,0.18);
+  InsertEnergySmearingItem(2,3,-999,0.94,0,999999,1.83,0.09);
+  InsertEnergySmearingItem(2,3,0.94,999,0,999999,2.01,0.06);
+
   }
   if (year==2012){
     // https://twiki.cern.ch/twiki/pub/CMS/ECALELF/22Jan2012-runDepPowheg-noR9shift-step2-invMass_SC_regrCorrSemiParV5_pho-loose-Et_25-trigger-noPF-HggRunEtaR9.dat
@@ -3783,6 +3829,17 @@ void DiPhotonMiniTree::InitEnergyScaleDatabase(){
     InsertEnergyScaleItem(2,3,0.94,+999,207490,207919,0.9769,0.0009);
     InsertEnergyScaleItem(2,3,0.94,+999,207920,208351,0.9813,0.0009);
     InsertEnergyScaleItem(2,3,0.94,+999,208352,208686,0.9809,0.0008);
+
+    // https://twiki.cern.ch/twiki/pub/CMS/ECALELF/22Jan2012-runDepPowheg-noR9shift-outProfile-scaleStep2smearing-Et_25-trigger-noPF-FitResult.config
+    InsertEnergySmearingItem(0,1,-999,0.94,0,999999  ,0.86,0.0181);
+    InsertEnergySmearingItem(0,1,0.94,999,0,999999   ,0.75,0.03  );
+    InsertEnergySmearingItem(1,1.5,-999,0.94,0,999999,1.88,0.0188);
+    InsertEnergySmearingItem(1,1.5,0.94,999,0,999999 ,1.22,0.0992);
+    InsertEnergySmearingItem(1.5,2,-999,0.94,0,999999,1.98,0.0323);
+    InsertEnergySmearingItem(1.5,2,0.94,999,0,999999 ,1.63,0.0878);
+    InsertEnergySmearingItem(2,3,-999,0.94,0,999999  ,1.92,0.0444);
+    InsertEnergySmearingItem(2,3,0.94,999,0,999999   ,1.86,0.0353);
+
   }
 
 };
@@ -3800,5 +3857,21 @@ void DiPhotonMiniTree::InsertEnergyScaleItem(float meta, float Meta, float mr9, 
   a.err = err;
 
   energyScaleDatabase.push_back(a);
+
+};
+
+void DiPhotonMiniTree::InsertEnergySmearingItem(float meta, float Meta, float mr9, float Mr9, int mrun, int Mrun, float val, float err){
+  
+  struct_escale_item a;
+  a.meta = meta;
+  a.Meta = Meta;
+  a.mr9 = mr9;
+  a.Mr9 = Mr9;
+  a.mrun = mrun;
+  a.Mrun = Mrun;
+  a.val = val;
+  a.err = err;
+
+  energySmearingDatabase.push_back(a);
 
 };

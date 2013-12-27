@@ -149,7 +149,7 @@ private:
   Float_t* kfactors;
 
   float getEtaCorrectionBarrel(float eta);
-  void CorrPhoton(TreeReader *fTR, int i);
+  void CorrPhoton(TreeReader *fTR, int i, std::vector<float> *unscaled_r9);
 	
   std::vector<int> ApplyPixelVeto(TreeReader *fTR, vector<int> passing, bool forelectron=0);
   std::vector<int> PhotonPreSelection(TreeReader *fTR, vector<int> passing);
@@ -200,9 +200,12 @@ private:
   float GetPUEnergy(TreeReader *fTR, TString mode, float eta);
 
   std::vector<struct_escale_item> energyScaleDatabase;
+  std::vector<struct_escale_item> energySmearingDatabase;
   float EnergyScaleOffset(float eta, float r9, int run);
-  void InitEnergyScaleDatabase();
+  float EnergySmearingCorrection(float eta, float r9, int run);
+  void InitEnergyScalesAndSmearingsDatabase();
   void InsertEnergyScaleItem(float meta, float Meta, float mr9, float Mr9, int mrun, int Mrun, float val, float err);
+  void InsertEnergySmearingItem(float meta, float Meta, float mr9, float Mr9, int mrun, int Mrun, float val, float err);
 
   void FillLead(int index, std::vector<int> passing_jets);
   void FillTrail(int index, std::vector<int> passing_jets);
@@ -238,6 +241,7 @@ private:
   jetmatching_struct PFMatchPhotonToJet(int phoqi);
 
   TRandom3 *randomgen;
+  TRandom3 *randomgen_forEsmearing;
 
   static const int n_templates_EB=7;
   static const int n_templates_EE=5;
