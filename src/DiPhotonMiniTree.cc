@@ -944,9 +944,7 @@ void DiPhotonMiniTree::Analyze(){
     GenJetSelection(passing_gen_jets);
 
     for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
-      bool pass=0;
-      if ( (fabs(fTR->GenPhotonEta[*it])<1.4442) || (fabs(fTR->GenPhotonEta[*it])>1.566 && fabs(fTR->GenPhotonEta[*it])<2.5)  ) pass=1;
-      if (fTR->GenPhotonPt[*it]<=25) pass=0;
+      bool pass=1;
       if (fTR->GenPhotonIsoDR04[*it]>5) pass=0;
       if (!pass) it=passing_gen.erase(it); else it++;
     }
@@ -965,10 +963,6 @@ void DiPhotonMiniTree::Analyze(){
 	if (match) it=passing_gen_jets.erase(it); else it++;
       }
     }
-    if (passing_gen.size()>0 && fTR->GenPhotonPt[passing_gen.at(0)]<=40) passing_gen.clear();
-    if (passing_gen.size()>=2 && Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])<global_dR_cut_acceptance) passing_gen.clear();
-    tree_gen_in_acc = (passing_gen.size()>=2);
-    if (!tree_gen_in_acc) {passing_gen.clear(); passing_gen_jets.clear();}
 
     tree_matched = false;
     if (tree_reco_in_acc){
@@ -976,8 +970,28 @@ void DiPhotonMiniTree::Analyze(){
       bool match1 = ( (fTR->PhoMCmatchexitcode[passing.at(1)]==1 || fTR->PhoMCmatchexitcode[passing.at(1)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(1)]]<5 );
       int m0 = (match0) ? fTR->PhoMCmatchindex[passing.at(0)] : -999;
       int m1 = (match1) ? fTR->PhoMCmatchindex[passing.at(1)] : -999;
-      if (m0!=m1 && find(passing_gen.begin(),passing_gen.end(),m0)!=passing_gen.end() && find(passing_gen.begin(),passing_gen.end(),m1)!=passing_gen.end()) tree_matched = true;
+      if (m0!=m1 && find(passing_gen.begin(),passing_gen.end(),m0)!=passing_gen.end() && find(passing_gen.begin(),passing_gen.end(),m1)!=passing_gen.end()) {
+	tree_matched = true;
+	for (vector<int>::iterator it = passing_gen.begin(); it != passing_gen.end(); ){
+	  if (*it==m0 || *it==m1) it++; else it = passing_gen.erase(it);
+	}
+      }
     }
+
+    if (passing_gen.size()>=2){
+      bool bad = false;
+      if (fTR->GenPhotonPt[passing_gen.at(0)]<=40) bad = true;
+      if (fTR->GenPhotonPt[passing_gen.at(1)]<=25) bad = true;
+      if (!((fabs(fTR->GenPhotonEta[passing_gen.at(0)])<1.4442) || (fabs(fTR->GenPhotonEta[passing_gen.at(0)])>1.566 && fabs(fTR->GenPhotonEta[passing_gen.at(0)])<2.5))) bad = true;
+      if (!((fabs(fTR->GenPhotonEta[passing_gen.at(1)])<1.4442) || (fabs(fTR->GenPhotonEta[passing_gen.at(1)])>1.566 && fabs(fTR->GenPhotonEta[passing_gen.at(1)])<2.5))) bad = true;
+      if (bad) passing_gen.clear();
+  }
+
+    if (passing_gen.size()>=2 && Util::GetDeltaR(fTR->GenPhotonEta[passing_gen.at(0)],fTR->GenPhotonEta[passing_gen.at(1)],fTR->GenPhotonPhi[passing_gen.at(0)],fTR->GenPhotonPhi[passing_gen.at(1)])<global_dR_cut_acceptance) passing_gen.clear();
+
+    tree_gen_in_acc = (passing_gen.size()>=2);
+    if (!tree_gen_in_acc) {passing_gen.clear(); passing_gen_jets.clear();}
+
 
     if (tree_reco_in_acc) {
       FillLead(passing.at(0),passing_jets);
