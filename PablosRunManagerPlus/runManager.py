@@ -409,6 +409,10 @@ def join_directory(path,filelist,username) :
 		cleanpath=cleanpath[0:len(cleanpath)-2]
 	fusecommand="hadd -f /scratch/"+username+"/ntuples/"+cleanpath+".root > /dev/null "
 	for item in filelist:
+#		if item.find('output')>=0:
+#			continue
+		if item.find('extra')>=0:
+			continue
 		copycommand="dccp dcap://t3se01.psi.ch:22125/pnfs/psi.ch/cms/trivcat/store/user/"+username+"/"+item+" /scratch/"+username+"/ntuples/"+item
 		commands.getstatusoutput(copycommand)
 		fusecommand=fusecommand+" /scratch/"+username+"/ntuples/"+item
@@ -446,6 +450,9 @@ def sanitycheck(name,path):
 		sys.exit(-1)
 	else :
 		return " ... ok !"
+
+def SendMeAMail(mypath):
+	os.system('echo Done  | mail -s \"Finished '+mypath+'\" Marco.Peruzzi@cern.ch')
 
 ##################################################################################
 #                                  MAIN                                          #
@@ -518,9 +525,12 @@ if __name__ == '__main__' :
                  currlist.append(int(line))
               checklist(jobnumbers,currlist)
 
-#        # Merge the files
-#        print "All jobs have finished - need to merge everything and place it in your scratch directory!"
-#        check_directory(fusepath,uname)
+        # Merge the files
+        print "All jobs have finished - need to merge everything and place it in your scratch directory!"
+        check_directory(fusepath,uname)
+
+	SendMeAMail(fusepath)
+	
 #        if isdata==1 and result[2].find("RunJZBAnalyzer")>-1:
 #                print "We're dealing with data - we still need to merge data files and check for duplicates!"
 #                pipe=popen("/shome/buchmann/material/flash_remove_duplicates.exec -d /scratch/"+uname+"/ntuples/"+str(fusepath)+"/ -o /scratch/"+uname+"/"+fusepath+".root")
