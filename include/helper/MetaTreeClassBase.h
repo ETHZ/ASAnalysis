@@ -130,19 +130,34 @@ public :
    Int_t           ElGenGMType[8];   //[NEls]
    Float_t         ElMT[8];   //[NEls]
    Int_t           NGenLep;
-   Int_t           GenLepID[20];   //[NGenLep]
-   Int_t           GenLepMID[20];   //[NGenLep]
-   Int_t           GenLepGMID[20];   //[NGenLep]
-   Int_t           GenLepStatus[20];   //[NGenLep]
-   Int_t           GenLepMStatus[20];   //[NGenLep]
-   Float_t         GenLepPt[20];   //[NGenLep]
-   Float_t         GenLepEta[20];   //[NGenLep]
-   Float_t         GenLepPhi[20];   //[NGenLep]
+   Int_t           GenLepID[50];   //[NGenLep]
+   Int_t           GenLepMID[50];   //[NGenLep]
+   Int_t           GenLepGMID[50];   //[NGenLep]
+   Int_t           GenLepStatus[50];   //[NGenLep]
+   Int_t           GenLepMStatus[50];   //[NGenLep]
+   Float_t         GenLepPt[50];   //[NGenLep]
+   Float_t         GenLepEta[50];   //[NGenLep]
+   Float_t         GenLepPhi[50];   //[NGenLep]
+   Float_t         GenLepMass[50];   //[NGenLep]
+   Int_t           GenLepFromW[50];   //[NGenLep]
+   Int_t           GenLepFromTop[50];   //[NGenLep]
+   Int_t           GenLepFromTau[50];   //[NGenLep]
+   Int_t           NGenW;
+   Int_t           GenWID[10];   //[NGenW]
+   Int_t           GenWMID[10];   //[NGenW]
+   Int_t           GenWGMID[10];   //[NGenW]
+   Int_t           GenWStatus[10];   //[NGenW]
+   Int_t           GenWMStatus[10];   //[NGenW]
+   Float_t         GenWPt[10];   //[NGenW]
+   Float_t         GenWEta[10];   //[NGenW]
+   Float_t         GenWPhi[10];   //[NGenW]
+   Int_t           GenWLept[10];   //[NGenW]
+   Int_t           GenWFromTop[10];   //[NGenW]
    Int_t           NGenJets;
-   Float_t         GenJetPt[20];   //[NGenJets]
-   Float_t         GenJetE[20];   //[NGenJets]
-   Float_t         GenJetEta[20];   //[NGenJets]
-   Float_t         GenJetPhi[20];   //[NGenJets]
+   Float_t         GenJetPt[50];   //[NGenJets]
+   Float_t         GenJetE[50];   //[NGenJets]
+   Float_t         GenJetEta[50];   //[NGenJets]
+   Float_t         GenJetPhi[50];   //[NGenJets]
    Int_t           NTaus;
    Int_t           TauCharge[5];   //[NTaus]
    Float_t         TauPt[5];   //[NTaus]
@@ -298,6 +313,21 @@ public :
    TBranch        *b_GenLepPt;   //!
    TBranch        *b_GenLepEta;   //!
    TBranch        *b_GenLepPhi;   //!
+   TBranch        *b_GenLepMass;   //!
+   TBranch        *b_GenLepFromW;   //!
+   TBranch        *b_GenLepFromTau;   //!
+   TBranch        *b_GenLepFromTop;   //!
+   TBranch        *b_NGenW;   //!
+   TBranch        *b_GenWID;   //!
+   TBranch        *b_GenWMID;   //!
+   TBranch        *b_GenWGMID;   //!
+   TBranch        *b_GenWStatus;   //!
+   TBranch        *b_GenWMStatus;   //!
+   TBranch        *b_GenWPt;   //!
+   TBranch        *b_GenWEta;   //!
+   TBranch        *b_GenWPhi;   //!
+   TBranch        *b_GenWLept;   //!
+   TBranch        *b_GenWFromTop;   //!
    TBranch        *b_NGenJets;   //!
    TBranch        *b_GenJetPt;   //!
    TBranch        *b_GenJetE;   //!
@@ -527,6 +557,21 @@ void MetaTreeClassBase::Init(TTree *tree)
    fChain->SetBranchAddress("GenLepPt", GenLepPt, &b_GenLepPt);
    fChain->SetBranchAddress("GenLepEta", GenLepEta, &b_GenLepEta);
    fChain->SetBranchAddress("GenLepPhi", GenLepPhi, &b_GenLepPhi);
+   fChain->SetBranchAddress("GenLepMass", GenLepMass, &b_GenLepMass);
+   fChain->SetBranchAddress("GenLepFromW", GenLepFromW, &b_GenLepFromW);
+   fChain->SetBranchAddress("GenLepFromTau", GenLepFromTau, &b_GenLepFromTau);
+   fChain->SetBranchAddress("GenLepFromTop", GenLepFromTop, &b_GenLepFromTop);
+   fChain->SetBranchAddress("NGenW", &NGenW, &b_NGenW);
+   fChain->SetBranchAddress("GenWID", GenWID, &b_GenWID);
+   fChain->SetBranchAddress("GenWMID", GenWMID, &b_GenWMID);
+   fChain->SetBranchAddress("GenWGMID", GenWGMID, &b_GenWGMID);
+   fChain->SetBranchAddress("GenWStatus", GenWStatus, &b_GenWStatus);
+   fChain->SetBranchAddress("GenWMStatus", GenWMStatus, &b_GenWMStatus);
+   fChain->SetBranchAddress("GenWPt", GenWPt, &b_GenWPt);
+   fChain->SetBranchAddress("GenWEta", GenWEta, &b_GenWEta);
+   fChain->SetBranchAddress("GenWPhi", GenWPhi, &b_GenWPhi);
+   fChain->SetBranchAddress("GenWLept", GenWLept, &b_GenWLept);
+   fChain->SetBranchAddress("GenWFromTop",GenWFromTop,&b_GenWFromTop);
    fChain->SetBranchAddress("NGenJets", &NGenJets, &b_NGenJets);
    fChain->SetBranchAddress("GenJetPt", GenJetPt, &b_GenJetPt);
    fChain->SetBranchAddress("GenJetE", GenJetE, &b_GenJetE);
