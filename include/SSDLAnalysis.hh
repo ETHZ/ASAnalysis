@@ -274,7 +274,6 @@ private:
 	float fTGenWPt   [fMaxNGenW];
 	float fTGenWEta  [fMaxNGenW];
 	float fTGenWPhi  [fMaxNGenW];
-	int fTGenWLept   [fMaxNGenW];
 	int fTGenWFromTop[fMaxNGenW];
 
 	// generator jet properties
