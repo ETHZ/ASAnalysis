@@ -17,7 +17,7 @@ const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
 
 
 const bool gDoPDFs      = false;
-const bool gSaveGenInfo = true;
+const bool gSaveGenInfo = false;
 
 
 //TString SSDLAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_2_5/src/DiLeptonAnalysis/NTupleProducer/macros/";
