@@ -92,6 +92,10 @@ struct TTWZPrediction {
 	float ttw_err_mm;
 	float ttw_err_ee;
 	float ttw_err_em;
+	float ttw_staterr;
+	float ttw_staterr_mm;
+	float ttw_staterr_ee;
+	float ttw_staterr_em;
 	float ttw_gen;
 
 	float ttw_aMCatNLO;

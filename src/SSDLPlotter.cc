@@ -476,13 +476,13 @@ void SSDLPlotter::doSMSscans(TString region, TString file, TString model){
 void SSDLPlotter::doAnalysis(){
   // sandBox();         
   //	if (gRunSMSscan) return; //DO NOT RUN THE ANALYSIS IF RUNNING THE SCAN
-	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root"       , false, false);
-	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1.root" , true , false);
-//	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genInfo_newest.root"    , false, false);
-//	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo_newest.root"        , true , false);
-//  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_madgraph/ttbar_madgraph_genInfo_new.root", false, true );
-//  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_powheg/ttbar_powheg_genInfo_new.root"    , true , true );
-  return;
+//	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root"       , false, false);
+//	genEfficiencies("dcap://t3se01.psi.ch:22125//pnfs/psi.ch/cms/trivcat/store/user/lbaeni/SSDLTrees/2013/Dec02/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1.root" , true , false);
+////	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_madgraph/ttw_madgraph_genInfo_newest.root"    , false, false);
+////	genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttw_amcnlo/ttw_amcnlo_genInfo_newest.root"        , true , false);
+////  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_madgraph/ttbar_madgraph_genInfo_new.root", false, true );
+////  genEfficiencies("/shome/mdunser/ttW2013/CMSSW_5_3_7_patch5/src/ASAnalysis/ttbar_powheg/ttbar_powheg_genInfo_new.root"    , true , true );
+//  return;
 
 
   cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
@@ -524,6 +524,7 @@ void SSDLPlotter::doAnalysis(){
   cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
   makeTTWIntPredictionsSigEvent();
   cout << "...done ===" << endl;
+
 
 
 //  cout << "=== Going to call makeTTWKinPlotsSigEvent..." << endl;  
@@ -13817,46 +13818,46 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << "\\hline\\hline" << endl;
 	fOUTSTREAM << "& \\multicolumn{2}{c}{$\\mu\\mu$} & \\multicolumn{2}{c}{$e\\mu$} & \\multicolumn{2}{c}{$ee$} \\\\" << endl;
 	fOUTSTREAM << "\\hline" << endl;
-	fOUTSTREAM << Form("Nominal           & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["Normal"].ttw_mm, ttwzpreds["Normal"].ttw_err_mm,
-					ttwzpreds["Normal"].ttw_em, ttwzpreds["Normal"].ttw_err_em,
-					ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttw_err_ee);
-	fOUTSTREAM << Form("JES up            & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["JetUp"].ttw_mm, ttwzpreds["JetUp"].ttw_err_mm,
-					ttwzpreds["JetUp"].ttw_em, ttwzpreds["JetUp"].ttw_err_em,
-					ttwzpreds["JetUp"].ttw_ee, ttwzpreds["JetUp"].ttw_err_ee);
-	fOUTSTREAM << Form("JES down          & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["JetDown"].ttw_mm, ttwzpreds["JetDown"].ttw_err_mm,
-					ttwzpreds["JetDown"].ttw_em, ttwzpreds["JetDown"].ttw_err_em,
-					ttwzpreds["JetDown"].ttw_ee, ttwzpreds["JetDown"].ttw_err_ee);
-	fOUTSTREAM << Form("JER               & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["JetSmear"].ttw_mm, ttwzpreds["JetSmear"].ttw_err_mm,
-					ttwzpreds["JetSmear"].ttw_em, ttwzpreds["JetSmear"].ttw_err_em,
-					ttwzpreds["JetSmear"].ttw_ee, ttwzpreds["JetSmear"].ttw_err_ee);
-	fOUTSTREAM << Form("b-tag up          & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["BUp"].ttw_mm, ttwzpreds["BUp"].ttw_err_mm,
-					ttwzpreds["BUp"].ttw_em, ttwzpreds["BUp"].ttw_err_em,
-					ttwzpreds["BUp"].ttw_ee, ttwzpreds["BUp"].ttw_err_ee);
-	fOUTSTREAM << Form("b-tag down        & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["BDown"].ttw_mm, ttwzpreds["BDown"].ttw_err_mm,
-					ttwzpreds["BDown"].ttw_em, ttwzpreds["BDown"].ttw_err_em,
-					ttwzpreds["BDown"].ttw_ee, ttwzpreds["BDown"].ttw_err_ee);
-	fOUTSTREAM << Form("Lepton scale up   & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["LepUp"].ttw_mm, ttwzpreds["LepUp"].ttw_err_mm,
-					ttwzpreds["LepUp"].ttw_em, ttwzpreds["LepUp"].ttw_err_em,
-					ttwzpreds["LepUp"].ttw_ee, ttwzpreds["LepUp"].ttw_err_ee);
-	fOUTSTREAM << Form("Lepton scale down & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["LepDown"].ttw_mm, ttwzpreds["LepDown"].ttw_err_mm,
-					ttwzpreds["LepDown"].ttw_em, ttwzpreds["LepDown"].ttw_err_em,
-					ttwzpreds["LepDown"].ttw_ee, ttwzpreds["LepDown"].ttw_err_ee);
-	fOUTSTREAM << Form("Pileup up         & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["PileupUp"].ttw_mm, ttwzpreds["PileupUp"].ttw_err_mm,
-					ttwzpreds["PileupUp"].ttw_em, ttwzpreds["PileupUp"].ttw_err_em,
-					ttwzpreds["PileupUp"].ttw_ee, ttwzpreds["PileupUp"].ttw_err_ee);
-	fOUTSTREAM << Form("Pileup down       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\\n\\hline\n",
-					ttwzpreds["PileupDown"].ttw_mm, ttwzpreds["PileupDown"].ttw_err_mm,
-					ttwzpreds["PileupDown"].ttw_em, ttwzpreds["PileupDown"].ttw_err_em,
-					ttwzpreds["PileupDown"].ttw_ee, ttwzpreds["PileupDown"].ttw_err_ee);
+	fOUTSTREAM << Form("Nominal           & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["Normal"].ttw_mm, ttwzpreds["Normal"].ttw_staterr_mm,
+					ttwzpreds["Normal"].ttw_em, ttwzpreds["Normal"].ttw_staterr_em,
+					ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttw_staterr_ee);
+	fOUTSTREAM << Form("JES up            & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["JetUp"].ttw_mm, ttwzpreds["JetUp"].ttw_staterr_mm,
+					ttwzpreds["JetUp"].ttw_em, ttwzpreds["JetUp"].ttw_staterr_em,
+					ttwzpreds["JetUp"].ttw_ee, ttwzpreds["JetUp"].ttw_staterr_ee);
+	fOUTSTREAM << Form("JES down          & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["JetDown"].ttw_mm, ttwzpreds["JetDown"].ttw_staterr_mm,
+					ttwzpreds["JetDown"].ttw_em, ttwzpreds["JetDown"].ttw_staterr_em,
+					ttwzpreds["JetDown"].ttw_ee, ttwzpreds["JetDown"].ttw_staterr_ee);
+	fOUTSTREAM << Form("JER               & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["JetSmear"].ttw_mm, ttwzpreds["JetSmear"].ttw_staterr_mm,
+					ttwzpreds["JetSmear"].ttw_em, ttwzpreds["JetSmear"].ttw_staterr_em,
+					ttwzpreds["JetSmear"].ttw_ee, ttwzpreds["JetSmear"].ttw_staterr_ee);
+	fOUTSTREAM << Form("b-tag up          & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["BUp"].ttw_mm, ttwzpreds["BUp"].ttw_staterr_mm,
+					ttwzpreds["BUp"].ttw_em, ttwzpreds["BUp"].ttw_staterr_em,
+					ttwzpreds["BUp"].ttw_ee, ttwzpreds["BUp"].ttw_staterr_ee);
+	fOUTSTREAM << Form("b-tag down        & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["BDown"].ttw_mm, ttwzpreds["BDown"].ttw_staterr_mm,
+					ttwzpreds["BDown"].ttw_em, ttwzpreds["BDown"].ttw_staterr_em,
+					ttwzpreds["BDown"].ttw_ee, ttwzpreds["BDown"].ttw_staterr_ee);
+	fOUTSTREAM << Form("Lepton scale up   & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["LepUp"].ttw_mm, ttwzpreds["LepUp"].ttw_staterr_mm,
+					ttwzpreds["LepUp"].ttw_em, ttwzpreds["LepUp"].ttw_staterr_em,
+					ttwzpreds["LepUp"].ttw_ee, ttwzpreds["LepUp"].ttw_staterr_ee);
+	fOUTSTREAM << Form("Lepton scale down & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["LepDown"].ttw_mm, ttwzpreds["LepDown"].ttw_staterr_mm,
+					ttwzpreds["LepDown"].ttw_em, ttwzpreds["LepDown"].ttw_staterr_em,
+					ttwzpreds["LepDown"].ttw_ee, ttwzpreds["LepDown"].ttw_staterr_ee);
+	fOUTSTREAM << Form("Pileup up         & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["PileupUp"].ttw_mm, ttwzpreds["PileupUp"].ttw_staterr_mm,
+					ttwzpreds["PileupUp"].ttw_em, ttwzpreds["PileupUp"].ttw_staterr_em,
+					ttwzpreds["PileupUp"].ttw_ee, ttwzpreds["PileupUp"].ttw_staterr_ee);
+	fOUTSTREAM << Form("Pileup down       & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
+					ttwzpreds["PileupDown"].ttw_mm, ttwzpreds["PileupDown"].ttw_staterr_mm,
+					ttwzpreds["PileupDown"].ttw_em, ttwzpreds["PileupDown"].ttw_staterr_em,
+					ttwzpreds["PileupDown"].ttw_ee, ttwzpreds["PileupDown"].ttw_staterr_ee);
 	fOUTSTREAM << "\\hline" << endl;
 	fOUTSTREAM << "\\end{tabular}" << endl;
 	fOUTSTREAM.close();
@@ -17923,7 +17924,6 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	delete gr_obs;
 	delete FR;
 
-
 	TTWZPrediction pred;
 	pred.obs      = nt2_mm+nt2_em+nt2_ee;
 	pred.obs_mm   = nt2_mm;
@@ -17938,6 +17938,10 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	pred.ttw_err_mm = sqrt(nt2_ttw_mc_mm_e2 + TTWESyst2*nt2_ttw_mc_mm*nt2_ttw_mc_mm);
 	pred.ttw_err_em = sqrt(nt2_ttw_mc_em_e2 + TTWESyst2*nt2_ttw_mc_em*nt2_ttw_mc_em);
 	pred.ttw_err_ee = sqrt(nt2_ttw_mc_ee_e2 + TTWESyst2*nt2_ttw_mc_ee*nt2_ttw_mc_ee);
+	pred.ttw_staterr    = sqrt(nt2_ttw_mc_ee_e2 + nt2_ttw_mc_mm_e2 + nt2_ttw_mc_em_e2);
+	pred.ttw_staterr_mm = sqrt(nt2_ttw_mc_mm_e2);
+	pred.ttw_staterr_em = sqrt(nt2_ttw_mc_em_e2);
+	pred.ttw_staterr_ee = sqrt(nt2_ttw_mc_ee_e2);
 	pred.ttw_gen = (float)fSampleMap["TTbarW"]   ->ngen * fLumiNorm / fSampleMap["TTbarW"]->getLumi();
 
 	pred.ttw_aMCatNLO     = nt2_ttw_aMCatNLO_mm + nt2_ttw_aMCatNLO_em + nt2_ttw_aMCatNLO_ee;
