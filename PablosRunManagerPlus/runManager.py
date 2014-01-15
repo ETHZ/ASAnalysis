@@ -269,7 +269,8 @@ def getListOfTasks(nameOfFile):
     argumentEnd = line.rfind("'")
 	    
     if(argumentBegin == -1 or argumentEnd == -1 or argumentBegin == argumentEnd):
-      showMessage("Ignoring the line : " + line)
+      if len(line) > 1: 
+	showMessage("Ignoring the line : " + line)
     else:  
       arguments = line[argumentBegin+1:argumentEnd]
       endLine = line[argumentEnd+1:len(line)]
