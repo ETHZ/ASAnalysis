@@ -466,6 +466,10 @@ if __name__ == '__main__' :
                 sys.exit(-1)
         
         timeleft=commands.getoutput("voms-proxy-info -timeleft")
+        if timeleft.find("java") > 0 : 
+	  print "Java is experiencing problems ... please try again later: "
+	  print timeleft
+	  sys.exit(-1)
         
         print "Seems like your proxy will be alive for another "+str(timeleft)+" seconds"
         if float(timeleft)>10800 and float(timeleft)<1000000: ## valid for >3h
