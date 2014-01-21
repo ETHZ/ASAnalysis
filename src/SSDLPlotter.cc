@@ -13869,7 +13869,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					(ttwzpreds["PileupDown"].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["PileupDown"].ttw_staterr_mm*ttwzpreds["PileupDown"].ttw_staterr_mm)/(ttwzpreds["PileupDown"].ttw_mm*ttwzpreds["PileupDown"].ttw_mm) ),
 					(ttwzpreds["PileupDown"].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["PileupDown"].ttw_staterr_em*ttwzpreds["PileupDown"].ttw_staterr_em)/(ttwzpreds["PileupDown"].ttw_em*ttwzpreds["PileupDown"].ttw_em) ),
 					(ttwzpreds["PileupDown"].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["PileupDown"].ttw_staterr_ee*ttwzpreds["PileupDown"].ttw_staterr_ee)/(ttwzpreds["PileupDown"].ttw_ee*ttwzpreds["PileupDown"].ttw_ee) ));
-	fOUTSTREAM << "\\hline\\hline" << endl;
+	fOUTSTREAM << "\\hline" << endl;
 	fOUTSTREAM << "\\end{tabular}" << endl;
 	fOUTSTREAM.close();
 	
@@ -17069,6 +17069,9 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	const float TTWESyst  = 0.5;
 	const float TTWESyst2 = TTWESyst*TTWESyst;
 
+	const float ChMisESyst  = 0.3;
+	const float ChMisESyst2 = ChMisESyst*ChMisESyst;
+
 	OUT << "/////////////////////////////////////////////////////////////////////////////" << endl;
 	OUT << " Producing predictions " ;
 	OUT << "  scaling MC to " << fLumiNorm << " /pb" << endl << endl;
@@ -17454,7 +17457,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	
 	nt2_em_chmid    = fbb*nt2_em_BB_os + fee*nt2_em_EE_os;
 	nt2_em_chmid_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
-	nt2_em_chmid_e2 = fbbE*fbbE*sqrt( nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os );
+	nt2_em_chmid_e2 = sqrt( fbbE*fbbE*nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os );
 
 
 	///////////////////////////////////////////////////////////////////////////////////
