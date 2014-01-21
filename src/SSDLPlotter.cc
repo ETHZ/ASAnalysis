@@ -521,9 +521,15 @@ void SSDLPlotter::doAnalysis(){
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
-  makeTTWIntPredictionsSigEvent();
-  cout << "...done ===" << endl;
+//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+//  makeTTWIntPredictionsSigEvent();
+//  cout << "...done ===" << endl;
+
+
+	// final selection w/o charge selection
+	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, 0, true);
+
+
 
 
 
@@ -13812,53 +13818,58 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 
 	TString syst_table     = outputdir + "SystTable" + chargeString + ".tex";
 	fOUTSTREAM.open(syst_table.Data(), ios::trunc);
+	fOUTSTREAM << "%!TEX root = ../AN-12-445.tex" << endl;
 	fOUTSTREAM << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
 	fOUTSTREAM << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
 	fOUTSTREAM << "\\begin{tabular}{l|r@{$\\,\\pm\\,$}lr@{$\\,\\pm\\,$}lr@{$\\,\\pm\\,$}l}" << endl;
 	fOUTSTREAM << "\\hline\\hline" << endl;
-	fOUTSTREAM << "& \\multicolumn{2}{c}{$\\mu\\mu$} & \\multicolumn{2}{c}{$e\\mu$} & \\multicolumn{2}{c}{$ee$} \\\\" << endl;
+	fOUTSTREAM << "& \\multicolumn{2}{c}{$\\mu\\mu$ [\\%]} & \\multicolumn{2}{c}{$e\\mu$ [\\%]} & \\multicolumn{2}{c}{$ee$ [\\%]} \\\\" << endl;
 	fOUTSTREAM << "\\hline" << endl;
-	fOUTSTREAM << Form("Nominal           & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["Normal"].ttw_mm, ttwzpreds["Normal"].ttw_staterr_mm,
-					ttwzpreds["Normal"].ttw_em, ttwzpreds["Normal"].ttw_staterr_em,
-					ttwzpreds["Normal"].ttw_ee, ttwzpreds["Normal"].ttw_staterr_ee);
-	fOUTSTREAM << Form("JES up            & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["JetUp"].ttw_mm, ttwzpreds["JetUp"].ttw_staterr_mm,
-					ttwzpreds["JetUp"].ttw_em, ttwzpreds["JetUp"].ttw_staterr_em,
-					ttwzpreds["JetUp"].ttw_ee, ttwzpreds["JetUp"].ttw_staterr_ee);
-	fOUTSTREAM << Form("JES down          & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["JetDown"].ttw_mm, ttwzpreds["JetDown"].ttw_staterr_mm,
-					ttwzpreds["JetDown"].ttw_em, ttwzpreds["JetDown"].ttw_staterr_em,
-					ttwzpreds["JetDown"].ttw_ee, ttwzpreds["JetDown"].ttw_staterr_ee);
-	fOUTSTREAM << Form("JER               & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["JetSmear"].ttw_mm, ttwzpreds["JetSmear"].ttw_staterr_mm,
-					ttwzpreds["JetSmear"].ttw_em, ttwzpreds["JetSmear"].ttw_staterr_em,
-					ttwzpreds["JetSmear"].ttw_ee, ttwzpreds["JetSmear"].ttw_staterr_ee);
-	fOUTSTREAM << Form("b-tag up          & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["BUp"].ttw_mm, ttwzpreds["BUp"].ttw_staterr_mm,
-					ttwzpreds["BUp"].ttw_em, ttwzpreds["BUp"].ttw_staterr_em,
-					ttwzpreds["BUp"].ttw_ee, ttwzpreds["BUp"].ttw_staterr_ee);
-	fOUTSTREAM << Form("b-tag down        & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["BDown"].ttw_mm, ttwzpreds["BDown"].ttw_staterr_mm,
-					ttwzpreds["BDown"].ttw_em, ttwzpreds["BDown"].ttw_staterr_em,
-					ttwzpreds["BDown"].ttw_ee, ttwzpreds["BDown"].ttw_staterr_ee);
-	fOUTSTREAM << Form("Lepton scale up   & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["LepUp"].ttw_mm, ttwzpreds["LepUp"].ttw_staterr_mm,
-					ttwzpreds["LepUp"].ttw_em, ttwzpreds["LepUp"].ttw_staterr_em,
-					ttwzpreds["LepUp"].ttw_ee, ttwzpreds["LepUp"].ttw_staterr_ee);
-	fOUTSTREAM << Form("Lepton scale down & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["LepDown"].ttw_mm, ttwzpreds["LepDown"].ttw_staterr_mm,
-					ttwzpreds["LepDown"].ttw_em, ttwzpreds["LepDown"].ttw_staterr_em,
-					ttwzpreds["LepDown"].ttw_ee, ttwzpreds["LepDown"].ttw_staterr_ee);
-	fOUTSTREAM << Form("Pileup up         & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["PileupUp"].ttw_mm, ttwzpreds["PileupUp"].ttw_staterr_mm,
-					ttwzpreds["PileupUp"].ttw_em, ttwzpreds["PileupUp"].ttw_staterr_em,
-					ttwzpreds["PileupUp"].ttw_ee, ttwzpreds["PileupUp"].ttw_staterr_ee);
-	fOUTSTREAM << Form("Pileup down       & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f & %11.1f \\\\\n\\hline\n",
-					ttwzpreds["PileupDown"].ttw_mm, ttwzpreds["PileupDown"].ttw_staterr_mm,
-					ttwzpreds["PileupDown"].ttw_em, ttwzpreds["PileupDown"].ttw_staterr_em,
-					ttwzpreds["PileupDown"].ttw_ee, ttwzpreds["PileupDown"].ttw_staterr_ee);
-	fOUTSTREAM << "\\hline" << endl;
+	fOUTSTREAM << Form("JES up            & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["JetUp"     ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["JetUp"     ].ttw_staterr_mm*ttwzpreds["JetUp"     ].ttw_staterr_mm)/(ttwzpreds["JetUp"     ].ttw_mm*ttwzpreds["JetUp"     ].ttw_mm) ),
+					(ttwzpreds["JetUp"     ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["JetUp"     ].ttw_staterr_em*ttwzpreds["JetUp"     ].ttw_staterr_em)/(ttwzpreds["JetUp"     ].ttw_em*ttwzpreds["JetUp"     ].ttw_em) ),
+					(ttwzpreds["JetUp"     ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["JetUp"     ].ttw_staterr_ee*ttwzpreds["JetUp"     ].ttw_staterr_ee)/(ttwzpreds["JetUp"     ].ttw_ee*ttwzpreds["JetUp"     ].ttw_ee) ));
+
+	fOUTSTREAM << Form("JES down          & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["JetDown"   ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["JetDown"   ].ttw_staterr_mm*ttwzpreds["JetDown"   ].ttw_staterr_mm)/(ttwzpreds["JetDown"   ].ttw_mm*ttwzpreds["JetDown"   ].ttw_mm) ),
+					(ttwzpreds["JetDown"   ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["JetDown"   ].ttw_staterr_em*ttwzpreds["JetDown"   ].ttw_staterr_em)/(ttwzpreds["JetDown"   ].ttw_em*ttwzpreds["JetDown"   ].ttw_em) ),
+					(ttwzpreds["JetDown"   ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["JetDown"   ].ttw_staterr_ee*ttwzpreds["JetDown"   ].ttw_staterr_ee)/(ttwzpreds["JetDown"   ].ttw_ee*ttwzpreds["JetDown"   ].ttw_ee) ));
+
+	fOUTSTREAM << Form("JER               & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["JetSmear"  ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["JetSmear"  ].ttw_staterr_mm*ttwzpreds["JetSmear"  ].ttw_staterr_mm)/(ttwzpreds["JetSmear"  ].ttw_mm*ttwzpreds["JetSmear"  ].ttw_mm) ),
+					(ttwzpreds["JetSmear"  ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["JetSmear"  ].ttw_staterr_em*ttwzpreds["JetSmear"  ].ttw_staterr_em)/(ttwzpreds["JetSmear"  ].ttw_em*ttwzpreds["JetSmear"  ].ttw_em) ),
+					(ttwzpreds["JetSmear"  ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["JetSmear"  ].ttw_staterr_ee*ttwzpreds["JetSmear"  ].ttw_staterr_ee)/(ttwzpreds["JetSmear"  ].ttw_ee*ttwzpreds["JetSmear"  ].ttw_ee) ));
+
+	fOUTSTREAM << Form("b-tag up          & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["BUp"       ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["BUp"       ].ttw_staterr_mm*ttwzpreds["BUp"       ].ttw_staterr_mm)/(ttwzpreds["BUp"       ].ttw_mm*ttwzpreds["BUp"       ].ttw_mm) ),
+					(ttwzpreds["BUp"       ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["BUp"       ].ttw_staterr_em*ttwzpreds["BUp"       ].ttw_staterr_em)/(ttwzpreds["BUp"       ].ttw_em*ttwzpreds["BUp"       ].ttw_em) ),
+					(ttwzpreds["BUp"       ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["BUp"       ].ttw_staterr_ee*ttwzpreds["BUp"       ].ttw_staterr_ee)/(ttwzpreds["BUp"       ].ttw_ee*ttwzpreds["BUp"       ].ttw_ee) ));
+
+	fOUTSTREAM << Form("b-tag down        & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["BDown"     ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["BDown"     ].ttw_staterr_mm*ttwzpreds["BDown"     ].ttw_staterr_mm)/(ttwzpreds["BDown"     ].ttw_mm*ttwzpreds["BDown"     ].ttw_mm) ),
+					(ttwzpreds["BDown"     ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["BDown"     ].ttw_staterr_em*ttwzpreds["BDown"     ].ttw_staterr_em)/(ttwzpreds["BDown"     ].ttw_em*ttwzpreds["BDown"     ].ttw_em) ),
+					(ttwzpreds["BDown"     ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["BDown"     ].ttw_staterr_ee*ttwzpreds["BDown"     ].ttw_staterr_ee)/(ttwzpreds["BDown"     ].ttw_ee*ttwzpreds["BDown"     ].ttw_ee) ));
+
+	fOUTSTREAM << Form("Lepton scale up   & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["LepUp"     ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["LepUp"     ].ttw_staterr_mm*ttwzpreds["LepUp"     ].ttw_staterr_mm)/(ttwzpreds["LepUp"     ].ttw_mm*ttwzpreds["LepUp"     ].ttw_mm) ),
+					(ttwzpreds["LepUp"     ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["LepUp"     ].ttw_staterr_em*ttwzpreds["LepUp"     ].ttw_staterr_em)/(ttwzpreds["LepUp"     ].ttw_em*ttwzpreds["LepUp"     ].ttw_em) ),
+					(ttwzpreds["LepUp"     ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["LepUp"     ].ttw_staterr_ee*ttwzpreds["LepUp"     ].ttw_staterr_ee)/(ttwzpreds["LepUp"     ].ttw_ee*ttwzpreds["LepUp"     ].ttw_ee) ));
+
+	fOUTSTREAM << Form("Lepton scale down & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["LepDown"   ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["LepDown"   ].ttw_staterr_mm*ttwzpreds["LepDown"   ].ttw_staterr_mm)/(ttwzpreds["LepDown"   ].ttw_mm*ttwzpreds["LepDown"   ].ttw_mm) ),
+					(ttwzpreds["LepDown"   ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["LepDown"   ].ttw_staterr_em*ttwzpreds["LepDown"   ].ttw_staterr_em)/(ttwzpreds["LepDown"   ].ttw_em*ttwzpreds["LepDown"   ].ttw_em) ),
+					(ttwzpreds["LepDown"   ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["LepDown"   ].ttw_staterr_ee*ttwzpreds["LepDown"   ].ttw_staterr_ee)/(ttwzpreds["LepDown"   ].ttw_ee*ttwzpreds["LepDown"   ].ttw_ee) ));
+
+	fOUTSTREAM << Form("Pileup up         & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["PileupUp"  ].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["PileupUp"  ].ttw_staterr_mm*ttwzpreds["PileupUp"  ].ttw_staterr_mm)/(ttwzpreds["PileupUp"  ].ttw_mm*ttwzpreds["PileupUp"  ].ttw_mm) ),
+					(ttwzpreds["PileupUp"  ].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["PileupUp"  ].ttw_staterr_em*ttwzpreds["PileupUp"  ].ttw_staterr_em)/(ttwzpreds["PileupUp"  ].ttw_em*ttwzpreds["PileupUp"  ].ttw_em) ),
+					(ttwzpreds["PileupUp"  ].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["PileupUp"  ].ttw_staterr_ee*ttwzpreds["PileupUp"  ].ttw_staterr_ee)/(ttwzpreds["PileupUp"  ].ttw_ee*ttwzpreds["PileupUp"  ].ttw_ee) ));
+
+	fOUTSTREAM << Form("Pileup down       & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["PileupDown"].ttw_mm/ttwzpreds["Normal"].ttw_mm-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_mm*ttwzpreds["Normal"].ttw_staterr_mm)/(ttwzpreds["Normal"].ttw_mm*ttwzpreds["Normal"].ttw_mm) + (ttwzpreds["PileupDown"].ttw_staterr_mm*ttwzpreds["PileupDown"].ttw_staterr_mm)/(ttwzpreds["PileupDown"].ttw_mm*ttwzpreds["PileupDown"].ttw_mm) ),
+					(ttwzpreds["PileupDown"].ttw_em/ttwzpreds["Normal"].ttw_em-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_em*ttwzpreds["Normal"].ttw_staterr_em)/(ttwzpreds["Normal"].ttw_em*ttwzpreds["Normal"].ttw_em) + (ttwzpreds["PileupDown"].ttw_staterr_em*ttwzpreds["PileupDown"].ttw_staterr_em)/(ttwzpreds["PileupDown"].ttw_em*ttwzpreds["PileupDown"].ttw_em) ),
+					(ttwzpreds["PileupDown"].ttw_ee/ttwzpreds["Normal"].ttw_ee-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr_ee*ttwzpreds["Normal"].ttw_staterr_ee)/(ttwzpreds["Normal"].ttw_ee*ttwzpreds["Normal"].ttw_ee) + (ttwzpreds["PileupDown"].ttw_staterr_ee*ttwzpreds["PileupDown"].ttw_staterr_ee)/(ttwzpreds["PileupDown"].ttw_ee*ttwzpreds["PileupDown"].ttw_ee) ));
+	fOUTSTREAM << "\\hline\\hline" << endl;
 	fOUTSTREAM << "\\end{tabular}" << endl;
 	fOUTSTREAM.close();
 	
@@ -23520,8 +23531,8 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 	}
 
 
-	ofstream debugOUTSTREAM;
-	debugOUTSTREAM.open("debugOUTSTREAM.txt", ios::trunc);
+//	ofstream debugOUTSTREAM;
+//	debugOUTSTREAM.open("debugOUTSTREAM.txt", ios::trunc);
 
 	
 	for( int i = 0; i < sigtree->GetEntries(); i++ ){
@@ -23550,7 +23561,7 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 		nff = FR->getWff(FakeRatios::gTLCat(cat), f1, f2, p1, p2);
 
 		if (datamc == 0) {
-			debugOUTSTREAM << Form("Event: %12d tlcat: %d pT1: %5.1f f1: %.3f pT2: %5.1f f2: %.3f npp: %.4f npf: %.4f nfp: %.4f nff: %.4f", event, cat, pT1, f2, pT2, f2, npp, npf, nfp, nff) << endl;
+//			debugOUTSTREAM << Form("Event: %12d tlcat: %d pT1: %5.1f f1: %.3f pT2: %5.1f f2: %.3f npp: %.4f npf: %.4f nfp: %.4f nff: %.4f", event, cat, pT1, f2, pT2, f2, npp, npf, nfp, nff) << endl;
 		}
 
 		// Store them in the right places for the different purposes
