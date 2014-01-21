@@ -1,0 +1,15 @@
+ReleasePath /shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/
+Executable /shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/RunSSDLAnalyzer
+NameOfConf myScript.sh
+NameOfSource configuration.cfg_ssdlmc
+#SrmPath SSDLTrees/2013/Nov11/MC/PDF-cteq6ll-CT10-CT10as
+#SrmPath SSDLTrees/2013/Nov06/MC/PDF-cteq61-CT10-CT10as
+#SrmPath SSDLTrees/2013/Nov06/MC/PDF-cteq6ll-MSTW2008nlo68cl-NNPDF20_100
+#SrmPath SSDLTrees/2013/Nov06/MC/PDF-cteq6ll-MSTW2008nlo68cl_+68cl-MSTW2008nlo68cl_+68clhalf
+#SrmPath SSDLTrees/2013/Nov06/MC/PDF-cteq6ll-MSTW2008nlo68cl_-68cl-MSTW2008nlo68cl_-68clhalf
+#SrmPath SSDLTrees/2013/Nov06/MC/PDF-cteq6ll-NNPDF20_as_0116_100-NNPDF20_as_0117_100
+#SrmPath SSDLTrees/2013/Nov11/MC/PDF-cteq6ll-NNPDF20_as_0118_100-NNPDF20_as_0120_100
+#SrmPath SSDLTrees/2013/Nov06/MC/PDF-cteq6ll-NNPDF20_as_0121_100-NNPDF20_as_0122_100
+SrmPath SSDLTrees/2013/Dec02/MC
+WorkPath /shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/PablosRunManagerPlus/
+HPName lbaeni
