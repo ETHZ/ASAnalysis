@@ -14,7 +14,7 @@
 #include <cstdlib>
 using namespace std;
 
-bool UseForZPlusB=false;
+bool UseForZPlusB=true;
 
 
 
@@ -2201,17 +2201,21 @@ float JZBAnalysis::GetSFLight(const float jpt, const float jeta, string WP, floa
   return mean;
 }
 
-float JZBAnalysis::GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert) {
+float JZBAnalysis::GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert, bool BTagged) {
   if(abs(JetFlavor)==4||abs(JetFlavor)==5) { // b of c
     float factor=1.0;
     if(abs(JetFlavor)==4) factor=2.0; // twice the uncertainty for c-jets
     PosUncert = factor*SFb_Uncertainty(JetPt, WP);
     NegUncert = PosUncert;
-    return SFb(JetPt, WP);
+    if (abs(JetFlavor)==5 && BTagged) return SFb(JetPt, WP);
+    if (abs(JetFlavor)==5 && !BTagged) return 1-SFb(JetPt, WP);
+    if (abs(JetFlavor)==4 && BTagged) return 1-SFb(JetPt, WP);
+    if (abs(JetFlavor)==4 && !BTagged) return SFb(JetPt, WP);
   } else {
     // light flavor
     float SFlight = GetSFLight(JetPt,JetEta,WP,PosUncert, NegUncert);
-    return SFlight;
+    if (BTagged) return 1-SFlight;
+    if (!BTagged) return SFlight;
   }
   cerr << "Something's wrong in " << __FUNCTION__ << " with input " << WP << " , " << JetFlavor << " , " << JetPt << " , " << JetEta << endl;
 }
@@ -2988,13 +2992,13 @@ void JZBAnalysis::Analyze() {
 	//Z+b selection with 30 GeV leading jet, 10 GeV sub-leading jet
 	if(nEvent.ZbCHS3015_pfJetGoodNum==0 && isMC) {
 	  float PosUncert, NegUncert;
-	  nEvent.ZbCHS3015_BTagWgtT     = GetBWeight("CSVT",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert);
+	  nEvent.ZbCHS3015_BTagWgtT     = GetBWeight("CSVT",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert,fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i]>0.244);
 	  nEvent.ZbCHS3015_BTagWgtTDown = nEvent.ZbCHS3015_BTagWgtT-NegUncert;
 	  nEvent.ZbCHS3015_BTagWgtTUp   = nEvent.ZbCHS3015_BTagWgtT+PosUncert;
-	  nEvent.ZbCHS3015_BTagWgtM     = GetBWeight("CSVM",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert);
+	  nEvent.ZbCHS3015_BTagWgtM     = GetBWeight("CSVM",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert,fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i]>0.679);
 	  nEvent.ZbCHS3015_BTagWgtMDown = nEvent.ZbCHS3015_BTagWgtM-NegUncert;
 	  nEvent.ZbCHS3015_BTagWgtMUp   = nEvent.ZbCHS3015_BTagWgtM+PosUncert;
-	  nEvent.ZbCHS3015_BTagWgtL     = GetBWeight("CSVL",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert);
+	  nEvent.ZbCHS3015_BTagWgtL     = GetBWeight("CSVL",abs(fTR->PFCHSJFlavour[i]), jpt, abs(jeta),PosUncert,NegUncert,fTR->JnewPFCombinedSecondaryVertexBPFJetTags[i]>0.898);
 	  nEvent.ZbCHS3015_BTagWgtLDown = nEvent.ZbCHS3015_BTagWgtL-NegUncert;
 	  nEvent.ZbCHS3015_BTagWgtLUp   = nEvent.ZbCHS3015_BTagWgtL+PosUncert;
 	  
