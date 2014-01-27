@@ -2202,20 +2202,25 @@ float JZBAnalysis::GetSFLight(const float jpt, const float jeta, string WP, floa
 }
 
 float JZBAnalysis::GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert, bool BTagged) {
-  if(abs(JetFlavor)==4||abs(JetFlavor)==5) { // b of c
-    float factor=1.0;
-    if(abs(JetFlavor)==4) factor=2.0; // twice the uncertainty for c-jets
-    PosUncert = factor*SFb_Uncertainty(JetPt, WP);
-    NegUncert = PosUncert;
-    if (abs(JetFlavor)==5 && BTagged) return SFb(JetPt, WP);
-    if (abs(JetFlavor)==5 && !BTagged) return 1-SFb(JetPt, WP);
-    if (abs(JetFlavor)==4 && BTagged) return 1-SFb(JetPt, WP);
-    if (abs(JetFlavor)==4 && !BTagged) return SFb(JetPt, WP);
-  } else {
-    // light flavor
-    float SFlight = GetSFLight(JetPt,JetEta,WP,PosUncert, NegUncert);
-    if (BTagged) return 1-SFlight;
-    if (!BTagged) return SFlight;
+  
+  if(!BTagged) {
+    PosUncert=0.0;
+    NegUncert=0.0;
+    return 1.0;
+  }
+  
+  if(BTagged) {
+    if(abs(JetFlavor)==4||abs(JetFlavor)==5) { // b of c
+      float factor=1.0;
+      if(abs(JetFlavor)==4) factor=2.0; // twice the uncertainty for c-jets
+      PosUncert = factor*SFb_Uncertainty(JetPt, WP);
+      NegUncert = PosUncert;
+      return SFb(JetPt, WP);
+    } else {
+      // light flavor
+      float SFlight = GetSFLight(JetPt,JetEta,WP,PosUncert, NegUncert);
+      return SFlight;
+    }
   }
   cerr << "Something's wrong in " << __FUNCTION__ << " with input " << WP << " , " << JetFlavor << " , " << JetPt << " , " << JetEta << endl;
 }
