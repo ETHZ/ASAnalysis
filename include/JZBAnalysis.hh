@@ -73,7 +73,7 @@ public:
   bool MatchTrigger(lepton *);
   int DetermineFlavor(bool, TreeReader*);
   int ExtractFileNumber(string fileName);
-  float GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert);
+  float GetBWeight(const string WP,const int JetFlavor, const float JetPt, const float JetEta, float &PosUncert, float &NegUncert, bool BTagged);
   float smearedJetPt(float, float, float, float&, float&);
   int FindGenJetIndex(float jpt, float jeta, float jphi);
   bool IsThisDY(vector<string>);
