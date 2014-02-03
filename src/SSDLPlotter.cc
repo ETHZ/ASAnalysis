@@ -527,7 +527,7 @@ void SSDLPlotter::doAnalysis(){
 
 
 	// final selection w/o charge selection
-	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, 0, true);
+//	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, 0, true);
 
 
 
@@ -545,7 +545,7 @@ void SSDLPlotter::doAnalysis(){
 //
 //
 //
-//	makeTTWNLOPlots();
+	makeTTWNLOPlots();
 
 
 
@@ -7180,11 +7180,12 @@ void SSDLPlotter::makeTTWNLOPlots(){
 //    diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
 //    diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
 //    diffVarName.push_back("Rho"   );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("rho"                             );   yAxisTitle.push_back("Events"          );
-	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  0);
+//	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  0,  0);
+	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  0, +1);
 //	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1,  1);
 //	makeTTWNLOPlot(diffVarName, nbins, xmin, xmax, xAxisTitle, yAxisTitle, -1, -1);
 }
-void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins, vector<double> xmin, vector<double> xmax, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel){
+void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins, vector<double> xmin, vector<double> xmax, vector<TString> xAxisTitle, vector<TString> yAxisTitle, int flavor_sel, int region_sel, int chVeto){
 //	TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float minPt1, float minPt2, int chVeto, bool ttw, int systflag){
 	if (diffVarName.size() != nbins     .size()) {cout << "check length of vectors!\n"; return;}
 	if (diffVarName.size() != xmin      .size()) {cout << "check length of vectors!\n"; return;}
@@ -7192,7 +7193,6 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	if (diffVarName.size() != xAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
 	if (diffVarName.size() != yAxisTitle.size()) {cout << "check length of vectors!\n"; return;}
 	
-	int chVeto(0);
 	float chargeFactor = chVeto ? 0.5:1.;
 	int systflag  (  0 );
 	float minHT   (  0.), maxHT     ( 8000.);
@@ -7336,9 +7336,9 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	TH2D *h_HT_MinPt_syst;
 	TH2D *h_HT_MinPt_top;
 	TH2D *h_HT_MinPt_top_eff;
-	int   nHTbins(60);
+	int   nHTbins(600);
 	float HTmin(0.), HTmax(600.);
-	int   nPtbins(20);
+	int   nPtbins(80);
 	float Ptmin(20.), Ptmax(100.);
 	h_HT_MinPt_madgraph     = new TH2D("HT_MinPt_madgraph"    , "HT_MinPt_madgraph"    , nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
 	h_HT_MinPt_aMCatNLO     = new TH2D("HT_MinPt_aMCatNLO"    , "HT_MinPt_aMCatNLO"    , nHTbins, HTmin, HTmax, nPtbins, Ptmin, Ptmax);
@@ -7423,7 +7423,9 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 			
 			float weight(1.);
 			if (*sname == "TTbarW") {
-				weight = puweight * HLTSF / fSampleMap["TTbarW"]->ngen;
+//				weight = puweight * HLTSF / fSampleMap["TTbarW"]->ngen;
+//				weight = puweight * HLTSF;
+				weight = 1.;
 				h_TTWLO_HT[var]->Fill(diffVar, weight);
 				if (var == 0) h_HT_MinPt_madgraph->Fill(HT, TMath::Min(pT1, pT2), weight);
 			}
@@ -7434,7 +7436,9 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 			}
 			if (var == 0 && (*sname == "TTJets_v1" || *sname == "TTJets_v2" || *sname == "TTJets_madgraph_v1" || *sname == "TTJets_madgraph_v2")) {
 				int ngenTop = fSampleMap["TTJets_v1"]->ngen + fSampleMap["TTJets_v2"]->ngen + fSampleMap["TTJets_madgraph_v1"]->ngen + fSampleMap["TTJets_madgraph_v2"]->ngen;
-				weight = puweight * HLTSF / (float)ngenTop;
+//				weight = puweight * HLTSF / (float)ngenTop;
+//				weight = puweight * HLTSF;
+				weight = 1.;
 				h_HT_MinPt_top->Fill(HT, TMath::Min(pT1, pT2), weight);
 			}
 		}
@@ -7476,6 +7480,9 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 			h_HT_MinPt_syst->SetBinContent(htbin, ptbin, eff_aMCatNLO / eff_madgraph - 1.);
 		}
 	}
+
+	h_HT_MinPt_madgraph_eff->Scale(1./h_HT_MinPt_madgraph_eff->GetBinContent(1,1));
+	h_HT_MinPt_top_eff     ->Scale(1./h_HT_MinPt_top_eff     ->GetBinContent(1,1));
 
 	h_HT_MinPt_madgraph_eff->SetXTitle("H_{T} cut (GeV)");
 	h_HT_MinPt_aMCatNLO_eff->SetXTitle("H_{T} cut (GeV)");
@@ -7525,6 +7532,128 @@ void SSDLPlotter::makeTTWNLOPlot(vector<TString> diffVarName, vector<int> nbins,
 	drawTopLineSim(0.56, 0.8);
 	Util::PrintPDF(c_temp, "top_BGeff" + chargeString, fOutputDir + fOutputSubDir);
 	Util::PrintPNG(c_temp, "top_BGeff" + chargeString, fOutputDir + fOutputSubDir);
+
+	float opt_HT_cuts[3] = {218.992 , 156.387, 223.76  };
+	float opt_pT_cuts[3] = { 37.4585,  40.007,  31.7879};
+	TGraph *opt_cuts = new TGraph(3, opt_HT_cuts, opt_pT_cuts);
+	h_HT_MinPt_top_eff     ->Draw("colz");
+	h_HT_MinPt_madgraph_eff->Draw("samecont3");
+	opt_cuts->SetMarkerStyle(5);
+	opt_cuts->SetMarkerSize(2.);
+	if (chVeto == 1) opt_cuts->Draw("sameP");
+	drawTopLineSim(0.56, 0.8);
+	Util::PrintPDF(c_temp, "sig_bg_eff" + chargeString, fOutputDir + fOutputSubDir);
+	Util::PrintPNG(c_temp, "sig_bg_eff" + chargeString, fOutputDir + fOutputSubDir);
+	delete opt_cuts;
+
+	// HT projections
+	vector<float> pt_cuts;
+	pt_cuts.push_back(20.);
+	pt_cuts.push_back(30.);
+	pt_cuts.push_back(40.);
+	vector<TString> pt_cuts_string;
+	pt_cuts_string.push_back("20");
+	pt_cuts_string.push_back("30");
+	pt_cuts_string.push_back("40");
+	vector<TH1D*> h_HT_MinPtX_top_eff;
+	vector<TH1D*> h_HT_MinPtX_madgraph_eff;
+	for (int i = 0; i < pt_cuts.size(); i++) {
+		TString madgraph_histoname = "MinPt"+pt_cuts_string[i]+"_madgraph_eff";
+		TString top_histoname      = "MinPt"+pt_cuts_string[i]+"_top_eff";
+		h_HT_MinPtX_madgraph_eff.push_back(h_HT_MinPt_madgraph_eff->ProjectionX(madgraph_histoname, h_HT_MinPt_madgraph_eff->GetYaxis()->FindBin(pt_cuts[i]), h_HT_MinPt_madgraph_eff->GetYaxis()->FindBin(pt_cuts[i])));
+		h_HT_MinPtX_top_eff     .push_back(h_HT_MinPt_top_eff     ->ProjectionX(top_histoname     , h_HT_MinPt_top_eff     ->GetYaxis()->FindBin(pt_cuts[i]), h_HT_MinPt_top_eff     ->GetYaxis()->FindBin(pt_cuts[i])));
+		h_HT_MinPtX_madgraph_eff[i]->SetXTitle("H_{T} cut (GeV)");
+		h_HT_MinPtX_top_eff     [i]->SetXTitle("H_{T} cut (GeV)");
+		h_HT_MinPtX_madgraph_eff[i]->SetYTitle("efficiency");
+		h_HT_MinPtX_top_eff     [i]->SetYTitle("efficiency");
+		h_HT_MinPtX_madgraph_eff[i]->GetXaxis()->SetTitleOffset(1.2);
+		h_HT_MinPtX_top_eff     [i]->GetXaxis()->SetTitleOffset(1.2);
+		h_HT_MinPtX_madgraph_eff[i]->GetYaxis()->SetTitleOffset(1.2);
+		h_HT_MinPtX_top_eff     [i]->GetYaxis()->SetTitleOffset(1.2);
+		h_HT_MinPtX_madgraph_eff[i]->SetMinimum(0.);
+		h_HT_MinPtX_top_eff     [i]->SetMinimum(0.);
+		h_HT_MinPtX_madgraph_eff[i]->SetMaximum(1.);
+		h_HT_MinPtX_top_eff     [i]->SetMaximum(1.);
+		h_HT_MinPtX_madgraph_eff[i]->SetFillStyle(3001);
+		h_HT_MinPtX_top_eff     [i]->SetFillStyle(3004);
+		h_HT_MinPtX_madgraph_eff[i]->SetLineColor(44);
+		h_HT_MinPtX_top_eff     [i]->SetLineColor(46);
+		h_HT_MinPtX_madgraph_eff[i]->SetFillColor(44);
+		h_HT_MinPtX_top_eff     [i]->SetFillColor(46);
+		h_HT_MinPtX_madgraph_eff[i]->Draw();
+		h_HT_MinPtX_top_eff     [i]->Draw("same");
+		drawTopLineSim(0.56, 0.8);
+		TLegend *leg;
+		leg = new TLegend(0.60,0.75,0.80,0.88);
+		leg->AddEntry(h_HT_MinPtX_madgraph_eff[i], "t#bar{t} + W", "f");
+		leg->AddEntry(h_HT_MinPtX_top_eff     [i], "t#bar{t}"    , "f");
+		leg->SetTextSize(0.04);
+		leg->SetFillStyle(0);
+		leg->SetTextFont(42);
+		leg->SetBorderSize(0);
+		leg->Draw();
+		Util::PrintPDF(c_temp, "HTcut_vs_sig_bg_eff_Pt" + pt_cuts_string[i] + chargeString, fOutputDir + fOutputSubDir);
+		Util::PrintPNG(c_temp, "HTcut_vs_sig_bg_eff_Pt" + pt_cuts_string[i] + chargeString, fOutputDir + fOutputSubDir);
+		delete leg, h_HT_MinPtX_madgraph_eff[i], h_HT_MinPtX_top_eff     [i];
+	}
+
+	// pT projections
+	vector<float> ht_cuts;
+	ht_cuts.push_back(100.);
+	ht_cuts.push_back(150.);
+	ht_cuts.push_back(200.);
+	ht_cuts.push_back(250.);
+	vector<TString> ht_cuts_string;
+	ht_cuts_string.push_back("100");
+	ht_cuts_string.push_back("150");
+	ht_cuts_string.push_back("200");
+	ht_cuts_string.push_back("250");
+	vector<TH1D*> h_MinPt_HTX_top_eff;
+	vector<TH1D*> h_MinPt_HTX_madgraph_eff;
+	for (int i = 0; i < ht_cuts.size(); i++) {
+		TString madgraph_histoname = "HT"+ht_cuts_string[i]+"_madgraph_eff";
+		TString top_histoname      = "HT"+ht_cuts_string[i]+"_top_eff";
+		h_MinPt_HTX_madgraph_eff.push_back(h_HT_MinPt_madgraph_eff->ProjectionY(madgraph_histoname, h_HT_MinPt_madgraph_eff->GetXaxis()->FindBin(ht_cuts[i]), h_HT_MinPt_madgraph_eff->GetXaxis()->FindBin(ht_cuts[i])));
+		h_MinPt_HTX_top_eff     .push_back(h_HT_MinPt_top_eff     ->ProjectionY(top_histoname     , h_HT_MinPt_top_eff     ->GetXaxis()->FindBin(ht_cuts[i]), h_HT_MinPt_top_eff     ->GetXaxis()->FindBin(ht_cuts[i])));
+		h_MinPt_HTX_madgraph_eff[i]->SetXTitle("p_{T} cut (GeV)");
+		h_MinPt_HTX_top_eff     [i]->SetXTitle("p_{T} cut (GeV)");
+		h_MinPt_HTX_madgraph_eff[i]->SetYTitle("efficiency");
+		h_MinPt_HTX_top_eff     [i]->SetYTitle("efficiency");
+		h_MinPt_HTX_madgraph_eff[i]->GetXaxis()->SetTitleOffset(1.2);
+		h_MinPt_HTX_top_eff     [i]->GetXaxis()->SetTitleOffset(1.2);
+		h_MinPt_HTX_madgraph_eff[i]->GetYaxis()->SetTitleOffset(1.2);
+		h_MinPt_HTX_top_eff     [i]->GetYaxis()->SetTitleOffset(1.2);
+		h_MinPt_HTX_madgraph_eff[i]->SetMinimum(0.);
+		h_MinPt_HTX_top_eff     [i]->SetMinimum(0.);
+		h_MinPt_HTX_madgraph_eff[i]->SetMaximum(1.);
+		h_MinPt_HTX_top_eff     [i]->SetMaximum(1.);
+		h_MinPt_HTX_madgraph_eff[i]->SetFillStyle(3001);
+		h_MinPt_HTX_top_eff     [i]->SetFillStyle(3004);
+		h_MinPt_HTX_madgraph_eff[i]->SetLineColor(44);
+		h_MinPt_HTX_top_eff     [i]->SetLineColor(46);
+		h_MinPt_HTX_madgraph_eff[i]->SetFillColor(44);
+		h_MinPt_HTX_top_eff     [i]->SetFillColor(46);
+		h_MinPt_HTX_madgraph_eff[i]->Draw();
+		h_MinPt_HTX_top_eff     [i]->Draw("same");
+		drawTopLineSim(0.56, 0.8);
+		TLegend *leg;
+		leg = new TLegend(0.60,0.75,0.80,0.88);
+		leg->AddEntry(h_MinPt_HTX_madgraph_eff[i], "t#bar{t} + W", "f");
+		leg->AddEntry(h_MinPt_HTX_top_eff     [i], "t#bar{t}"    , "f");
+		leg->SetTextSize(0.04);
+		leg->SetFillStyle(0);
+		leg->SetTextFont(42);
+		leg->SetBorderSize(0);
+		leg->Draw();
+		Util::PrintPDF(c_temp, "pTcut_vs_sig_bg_eff_HT" + ht_cuts_string[i] + chargeString, fOutputDir + fOutputSubDir);
+		Util::PrintPNG(c_temp, "pTcut_vs_sig_bg_eff_HT" + ht_cuts_string[i] + chargeString, fOutputDir + fOutputSubDir);
+		delete leg, h_MinPt_HTX_madgraph_eff[i], h_MinPt_HTX_top_eff     [i];
+	}
+
+	TFile *eff_file = new TFile(fOutputDir+fOutputSubDir+"eff_histos"+chargeString+".root", "RECREATE", "eff_file");
+	h_HT_MinPt_madgraph_eff->Write();
+	h_HT_MinPt_top_eff     ->Write();
+	eff_file->Close();
 
 	delete c_temp, lat;
 	
@@ -12766,6 +12895,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	for( ; gsystIt != gSystematics.end() ; ++gsystIt){
 		TString outputname = outputdir + "DataPred_" + gsystIt->first + chargeString + ".txt";
 		//if (gsystIt->second != 0 && gsystIt->second != 10 && gsystIt->second != 11) continue;
+		//if (gsystIt->second != 0) continue;
 		ttwzpreds[gsystIt->first] = makePredictionSignalEvents(minHT, maxHT, minMET, maxMET, minNjets, minNbjetsL, minNbjetsM, pT1, pT2, chVeto, ttw, gsystIt->second);
 	// here we are. fix this stuff
 	}
@@ -13873,6 +14003,58 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM << "\\end{tabular}" << endl;
 	fOUTSTREAM.close();
 	
+
+
+
+	TString syst_table_int     = outputdir + "SystTableInt" + chargeString + ".tex";
+	fOUTSTREAM.open(syst_table_int.Data(), ios::trunc);
+	fOUTSTREAM << "%!TEX root = ../AN-12-445.tex" << endl;
+	fOUTSTREAM << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	fOUTSTREAM << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM << "\\begin{tabular}{l|r@{$\\,\\pm\\,$}l}" << endl;
+	fOUTSTREAM << "\\hline\\hline" << endl;
+	fOUTSTREAM << "& \\multicolumn{2}{c}{Int [\\%]}} \\\\" << endl;
+	fOUTSTREAM << "\\hline" << endl;
+	fOUTSTREAM << Form("JES up            & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["JetUp"     ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["JetUp"     ].ttw_staterr*ttwzpreds["JetUp"     ].ttw_staterr)/(ttwzpreds["JetUp"     ].ttw*ttwzpreds["JetUp"     ].ttw) ));
+
+	fOUTSTREAM << Form("JES down          & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["JetDown"   ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["JetDown"   ].ttw_staterr*ttwzpreds["JetDown"   ].ttw_staterr)/(ttwzpreds["JetDown"   ].ttw*ttwzpreds["JetDown"   ].ttw) ));
+
+	fOUTSTREAM << Form("JER               & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["JetSmear"  ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["JetSmear"  ].ttw_staterr*ttwzpreds["JetSmear"  ].ttw_staterr)/(ttwzpreds["JetSmear"  ].ttw*ttwzpreds["JetSmear"  ].ttw) ));
+
+	fOUTSTREAM << Form("b-tag up          & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["BUp"       ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["BUp"       ].ttw_staterr*ttwzpreds["BUp"       ].ttw_staterr)/(ttwzpreds["BUp"       ].ttw*ttwzpreds["BUp"       ].ttw) ));
+
+	fOUTSTREAM << Form("b-tag down        & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["BDown"     ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["BDown"     ].ttw_staterr*ttwzpreds["BDown"     ].ttw_staterr)/(ttwzpreds["BDown"     ].ttw*ttwzpreds["BDown"     ].ttw) ));
+
+	fOUTSTREAM << Form("Lepton scale up   & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["LepUp"     ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["LepUp"     ].ttw_staterr*ttwzpreds["LepUp"     ].ttw_staterr)/(ttwzpreds["LepUp"     ].ttw*ttwzpreds["LepUp"     ].ttw) ));
+
+	fOUTSTREAM << Form("Lepton scale down & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["LepDown"   ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["LepDown"   ].ttw_staterr*ttwzpreds["LepDown"   ].ttw_staterr)/(ttwzpreds["LepDown"   ].ttw*ttwzpreds["LepDown"   ].ttw) ));
+
+	fOUTSTREAM << Form("Pileup up         & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["PileupUp"  ].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["PileupUp"  ].ttw_staterr*ttwzpreds["PileupUp"  ].ttw_staterr)/(ttwzpreds["PileupUp"  ].ttw*ttwzpreds["PileupUp"  ].ttw) ));
+
+	fOUTSTREAM << Form("Pileup down       & %11.2f & %11.2f \\\\\n\\hline\n",
+					(ttwzpreds["PileupDown"].ttw/ttwzpreds["Normal"].ttw-1.)*100., 100.*sqrt( (ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr)/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + (ttwzpreds["PileupDown"].ttw_staterr*ttwzpreds["PileupDown"].ttw_staterr)/(ttwzpreds["PileupDown"].ttw*ttwzpreds["PileupDown"].ttw) ));
+	fOUTSTREAM << "\\hline" << endl;
+	fOUTSTREAM << "\\end{tabular}" << endl;
+	fOUTSTREAM.close();
+
+
+
+
+
+
+
+
+
+
+
 //	return ttwzpreds["Normal"];
 	return ttwzpreds;
 }
@@ -17453,13 +17635,13 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	// Simple error propagation assuming error on number of events is sqrt(N)
 	nt2_ee_chmid    = 2*fbb*nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
 	nt2_ee_chmid_e1 = sqrt( 4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)  + 4*fee*fee*FR->getEStat2(nt2_ee_EE_os)   + 4*feb*feb*FR->getEStat2(nt2_ee_EB_os) ); // stat only
-//	nt2_ee_chmid_e2 = sqrt( 4*fbbE*fbbE*nt2_ee_BB_os*nt2_ee_BB_os  + 4*feeE*feeE*nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
-	nt2_ee_chmid_e2 = ChMisESyst*nt2_ee_chmid;
+	nt2_ee_chmid_e2 = sqrt( 4*fbbE*fbbE*nt2_ee_BB_os*nt2_ee_BB_os  + 4*feeE*feeE*nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE*nt2_ee_EB_os*nt2_ee_EB_os    // syst only
+	                        + ChMisESyst*ChMisESyst*nt2_ee_chmid*nt2_ee_chmid                                                                        );
 	
 	nt2_em_chmid    = fbb*nt2_em_BB_os + fee*nt2_em_EE_os;
 	nt2_em_chmid_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
-//	nt2_em_chmid_e2 = sqrt( fbbE*fbbE*nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os );
-	nt2_em_chmid_e2 = ChMisESyst*nt2_em_chmid;
+	nt2_em_chmid_e2 = sqrt( fbbE*fbbE*nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os
+	                        + ChMisESyst*ChMisESyst*nt2_em_chmid*nt2_em_chmid                         );
 
 
 	///////////////////////////////////////////////////////////////////////////////////

@@ -335,7 +335,7 @@ public:
 	void getMIDIsolationPlots(vector<int>, gChannel, gFPSwitch, TH1D*&, TH1D*&, TH1D*&, TH1D*&);
 	void drawMIDIsolationPlots(TString, gChannel, gFPSwitch, TH1D*, TH1D*, TH1D*, TH1D*);
 	void makeTTWNLOPlots(float, float, float, float, int, int, int, float, float, int, bool, int);
-	void makeTTWNLOPlot(vector<TString>, vector<int>, vector<double>, vector<double>, vector<TString>, vector<TString>, int = -1, int = 0);
+	void makeTTWNLOPlot(vector<TString>, vector<int>, vector<double>, vector<double>, vector<TString>, vector<TString>, int = -1, int = 0, int = 0);
 	void makeTTWNLOPlots();
 	float getTTWGeneratorSystematic(float, float, float, float, int, int, int, float, float, int, bool, int, bool = false);
 
