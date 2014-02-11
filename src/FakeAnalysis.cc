@@ -230,7 +230,8 @@ void FakeAnalysis::FillAnalysisTree(){
 
 	// Dump basic jet and MET properties
 	for(int ind = 0; ind < fTR->NJets; ++ind){
-		if( !IsGoodBasicPFJet(ind, 15., 2.5) ) continue; // jet selector
+		if(fabs(fTR->JEta[ind]) > 2.5 || fTR->JPt[ind] < 15.) continue;
+		if( !IsGoodBasicPFJet(ind) ) continue; // jet selector
 		
 		float pt = (fGlobalTag == "" ? fTR->JPt[ind]:getNewJetInfo(ind, "pt") ); // new or old pt
 		p_fTJetpt      ->push_back( pt) ;
