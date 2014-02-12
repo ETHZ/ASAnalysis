@@ -269,7 +269,8 @@ def getListOfTasks(nameOfFile):
     argumentEnd = line.rfind("'")
 	    
     if(argumentBegin == -1 or argumentEnd == -1 or argumentBegin == argumentEnd):
-      showMessage("Ignoring the line : " + line)
+      if len(line) > 1: 
+	showMessage("Ignoring the line : " + line)
     else:  
       arguments = line[argumentBegin+1:argumentEnd]
       endLine = line[argumentEnd+1:len(line)]
@@ -464,10 +465,14 @@ if __name__ == '__main__' :
                 parser.print_usage()
                 sys.exit(-1)
         
-        timeleft=commands.getoutput("voms-proxy-info | grep timeleft | awk '{ print $3 }'")
+        timeleft=commands.getoutput("voms-proxy-info -timeleft")
+        if timeleft.find("java") > 0 : 
+	  print "Java is experiencing problems ... please try again later: "
+	  print timeleft
+	  sys.exit(-1)
         
-        print "Seems like your proxy will be alive for another "+str(timeleft)+" hours"
-        if timeleft>10800: ## valid for >3h
+        print "Seems like your proxy will be alive for another "+str(timeleft)+" seconds"
+        if float(timeleft)>10800 and float(timeleft)<1000000: ## valid for >3h
 	  print "You should be ok, your proxy is still valid for a long time."
 	else:
 	  print "You need to refresh your proxy! (will run voms-proxy-init -voms cms for you)"
@@ -483,7 +488,6 @@ if __name__ == '__main__' :
         listOfTasks = getListOfTasks(result[0])
         fusepath=result[4]
         uname=result[6]
-
  
         # Get list of files and create scripts to run
         if options.mergeonly:
