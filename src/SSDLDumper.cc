@@ -3296,9 +3296,9 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("D02",         &fSETree_D02     , "D02/F");
 	fSigEv_Tree->Branch("Rho",         &fSETree_Rho     , "Rho/F");
 	fSigEv_Tree->Branch("MTLep1",         &fSETree_MTLep1     , "MTLep1/F");
-	fSigEv_Tree->Branch("MTLep2",         &fSETree_MTLep2     , "MTLep1/F");
+	fSigEv_Tree->Branch("MTLep2",         &fSETree_MTLep2     , "MTLep2/F");
 	fSigEv_Tree->Branch("dRbJl1",         &fSETree_dRbJl1     , "dRbJl1/F");
-	fSigEv_Tree->Branch("dRbJl2",         &fSETree_dRbJl2     , "dRbJl1/F");
+	fSigEv_Tree->Branch("dRbJl2",         &fSETree_dRbJl2     , "dRbJl2/F");
 	fSigEv_Tree->Branch("BetaStar1",   &fSETree_BetaStar1, "BetaStar1/F");
 	fSigEv_Tree->Branch("BetaStar2",   &fSETree_BetaStar2, "BetaStar2/F");
 	fSigEv_Tree->Branch("BetaStar3",   &fSETree_BetaStar3, "BetaStar3/F");
