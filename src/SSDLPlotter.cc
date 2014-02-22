@@ -521,9 +521,9 @@ void SSDLPlotter::doAnalysis(){
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
-//  makeTTWIntPredictionsSigEvent();
-//  cout << "...done ===" << endl;
+  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+  makeTTWIntPredictionsSigEvent();
+  cout << "...done ===" << endl;
 
 
 	// final selection w/o charge selection
@@ -545,7 +545,7 @@ void SSDLPlotter::doAnalysis(){
 //
 //
 //
-	makeTTWNLOPlots();
+//	makeTTWNLOPlots();
 
 
 
@@ -11872,6 +11872,22 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 	float minPt1_mimi ( gMinPt1_ttWSel_mm     );
 	float minPt2_mimi ( gMinPt2_ttWSel_mm     );
 
+	// alternative final selection
+//	float  minHT_plpl ( 0.                    );
+//	float minMET_plpl ( gMinMET_ttWSel_pp     );
+//	int    minNJ_plpl ( gMinNjets_ttWSel_pp   );
+//	int  minNbJL_plpl ( 2                     );
+//	int  minNbJM_plpl ( 2                     );
+//	float minPt1_plpl ( 20.                   );
+//	float minPt2_plpl ( 20.                   );
+//	float  minHT_mimi ( 0.                    );
+//	float minMET_mimi ( gMinMET_ttWSel_mm     );
+//	int    minNJ_mimi ( gMinNjets_ttWSel_mm   );
+//	int  minNbJL_mimi ( 2                     );
+//	int  minNbJM_mimi ( 2                     );
+//	float minPt1_mimi ( 20.                   );
+//	float minPt2_mimi ( 20.                   );
+
 	ttwzpreds_plpl = makeTTWIntPredictionsSigEvent(minHT_plpl, 8000., minMET_plpl, 8000., minNJ_plpl, minNbJL_plpl, minNbJM_plpl, minPt1_plpl, minPt2_plpl, +1, true);
 	ttwzpreds_mimi = makeTTWIntPredictionsSigEvent(minHT_mimi, 8000., minMET_mimi, 8000., minNJ_mimi, minNbJL_mimi, minNbJM_mimi, minPt1_mimi, minPt2_mimi, -1, true);
 //	ttwzpreds_plpl = makeTTWIntPredictionsSigEvent(200., 8000., 0., 8000., 3, 1, 1, 32., 32.,+1, true);
@@ -14105,15 +14121,15 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	// 2 J   1 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  2,  0);
 	// 2 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
-////	// 3 J   0 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  3,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  3,  0);
+//	// 3 J   0 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  4,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  4,  0);
 ////	// 1 J   0 bJ
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  5,  0);
 ////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  5,  0);
@@ -14124,11 +14140,11 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  6,  0);
 //////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
 //////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
-//	// 3 J   1 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+	// 3 J   1 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 //	// 3 J   2 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9, +1);
@@ -14280,6 +14296,9 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	const float TTWESyst  = 0.5;
 	const float TTWESyst2 = TTWESyst*TTWESyst;
 	
+	const float ChMisESyst  = 0.3;
+	const float ChMisESyst2 = ChMisESyst*ChMisESyst;
+
 	// only take half the events for ++/--
 	float chargeFactor = chVeto ? 0.5:1.;
 
@@ -14907,12 +14926,13 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 			float nt2_ee_EE_os = h_obs_t11_ee_EE_os[var]->GetBinContent(b+1);
 			float nt2_em_BB_os = h_obs_t11_em_BB_os[var]->GetBinContent(b+1);
 			float nt2_em_EE_os = h_obs_t11_em_EE_os[var]->GetBinContent(b+1);
+			float chmid_nPass  = h_pred_chmid[var]->GetBinContent(b+1);
 			// Simple error propagation assuming error on number of events is FR->getEStat2()
 			float nt11_ee_cm_e1 = sqrt( (4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)) + (4*fee*fee*FR->getEStat2(nt2_ee_EE_os)) + 4*(feb)*(feb)*FR->getEStat2(nt2_ee_EB_os) ); // stat only
 			float nt11_ee_cm_e2 = sqrt( (4*nt2_ee_BB_os*nt2_ee_BB_os*fbbE*fbbE) + (4*nt2_ee_EE_os*nt2_ee_EE_os*feeE*feeE) + 4*(febE*febE)*nt2_ee_EB_os*nt2_ee_EB_os ); // syst only
 			float nt11_em_cm_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
 			float nt11_em_cm_e2 = sqrt( nt2_em_BB_os*nt2_em_BB_os * fbbE*fbbE + nt2_em_EE_os*nt2_em_EE_os * feeE*feeE );
-			float cm_syst2 = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2;
+			float cm_syst2 = nt11_ee_cm_e2*nt11_ee_cm_e2 + nt11_em_cm_e2*nt11_em_cm_e2 + ChMisESyst2*chmid_nPass*chmid_nPass;
 			float cm_stat2 = nt11_ee_cm_e1*nt11_ee_cm_e1 + nt11_em_cm_e1*nt11_em_cm_e1;
 			prev2 = prev2 + cm_syst2 + cm_stat2;
 			
@@ -17636,12 +17656,12 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	nt2_ee_chmid    = 2*fbb*nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
 	nt2_ee_chmid_e1 = sqrt( 4*fbb*fbb*FR->getEStat2(nt2_ee_BB_os)  + 4*fee*fee*FR->getEStat2(nt2_ee_EE_os)   + 4*feb*feb*FR->getEStat2(nt2_ee_EB_os) ); // stat only
 	nt2_ee_chmid_e2 = sqrt( 4*fbbE*fbbE*nt2_ee_BB_os*nt2_ee_BB_os  + 4*feeE*feeE*nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE*nt2_ee_EB_os*nt2_ee_EB_os    // syst only
-	                        + ChMisESyst*ChMisESyst*nt2_ee_chmid*nt2_ee_chmid                                                                        );
+	                        + ChMisESyst2*nt2_ee_chmid*nt2_ee_chmid                                                                        );
 	
 	nt2_em_chmid    = fbb*nt2_em_BB_os + fee*nt2_em_EE_os;
 	nt2_em_chmid_e1 = sqrt( fbb*fbb*FR->getEStat2(nt2_em_BB_os) + fee*fee*FR->getEStat2(nt2_em_EE_os) );
 	nt2_em_chmid_e2 = sqrt( fbbE*fbbE*nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os
-	                        + ChMisESyst*ChMisESyst*nt2_em_chmid*nt2_em_chmid                         );
+	                        + ChMisESyst2*nt2_em_chmid*nt2_em_chmid                         );
 
 
 	///////////////////////////////////////////////////////////////////////////////////
