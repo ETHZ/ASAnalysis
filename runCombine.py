@@ -56,12 +56,12 @@ def signal_strength(datacard, opt):
 #	print 'Best fit ', rf.getVal()
 
 def printLaTeX(obsSignif, obsPValue, expSignif, expPValue, sigStrength, loStat, hiStat, loSyst, hiSyst, channel):
-	xsec = 0.232
+	xsec = 232.
 	print '\\newcommand{\\ttWExpSignificance'+channel+'}{%.2f}' % expSignif
 	print '\\newcommand{\\ttWExpPValue'+channel+'}      {%.2f}' % expPValue
 	print '\\newcommand{\\ttWSignificance'+channel+'}   {%.2f}' % obsSignif
 	print '\\newcommand{\\ttWPValue'+channel+'}         {%.2f}' % obsPValue
-	print '\\newcommand{\\ttWCrossSection'+channel+'}   {%.2f  \\,\\,\\,^{+%.2f}_{-%.2f} \\,\\,\\,\\mathrm{(stat)} \\,\\,\\,  ^{+%.2f}_{-%.2f}\\,\\,\\, \\mathrm{(syst)} \\,\\,\\,  \\mathrm{pb}}' % (sigStrength*xsec, hiStat*xsec, loStat*xsec, hiSyst*xsec, loSyst*xsec)
+	print '\\newcommand{\\ttWCrossSection'+channel+'}   {%.0f  \\,\\,\\,^{+%.0f}_{-%.0f} \\,\\,\\,\\mathrm{(stat)} \\,\\,\\,  ^{+%.0f}_{-%.0f}\\,\\,\\, \\mathrm{(syst)} \\,\\,\\,  \\mathrm{fb}}' % (sigStrength*xsec, hiStat*xsec, loStat*xsec, hiSyst*xsec, loSyst*xsec)
 #	print '\\renewcommand{\\ttWCrossSection}   {', sigStrength*xsec, '  \\,\\,\\,^{+', hiStat*xsec, '}_{-', loStat*xsec, '} \\,\\,\\,\\mathrm{(stat)} \\,\\,\\,  ^{+', hiSyst*xsec, '}_{-', loSyst*xsec, '}\\,\\,\\, \mathrm{(syst)} \\,\\,\\,  \\mathrm{pb}}'
 
 def main(args):
@@ -75,6 +75,7 @@ def main(args):
 		expPValue = expected_significance(str(args[args.index('-d')+1]),"--pvalue")
 		(sigStrength , loSystStat, hiSystStat) = signal_strength(str(args[args.index('-d')+1]),"")
 		(sigStrength2, loStat    , hiStat    ) = signal_strength(str(args[args.index('-d')+1]),"-S 0")
+#		(sigStrength2, loStat    , hiStat    ) = signal_strength(str(args[args.index('-d')+1]),"--justFit --profilingMode=none")
 		loSyst = math.sqrt(loSystStat*loSystStat - loStat*loStat)
 		hiSyst = math.sqrt(hiSystStat*hiSystStat - hiStat*hiStat)
 		channel = ''
