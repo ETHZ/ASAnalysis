@@ -15025,7 +15025,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		}
 		
 		TLegend *leg = new TLegend(0.55,0.62,0.90,0.88);
-		leg->AddEntry(h_obs       [var], "Data","p");
+		leg->AddEntry(h_obs       [var], "Observed","p");
 		leg->AddEntry(h_pred_fake [var], "Non-prompt / MisID","f");
 		leg->AddEntry(h_pred_chmid[var], "Charge MisID","f");
 		leg->AddEntry(h_pred_rare [var], "Rare SM","f");
@@ -18088,7 +18088,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 
 	TLegend *leg = new TLegend(0.15,0.62,0.50,0.88);
 	leg->AddEntry(h_obs,        "Observed","p");
-	leg->AddEntry(h_pred_fake , "Fakes","f");
+	leg->AddEntry(h_pred_fake , "Non-prompt / MisID","f");
 	leg->AddEntry(h_pred_chmid, "Charge MisID","f");
 	leg->AddEntry(h_pred_mc,    "Rare SM","f");
 	leg->AddEntry(h_pred_wz,    "WZ","f");
