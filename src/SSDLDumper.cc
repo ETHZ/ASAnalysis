@@ -1981,6 +1981,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
+		fSETree_M3      = getM3();
 		if( isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightMuon(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 2;
@@ -2084,6 +2085,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
+		fSETree_M3      = getM3();
 		if( isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2176,6 +2178,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
+		fSETree_M3      = getM3();
 		if( isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightElectron(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2266,6 +2269,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 //				fSETree_BetaStar2 = getBetaStar(2);
 //				fSETree_BetaStar3 = getBetaStar(3);
 //				fSETree_BetaStar4 = getBetaStar(4);
+//				fSETree_M3      = getM3();
 //				fSETree_BetaStar5 = getBetaStar(5);
 ////				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 ////				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
@@ -2314,6 +2318,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_BetaStar3 = getBetaStar(3);
 				fSETree_BetaStar4 = getBetaStar(4);
 				fSETree_BetaStar5 = getBetaStar(5);
+				fSETree_M3      = getM3();
 				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
@@ -2361,6 +2366,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_BetaStar3 = getBetaStar(3);
 				fSETree_BetaStar4 = getBetaStar(4);
 				fSETree_BetaStar5 = getBetaStar(5);
+				fSETree_M3      = getM3();
 				if( isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel/Barrel
 				if( isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Barrel/Endcap
 				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 2; // TLCat == 2 if Endcap/Barrel
@@ -3307,6 +3313,7 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("NVrtx",       &fSETree_NVrtx   , "NVrtx/I");
 	fSigEv_Tree->Branch("NTrue",       &fSETree_NTrue   , "NTrue/I");
 	fSigEv_Tree->Branch("GenWeight",   &fSETree_GenWeight, "GenWeight/F");
+	fSigEv_Tree->Branch("M3",          &fSETree_M3      , "M3/F");
 	
 }
 void SSDLDumper::resetSigEventTree(){
@@ -3363,6 +3370,7 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_NVrtx    = -1.;
 	fSETree_NTrue    = -1.;
 	fSETree_GenWeight = -999.;
+	fSETree_M3       = -999.;
 }
 void SSDLDumper::writeSigEvTree(TFile *pFile){
 	pFile->cd();

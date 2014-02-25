@@ -514,16 +514,16 @@ void SSDLPlotter::doAnalysis(){
   cout << "...done ====" << endl;
 
 
-//  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-//  makeTTWDiffPredictionsSigEvent();
-//  cout << "...done ===" << endl;
+  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+  makeTTWDiffPredictionsSigEvent();
+  cout << "...done ===" << endl;
 
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
-  makeTTWIntPredictionsSigEvent();
-  cout << "...done ===" << endl;
+//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+//  makeTTWIntPredictionsSigEvent();
+//  cout << "...done ===" << endl;
 
 
 	// final selection w/o charge selection
@@ -14165,6 +14165,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	double Mllbins[20]   = {20.,  40.,  60.,  80., 84., 89, 91., 93., 95., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300.};
 	double NVrtxbins[41] = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.,  10.,  11.,  12.,  13.,  14.,  15.,  16.,  17.,  18.,  19.,  20.,  21.,  22.,  23.,  24.,  25.,  26.,  27.,  28.,  29.,  30.,  31.,  32.,  33.,  34.,  35.,  36.,  37.,  38.,  39.,  40.};
 	double minMTbins[21] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400.};
+	double minM3bins[31] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600.};
 
 
 
@@ -14188,6 +14189,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	diffVarName.push_back("Mll"    );   nbins.push_back(          19 );   bins.push_back(                 Mllbins );   xAxisTitle.push_back("m_{ll} [GeV]"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("NVrtx"  );   nbins.push_back(          40 );   bins.push_back(               NVrtxbins );   xAxisTitle.push_back("N_{Vertices}"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("minMT"  );   nbins.push_back(          20 );   bins.push_back(               minMTbins );   xAxisTitle.push_back("M_{T}"                                );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("M3"     );   nbins.push_back(          30 );   bins.push_back(               minM3bins );   xAxisTitle.push_back("m_{jjj} [GeV]"                        );   yAxisTitle.push_back("Events"          );
 
 	// region_sel = 2 2J 1bJ
 	// region_sel = 3 2J 0bJ
@@ -14221,7 +14223,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 //	// 3 J   2 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9, +1);
@@ -14233,18 +14235,21 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
 //	// >=2 J   ==0 bJ  pt > 40 GeV
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 11,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0, 11,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1, 11,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2, 11,  0);
 //	// final sel
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
+	// == 3 J  == 1 bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 12,  0);
 
 	return;
 	diffVarName.clear();
@@ -14314,6 +14319,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	if (region_sel == 8)  fOutputSubDir = "DiffPredictionSigEventTree/2JnobJ/";
 	if (region_sel == 9)  fOutputSubDir = "DiffPredictionSigEventTree/3J2bJ/";
 	if (region_sel == 11) fOutputSubDir = "DiffPredictionSigEventTree/2JnobJ40pt/";
+	if (region_sel == 12) fOutputSubDir = "DiffPredictionSigEventTree/3J1bJnotMore/";
 
 //	gApplyZVeto = true;
 //	if (gApplyZVeto) {
@@ -14512,6 +14518,28 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		minPt2     = gMinPt2_ttWSel_mm     , maxPt2     =  8000.;
 		minMll     =   8.; // 8.
 	}
+	if (region_sel == 1 && chVeto == 0) {
+		systflag   =   0 ;
+		minHT      = gMinHT_ttWSel_pp      , maxHT      =  8000.;
+		minMET     = gMinMET_ttWSel_pp     , maxMET     =  8000.;
+		minNjets   = gMinNjets_ttWSel_pp   , maxNjets   =    99 ;
+		minNbjetsL = gMinNbjetsL_ttWSel_pp , maxNbjetsL =    99 ;
+		minNbjetsM = gMinNbjetsM_ttWSel_pp , maxNbjetsM =    99 ;
+		minPt1     = gMinPt1_ttWSel_pp     , maxPt1     =  8000.;
+		minPt2     = gMinPt2_ttWSel_pp     , maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 12) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   3 , maxNjets   =     3 ;
+		minNbjetsL =   1 , maxNbjetsL =    99 ;
+		minNbjetsM =   1 , maxNbjetsM =     1 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
 
 	TString sysString = "";
 	TString chargeString = "";
@@ -14627,7 +14655,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	string *sname = 0;
 	int flag(0);
 	int   SType, Flavor, TLCat, NJ, NbJ, NbJmed, NVrtx;
-	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2;
+	float puweight, pT1, pT2, HT, MET, SLumi, HLTSF, PFIso1, PFIso2, D01, D02, Rho, BetaStar1, BetaStar2, BetaStar3, BetaStar4, BetaStar5, MTLep1, MTLep2, M3;
 	float eta1, eta2, mll;
 	int   event, run, ls;
 	int charge;
@@ -14676,6 +14704,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	sigtree->SetBranchAddress("BetaStar5", &BetaStar5);
 	sigtree->SetBranchAddress("MTLep1", &MTLep1);
 	sigtree->SetBranchAddress("MTLep2", &MTLep2);
+	sigtree->SetBranchAddress("M3", &M3);
 
 	float trigScale[3] = {gMMTrigScale, gEMTrigScale, gEETrigScale};
 
@@ -14781,6 +14810,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 				if (MTLep1 > MTLep2)                diffVar = MTLep2;
 				else                          diffVar = MTLep1;
 			}
+			else if (diffVarName[var] == "M3") diffVar = M3;
 			else                                    diffVar = -9999.;
 
 			// GET ALL DATA EVENTS
@@ -15127,10 +15157,10 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		gr_obs->Draw("P same");
 		
 		lat->SetTextSize(0.03);
-		if (flavor_sel == -1) lat->DrawLatex(0.14,0.85, "ee/e#mu/#mu#mu");	// MU-MU || E-E
-		if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu#mu");
-		if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e#mu");
-		if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "ee");
+		if (flavor_sel == -1) lat->DrawLatex(0.14,0.85, "e"  + chargeSignString + "e"  + chargeSignString + "/e"  + chargeSignString + "#mu"+ chargeSignString + "/#mu"+ chargeSignString + "#mu"+ chargeSignString);	// MU-MU || E-E
+		if (flavor_sel ==  0) lat->DrawLatex(0.14,0.85, "#mu"+ chargeSignString + "#mu"+ chargeSignString);
+		if (flavor_sel ==  1) lat->DrawLatex(0.14,0.85, "e"  + chargeSignString + "#mu"+ chargeSignString);
+		if (flavor_sel ==  2) lat->DrawLatex(0.14,0.85, "e"  + chargeSignString + "e"  + chargeSignString);
 		if (flavor_sel ==  3) lat->DrawLatex(0.14,0.85, "#mu#mu (OS)");
 		if (flavor_sel ==  4) lat->DrawLatex(0.14,0.85, "e#mu (OS)");
 		if (flavor_sel ==  5) lat->DrawLatex(0.14,0.85, "ee (OS)");
