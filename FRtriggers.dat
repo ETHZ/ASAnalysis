@@ -1,0 +1,13 @@
+##################################################
+# Control regions:
+PATHSET
+Name	HLT_MU8
+Path	HLT_Mu8_v16
+Path	HLT_Mu8_v17
+Path	HLT_Mu8_v18
+
+PATHSET
+Name	HLT_MU17
+Path	HLT_Mu17_v3
+Path	HLT_Mu17_v4
+Path	HLT_Mu17_v5

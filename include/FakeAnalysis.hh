@@ -106,6 +106,15 @@ private:
 	vector<float> fTmud0    ; vector<float> * p_fTmud0    ;
 	vector<float> fTmuMT    ; vector<float> * p_fTmuMT    ;
 
+	vector<bool>  fTis_global        ;vector<bool>  * p_fTis_global        ;
+	vector<bool>  fTis_pf            ;vector<bool>  * p_fTis_pf            ;
+	vector<float> fTndof             ;vector<float> * p_fTndof             ;
+	vector<int>   fTchamber_hits     ;vector<int>   * p_fTchamber_hits     ;
+    vector<int>   fTmatched_stations ;vector<int>   * p_fTmatched_stations ;
+	vector<float> fTdz               ;vector<float> * p_fTdz               ;
+	vector<int>   fTpixel_hits       ;vector<int>   * p_fTpixel_hits       ;
+	vector<int>   fTnlayers          ;vector<int>   * p_fTnlayers          ;
+
 	vector<bool>  fTmuisveto ; vector<bool> * p_fTmuisveto ;
 	vector<bool>  fTmuisloose; vector<bool> * p_fTmuisloose;
 	vector<bool>  fTmuistight; vector<bool> * p_fTmuistight;
@@ -128,6 +137,7 @@ private:
 	float fTpfMETphi;
 
 	vector<float> fTJetpt        ; vector<float> * p_fTJetpt        ;
+	vector<float> fTJetrawpt     ; vector<float> * p_fTJetrawpt     ;
 	vector<float> fTJeteta       ; vector<float> * p_fTJeteta       ;
 	vector<float> fTJetphi       ; vector<float> * p_fTJetphi       ;
 	vector<float> fTJetenergy    ; vector<float> * p_fTJetenergy    ;

@@ -12,7 +12,7 @@ using namespace std;
 const bool gSaveGenInfo = true;
 
 
-TString FakeAnalysis::gBaseDir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/";
+TString FakeAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_3_7_patch5/src/ASAnalysis/";
 
 //____________________________________________________________________________
 FakeAnalysis::FakeAnalysis(TreeReader *tr, bool data, string globaltag): UserAnalysisBase(tr, data, globaltag){
@@ -36,7 +36,7 @@ FakeAnalysis::~FakeAnalysis(){
 
 //____________________________________________________________________________
 void FakeAnalysis::Begin(const char* filename){
-	ReadTriggers(gBaseDir + "HLTPaths_SSDL_2012.dat");
+	ReadTriggers(gBaseDir + "FRtriggers.dat");
 	ReadPDGTable(gBaseDir + "pdgtable.txt");
 
 	cout << "fakeanalysis ----------------  isdata? "  << (fIsData ? "yes":"no") << endl;
@@ -173,6 +173,15 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("MuD0"     , "std::vector<float>", &p_fTmud0          );
 	fAnalysisTree->Branch("MuMT"     , "std::vector<float>", &p_fTmuMT          );
 
+	fAnalysisTree->Branch("MuIsGlobal"        ,  "std::vector<bool>" , &p_fTis_global        );
+	fAnalysisTree->Branch("MuIsPF"            ,  "std::vector<bool>" , &p_fTis_pf            );
+	fAnalysisTree->Branch("MuChi2"            ,  "std::vector<float>", &p_fTndof             );
+	fAnalysisTree->Branch("MuChamberHits"     ,  "std::vector<int>"  , &p_fTchamber_hits     );
+    fAnalysisTree->Branch("MuMatchedStations" ,  "std::vector<int>"  , &p_fTmatched_stations );
+	fAnalysisTree->Branch("MuDz"              ,  "std::vector<float>", &p_fTdz               );
+	fAnalysisTree->Branch("MuPixelHits"       ,  "std::vector<int>"  , &p_fTpixel_hits       );
+	fAnalysisTree->Branch("MuNLayers"         ,  "std::vector<int>"  , &p_fTnlayers          );
+
 	fAnalysisTree->Branch("MuIsVeto"      , "std::vector<bool>", &p_fTmuisveto  );
 	fAnalysisTree->Branch("MuIsLoose"     , "std::vector<bool>", &p_fTmuisloose );
 	fAnalysisTree->Branch("MuIsTight"     , "std::vector<bool>", &p_fTmuistight );
@@ -195,6 +204,7 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("pfMETPhi"      ,&fTpfMETphi      , "pfMETPhi/F"             );
 
 	fAnalysisTree->Branch("JetPt"         , "std::vector<float>" , &p_fTJetpt         );
+	fAnalysisTree->Branch("JetRawPt"      , "std::vector<float>" , &p_fTJetrawpt      );
 	fAnalysisTree->Branch("JetEta"        , "std::vector<float>" , &p_fTJeteta        );
 	fAnalysisTree->Branch("JetPhi"        , "std::vector<float>" , &p_fTJetphi        );
 	fAnalysisTree->Branch("JetEnergy"     , "std::vector<float>" , &p_fTJetenergy     );
@@ -210,6 +220,8 @@ void FakeAnalysis::Analyze(){
 	FillAnalysisTree();
 }
 void FakeAnalysis::FillAnalysisTree(){
+
+if(fTR->Event == 72652549) cout << "i ran on this event!!!!" << endl;
 	fCounter.fill(fCutnames[0]);
 	// initial event selection: good event trigger, good primary vertex...
 	if( !IsGoodEvent() ) return;
@@ -217,7 +229,7 @@ void FakeAnalysis::FillAnalysisTree(){
 	ResetTree();
 	
 	// Trigger selection
-	// if(fIsData && FillTriggers(fHLTPaths) == false) return;
+	if(fIsData && FillTriggers() == false) return;
 	FillTriggers();
 	fCounter.fill(fCutnames[2]);
 
@@ -230,11 +242,12 @@ void FakeAnalysis::FillAnalysisTree(){
 
 	// Dump basic jet and MET properties
 	for(int ind = 0; ind < fTR->NJets; ++ind){
-		if(fabs(fTR->JEta[ind]) > 2.5 || fTR->JPt[ind] < 15.) continue;
+		if(fabs(fTR->JEta[ind]) > 2.5 || fTR->JPt[ind] <  1.) continue;
 		if( !IsGoodBasicPFJet(ind) ) continue; // jet selector
 		
 		float pt = (fGlobalTag == "" ? fTR->JPt[ind]:getNewJetInfo(ind, "pt") ); // new or old pt
 		p_fTJetpt      ->push_back( pt) ;
+		p_fTJetrawpt   ->push_back( fTR->JPt[ind]/fTR->JEcorr[ind]) ;
 		p_fTJeteta     ->push_back( fTR->JEta[ind] );
 		p_fTJetphi     ->push_back( fTR->JPhi[ind] );
 		p_fTJetenergy  ->push_back( (fGlobalTag == "" ? fTR->JE[ind]:getNewJetInfo(ind, "e") ) ); // new energy
@@ -247,8 +260,10 @@ void FakeAnalysis::FillAnalysisTree(){
 
 	// Get METs
 	std::pair<float, float> newmet = GetOnTheFlyCorrections();
-	fTpfMET     = fGlobalTag == "" ? fTR->PFType1MET   : newmet.first ;
-	fTpfMETphi  = fGlobalTag == "" ? fTR->PFType1METphi: newmet.second;
+	// fTpfMET     = fGlobalTag == "" ? fTR->PFType1MET   : newmet.first ;
+	// fTpfMETphi  = fGlobalTag == "" ? fTR->PFType1METphi: newmet.second;
+	fTpfMET     = fGlobalTag == "" ? fTR->PFMET   : newmet.first ;
+	fTpfMETphi  = fGlobalTag == "" ? fTR->PFMETphi: newmet.second;
 
 	// fill a met TLorentzVector
 	TLorentzVector met;
@@ -274,7 +289,8 @@ void FakeAnalysis::FillAnalysisTree(){
 
 	// Dump muon properties
 	for(int ind = 0; ind < fTR->NMus; ++ind){
-		if(fTR->MuPt[ind] < 5. || fabs(fTR->MuEta[ind]) > 2.5 || MuPFIso(ind) > 1.0 ) continue; //save no muons with pt <5, eta > 2.5 or iso > 1.0
+		if(fTR->MuPt[ind] <10. || fabs(fTR->MuEta[ind]) > 2.4) continue; //save no muons with pt <5, eta > 2.5 or iso > 1.0
+	//cout << Form("%i\t%i\t%i\t%.2f\t%.2f\t%.2f\t%i\t%i",fTR->Run, fTR->LumiSection, fTR->Event, fTR->MuPt[ind], fTR->MuEta[ind], fTR->MuPhi[ind], IsLooseMuon(ind), IsTightMuon(ind)) << endl;
 		p_fTmupt    ->push_back( fTR->MuPt      [ind] );
 		p_fTmueta   ->push_back( fTR->MuEta     [ind] );
 		p_fTmuphi   ->push_back( fTR->MuPhi     [ind] );
@@ -288,9 +304,19 @@ void FakeAnalysis::FillAnalysisTree(){
 		
 		// Calculate mT:
 		TLorentzVector pmu;
-		pmu.SetPtEtaPhiM(fTR->MuPt[ind], fTR->MuEta[ind], fTR->MuPhi[ind], 0.105);	
-		p_fTmuMT->push_back( (met+pmu).Mt() );
+		pmu.SetPtEtaPhiM(fTR->MuPt[ind], 0., fTR->MuPhi[ind], 0.105);	
+		p_fTmuMT->push_back( (met+pmu).M() );
+
 		if(IsLooseMuon(ind)) nLooseLeptons++;
+
+	p_fTis_global        -> push_back( fTR->MuIsGlobalMuon[ind]     );
+	p_fTis_pf            -> push_back( fTR->MuIsPFMuon[ind]         );
+	p_fTndof             -> push_back( fTR->MuNChi2[ind]            );
+	p_fTchamber_hits     -> push_back( fTR->MuNGlMuHits [ind]       ); // muon.globalTrack()-> hitPattern().numberOfValidMuonHits()
+    p_fTmatched_stations -> push_back( fTR->MuNMatchedStations[ind] ); // muon.numberOfMatchedStations()
+	p_fTdz               -> push_back( fTR->MuDzPV[ind]             );
+	p_fTpixel_hits       -> push_back( fTR->MuNPxHits[ind]          ); // muon.innerTrack()-> hitPattern().numberOfValidPixelHits()
+	p_fTnlayers          -> push_back( fTR->MuNSiLayers[ind]        ); // muon.innerTrack()-> hitPattern().trackerLayersWithMeasurement()
 	}
 
 
@@ -311,12 +337,12 @@ void FakeAnalysis::FillAnalysisTree(){
 		
 		// Calculate mT:
 		TLorentzVector pel;
-		pel.SetPtEtaPhiM(fTR->ElPt[ind], fTR->ElEta[ind], fTR->ElPhi[ind], 0.0005);
-		p_fTelMT->push_back( (met+pel).Mt() );
+		pel.SetPtEtaPhiM(fTR->ElPt[ind], 0., fTR->ElPhi[ind], 0.0005);
+		p_fTelMT->push_back( (met+pel).M() );
 		if(IsLooseElectron(ind)) nLooseLeptons++;
 	}
 
-	if(nLooseLeptons < 1) return;
+	// if(nLooseLeptons < 1) return;
 
 	fAnalysisTree->Fill();
 }
@@ -348,6 +374,15 @@ void FakeAnalysis::ResetTree(){
 	p_fTmud0    = &fTmud0    ; p_fTmud0    ->reserve(fTR->NMus) ; p_fTmud0    ->clear();
 	p_fTmuMT    = &fTmuMT    ; p_fTmuMT    ->reserve(fTR->NMus) ; p_fTmuMT    ->clear();
 
+	p_fTis_global        = &fTis_global       ; p_fTis_global       -> reserve(fTR->NMus) ;p_fTis_global        -> clear();
+	p_fTis_pf            = &fTis_pf           ; p_fTis_pf           -> reserve(fTR->NMus) ;p_fTis_pf            -> clear();
+	p_fTndof             = &fTndof            ; p_fTndof            -> reserve(fTR->NMus) ;p_fTndof             -> clear();
+	p_fTchamber_hits     = &fTchamber_hits    ; p_fTchamber_hits    -> reserve(fTR->NMus) ;p_fTchamber_hits     -> clear();
+    p_fTmatched_stations = &fTmatched_stations; p_fTmatched_stations-> reserve(fTR->NMus) ;p_fTmatched_stations -> clear();
+	p_fTdz               = &fTdz              ; p_fTdz              -> reserve(fTR->NMus) ;p_fTdz               -> clear();
+	p_fTpixel_hits       = &fTpixel_hits      ; p_fTpixel_hits      -> reserve(fTR->NMus) ;p_fTpixel_hits       -> clear();
+	p_fTnlayers          = &fTnlayers         ; p_fTnlayers         -> reserve(fTR->NMus) ;p_fTnlayers          -> clear();
+
 	p_fTmuisveto   = &fTmuisveto  ; p_fTmuisveto   ->reserve(fTR->NMus) ; p_fTmuisveto  ->clear();
 	p_fTmuisloose  = &fTmuisloose ; p_fTmuisloose  ->reserve(fTR->NMus) ; p_fTmuisloose ->clear();
 	p_fTmuistight  = &fTmuistight ; p_fTmuistight  ->reserve(fTR->NMus) ; p_fTmuistight ->clear();
@@ -370,6 +405,7 @@ void FakeAnalysis::ResetTree(){
 	fTpfMETphi      = -999.99;
 
 	p_fTJetpt        = &fTJetpt        ; p_fTJetpt        ->reserve(fTR->NJets); p_fTJetpt        ->clear();
+	p_fTJetrawpt     = &fTJetrawpt     ; p_fTJetrawpt     ->reserve(fTR->NJets); p_fTJetrawpt     ->clear();
 	p_fTJeteta       = &fTJeteta       ; p_fTJeteta       ->reserve(fTR->NJets); p_fTJeteta       ->clear();
 	p_fTJetphi       = &fTJetphi       ; p_fTJetphi       ->reserve(fTR->NJets); p_fTJetphi       ->clear();
 	p_fTJetenergy    = &fTJetenergy    ; p_fTJetenergy    ->reserve(fTR->NJets); p_fTJetenergy    ->clear();
@@ -469,27 +505,33 @@ bool FakeAnalysis::IsLooseMuon(int ind){
 	if(fTR->MuIsGlobalMuon[ind] == 0)    return false;
 	if(fTR->MuIsPFMuon[ind] == 0)        return false;
 
-	if(fabs(fTR->MuEta[ind]) > 2.4)      return false;
-
 	if(fTR->MuNChi2[ind] > 10)           return false;
-	if(fTR->MuNSiLayers[ind] < 6)        return false;
-	if(fTR->MuNPxHits[ind] < 1)          return false;
-	if(fTR->MuNGlMuHits [ind] < 1)       return false;
-	if(fTR->MuNMuHits [ind] < 1)         return false;
+
+	if(fTR->MuNGlMuHits [ind] < 1)       return false; // muon.globalTrack()->hitPattern().numberOfValidMuonHits() 
+
     if(fTR->MuNMatchedStations[ind] < 2) return false; // muon.numberOfMatchedStations()
 
-	if(fabs(fTR->MuD0PV[ind])     > 0.02) return false;
-	if(fabs(fTR->MuDzPV[ind])     > 0.10) return false;
+	if(fabs(fTR->MuD0PV[ind])     > 0.2) return false;
 
-	if(fTR->MuIso03EMVetoEt[ind]  > 4.00) return false;
-	if(fTR->MuIso03HadVetoEt[ind] > 6.00) return false;
+	if(fabs(fTR->MuDzPV[ind])     > 0.2) return false;
+
+	if(fTR->MuNPxHits[ind] < 1)          return false; // muon.innerTrack()->hitPattern().numberOfValidPixelHits()
+
+	if(fTR->MuNSiLayers[ind] < 6)        return false; // muon.innerTrack()->hitPattern().trackerLayersWithMeasurement()
+
+	if(MuPFIso(ind) > 1.0) return false;
+
+	// if(fTR->MuNMuHits [ind] < 1)         return false; // this is on the outer track: muon.outerTrack()->hitPattern().numberOfValidHits()
+	// not applied if(fTR->MuIso03EMVetoEt[ind]  > 4.00) return false;
+	// not applied if(fTR->MuIso03HadVetoEt[ind] > 6.00) return false;
 
 	return true;
 }
 
 bool FakeAnalysis::IsTightMuon(int ind){
 	if(!IsLooseMuon(ind)) return false;
-	if(MuPFIso(ind) > 1.0) return false;
+	if(MuPFIso(ind) > 0.1) return false;
+	if(fabs(fTR->MuD0PV[ind]) > 0.01) return false;
 	return true;
 }
 

@@ -1,39 +1,39 @@
-## # Run 2012A
-## /DoubleMu/mdunser-V03-04-01_DoubleMu-Run2012A-PromptReco-v1-AOD-0ffd1209610725aa8fb0ae6c685ebe77/USER              ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-## /DoubleElectron/mdunser-V03-04-01_DoubleElectron-Run2012A-PromptReco-v1-AOD-0ffd1209610725aa8fb0ae6c685ebe77/USER  ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-## /MuEG/mdunser-V03-04-01_MuEG-Run2012A-PromptReco-v1-AOD-0ffd1209610725aa8fb0ae6c685ebe77/USER                      ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-## 
-## # Run 2012B
-## /DoubleMu/mdunser-V03-04-01_DoubleMu-Run2012B-PromptReco-v1-AOD-0ffd1209610725aa8fb0ae6c685ebe77/USER              ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-## /DoubleElectron/mdunser-V03-04-01_DoubleElectron-Run2012B-PromptReco-v1-AOD-0ffd1209610725aa8fb0ae6c685ebe77/USER  ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-## /MuEG/mdunser-V03-04-01_MuEG-Run2012B-PromptReco-v1-AOD-0ffd1209610725aa8fb0ae6c685ebe77/USER                      ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-
-# Run 2012B extended Jun10
-/DoubleMu/mdunser-V03-04-02_DoubleMu-Run2012B-PromptReco-v1-AOD-jun10ext-a3fc100070f87b6b5dc11df365c85042/USER              ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-/DoubleElectron/mdunser-V03-04-02_DoubleElectron-Run2012B-PromptReco-v1-AOD-jun10ext-a3fc100070f87b6b5dc11df365c85042/USER  ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-/MuEG/mdunser-V03-04-02_MuEG-Run2012B-PromptReco-v1-AOD-jun10ext-a3fc100070f87b6b5dc11df365c85042/USER                      ' -v 1 -j /shome/mdunser/jsons/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt' 20 -1
-
-# ## Latest runs
-# /susy/ntuples/data/V02-05-00b/DoubleElectron-Run2011B-PromptReco-v1-AOD/  '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' -1 5
-# /susy/ntuples/data/V02-05-00b/MuEG-Run2011B-PromptReco-v1-AOD/            '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' -1 5
-# /susy/ntuples/data/V02-05-00b/DoubleMu-Run2011B-PromptReco-v1-AOD/        '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' -1 5
-# ## Run2011B
-# /susy/ntuples/data/V02-05-00/DoubleElectron-Run2011B-PromptReco-v1-AOD/        '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-05-00/MuEG-Run2011B-PromptReco-v1-AOD/                  '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1 
-# /susy/ntuples/data/V02-05-00/DoubleMu-Run2011B-PromptReco-v1-AOD/              '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# ## PromptReco v6
-# /susy/ntuples/data/V02-04-03/DoubleElectron_Run2011A-PromptReco-v6_AOD__retry  '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-04-03/DoubleMu_Run2011A-PromptReco-v6_AOD__retry/       '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1 
-# /susy/ntuples/data/V02-04-03/MuEG_Run2011A-PromptReco-v6_AOD__retry/           '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# ## PromptReco v4
-# /susy/ntuples/data/V02-02-09a/DoubleMu-Run2011A-PromptReco-v4-AOD/             '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-02-09a/DoubleElectron-Run2011A-PromptReco-v4-AOD/       '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-02-09a/MuEG-Run2011A-PromptReco-v4-AOD_RETRANSFER/      '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# ## Aug5 ReReco (170249-172619)
-# /susy/ntuples/data/V02-04-03/DoubleElectron-Run2011A-05Aug2011-v1-AOD/         '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-04-03/MuEG-Run2011A-05Aug2011-v1-AOD__new/              '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-04-03/DoubleMu-Run2011A-05Aug2011-v1-AOD/               '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# ## May10 ReReco
-# /susy/ntuples/data/V02-02-08/DoubleElectron-Run2011A-May10ReReco-v1-AOD/       '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-02-08/MuEG-Run2011A-May10ReReco-v1-AOD/                 '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
-# /susy/ntuples/data/V02-02-08/DoubleMu-Run2011A-May10ReReco-v1-AOD/             '-v 1 -j /shome/stiegerb/NTP413/macros/Cert_160404-180252_7TeV_PromptReco_ReRecoAug5_ReRecoMay10_JSON.txt' 20 -1
+##
+## #### SingleMu  #####
+## /SingleMu/pablom-V03-09-01_SingleMu-Run2012A-recover-06Aug2012-v1-78a6c7f738b6e33736140124e4f64092/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+## /SingleMu/pablom-V03-09-01_SingleMu-Run2012A-13Jul2012-v1-d509f6f6f2ed390401a23296b0740882/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+## /SingleMu/pablom-V03-09-01_SingleMu-Run2012C-EcalRecover-11Dec2012-v1-ae8907b722febc42a20177aeb71b8421/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+## /SingleMu/pablom-V03-09-01_SingleMu-Run2012C-24Aug2012-v1-a7b324c190d2cb3ee0451568b4fe1774/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+## /SingleMu/pablom-V03-09-01_SingleMu-Run2012C-PromptReco-v2-ae8907b722febc42a20177aeb71b8421/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+## /SingleMu/pablom-V03-09-01_SingleMu-Run2012B-13Jul2012-v1-3-d509f6f6f2ed390401a23296b0740882/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 10 -1
+## /SingleMu/pablom-V03-09-01_SingleMu-Run2012D-PromptReco-v1-ed27575347012eeeb5efebc15a8ff0a1/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+###
+### #### DoubleMu  #####
+/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012A-13Jul2012-v1-8b40af1c1a7112b82abff0ac5ab711c2/USER			' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012B-13Jul2012-v4-8b40af1c1a7112b82abff0ac5ab711c2/USER			' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 10 -1
+/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012A-recover-06Aug2012-v1-e70166c5bed902d2bd92edbda9fa107a/USER		' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 1 -1
+/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012C-24Aug2012-v1-8bfe2e4ea3f2513d64bd97608ee8b69e/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 3 -1
+/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012C-PromptReco-v2-RETRY-274a619113c85d842e3dd58dec83f5eb/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012D-PromptReco-v1-RETRY-87eb78fbd8f3b8706be023253eaf999d/USER				        ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012C-EcalRecover-11Dec2012-v1-274a619113c85d842e3dd58dec83f5eb/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+###
+### #### MuEG #####
+#/MuEG/fronga-V03-09-01_MuEG-Run2012A-13Jul2012-v1-bc9c2b19fb3a6c32e68e698da0c1a6a2/USER					' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+#/MuEG/fronga-V03-09-01_MuEG-Run2012B-13Jul2012-v1-bc9c2b19fb3a6c32e68e698da0c1a6a2/USER					' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 10 -1
+#/MuEG/fronga-V03-09-01_MuEG-Run2012A-recover-06Aug2012-v1-e7ea0c1aa04bed5035de4d5f4101c25e/USER		' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 1 -1
+#/MuEG/fronga-V03-09-01_MuEG-Run2012C-24Aug2012-v1-d88d882b7a3fcfc4ed1033f73588560d/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 3 -1
+#/MuEG/fronga-V03-09-01_MuEG-Run2012C-PromptReco-v2-31ebd271d9f1a9498249bcd7225c3aff/USER		' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+#/MuEG/fronga-V03-09-01_MuEG-Run2012D-PromptReco-v1-28e5d3b4873e093c8318dc4a850886a2/USER					    ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+#/MuEG/fronga-V03-09-01_MuEG-Run2012C-EcalRecover-11Dec2012-v1-31ebd271d9f1a9498249bcd7225c3aff/USER		' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+###
+### #### DoubleElectron #####
+#/DoubleElectron/buchmann-V03-09-00_DoubleElectron-Run2012A-13Jul2012-v1-16f7e5c850b3d80f89ea2947f974ec99/USER		    ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
+#/DoubleElectron/buchmann-V03-09-00_DoubleElectron-Run2012B-13Jul2012-v1-16f7e5c850b3d80f89ea2947f974ec99/USER		    ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 10 -1
+#/DoubleElectron/buchmann-V03-09-01_DoubleElectron-Run2012B-13Jul2012-v1_PATCH-16f7e5c850b3d80f89ea2947f974ec99/USER		    ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 10 -1
+#/DoubleElectron/buchmann-V03-09-00_DoubleElectron-Run2012A-recover-06Aug2012-v1_CorrectGT-3a98a48185db3b99c88f9961cfe728e6/USER		' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 1 -1
+#/DoubleElectron/buchmann-V03-09-00_DoubleElectron-Run2012C-24Aug2012-v1-43f8fc69966fa45202760d31e19370d9/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 3 -1
+#/DoubleElectron/buchmann-V03-09-00_DoubleElectron-Run2012C-PromptReco-v2-c76c59f67b9f31d0cf3a452c4cc74ddc/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+#/DoubleElectron/buchmann-V03-09-01_DoubleElectron-Run2012C-PromptReco-v2_PATCH-c76c59f67b9f31d0cf3a452c4cc74ddc/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+#/DoubleElectron/buchmann-V03-09-00_DoubleElectron-Run2012D-PromptReco-v1-4c1b7b909e96a5b40ca70afea9d31333/USER				        ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+#/DoubleElectron/buchmann-V03-09-01_DoubleElectron-Run2012D-PromptReco-v1_MEGAPATCH-4c1b7b909e96a5b40ca70afea9d31333/USER				        ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+#/DoubleElectron/buchmann-V03-09-00_DoubleElectron-Run2012C-EcalRecover-11Dec2012-v1-c76c59f67b9f31d0cf3a452c4cc74ddc/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
