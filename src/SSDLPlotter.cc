@@ -514,16 +514,16 @@ void SSDLPlotter::doAnalysis(){
   cout << "...done ====" << endl;
 
 
-  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-  makeTTWDiffPredictionsSigEvent();
-  cout << "...done ===" << endl;
+//  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+//  makeTTWDiffPredictionsSigEvent();
+//  cout << "...done ===" << endl;
 
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
-//  makeTTWIntPredictionsSigEvent();
-//  cout << "...done ===" << endl;
+  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+  makeTTWIntPredictionsSigEvent();
+  cout << "...done ===" << endl;
 
 
 	// final selection w/o charge selection
@@ -12358,31 +12358,80 @@ void SSDLPlotter::makeTTWIntPredictionsSigEvent() {
 					   1.0+(ttwzpreds_mimi["JetUp"].wz_ee    -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
 					   1.0+(ttwzpreds_mimi["JetDown"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee,
 					   1.0+(ttwzpreds_mimi["JetUp"].rare_ee  -ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
-	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
-					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
-					   1.0+(ttwzpreds_plpl["JetSmear"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
-					   1.0+(ttwzpreds_plpl["JetSmear"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
-					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
-					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
-					   1.0+(ttwzpreds_plpl["JetSmear"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
-					   1.0+(ttwzpreds_plpl["JetSmear"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
-					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
-					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
-					   1.0+(ttwzpreds_plpl["JetSmear"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
-					   1.0+(ttwzpreds_plpl["JetSmear"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
-					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
-					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
-					   1.0+(ttwzpreds_mimi["JetSmear"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
-					   1.0+(ttwzpreds_mimi["JetSmear"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
-					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
-					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
-					   1.0+(ttwzpreds_mimi["JetSmear"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
-					   1.0+(ttwzpreds_mimi["JetSmear"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
-					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
-					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
-					   1.0+(ttwzpreds_mimi["JetSmear"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
-					   1.0+(ttwzpreds_mimi["JetSmear"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+//	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+	fOUTSTREAM << Form("jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].ttwz_mm  -ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].wz_mm    -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].rare_mm  -ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].ttwz_em  -ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].wz_em    -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].rare_em  -ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].ttwz_ee  -ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].wz_ee    -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+					   1.0+(ttwzpreds_plpl["JetSmearDown"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_plpl["JetSmearUp"].rare_ee  -ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].ttwz_mm  -ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].wz_mm    -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].rare_mm  -ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].ttwz_em  -ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].wz_em    -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].rare_em  -ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].ttwz_ee  -ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].wz_ee    -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearDown"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee,
+					   1.0+(ttwzpreds_mimi["JetSmearUp"].rare_ee  -ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
 //	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
 //					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst,
 //					   pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst, pu_syst) << endl;
@@ -12954,6 +13003,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	for( ; gsystIt != gSystematics.end() ; ++gsystIt){
 		TString outputname = outputdir + "DataPred_" + gsystIt->first + chargeString + ".txt";
 		//if (gsystIt->second != 0 && gsystIt->second != 10 && gsystIt->second != 11) continue;
+		if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13) continue;
 		//if (gsystIt->second != 0) continue;
 		ttwzpreds[gsystIt->first] = makePredictionSignalEvents(minHT, maxHT, minMET, maxMET, minNjets, minNbjetsL, minNbjetsM, pT1, pT2, chVeto, ttw, gsystIt->second);
 	// here we are. fix this stuff
@@ -13201,11 +13251,20 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetUp"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
 					   1.0+(ttwzpreds["JetDown"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare,
 					   1.0+(ttwzpreds["JetUp"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare) << endl;
-	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   1.0+(ttwzpreds["jetsmear"].ttwz-ttwzpreds["normal"].ttwz)/ttwzpreds["normal"].ttwz,
-					   1.0+(ttwzpreds["jetsmear"].ttwz-ttwzpreds["normal"].ttwz)/ttwzpreds["normal"].ttwz,
-					   1.0+(ttwzpreds["jetsmear"].wz  -ttwzpreds["normal"].wz  )/ttwzpreds["normal"].wz,
-					   1.0+(ttwzpreds["jetsmear"].rare-ttwzpreds["normal"].rare)/ttwzpreds["normal"].rare) << endl;
+//	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   1.0+(ttwzpreds["jetsmear"].ttwz-ttwzpreds["normal"].ttwz)/ttwzpreds["normal"].ttwz,
+//					   1.0+(ttwzpreds["jetsmear"].ttwz-ttwzpreds["normal"].ttwz)/ttwzpreds["normal"].ttwz,
+//					   1.0+(ttwzpreds["jetsmear"].wz  -ttwzpreds["normal"].wz  )/ttwzpreds["normal"].wz,
+//					   1.0+(ttwzpreds["jetsmear"].rare-ttwzpreds["normal"].rare)/ttwzpreds["normal"].rare) << endl;
+	fOUTSTREAM << Form("jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz-ttwzpreds["Normal"].ttwz)/ttwzpreds["Normal"].ttwz,
+					   1.0+(ttwzpreds["JetSmearDown"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
+					   1.0+(ttwzpreds["JetSmearUp"].wz  -ttwzpreds["Normal"].wz  )/ttwzpreds["Normal"].wz,
+					   1.0+(ttwzpreds["JetSmearDown"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare,
+					   1.0+(ttwzpreds["JetSmearUp"].rare-ttwzpreds["Normal"].rare)/ttwzpreds["Normal"].rare) << endl;
 //	fOUTSTREAM << Form("pu       lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
 //					   pu_syst, pu_syst, pu_syst, pu_syst) << endl;
 	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
@@ -13723,19 +13782,44 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 					   1.0+(ttwzpreds["JetUp"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
 					   1.0+(ttwzpreds["JetDown"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee,
 					   1.0+(ttwzpreds["JetUp"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
-	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-					   1.0+(ttwzpreds["JetSmear"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
-					   1.0+(ttwzpreds["JetSmear"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
-					   1.0+(ttwzpreds["JetSmear"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
-					   1.0+(ttwzpreds["JetSmear"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
-					   1.0+(ttwzpreds["JetSmear"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
-					   1.0+(ttwzpreds["JetSmear"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
-					   1.0+(ttwzpreds["JetSmear"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
-					   1.0+(ttwzpreds["JetSmear"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
-					   1.0+(ttwzpreds["JetSmear"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
-					   1.0+(ttwzpreds["JetSmear"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
-					   1.0+(ttwzpreds["JetSmear"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
-					   1.0+(ttwzpreds["JetSmear"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
+//	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+//					   1.0+(ttwzpreds["JetSmear"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+//					   1.0+(ttwzpreds["JetSmear"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+//					   1.0+(ttwzpreds["JetSmear"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+//					   1.0+(ttwzpreds["JetSmear"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+//					   1.0+(ttwzpreds["JetSmear"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+//					   1.0+(ttwzpreds["JetSmear"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+//					   1.0+(ttwzpreds["JetSmear"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+//					   1.0+(ttwzpreds["JetSmear"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+//					   1.0+(ttwzpreds["JetSmear"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+//					   1.0+(ttwzpreds["JetSmear"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+//					   1.0+(ttwzpreds["JetSmear"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+//					   1.0+(ttwzpreds["JetSmear"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
+	fOUTSTREAM << Form("jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
+					   1.0+(ttwzpreds["JetSmearDown"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["JetSmearUp"].wz_mm  -ttwzpreds["Normal"].wz_mm  )/ttwzpreds["Normal"].wz_mm,
+					   1.0+(ttwzpreds["JetSmearDown"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+					   1.0+(ttwzpreds["JetSmearUp"].rare_mm-ttwzpreds["Normal"].rare_mm)/ttwzpreds["Normal"].rare_mm,
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz_em-ttwzpreds["Normal"].ttwz_em)/ttwzpreds["Normal"].ttwz_em,
+					   1.0+(ttwzpreds["JetSmearDown"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["JetSmearUp"].wz_em  -ttwzpreds["Normal"].wz_em  )/ttwzpreds["Normal"].wz_em,
+					   1.0+(ttwzpreds["JetSmearDown"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+					   1.0+(ttwzpreds["JetSmearUp"].rare_em-ttwzpreds["Normal"].rare_em)/ttwzpreds["Normal"].rare_em,
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["JetSmearDown"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["JetSmearUp"].ttwz_ee-ttwzpreds["Normal"].ttwz_ee)/ttwzpreds["Normal"].ttwz_ee,
+					   1.0+(ttwzpreds["JetSmearDown"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["JetSmearUp"].wz_ee  -ttwzpreds["Normal"].wz_ee  )/ttwzpreds["Normal"].wz_ee,
+					   1.0+(ttwzpreds["JetSmearDown"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee,
+					   1.0+(ttwzpreds["JetSmearUp"].rare_ee-ttwzpreds["Normal"].rare_ee)/ttwzpreds["Normal"].rare_ee) << endl;
 	fOUTSTREAM << Form("pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 					   1.0+(ttwzpreds["PileupDown"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
 					   1.0+(ttwzpreds["PileupUp"].ttwz_mm-ttwzpreds["Normal"].ttwz_mm)/ttwzpreds["Normal"].ttwz_mm,
