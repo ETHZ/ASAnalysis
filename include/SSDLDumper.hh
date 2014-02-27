@@ -932,7 +932,7 @@ public:
 
         virtual bool isGoodJet(int, float = 20., bool doLepCleaning=true);
         virtual bool isGoodJetNoPtCut(int, float = 20., bool doLepCleaning=true);
-	virtual float getJERScale(int);
+	virtual float getJERScale(int, int = 3);
 	virtual float getErrPt(float, float);
 	
 
@@ -1105,6 +1105,8 @@ public:
 	BTagSF *fBTagSF;
         GoodRunList *fGoodRunList;
 	TRandom3 *fRand3;
+	TRandom3 *fRand3_2;
+	TRandom3 *fRand3_3;
 	TRandom3 *fRand3Normal;
 	reweight::LumiReWeighting *fPUWeight, *fPUWeightUp, *fPUWeightDown, *fPUWeightCentral;
 

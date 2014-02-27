@@ -362,6 +362,8 @@ SSDLDumper::SSDLDumper(TString configfile){
 	gSystematics["METDown"]    = 9;
 	gSystematics["PileupUp"]   = 10;
 	gSystematics["PileupDown"] = 11;
+	gSystematics["JetSmearUp"] = 12;
+	gSystematics["JetSmearDown"] = 13;
 
 
 }
@@ -401,7 +403,9 @@ void SSDLDumper::init(){
 
 	// fBTagSFUtil = new BTagSFUtil("CSV", 28);
 	fBTagSF = new BTagSF();
-	fRand3 = new TRandom3(50);
+	fRand3   = new TRandom3(50);
+	fRand3_2 = new TRandom3(50);
+	fRand3_3 = new TRandom3(50);
 	fRand3Normal = new TRandom3(10);
 
 	resetHypLeptons();
@@ -655,6 +659,9 @@ void SSDLDumper::loopEvents(Sample *S){
 		// fillYields(S, gRegion["TTbarWSel"]);
 		// fDoCounting = false;
 
+		// smear jet pTs
+		smearJetPts(S, 3);
+
 		fillSigEventTree(S, 0);
 		fillDiffYields(S);
 		fillRatioPlots(S);
@@ -676,6 +683,19 @@ void SSDLDumper::loopEvents(Sample *S){
 		fillPuritiesCounters(S);
 		/////////////////////////////////////////////
 		// Systematic studies
+
+		// Jet pts smeared up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		smearJetPts(S, 4);
+		fillSigEventTree(S, gSystematics["JetSmearUp"]);
+
+		// Jet pts smeared down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		smearJetPts(S, 5);
+		fillSigEventTree(S, gSystematics["JetSmearDown"]);
+
 		if(!gDoSystStudies) continue;
 
 		// Jet pts scaled down
@@ -5027,10 +5047,13 @@ void SSDLDumper::smearJetPts(Sample *S, int flag){
 		ojets += tmp;                                                           // add jet to the old jets vector
 		if(flag == 1) JetPt[*it] *= (1 + JetCorrUnc[*it]);                     // vary up for flag 1
 		if(flag == 2) JetPt[*it] *= (1 - JetCorrUnc[*it]);                     // vary down for flag 2;
-		if(flag == 3){
+		if(flag >  2){
 			float sigmaMC  = getErrPt(JetPt[*it], JetEta[*it])/JetPt[*it];      // get the resolution
 			float jerScale = getJERScale(*it);                                  // get JER scale factors
-			float factor = fRand3->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
+			float factor;
+			if (flag == 3) factor = fRand3  ->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
+			if (flag == 4) factor = fRand3_2->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
+			if (flag == 5) factor = fRand3_3->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
 			JetPt[*it] = JetPt[*it] * factor; // smear for flag 3
 		}
 		tmp.SetPtEtaPhiE(JetPt[*it], JetEta[*it], JetPhi[*it], JetEnergy[*it]); // set tmp to the scaled/smeared jet
@@ -7139,13 +7162,30 @@ bool SSDLDumper::isGoodJetNoPtCut(int jet, float pt, bool doLepCleaning){
 
 	return true;
 }
-float SSDLDumper::getJERScale(int jet){
+float SSDLDumper::getJERScale(int jet, int flag){
 	float eta = JetEta[jet];
-	if(     fabs(eta) < 0.5) return 1.052;
-	else if(fabs(eta) < 1.1) return 1.057;
-	else if(fabs(eta) < 1.7) return 1.096;
-	else if(fabs(eta) < 2.3) return 1.134;
-	else                     return 1.288;
+	if (flag < 4) {
+		if(     fabs(eta) < 0.5) return 1.052;
+		else if(fabs(eta) < 1.1) return 1.057;
+		else if(fabs(eta) < 1.7) return 1.096;
+		else if(fabs(eta) < 2.3) return 1.134;
+		else                     return 1.288;
+	}
+	else if (flag == 4) {
+		if(     fabs(eta) < 0.5) return 1.115;
+		else if(fabs(eta) < 1.1) return 1.114;
+		else if(fabs(eta) < 1.7) return 1.161;
+		else if(fabs(eta) < 2.3) return 1.228;
+		else                     return 1.488;
+	}
+	else if (flag == 5) {
+//		if(     fabs(eta) < 0.5) return 0.990; // < 1. doesn't make sense
+		if(     fabs(eta) < 0.5) return 1.;
+		else if(fabs(eta) < 1.1) return 1.001;
+		else if(fabs(eta) < 1.7) return 1.032;
+		else if(fabs(eta) < 2.3) return 1.042;
+		else                     return 1.089;
+	}
 }
 float SSDLDumper::getErrPt(float Pt, float Eta) {
   
