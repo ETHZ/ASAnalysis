@@ -683,19 +683,6 @@ void SSDLDumper::loopEvents(Sample *S){
 		fillPuritiesCounters(S);
 		/////////////////////////////////////////////
 		// Systematic studies
-
-		// Jet pts smeared up
-		fChain->GetEntry(jentry); // reset tree vars
-		resetBTags(); // reset to scaled btag values
-		smearJetPts(S, 4);
-		fillSigEventTree(S, gSystematics["JetSmearUp"]);
-
-		// Jet pts smeared down
-		fChain->GetEntry(jentry); // reset tree vars
-		resetBTags(); // reset to scaled btag values
-		smearJetPts(S, 5);
-		fillSigEventTree(S, gSystematics["JetSmearDown"]);
-
 		if(!gDoSystStudies) continue;
 
 		// Jet pts scaled down
@@ -715,6 +702,18 @@ void SSDLDumper::loopEvents(Sample *S){
 		resetBTags(); // reset to scaled btag values
 		smearJetPts(S, 3);
 		fillSigEventTree(S, gSystematics["JetSmear"]);
+
+		// Jet pts smeared up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		smearJetPts(S, 4);
+		fillSigEventTree(S, gSystematics["JetSmearUp"]);
+
+		// Jet pts smeared down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		smearJetPts(S, 5);
+		fillSigEventTree(S, gSystematics["JetSmearDown"]);
 
 		// Btags scaled up
 		fChain->GetEntry(jentry); // reset tree vars
