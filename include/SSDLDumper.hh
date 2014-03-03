@@ -800,6 +800,8 @@ public:
 	virtual void saveBTags();
 	virtual void resetBTags();
 	virtual void smearJetPts(Sample *S, int flag = 0);
+	virtual void saveJetPts();
+	virtual void resetJetPts();
 	virtual void scaleLeptons(Sample *S, int flag = 0);
 	virtual void smearMET(Sample *S);
 	virtual void propagateMET(TLorentzVector vec1, TLorentzVector vec2);
@@ -1096,6 +1098,7 @@ public:
 	vector<float> fSigEv_HI_EM_MET;
 	
 	vector<float> fSaved_Tags;
+	vector<float> fSaved_JetPts;
 	
 	TFile *fStorageFile;
 	TString fOutputFileName;
@@ -1105,6 +1108,7 @@ public:
 	BTagSF *fBTagSF;
         GoodRunList *fGoodRunList;
 	TRandom3 *fRand3;
+	TRandom3 *fRand3_1;
 	TRandom3 *fRand3_2;
 	TRandom3 *fRand3_3;
 	TRandom3 *fRand3Normal;

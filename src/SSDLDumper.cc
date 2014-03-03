@@ -58,6 +58,8 @@ TString tmp_gBaseRegion  ;
 TString gJSONfile        ;
 bool  tmp_gDoWZValidation;
 bool  gMETType1          ;
+float gScaleMuSF = 1.;
+float gScaleElSF = 1.;
 
 // std::vector< SSDLDumper::Region* > gRegions;
 // std::vector< SSDLDumper::Region* >::iterator regIt;
@@ -404,6 +406,7 @@ void SSDLDumper::init(){
 	// fBTagSFUtil = new BTagSFUtil("CSV", 28);
 	fBTagSF = new BTagSF();
 	fRand3   = new TRandom3(50);
+	fRand3_1 = new TRandom3(50);
 	fRand3_2 = new TRandom3(50);
 	fRand3_3 = new TRandom3(50);
 	fRand3Normal = new TRandom3(10);
@@ -587,6 +590,10 @@ void SSDLDumper::loopEvents(Sample *S){
 	Long64_t nentries = fChain->GetEntriesFast();
 	Long64_t nbytes = 0, nb = 0;
 	for (Long64_t jentry=0; jentry<nentries;jentry++) {
+
+		gScaleMuSF = 1.;
+		gScaleElSF = 1.;
+
 		printProgress(jentry, nentries, S->sname);
 
 		Long64_t ientry = LoadTree(jentry);
@@ -660,7 +667,8 @@ void SSDLDumper::loopEvents(Sample *S){
 		// fDoCounting = false;
 
 		// smear jet pTs
-		smearJetPts(S, 3);
+//		smearJetPts(S, 3);
+//		saveJetPts();
 
 		fillSigEventTree(S, 0);
 		fillDiffYields(S);
@@ -678,24 +686,16 @@ void SSDLDumper::loopEvents(Sample *S){
 		fillElIdPlots(S);
 		
 
+		gScaleMuSF = 1.;
+		gScaleElSF = 1.;
+
 		fillPileUpPlots(S);
 		//		fillSyncCounters(S);
 		fillPuritiesCounters(S);
 		/////////////////////////////////////////////
 		// Systematic studies
-		if(!gDoSystStudies) continue;
 
-		// Jet pts scaled down
-		fChain->GetEntry(jentry); // reset tree vars
-		resetBTags(); // reset to scaled btag values
-		smearJetPts(S, 1);
-		fillSigEventTree(S, gSystematics["JetUp"]);
-
-		// Jet pts scaled down
-		fChain->GetEntry(jentry); // reset tree vars
-		resetBTags(); // reset to scaled btag values
-		smearJetPts(S, 2);
-		fillSigEventTree(S, gSystematics["JetDown"]);
+		// THIS IS HERE FOR TESTING
 
 		// Jet pts smeared
 		fChain->GetEntry(jentry); // reset tree vars
@@ -715,19 +715,77 @@ void SSDLDumper::loopEvents(Sample *S){
 		smearJetPts(S, 5);
 		fillSigEventTree(S, gSystematics["JetSmearDown"]);
 
+//		// Lepton pts scaled up
+//		fChain->GetEntry(jentry); // reset tree vars
+//		resetBTags(); // reset to scaled btag values
+//		resetJetPts();
+//		gScaleMuSF = 1.03;
+//		gScaleElSF = 1.05;
+// 		// fillYields(S, gRegion["TTbarWSelLU"]);
+//		fillSigEventTree(S, gSystematics["LepUp"]);
+//
+//		// Lepton pts scaled down
+//		fChain->GetEntry(jentry); // reset tree vars
+//		resetBTags(); // reset to scaled btag values
+//		resetJetPts();
+//		gScaleMuSF = 0.97;
+//		gScaleElSF = 0.95;
+// 		// fillYields(S, gRegion["TTbarWSelLD"]);
+//		fillSigEventTree(S, gSystematics["LepDown"]);
+
+		gScaleMuSF = 1.;
+		gScaleElSF = 1.;
+
+		if(!gDoSystStudies) continue;
+
+		// Jet pts scaled down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		smearJetPts(S, 1);
+		fillSigEventTree(S, gSystematics["JetUp"]);
+
+		// Jet pts scaled down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		smearJetPts(S, 2);
+		fillSigEventTree(S, gSystematics["JetDown"]);
+
+		// // Jet pts smeared
+		// fChain->GetEntry(jentry); // reset tree vars
+		// resetBTags(); // reset to scaled btag values
+		// smearJetPts(S, 3);
+		// fillSigEventTree(S, gSystematics["JetSmear"]);
+
+		// Jet pts smeared up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		smearJetPts(S, 4);
+		fillSigEventTree(S, gSystematics["JetSmearUp"]);
+
+		// Jet pts smeared down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		smearJetPts(S, 5);
+		fillSigEventTree(S, gSystematics["JetSmearDown"]);
+
 		// Btags scaled up
 		fChain->GetEntry(jentry); // reset tree vars
+		resetJetPts();
 		scaleBTags(S, 1);
 		fillSigEventTree(S, gSystematics["BUp"]);
 
 		// Btags scaled down
 		fChain->GetEntry(jentry); // reset tree vars
+		resetJetPts();
 		scaleBTags(S, 2);
 		fillSigEventTree(S, gSystematics["BDown"]);
 
 		// Lepton pts scaled up
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
+		resetJetPts();
 		scaleLeptons(S, 1);
  		// fillYields(S, gRegion["TTbarWSelLU"]);
 		fillSigEventTree(S, gSystematics["LepUp"]);
@@ -735,6 +793,7 @@ void SSDLDumper::loopEvents(Sample *S){
 		// Lepton pts scaled down
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
+		resetJetPts();
 		scaleLeptons(S, 2);
  		// fillYields(S, gRegion["TTbarWSelLD"]);
 		fillSigEventTree(S, gSystematics["LepDown"]);
@@ -742,24 +801,28 @@ void SSDLDumper::loopEvents(Sample *S){
 		// scale the unclustered MET up
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
+		resetJetPts();
 		scaleMET(S, 0);
 		fillSigEventTree(S, gSystematics["METUp"]);
 
 		// scale the unclustered MET down
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
+		resetJetPts();
 		scaleMET(S, 2);
 		fillSigEventTree(S, gSystematics["METDown"]);
 
 		// Pileup scaled up
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
+		resetJetPts();
 		scalePileup(1);
 		fillSigEventTree(S, gSystematics["PileupUp"]);
 
 		// Pileup scaled down
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
+		resetJetPts();
 		scalePileup(2);
 		fillSigEventTree(S, gSystematics["PileupDown"]);
 	}
@@ -5035,10 +5098,14 @@ void SSDLDumper::smearJetPts(Sample *S, int flag){
 	TLorentzVector ojets, jets, tmp;                           // 4-vec of old jets, newjets and a tmp-vector
 	std::vector<int>::const_iterator it = cleanJets.begin();
 	
+	if (flag == 3 && Event == 2610124) cout << "=== smearing nominal.." << endl;
+	if (flag == 4 && Event == 2610124) cout << "=== smearing up.." << endl;
+	if (flag == 5 && Event == 2610124) cout << "=== smearing down.." << endl;
 	for( it = cleanJets.begin(); it != cleanJets.end(); ++it) {
-		if (flag==3 && Event == 15713329) {
-			cout << "at jet: " << *it<< endl;
+//		if (flag==3 && Event == 15713329) {
+		if (flag > 2 && Event == 2610124) {
 			cout << "---------------------------" << endl;
+			cout << "at jet: " << *it<< endl;
 			cout << Form("before: jeti: %d jetpt: %.2f jeteta %.2f jetphi: %.2f", *it, JetPt[*it], JetEta[*it], JetPhi[*it]) << endl;
 			//cout << Form("  JEC-uncertainty: %.7f", JetCorrUnc[*it]) << endl;
 		}
@@ -5048,17 +5115,32 @@ void SSDLDumper::smearJetPts(Sample *S, int flag){
 		if(flag == 2) JetPt[*it] *= (1 - JetCorrUnc[*it]);                     // vary down for flag 2;
 		if(flag >  2){
 			float sigmaMC  = getErrPt(JetPt[*it], JetEta[*it])/JetPt[*it];      // get the resolution
-			float jerScale = getJERScale(*it);                                  // get JER scale factors
+			float jerScale = getJERScale(*it, flag);                                  // get JER scale factors
 			float factor;
-			if (flag == 3) factor = fRand3  ->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
+//			delete fRand3_2;
+//			fRand3_2 = new TRandom3(Event);
+			if (flag == 3) factor = fRand3_1->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
 			if (flag == 4) factor = fRand3_2->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
 			if (flag == 5) factor = fRand3_3->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
 			JetPt[*it] = JetPt[*it] * factor; // smear for flag 3
 		}
 		tmp.SetPtEtaPhiE(JetPt[*it], JetEta[*it], JetPhi[*it], JetEnergy[*it]); // set tmp to the scaled/smeared jet
 		jets += tmp;                                                            // add scaled/smeared jet to the new jets
+		if (flag > 2 && Event == 2610124) {
+			cout << Form("after:  jeti: %d jetpt: %.2f jeteta %.2f jetphi: %.2f", *it, JetPt[*it], JetEta[*it], JetPhi[*it]) << endl;
+		}
 	}
 	propagateMET(jets, ojets);                                                  // propagate this change to the MET
+}
+void SSDLDumper::saveJetPts(){
+	// Saves the current tagger values for all jets in a vector
+	fSaved_JetPts.clear();
+	for(size_t i = 0; i < NJets; ++i) fSaved_JetPts.push_back(JetPt[i]);
+}
+void SSDLDumper::resetJetPts(){
+	// Resets the b tags for all jets to saved values
+	if(fSaved_JetPts.size() < 1) return;
+	for(size_t i = 0; i < NJets; ++i) JetPt[i] = fSaved_JetPts[i];
 }
 // original void SSDLDumper::smearJetPts(Sample *S, int flag){
 // original 	// Modify the jet pt for systematics studies
@@ -7240,14 +7322,17 @@ float SSDLDumper::getSF(Sample *S, gChannel chan, int ind1, int ind2){
 	if(chan == Muon){
 		trig = getTriggerSFMuMu(MuEta[ind2]);
 		id   = getLeptonSFMu(MuPt[ind1], MuEta[ind1])*getLeptonSFMu(MuPt[ind2], MuEta[ind2]);
+		id = id * gScaleMuSF * gScaleMuSF;
 	}
 	else if(chan == Elec){
 		trig = getTriggerSFElEl(ElPt[ind2]);
 		id   = getLeptonSFEl(ElPt[ind1], ElEta[ind1])*getLeptonSFEl(ElPt[ind2], ElEta[ind2]);
+		id = id * gScaleElSF * gScaleElSF;
 	}
 	else if(chan == ElMu){
 	        trig = getTriggerSFMuEl();
 		id   = getLeptonSFMu(MuPt[ind1], MuEta[ind1])*getLeptonSFEl(ElPt[ind2], ElEta[ind2]);
+		id = id * gScaleMuSF * gScaleElSF;
 	}
 	return (trig*id);
 }
