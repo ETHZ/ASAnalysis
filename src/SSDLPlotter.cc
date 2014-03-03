@@ -521,13 +521,16 @@ void SSDLPlotter::doAnalysis(){
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
-  makeTTWIntPredictionsSigEvent();
-  cout << "...done ===" << endl;
+//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
+//  makeTTWIntPredictionsSigEvent();
+//  cout << "...done ===" << endl;
 
 
 	// final selection w/o charge selection
 //	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, 0, true);
+
+	// final selection w/o charge selection and loose lepton pT cut
+	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, 20., 20., 0, true);
 
 
 
@@ -13003,7 +13006,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	for( ; gsystIt != gSystematics.end() ; ++gsystIt){
 		TString outputname = outputdir + "DataPred_" + gsystIt->first + chargeString + ".txt";
 		//if (gsystIt->second != 0 && gsystIt->second != 10 && gsystIt->second != 11) continue;
-		if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13) continue;
+		//if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 6 && gsystIt->second != 7) continue;
+		if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 3) continue;
 		//if (gsystIt->second != 0) continue;
 		ttwzpreds[gsystIt->first] = makePredictionSignalEvents(minHT, maxHT, minMET, maxMET, minNjets, minNbjetsL, minNbjetsM, pT1, pT2, chVeto, ttw, gsystIt->second);
 	// here we are. fix this stuff
@@ -13096,6 +13100,124 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM2.close();
 	fOUTSTREAM3.close();
 	
+
+
+	TString JERtable     = outputdir + "JERTable" + chargeString + ".tex";
+	fOUTSTREAM3.open(JERtable.Data(), ios::trunc);
+	fOUTSTREAM3 << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+	fOUTSTREAM3 << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM3 << "%% Format is tot, (ee, mm, em)" << endl;
+	fOUTSTREAM3 << endl;
+	fOUTSTREAM3 << "\\begin{tabular}{l|c|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n";
+	fOUTSTREAM3 << "JER configuration & events & \\multicolumn{2}{c|}{events} & \\multicolumn{2}{c|}{diff} & \\multicolumn{2}{c}{rel diff} \\\\\n\\hline\n";
+
+
+	fOUTSTREAM3 << Form("unsmeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["Normal"].ttw_Nmc,
+			ttwzpreds["Normal"].ttw,
+			ttwzpreds["Normal"].ttw_staterr,
+			ttwzpreds["Normal"].ttw - ttwzpreds["Normal"].ttw,
+			sqrt(ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr + ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr),
+			ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw,
+			ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw * sqrt(ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw))
+	) << endl;
+	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmear"].ttw_Nmc,
+			ttwzpreds["JetSmear"].ttw,
+			ttwzpreds["JetSmear"].ttw_staterr,
+			ttwzpreds["JetSmear"].ttw - ttwzpreds["Normal"].ttw,
+			sqrt(ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr + ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr),
+			ttwzpreds["JetSmear"].ttw / ttwzpreds["Normal"].ttw,
+			ttwzpreds["JetSmear"].ttw / ttwzpreds["Normal"].ttw * sqrt(ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw) + ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw))
+	) << endl;
+	fOUTSTREAM3 << "\\hline" << endl;
+	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmear"].ttw_Nmc,
+			ttwzpreds["JetSmear"].ttw,
+			ttwzpreds["JetSmear"].ttw_staterr,
+			ttwzpreds["JetSmear"].ttw - ttwzpreds["JetSmear"].ttw,
+			sqrt(ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr),
+			ttwzpreds["JetSmear"].ttw / ttwzpreds["JetSmear"].ttw,
+			ttwzpreds["JetSmear"].ttw / ttwzpreds["JetSmear"].ttw * sqrt(ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw) + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw))
+	) << endl;
+	fOUTSTREAM3 << Form("smeared up   & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmearUp"].ttw_Nmc,
+			ttwzpreds["JetSmearUp"].ttw,
+			ttwzpreds["JetSmearUp"].ttw_staterr,
+			ttwzpreds["JetSmearUp"].ttw - ttwzpreds["JetSmear"].ttw,
+			sqrt(ttwzpreds["JetSmearUp"].ttw_staterr*ttwzpreds["JetSmearUp"].ttw_staterr + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr),
+			ttwzpreds["JetSmearUp"].ttw / ttwzpreds["JetSmear"].ttw,
+			ttwzpreds["JetSmearUp"].ttw / ttwzpreds["JetSmear"].ttw * sqrt(ttwzpreds["JetSmearUp"].ttw_staterr*ttwzpreds["JetSmearUp"].ttw_staterr/(ttwzpreds["JetSmearUp"].ttw*ttwzpreds["JetSmearUp"].ttw) + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw))
+	) << endl;
+	fOUTSTREAM3 << Form("smeared down & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmearDown"].ttw_Nmc,
+			ttwzpreds["JetSmearDown"].ttw,
+			ttwzpreds["JetSmearDown"].ttw_staterr,
+			ttwzpreds["JetSmearDown"].ttw - ttwzpreds["JetSmear"].ttw,
+			sqrt(ttwzpreds["JetSmearDown"].ttw_staterr*ttwzpreds["JetSmearDown"].ttw_staterr + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr),
+			ttwzpreds["JetSmearDown"].ttw / ttwzpreds["JetSmear"].ttw,
+			ttwzpreds["JetSmearDown"].ttw / ttwzpreds["JetSmear"].ttw * sqrt(ttwzpreds["JetSmearDown"].ttw_staterr*ttwzpreds["JetSmearDown"].ttw_staterr/(ttwzpreds["JetSmearDown"].ttw*ttwzpreds["JetSmearDown"].ttw) + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw))
+	) << endl;
+	fOUTSTREAM3 << "\\hline\\hline" << endl;
+	fOUTSTREAM3 << "\\end{tabular}" << endl;
+
+	fOUTSTREAM3 << endl << endl;
+
+	fOUTSTREAM3 << "\\begin{tabular}{l|c|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n";
+	fOUTSTREAM3 << "JER configuration & events & \\multicolumn{2}{c|}{events} & \\multicolumn{2}{c|}{diff} & \\multicolumn{2}{c}{rel diff} \\\\\n\\hline\n";
+
+
+	fOUTSTREAM3 << Form("unsmeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["Normal"].ttwz_Nmc,
+			ttwzpreds["Normal"].ttwz,
+			ttwzpreds["Normal"].ttwz_staterr,
+			ttwzpreds["Normal"].ttwz - ttwzpreds["Normal"].ttwz,
+			sqrt(ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr + ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr),
+			ttwzpreds["Normal"].ttwz / ttwzpreds["Normal"].ttwz,
+			ttwzpreds["Normal"].ttwz / ttwzpreds["Normal"].ttwz * sqrt(ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr/(ttwzpreds["Normal"].ttwz*ttwzpreds["Normal"].ttwz) + ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr/(ttwzpreds["Normal"].ttwz*ttwzpreds["Normal"].ttwz))
+	) << endl;
+	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmear"].ttwz_Nmc,
+			ttwzpreds["JetSmear"].ttwz,
+			ttwzpreds["JetSmear"].ttwz_staterr,
+			ttwzpreds["JetSmear"].ttwz - ttwzpreds["Normal"].ttwz,
+			sqrt(ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr + ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr),
+			ttwzpreds["JetSmear"].ttwz / ttwzpreds["Normal"].ttwz,
+			ttwzpreds["JetSmear"].ttwz / ttwzpreds["Normal"].ttwz * sqrt(ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz) + ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr/(ttwzpreds["Normal"].ttwz*ttwzpreds["Normal"].ttwz))
+	) << endl;
+	fOUTSTREAM3 << "\\hline" << endl;
+	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmear"].ttwz_Nmc,
+			ttwzpreds["JetSmear"].ttwz,
+			ttwzpreds["JetSmear"].ttwz_staterr,
+			ttwzpreds["JetSmear"].ttwz - ttwzpreds["JetSmear"].ttwz,
+			sqrt(ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr),
+			ttwzpreds["JetSmear"].ttwz / ttwzpreds["JetSmear"].ttwz,
+			ttwzpreds["JetSmear"].ttwz / ttwzpreds["JetSmear"].ttwz * sqrt(ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz) + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz))
+	) << endl;
+	fOUTSTREAM3 << Form("smeared up   & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmearUp"].ttwz_Nmc,
+			ttwzpreds["JetSmearUp"].ttwz,
+			ttwzpreds["JetSmearUp"].ttwz_staterr,
+			ttwzpreds["JetSmearUp"].ttwz - ttwzpreds["JetSmear"].ttwz,
+			sqrt(ttwzpreds["JetSmearUp"].ttwz_staterr*ttwzpreds["JetSmearUp"].ttwz_staterr + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr),
+			ttwzpreds["JetSmearUp"].ttwz / ttwzpreds["JetSmear"].ttwz,
+			ttwzpreds["JetSmearUp"].ttwz / ttwzpreds["JetSmear"].ttwz * sqrt(ttwzpreds["JetSmearUp"].ttwz_staterr*ttwzpreds["JetSmearUp"].ttwz_staterr/(ttwzpreds["JetSmearUp"].ttwz*ttwzpreds["JetSmearUp"].ttwz) + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz))
+	) << endl;
+	fOUTSTREAM3 << Form("smeared down & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			ttwzpreds["JetSmearDown"].ttwz_Nmc,
+			ttwzpreds["JetSmearDown"].ttwz,
+			ttwzpreds["JetSmearDown"].ttwz_staterr,
+			ttwzpreds["JetSmearDown"].ttwz - ttwzpreds["JetSmear"].ttwz,
+			sqrt(ttwzpreds["JetSmearDown"].ttwz_staterr*ttwzpreds["JetSmearDown"].ttwz_staterr + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr),
+			ttwzpreds["JetSmearDown"].ttwz / ttwzpreds["JetSmear"].ttwz,
+			ttwzpreds["JetSmearDown"].ttwz / ttwzpreds["JetSmear"].ttwz * sqrt(ttwzpreds["JetSmearDown"].ttwz_staterr*ttwzpreds["JetSmearDown"].ttwz_staterr/(ttwzpreds["JetSmearDown"].ttwz*ttwzpreds["JetSmearDown"].ttwz) + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz))
+	) << endl;
+	fOUTSTREAM3 << "\\hline\\hline" << endl;
+	fOUTSTREAM3 << "\\end{tabular}" << endl;
+
+	fOUTSTREAM3.close();
+
 	////////////////////////////////////////////////////
 	// Datacards and systematics
 	TString datacard;
@@ -17916,6 +18038,10 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		float EM_yiel = rareMapEM[it->first];
 		float EE_yiel = rareMapEE[it->first];
 
+		int MM_yiel_npass = rareMapMM_npass[it->first];
+		int EM_yiel_npass = rareMapEM_npass[it->first];
+		int EE_yiel_npass = rareMapEE_npass[it->first];
+
 		float MM_stat = weight*HLTSF*(S->getError(rareMapMM_npass[it->first]));
 		float EM_stat = weight*HLTSF*(S->getError(rareMapEM_npass[it->first]));
 		float EE_stat = weight*HLTSF*(S->getError(rareMapEE_npass[it->first]));
@@ -17937,12 +18063,18 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 				nt2_ttw_mc_mm += MM_yiel; nt2_ttw_mc_mm_e2 += MM_stat*MM_stat;
 				nt2_ttw_mc_em += EM_yiel; nt2_ttw_mc_em_e2 += EM_stat*EM_stat;
 				nt2_ttw_mc_ee += EE_yiel; nt2_ttw_mc_ee_e2 += EE_stat*EE_stat;
+				nt2_ttw_Nmc_mm += MM_yiel_npass;
+				nt2_ttw_Nmc_em += EM_yiel_npass;
+				nt2_ttw_Nmc_ee += EE_yiel_npass;
 				continue;
 			}
 			else if (ttw && (it->first == "TTbarZ") ){
 				nt2_ttz_mc_mm += MM_yiel; nt2_ttz_mc_mm_e2 += MM_stat*MM_stat;
 				nt2_ttz_mc_em += EM_yiel; nt2_ttz_mc_em_e2 += EM_stat*EM_stat;
 				nt2_ttz_mc_ee += EE_yiel; nt2_ttz_mc_ee_e2 += EE_stat*EE_stat;
+				nt2_ttz_Nmc_mm += MM_yiel_npass;
+				nt2_ttz_Nmc_em += EM_yiel_npass;
+				nt2_ttz_Nmc_ee += EE_yiel_npass;
 				continue;
 			}
 			else {
@@ -18351,6 +18483,10 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	pred.ttw_staterr_mm = sqrt(nt2_ttw_mc_mm_e2);
 	pred.ttw_staterr_em = sqrt(nt2_ttw_mc_em_e2);
 	pred.ttw_staterr_ee = sqrt(nt2_ttw_mc_ee_e2);
+	pred.ttw_Nmc    = nt2_ttw_Nmc_mm + nt2_ttw_Nmc_em + nt2_ttw_Nmc_ee;
+	pred.ttw_Nmc_mm = nt2_ttw_Nmc_mm;
+	pred.ttw_Nmc_em = nt2_ttw_Nmc_em;
+	pred.ttw_Nmc_ee = nt2_ttw_Nmc_ee;
 	pred.ttw_gen = (float)fSampleMap["TTbarW"]   ->ngen * fLumiNorm / fSampleMap["TTbarW"]->getLumi();
 
 	pred.ttw_aMCatNLO     = nt2_ttw_aMCatNLO_mm + nt2_ttw_aMCatNLO_em + nt2_ttw_aMCatNLO_ee;
@@ -18364,11 +18500,31 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	pred.ttz_err_mm = sqrt(nt2_ttz_mc_mm_e2 + TTZESyst2*nt2_ttz_mc_mm*nt2_ttz_mc_mm);
 	pred.ttz_err_em = sqrt(nt2_ttz_mc_em_e2 + TTZESyst2*nt2_ttz_mc_em*nt2_ttz_mc_em);
 	pred.ttz_err_ee = sqrt(nt2_ttz_mc_ee_e2 + TTZESyst2*nt2_ttz_mc_ee*nt2_ttz_mc_ee);
+	pred.ttz_staterr    = sqrt(nt2_ttz_mc_ee_e2 + nt2_ttz_mc_mm_e2 + nt2_ttz_mc_em_e2);
+	pred.ttz_staterr_mm = sqrt(nt2_ttz_mc_mm_e2);
+	pred.ttz_staterr_em = sqrt(nt2_ttz_mc_em_e2);
+	pred.ttz_staterr_ee = sqrt(nt2_ttz_mc_ee_e2);
+	pred.ttz_Nmc    = nt2_ttz_Nmc_mm + nt2_ttz_Nmc_em + nt2_ttz_Nmc_ee;
+	pred.ttz_Nmc_mm = nt2_ttz_Nmc_mm;
+	pred.ttz_Nmc_em = nt2_ttz_Nmc_em;
+	pred.ttz_Nmc_ee = nt2_ttz_Nmc_ee;
 	
-	pred.ttwz     = pred.ttw + pred.ttz;
-	pred.ttwz_mm  = pred.ttw_mm + pred.ttz_mm;
-	pred.ttwz_em  = pred.ttw_em + pred.ttz_em;
-	pred.ttwz_ee  = pred.ttw_ee + pred.ttz_ee;
+	pred.ttwz            = pred.ttw + pred.ttz;
+	pred.ttwz_mm         = pred.ttw_mm + pred.ttz_mm;
+	pred.ttwz_em         = pred.ttw_em + pred.ttz_em;
+	pred.ttwz_ee         = pred.ttw_ee + pred.ttz_ee;
+	pred.ttwz_err        = sqrt(pred.ttw_err   *pred.ttw_err    + pred.ttz_err   *pred.ttz_err   );
+	pred.ttwz_err_mm     = sqrt(pred.ttw_err_mm*pred.ttw_err_mm + pred.ttz_err_mm*pred.ttz_err_mm);
+	pred.ttwz_err_em     = sqrt(pred.ttw_err_em*pred.ttw_err_em + pred.ttz_err_em*pred.ttz_err_em);
+	pred.ttwz_err_ee     = sqrt(pred.ttw_err_ee*pred.ttw_err_ee + pred.ttz_err_ee*pred.ttz_err_ee);
+	pred.ttwz_staterr    = sqrt(pred.ttw_staterr   *pred.ttw_staterr    + pred.ttz_staterr   *pred.ttz_staterr   );
+	pred.ttwz_staterr_mm = sqrt(pred.ttw_staterr_mm*pred.ttw_staterr_mm + pred.ttz_staterr_mm*pred.ttz_staterr_mm);
+	pred.ttwz_staterr_em = sqrt(pred.ttw_staterr_em*pred.ttw_staterr_em + pred.ttz_staterr_em*pred.ttz_staterr_em);
+	pred.ttwz_staterr_ee = sqrt(pred.ttw_staterr_ee*pred.ttw_staterr_ee + pred.ttz_staterr_ee*pred.ttz_staterr_ee);
+	pred.ttwz_Nmc        = pred.ttw_Nmc    + pred.ttz_Nmc;
+	pred.ttwz_Nmc_mm     = pred.ttw_Nmc_mm + pred.ttz_Nmc_mm;
+	pred.ttwz_Nmc_em     = pred.ttw_Nmc_em + pred.ttz_Nmc_em;
+	pred.ttwz_Nmc_ee     = pred.ttw_Nmc_ee + pred.ttz_Nmc_ee;
 	
 	pred.fake     = nF;
 	pred.fake_mm  = nF_mm;

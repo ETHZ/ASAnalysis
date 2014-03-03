@@ -96,6 +96,10 @@ struct TTWZPrediction {
 	float ttw_staterr_mm;
 	float ttw_staterr_ee;
 	float ttw_staterr_em;
+	int   ttw_Nmc;
+	int   ttw_Nmc_mm;
+	int   ttw_Nmc_ee;
+	int   ttw_Nmc_em;
 	float ttw_gen;
 
 	float ttw_aMCatNLO;
@@ -109,6 +113,14 @@ struct TTWZPrediction {
 	float ttz_err_mm;
 	float ttz_err_ee;
 	float ttz_err_em;
+	float ttz_staterr;
+	float ttz_staterr_mm;
+	float ttz_staterr_ee;
+	float ttz_staterr_em;
+	int   ttz_Nmc;
+	int   ttz_Nmc_mm;
+	int   ttz_Nmc_ee;
+	int   ttz_Nmc_em;
 	
 	float tth;
 	float tth_mm;
@@ -123,6 +135,18 @@ struct TTWZPrediction {
 	float ttwz_mm;
 	float ttwz_ee;
 	float ttwz_em;
+	float ttwz_err;
+	float ttwz_err_mm;
+	float ttwz_err_ee;
+	float ttwz_err_em;
+	float ttwz_staterr;
+	float ttwz_staterr_mm;
+	float ttwz_staterr_ee;
+	float ttwz_staterr_em;
+	int   ttwz_Nmc;
+	int   ttwz_Nmc_mm;
+	int   ttwz_Nmc_ee;
+	int   ttwz_Nmc_em;
 	
 	float fake;
 	float fake_mm;
