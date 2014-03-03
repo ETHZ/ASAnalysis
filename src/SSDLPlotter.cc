@@ -13112,7 +13112,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM3 << "JER configuration & events & \\multicolumn{2}{c|}{events} & \\multicolumn{2}{c|}{diff} & \\multicolumn{2}{c}{rel diff} \\\\\n\\hline\n";
 
 
-	fOUTSTREAM3 << Form("unsmeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("unsmeared             & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["Normal"].ttw_Nmc,
 			ttwzpreds["Normal"].ttw,
 			ttwzpreds["Normal"].ttw_staterr,
@@ -13121,7 +13121,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw,
 			ttwzpreds["Normal"].ttw / ttwzpreds["Normal"].ttw * sqrt(ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw) + ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw))
 	) << endl;
-	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared             & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmear"].ttw_Nmc,
 			ttwzpreds["JetSmear"].ttw,
 			ttwzpreds["JetSmear"].ttw_staterr,
@@ -13131,7 +13131,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["JetSmear"].ttw / ttwzpreds["Normal"].ttw * sqrt(ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw) + ttwzpreds["Normal"].ttw_staterr*ttwzpreds["Normal"].ttw_staterr/(ttwzpreds["Normal"].ttw*ttwzpreds["Normal"].ttw))
 	) << endl;
 	fOUTSTREAM3 << "\\hline" << endl;
-	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared             & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmear"].ttw_Nmc,
 			ttwzpreds["JetSmear"].ttw,
 			ttwzpreds["JetSmear"].ttw_staterr,
@@ -13140,7 +13140,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["JetSmear"].ttw / ttwzpreds["JetSmear"].ttw,
 			ttwzpreds["JetSmear"].ttw / ttwzpreds["JetSmear"].ttw * sqrt(ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw) + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw))
 	) << endl;
-	fOUTSTREAM3 << Form("smeared up   & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared up   & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmearUp"].ttw_Nmc,
 			ttwzpreds["JetSmearUp"].ttw,
 			ttwzpreds["JetSmearUp"].ttw_staterr,
@@ -13149,7 +13149,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["JetSmearUp"].ttw / ttwzpreds["JetSmear"].ttw,
 			ttwzpreds["JetSmearUp"].ttw / ttwzpreds["JetSmear"].ttw * sqrt(ttwzpreds["JetSmearUp"].ttw_staterr*ttwzpreds["JetSmearUp"].ttw_staterr/(ttwzpreds["JetSmearUp"].ttw*ttwzpreds["JetSmearUp"].ttw) + ttwzpreds["JetSmear"].ttw_staterr*ttwzpreds["JetSmear"].ttw_staterr/(ttwzpreds["JetSmear"].ttw*ttwzpreds["JetSmear"].ttw))
 	) << endl;
-	fOUTSTREAM3 << Form("smeared down & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared down & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmearDown"].ttw_Nmc,
 			ttwzpreds["JetSmearDown"].ttw,
 			ttwzpreds["JetSmearDown"].ttw_staterr,
@@ -13167,7 +13167,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 	fOUTSTREAM3 << "JER configuration & events & \\multicolumn{2}{c|}{events} & \\multicolumn{2}{c|}{diff} & \\multicolumn{2}{c}{rel diff} \\\\\n\\hline\n";
 
 
-	fOUTSTREAM3 << Form("unsmeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("unsmeared             & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["Normal"].ttwz_Nmc,
 			ttwzpreds["Normal"].ttwz,
 			ttwzpreds["Normal"].ttwz_staterr,
@@ -13176,7 +13176,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["Normal"].ttwz / ttwzpreds["Normal"].ttwz,
 			ttwzpreds["Normal"].ttwz / ttwzpreds["Normal"].ttwz * sqrt(ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr/(ttwzpreds["Normal"].ttwz*ttwzpreds["Normal"].ttwz) + ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr/(ttwzpreds["Normal"].ttwz*ttwzpreds["Normal"].ttwz))
 	) << endl;
-	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared             & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmear"].ttwz_Nmc,
 			ttwzpreds["JetSmear"].ttwz,
 			ttwzpreds["JetSmear"].ttwz_staterr,
@@ -13186,7 +13186,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["JetSmear"].ttwz / ttwzpreds["Normal"].ttwz * sqrt(ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz) + ttwzpreds["Normal"].ttwz_staterr*ttwzpreds["Normal"].ttwz_staterr/(ttwzpreds["Normal"].ttwz*ttwzpreds["Normal"].ttwz))
 	) << endl;
 	fOUTSTREAM3 << "\\hline" << endl;
-	fOUTSTREAM3 << Form("smeared       & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared             & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmear"].ttwz_Nmc,
 			ttwzpreds["JetSmear"].ttwz,
 			ttwzpreds["JetSmear"].ttwz_staterr,
@@ -13195,7 +13195,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["JetSmear"].ttwz / ttwzpreds["JetSmear"].ttwz,
 			ttwzpreds["JetSmear"].ttwz / ttwzpreds["JetSmear"].ttwz * sqrt(ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz) + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz))
 	) << endl;
-	fOUTSTREAM3 << Form("smeared up   & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared up   & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmearUp"].ttwz_Nmc,
 			ttwzpreds["JetSmearUp"].ttwz,
 			ttwzpreds["JetSmearUp"].ttwz_staterr,
@@ -13204,7 +13204,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 			ttwzpreds["JetSmearUp"].ttwz / ttwzpreds["JetSmear"].ttwz,
 			ttwzpreds["JetSmearUp"].ttwz / ttwzpreds["JetSmear"].ttwz * sqrt(ttwzpreds["JetSmearUp"].ttwz_staterr*ttwzpreds["JetSmearUp"].ttwz_staterr/(ttwzpreds["JetSmearUp"].ttwz*ttwzpreds["JetSmearUp"].ttwz) + ttwzpreds["JetSmear"].ttwz_staterr*ttwzpreds["JetSmear"].ttwz_staterr/(ttwzpreds["JetSmear"].ttwz*ttwzpreds["JetSmear"].ttwz))
 	) << endl;
-	fOUTSTREAM3 << Form("smeared down & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+	fOUTSTREAM3 << Form("smeared down & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
 			ttwzpreds["JetSmearDown"].ttwz_Nmc,
 			ttwzpreds["JetSmearDown"].ttwz,
 			ttwzpreds["JetSmearDown"].ttwz_staterr,
