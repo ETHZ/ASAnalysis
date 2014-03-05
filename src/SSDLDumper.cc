@@ -366,6 +366,10 @@ SSDLDumper::SSDLDumper(TString configfile){
 	gSystematics["PileupDown"] = 11;
 	gSystematics["JetSmearUp"] = 12;
 	gSystematics["JetSmearDown"] = 13;
+	gSystematics["MuUp"]       = 14;
+	gSystematics["MuDown"]     = 15;
+	gSystematics["ElUp"]       = 16;
+	gSystematics["ElDown"]     = 17;
 
 
 }
@@ -714,6 +718,42 @@ void SSDLDumper::loopEvents(Sample *S){
 		gScaleElSF = 1. - sqrt(0.05*0.05 + 0.02*0.02);
  		// fillYields(S, gRegion["TTbarWSelLD"]);
 		fillSigEventTree(S, gSystematics["LepDown"]);
+
+		// Muon pts scaled up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		gScaleMuSF = 1. + sqrt(0.03*0.03 + 0.02*0.02);
+		gScaleElSF = 1.;
+ 		// fillYields(S, gRegion["TTbarWSelLU"]);
+		fillSigEventTree(S, gSystematics["MuUp"]);
+
+		// Muon pts scaled down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		gScaleMuSF = 1. - sqrt(0.03*0.03 + 0.02*0.02);
+		gScaleElSF = 1.;
+ 		// fillYields(S, gRegion["TTbarWSelLD"]);
+		fillSigEventTree(S, gSystematics["MuDown"]);
+
+		// Electron pts scaled up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		gScaleMuSF = 1.;
+		gScaleElSF = 1. + sqrt(0.05*0.05 + 0.02*0.02);
+ 		// fillYields(S, gRegion["TTbarWSelLU"]);
+		fillSigEventTree(S, gSystematics["ElUp"]);
+
+		// Electron pts scaled down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		gScaleMuSF = 1.;
+		gScaleElSF = 1. - sqrt(0.05*0.05 + 0.02*0.02);
+ 		// fillYields(S, gRegion["TTbarWSelLD"]);
+		fillSigEventTree(S, gSystematics["ElDown"]);
 
 		gScaleMuSF = 1.;
 		gScaleElSF = 1.;
@@ -7329,33 +7369,33 @@ float SSDLDumper::getLeptonSFMu(float pt, float eta){
 	
 	if (10 < pt && pt < 15)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.91;}
-		if (1.20  < aeta && aeta < 2.50) {return 1.03;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.918;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.962;}
 	}
 	else if (15 < pt && pt < 20)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 1.01;}
-		if (1.20  < aeta && aeta < 2.50) {return 1.05;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.955;}
+		if (1.20  < aeta && aeta < 2.50) {return 1.034;}
 	}
 	else if (20 < pt && pt < 30)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.98;}
-		if (1.20  < aeta && aeta < 2.50) {return 1.02;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.965;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.972;}
 	}
 	else if (30 < pt && pt < 40)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 1.00;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.98;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.972;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.980;}
 	}
 	else if (40 < pt && pt < 50)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.96;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.99;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.979;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.985;}
 	}
 	else if (pt > 50)
 	{
-		if (0.00  < aeta && aeta < 1.20) {return 0.90;}
-		if (1.20  < aeta && aeta < 2.50) {return 0.94;}
+		if (0.00  < aeta && aeta < 1.20) {return 0.974;}
+		if (1.20  < aeta && aeta < 2.50) {return 0.980;}
 	}
 	
 	// if we get here, return no SF
@@ -7368,45 +7408,45 @@ float SSDLDumper::getLeptonSFEl(float pt, float eta){
 	
 	if (10 < pt && pt < 15)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.66;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.85;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.41;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.76;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.787;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.861;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.798;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.866;}
 	}
 	else if (15 < pt && pt < 20)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.90;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.86;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.68;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 1.48;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.943;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.910;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.866;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.929;}
 	}
 	else if (20 < pt && pt < 30)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 1.00;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.89;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.90;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.97;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.963;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.921;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.910;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.935;}
 	}
 	else if (30 < pt && pt < 40)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.94;}
-		if (0.80   < aeta && aeta < 1.4442) {return 0.97;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.88;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.97;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.969;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.943;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.928;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.954;}
 	}
 	else if (40 < pt && pt < 50)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.96;}
-		if (0.80   < aeta && aeta < 1.4442) {return 1.20;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.96;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 0.88;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.975;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.956;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.948;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.962;}
 	}
 	else if (pt > 50)
 	{
-		if (0.00   < aeta && aeta < 0.80  ) {return 0.93;}
-		if (0.80   < aeta && aeta < 1.4442) {return 1.27;}
-		if (1.566  < aeta && aeta < 2.00  ) {return 0.64;}
-		if (2.00   < aeta && aeta < 2.50  ) {return 1.06;}
+		if (0.00   < aeta && aeta < 0.80  ) {return 0.973;}
+		if (0.80   < aeta && aeta < 1.4442) {return 0.950;}
+		if (1.566  < aeta && aeta < 2.00  ) {return 0.964;}
+		if (2.00   < aeta && aeta < 2.50  ) {return 0.955;}
 	}
 	
 	// if we get here, return 0.
