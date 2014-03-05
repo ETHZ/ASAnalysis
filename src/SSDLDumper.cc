@@ -697,44 +697,28 @@ void SSDLDumper::loopEvents(Sample *S){
 
 		// THIS IS HERE FOR TESTING
 
-		// Jet pts smeared
+		// Lepton pts scaled up
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
-		smearJetPts(S, 3);
-		fillSigEventTree(S, gSystematics["JetSmear"]);
+		resetJetPts();
+		gScaleMuSF = 1. + sqrt(0.03*0.03 + 0.02*0.02);
+		gScaleElSF = 1. + sqrt(0.05*0.05 + 0.02*0.02);
+ 		// fillYields(S, gRegion["TTbarWSelLU"]);
+		fillSigEventTree(S, gSystematics["LepUp"]);
 
-		// Jet pts smeared up
+		// Lepton pts scaled down
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
-		smearJetPts(S, 4);
-		fillSigEventTree(S, gSystematics["JetSmearUp"]);
-
-		// Jet pts smeared down
-		fChain->GetEntry(jentry); // reset tree vars
-		resetBTags(); // reset to scaled btag values
-		smearJetPts(S, 5);
-		fillSigEventTree(S, gSystematics["JetSmearDown"]);
-
-//		// Lepton pts scaled up
-//		fChain->GetEntry(jentry); // reset tree vars
-//		resetBTags(); // reset to scaled btag values
-//		resetJetPts();
-//		gScaleMuSF = 1.03;
-//		gScaleElSF = 1.05;
-// 		// fillYields(S, gRegion["TTbarWSelLU"]);
-//		fillSigEventTree(S, gSystematics["LepUp"]);
-//
-//		// Lepton pts scaled down
-//		fChain->GetEntry(jentry); // reset tree vars
-//		resetBTags(); // reset to scaled btag values
-//		resetJetPts();
-//		gScaleMuSF = 0.97;
-//		gScaleElSF = 0.95;
-// 		// fillYields(S, gRegion["TTbarWSelLD"]);
-//		fillSigEventTree(S, gSystematics["LepDown"]);
+		resetJetPts();
+		gScaleMuSF = 1. - sqrt(0.03*0.03 + 0.02*0.02);
+		gScaleElSF = 1. - sqrt(0.05*0.05 + 0.02*0.02);
+ 		// fillYields(S, gRegion["TTbarWSelLD"]);
+		fillSigEventTree(S, gSystematics["LepDown"]);
 
 		gScaleMuSF = 1.;
 		gScaleElSF = 1.;
+
+		// END OF TESTING
 
 		if(!gDoSystStudies) continue;
 
