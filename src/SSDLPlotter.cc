@@ -13007,7 +13007,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		TString outputname = outputdir + "DataPred_" + gsystIt->first + chargeString + ".txt";
 		//if (gsystIt->second != 0 && gsystIt->second != 10 && gsystIt->second != 11) continue;
 		//if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 6 && gsystIt->second != 7) continue;
-		if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 3) continue;
+		//if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 3) continue;
+		if (gsystIt->second != 0 && gsystIt->second != 6 && gsystIt->second != 7) continue;
 		//if (gsystIt->second != 0) continue;
 		ttwzpreds[gsystIt->first] = makePredictionSignalEvents(minHT, maxHT, minMET, maxMET, minNjets, minNbjetsL, minNbjetsM, pT1, pT2, chVeto, ttw, gsystIt->second);
 	// here we are. fix this stuff
@@ -14350,7 +14351,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 
 
 
-
+//	makeSystTable(outputdir, chargeString, "JER", ttwzpreds["JetSmear"], ttwzpreds["JetSmearUp"], ttwzpreds["JetSmearDown"]);
+	makeSystTable(outputdir, chargeString, "Lep", ttwzpreds["Normal"], ttwzpreds["LepUp"], ttwzpreds["LepDown"]);
 
 
 
@@ -14358,6 +14360,89 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 
 //	return ttwzpreds["Normal"];
 	return ttwzpreds;
+}
+void SSDLPlotter::makeSystTable(TString outputdir, TString chargeString, TString syst_name, TTWZPrediction syst_nominal, TTWZPrediction syst_up, TTWZPrediction syst_down) {
+	TString table_name;
+
+	// ttW yield only
+	table_name = outputdir + "Syst_Table_" + syst_name + "_ttW" + chargeString + ".tex";
+	fOUTSTREAM3.open(table_name.Data(), ios::trunc);
+	fOUTSTREAM3 << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+//	fOUTSTREAM3 << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM3 << endl;
+	fOUTSTREAM3 << "\\begin{tabular}{l|c|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n";
+	fOUTSTREAM3 << syst_name << " configuration &  raw events  &  \\multicolumn{2}{c|}{events}  &   \\multicolumn{2}{c|}{diff}   &  \\multicolumn{2}{c}{rel diff} \\\\\n\\hline\n";
+	fOUTSTREAM3 << Form("nominal           & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_nominal.ttw_Nmc,
+			syst_nominal.ttw,
+			syst_nominal.ttw_staterr,
+			syst_nominal.ttw - syst_nominal.ttw,
+			sqrt(syst_nominal.ttw_staterr*syst_nominal.ttw_staterr + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr),
+			syst_nominal.ttw / syst_nominal.ttw - 1.,
+			syst_nominal.ttw / syst_nominal.ttw * sqrt(syst_nominal.ttw_staterr*syst_nominal.ttw_staterr/(syst_nominal.ttw*syst_nominal.ttw) + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr/(syst_nominal.ttw*syst_nominal.ttw))
+	);
+	fOUTSTREAM3 << Form("up                & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_up.ttw_Nmc,
+			syst_up.ttw,
+			syst_up.ttw_staterr,
+			syst_up.ttw - syst_nominal.ttw,
+			sqrt(syst_up.ttw_staterr*syst_up.ttw_staterr + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr),
+			syst_up.ttw / syst_nominal.ttw - 1.,
+			syst_up.ttw / syst_nominal.ttw * sqrt(syst_up.ttw_staterr*syst_up.ttw_staterr/(syst_up.ttw*syst_up.ttw) + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr/(syst_nominal.ttw*syst_nominal.ttw))
+	);
+	fOUTSTREAM3 << Form("down              & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_down.ttw_Nmc,
+			syst_down.ttw,
+			syst_down.ttw_staterr,
+			syst_down.ttw - syst_nominal.ttw,
+			sqrt(syst_down.ttw_staterr*syst_down.ttw_staterr + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr),
+			syst_down.ttw / syst_nominal.ttw - 1.,
+			syst_down.ttw / syst_nominal.ttw * sqrt(syst_down.ttw_staterr*syst_down.ttw_staterr/(syst_down.ttw*syst_down.ttw) + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr/(syst_nominal.ttw*syst_nominal.ttw))
+	);
+	fOUTSTREAM3 << "\\hline\\hline" << endl;
+	fOUTSTREAM3 << "\\end{tabular}" << endl;
+	fOUTSTREAM3 << endl << endl;
+	fOUTSTREAM3.close();
+
+	// adding ttW and ttZ yields
+	table_name = outputdir + "Syst_Table_" + syst_name + "_ttWZ" + chargeString + ".tex";
+	fOUTSTREAM3.open(table_name.Data(), ios::trunc);
+	fOUTSTREAM3 << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+//	fOUTSTREAM3 << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM3 << endl;
+	fOUTSTREAM3 << "\\begin{tabular}{l|c|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n";
+	fOUTSTREAM3 << syst_name << " configuration &  raw events  &  \\multicolumn{2}{c|}{events}  &   \\multicolumn{2}{c|}{diff}   &  \\multicolumn{2}{c}{rel diff} \\\\\n\\hline\n";
+	fOUTSTREAM3 << Form("nominal           & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_nominal.ttwz_Nmc,
+			syst_nominal.ttwz,
+			syst_nominal.ttwz_staterr,
+			syst_nominal.ttwz - syst_nominal.ttwz,
+			sqrt(syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr),
+			syst_nominal.ttwz / syst_nominal.ttwz - 1.,
+			syst_nominal.ttwz / syst_nominal.ttwz * sqrt(syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr/(syst_nominal.ttwz*syst_nominal.ttwz) + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr/(syst_nominal.ttwz*syst_nominal.ttwz))
+	);
+	fOUTSTREAM3 << Form("up                & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_up.ttwz_Nmc,
+			syst_up.ttwz,
+			syst_up.ttwz_staterr,
+			syst_up.ttwz - syst_nominal.ttwz,
+			sqrt(syst_up.ttwz_staterr*syst_up.ttwz_staterr + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr),
+			syst_up.ttwz / syst_nominal.ttwz - 1.,
+			syst_up.ttwz / syst_nominal.ttwz * sqrt(syst_up.ttwz_staterr*syst_up.ttwz_staterr/(syst_up.ttwz*syst_up.ttwz) + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr/(syst_nominal.ttwz*syst_nominal.ttwz))
+	);
+	fOUTSTREAM3 << Form("down              & %13d & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_down.ttwz_Nmc,
+			syst_down.ttwz,
+			syst_down.ttwz_staterr,
+			syst_down.ttwz - syst_nominal.ttwz,
+			sqrt(syst_down.ttwz_staterr*syst_down.ttwz_staterr + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr),
+			syst_down.ttwz / syst_nominal.ttwz - 1.,
+			syst_down.ttwz / syst_nominal.ttwz * sqrt(syst_down.ttwz_staterr*syst_down.ttwz_staterr/(syst_down.ttwz*syst_down.ttwz) + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr/(syst_nominal.ttwz*syst_nominal.ttwz))
+	);
+	fOUTSTREAM3 << "\\hline\\hline" << endl;
+	fOUTSTREAM3 << "\\end{tabular}" << endl;
+	fOUTSTREAM3 << endl << endl;
+	fOUTSTREAM3.close();
 }
 void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	vector<TString> diffVarName, xAxisTitle, yAxisTitle;

@@ -389,6 +389,7 @@ public:
 
 	void makeTTWIntPredictionsSigEvent();
 	map< TString, TTWZPrediction > makeTTWIntPredictionsSigEvent(float minHT, float maxHT, float minMET, float maxMET, int minNjets, int minNbjetsL, int minNbjetsM, float pT1=20., float pT2=10., int chVeto = 0, bool ttw    =false, int flag=0);
+	void makeSystTable(TString, TString, TString, TTWZPrediction, TTWZPrediction, TTWZPrediction);
 	void makeTTWDiffPredictionsSigEvent();
 //	void makeTTWDiffPredictionSigEvent(TString, int, double*);
 	void makeTTWDiffPredictionSigEvent(vector<TString>, vector<int>, vector<double*>, vector<TString>, vector<TString>, int = -1, int = 0, int = 0);
