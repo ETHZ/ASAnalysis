@@ -5122,6 +5122,7 @@ void SSDLDumper::smearJetPts(Sample *S, int flag){
 			if (flag == 3) factor = fRand3_1->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
 			if (flag == 4) factor = fRand3_2->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
 			if (flag == 5) factor = fRand3_3->Gaus(1., sqrt(jerScale*jerScale -1.)*sigmaMC );
+			if (Event == 2610124) cout << "factor: " << factor << endl;
 			JetPt[*it] = JetPt[*it] * factor; // smear for flag 3
 		}
 		tmp.SetPtEtaPhiE(JetPt[*it], JetEta[*it], JetPhi[*it], JetEnergy[*it]); // set tmp to the scaled/smeared jet
