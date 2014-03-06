@@ -13008,7 +13008,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		//if (gsystIt->second != 0 && gsystIt->second != 10 && gsystIt->second != 11) continue;
 		//if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 6 && gsystIt->second != 7) continue;
 		//if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 3) continue;
-		if (gsystIt->second != 0 && gsystIt->second != 6 && gsystIt->second != 7) continue;
+		//if (gsystIt->second != 0 && gsystIt->second != 6 && gsystIt->second != 7) continue;
+		if (gsystIt->second != 0 && gsystIt->second != 14 && gsystIt->second != 15 && gsystIt->second != 16 && gsystIt->second != 17) continue;
 		//if (gsystIt->second != 0) continue;
 		ttwzpreds[gsystIt->first] = makePredictionSignalEvents(minHT, maxHT, minMET, maxMET, minNjets, minNbjetsL, minNbjetsM, pT1, pT2, chVeto, ttw, gsystIt->second);
 	// here we are. fix this stuff
@@ -14353,6 +14354,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 
 //	makeSystTable(outputdir, chargeString, "JER", ttwzpreds["JetSmear"], ttwzpreds["JetSmearUp"], ttwzpreds["JetSmearDown"]);
 	makeSystTable(outputdir, chargeString, "Lep", ttwzpreds["Normal"], ttwzpreds["LepUp"], ttwzpreds["LepDown"]);
+	makeSystTable(outputdir, chargeString, "Mu", ttwzpreds["Normal"], ttwzpreds["MuUp"], ttwzpreds["MuDown"]);
+	makeSystTable(outputdir, chargeString, "El", ttwzpreds["Normal"], ttwzpreds["ElUp"], ttwzpreds["ElDown"]);
 
 
 
@@ -14363,6 +14366,75 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 }
 void SSDLPlotter::makeSystTable(TString outputdir, TString chargeString, TString syst_name, TTWZPrediction syst_nominal, TTWZPrediction syst_up, TTWZPrediction syst_down) {
 	TString table_name;
+	TString chargeSignString = "";
+	if (chargeString == "_plpl") chargeSignString = "^+";
+	if (chargeString == "_mimi") chargeSignString = "^-";
+
+	// ttW splitted by flavor channels
+	table_name = outputdir + "Syst_Table_" + syst_name + "_ttW_3channels" + chargeString + ".tex";
+	fOUTSTREAM3.open(table_name.Data(), ios::trunc);
+	fOUTSTREAM3 << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+//	fOUTSTREAM3 << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM3 << endl;
+	fOUTSTREAM3 << "\\begin{tabular}{l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n";
+	fOUTSTREAM3 << syst_name << "  &  \\multicolumn{2}{c|}{$\\mu"<<chargeSignString<<"\\mu"<<chargeSignString<<"$}  &   \\multicolumn{2}{c|}{$e"<<chargeSignString<<"\\mu"<<chargeSignString<<"$}  &   \\multicolumn{2}{c|}{$e"<<chargeSignString<<"e"<<chargeSignString<<"$}   &  \\multicolumn{2}{c}{total} \\\\\n\\hline\n";
+	fOUTSTREAM3 << Form("up                & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_up.ttw_mm / syst_nominal.ttw_mm - 1.,
+			syst_up.ttw_mm / syst_nominal.ttw_mm * sqrt(syst_up.ttw_staterr_mm*syst_up.ttw_staterr_mm/(syst_up.ttw_mm*syst_up.ttw_mm) + syst_nominal.ttw_staterr_mm*syst_nominal.ttw_staterr_mm/(syst_nominal.ttw_mm*syst_nominal.ttw_mm)),
+			syst_up.ttw_em / syst_nominal.ttw_em - 1.,
+			syst_up.ttw_em / syst_nominal.ttw_em * sqrt(syst_up.ttw_staterr_em*syst_up.ttw_staterr_em/(syst_up.ttw_em*syst_up.ttw_em) + syst_nominal.ttw_staterr_em*syst_nominal.ttw_staterr_em/(syst_nominal.ttw_em*syst_nominal.ttw_em)),
+			syst_up.ttw_ee / syst_nominal.ttw_ee - 1.,
+			syst_up.ttw_ee / syst_nominal.ttw_ee * sqrt(syst_up.ttw_staterr_ee*syst_up.ttw_staterr_ee/(syst_up.ttw_ee*syst_up.ttw_ee) + syst_nominal.ttw_staterr_ee*syst_nominal.ttw_staterr_ee/(syst_nominal.ttw_ee*syst_nominal.ttw_ee)),
+			syst_up.ttw / syst_nominal.ttw - 1.,
+			syst_up.ttw / syst_nominal.ttw * sqrt(syst_up.ttw_staterr*syst_up.ttw_staterr/(syst_up.ttw*syst_up.ttw) + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr/(syst_nominal.ttw*syst_nominal.ttw))
+	);
+	fOUTSTREAM3 << Form("down              & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_down.ttw_mm / syst_nominal.ttw_mm - 1.,
+			syst_down.ttw_mm / syst_nominal.ttw_mm * sqrt(syst_down.ttw_staterr_mm*syst_down.ttw_staterr_mm/(syst_down.ttw_mm*syst_down.ttw_mm) + syst_nominal.ttw_staterr_mm*syst_nominal.ttw_staterr_mm/(syst_nominal.ttw_mm*syst_nominal.ttw_mm)),
+			syst_down.ttw_em / syst_nominal.ttw_em - 1.,
+			syst_down.ttw_em / syst_nominal.ttw_em * sqrt(syst_down.ttw_staterr_em*syst_down.ttw_staterr_em/(syst_down.ttw_em*syst_down.ttw_em) + syst_nominal.ttw_staterr_em*syst_nominal.ttw_staterr_em/(syst_nominal.ttw_em*syst_nominal.ttw_em)),
+			syst_down.ttw_ee / syst_nominal.ttw_ee - 1.,
+			syst_down.ttw_ee / syst_nominal.ttw_ee * sqrt(syst_down.ttw_staterr_ee*syst_down.ttw_staterr_ee/(syst_down.ttw_ee*syst_down.ttw_ee) + syst_nominal.ttw_staterr_ee*syst_nominal.ttw_staterr_ee/(syst_nominal.ttw_ee*syst_nominal.ttw_ee)),
+			syst_down.ttw / syst_nominal.ttw - 1.,
+			syst_down.ttw / syst_nominal.ttw * sqrt(syst_down.ttw_staterr*syst_down.ttw_staterr/(syst_down.ttw*syst_down.ttw) + syst_nominal.ttw_staterr*syst_nominal.ttw_staterr/(syst_nominal.ttw*syst_nominal.ttw))
+	);
+	fOUTSTREAM3 << "\\hline\\hline" << endl;
+	fOUTSTREAM3 << "\\end{tabular}" << endl;
+	fOUTSTREAM3 << endl << endl;
+	fOUTSTREAM3.close();
+
+	// ttV splitted by flavor channels
+	table_name = outputdir + "Syst_Table_" + syst_name + "_ttWZ_3channels" + chargeString + ".tex";
+	fOUTSTREAM3.open(table_name.Data(), ios::trunc);
+	fOUTSTREAM3 << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << endl;
+//	fOUTSTREAM3 << Form("%%%% Generated on: %s ", asctime(timeinfo)) << endl;
+	fOUTSTREAM3 << endl;
+	fOUTSTREAM3 << "\\begin{tabular}{l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n";
+	fOUTSTREAM3 << syst_name << "  &  \\multicolumn{2}{c|}{$\\mu"<<chargeSignString<<"\\mu"<<chargeSignString<<"$}  &   \\multicolumn{2}{c|}{$e"<<chargeSignString<<"\\mu"<<chargeSignString<<"$}  &   \\multicolumn{2}{c|}{$e"<<chargeSignString<<"e"<<chargeSignString<<"$}   &  \\multicolumn{2}{c}{total} \\\\\n\\hline\n";
+	fOUTSTREAM3 << Form("up                & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_up.ttwz_mm / syst_nominal.ttwz_mm - 1.,
+			syst_up.ttwz_mm / syst_nominal.ttwz_mm * sqrt(syst_up.ttwz_staterr_mm*syst_up.ttwz_staterr_mm/(syst_up.ttwz_mm*syst_up.ttwz_mm) + syst_nominal.ttwz_staterr_mm*syst_nominal.ttwz_staterr_mm/(syst_nominal.ttwz_mm*syst_nominal.ttwz_mm)),
+			syst_up.ttwz_em / syst_nominal.ttwz_em - 1.,
+			syst_up.ttwz_em / syst_nominal.ttwz_em * sqrt(syst_up.ttwz_staterr_em*syst_up.ttwz_staterr_em/(syst_up.ttwz_em*syst_up.ttwz_em) + syst_nominal.ttwz_staterr_em*syst_nominal.ttwz_staterr_em/(syst_nominal.ttwz_em*syst_nominal.ttwz_em)),
+			syst_up.ttwz_ee / syst_nominal.ttwz_ee - 1.,
+			syst_up.ttwz_ee / syst_nominal.ttwz_ee * sqrt(syst_up.ttwz_staterr_ee*syst_up.ttwz_staterr_ee/(syst_up.ttwz_ee*syst_up.ttwz_ee) + syst_nominal.ttwz_staterr_ee*syst_nominal.ttwz_staterr_ee/(syst_nominal.ttwz_ee*syst_nominal.ttwz_ee)),
+			syst_up.ttwz / syst_nominal.ttwz - 1.,
+			syst_up.ttwz / syst_nominal.ttwz * sqrt(syst_up.ttwz_staterr*syst_up.ttwz_staterr/(syst_up.ttwz*syst_up.ttwz) + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr/(syst_nominal.ttwz*syst_nominal.ttwz))
+	);
+	fOUTSTREAM3 << Form("down              & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f & %13.3f \\\\ \n",
+			syst_down.ttwz_mm / syst_nominal.ttwz_mm - 1.,
+			syst_down.ttwz_mm / syst_nominal.ttwz_mm * sqrt(syst_down.ttwz_staterr_mm*syst_down.ttwz_staterr_mm/(syst_down.ttwz_mm*syst_down.ttwz_mm) + syst_nominal.ttwz_staterr_mm*syst_nominal.ttwz_staterr_mm/(syst_nominal.ttwz_mm*syst_nominal.ttwz_mm)),
+			syst_down.ttwz_em / syst_nominal.ttwz_em - 1.,
+			syst_down.ttwz_em / syst_nominal.ttwz_em * sqrt(syst_down.ttwz_staterr_em*syst_down.ttwz_staterr_em/(syst_down.ttwz_em*syst_down.ttwz_em) + syst_nominal.ttwz_staterr_em*syst_nominal.ttwz_staterr_em/(syst_nominal.ttwz_em*syst_nominal.ttwz_em)),
+			syst_down.ttwz_ee / syst_nominal.ttwz_ee - 1.,
+			syst_down.ttwz_ee / syst_nominal.ttwz_ee * sqrt(syst_down.ttwz_staterr_ee*syst_down.ttwz_staterr_ee/(syst_down.ttwz_ee*syst_down.ttwz_ee) + syst_nominal.ttwz_staterr_ee*syst_nominal.ttwz_staterr_ee/(syst_nominal.ttwz_ee*syst_nominal.ttwz_ee)),
+			syst_down.ttwz / syst_nominal.ttwz - 1.,
+			syst_down.ttwz / syst_nominal.ttwz * sqrt(syst_down.ttwz_staterr*syst_down.ttwz_staterr/(syst_down.ttwz*syst_down.ttwz) + syst_nominal.ttwz_staterr*syst_nominal.ttwz_staterr/(syst_nominal.ttwz*syst_nominal.ttwz))
+	);
+	fOUTSTREAM3 << "\\hline\\hline" << endl;
+	fOUTSTREAM3 << "\\end{tabular}" << endl;
+	fOUTSTREAM3 << endl << endl;
+	fOUTSTREAM3.close();
 
 	// ttW yield only
 	table_name = outputdir + "Syst_Table_" + syst_name + "_ttW" + chargeString + ".tex";
