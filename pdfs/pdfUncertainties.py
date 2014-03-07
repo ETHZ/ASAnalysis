@@ -87,7 +87,8 @@ if model == 'TTWJets':
 	xvar = 'foobar'
 	yvar = 'foobar'
 	zmax = 15.
-	modelRoot = 'TTWJets_madgraph'
+#	modelRoot = 'TTWJets_madgraph'
+	modelRoot = 'WZTo3LNu'
 	relevantRegion = 'TTbarWSel'
 	#relevantRegion = 'TTbarWPresel'
 	modelPub = 'TTWJets'
