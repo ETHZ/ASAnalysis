@@ -761,29 +761,29 @@ void SSDLDumper::loopEvents(Sample *S){
 // OLD 		// fillYields(S, gRegion["TTbarWSelLD"]);
 // OLD		fillSigEventTree(S, gSystematics["LepDown"]);
 
-//		// Lepton pts scaled up
-//		fChain->GetEntry(jentry); // reset tree vars
-//		resetBTags(); // reset to scaled btag values
-//		resetJetPts();
-//		gScaleMuSF = 1. + sqrt(0.03*0.03 + 0.02*0.02);
-//		gScaleElSF = 1. + sqrt(0.05*0.05 + 0.02*0.02);
-// 		// fillYields(S, gRegion["TTbarWSelLU"]);
-//		fillSigEventTree(S, gSystematics["LepUp"]);
-//
-//		// Lepton pts scaled down
-//		fChain->GetEntry(jentry); // reset tree vars
-//		resetBTags(); // reset to scaled btag values
-//		resetJetPts();
-//		gScaleMuSF = 1. - sqrt(0.03*0.03 + 0.02*0.02);
-//		gScaleElSF = 1. - sqrt(0.05*0.05 + 0.02*0.02);
-// 		// fillYields(S, gRegion["TTbarWSelLD"]);
-//		fillSigEventTree(S, gSystematics["LepDown"]);
+		// Lepton pts scaled up
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		gScaleMuSF = 1. + 0.02;
+		gScaleElSF = 1. + 0.02;
+ 		// fillYields(S, gRegion["TTbarWSelLU"]);
+		fillSigEventTree(S, gSystematics["LepUp"]);
+
+		// Lepton pts scaled down
+		fChain->GetEntry(jentry); // reset tree vars
+		resetBTags(); // reset to scaled btag values
+		resetJetPts();
+		gScaleMuSF = 1. - 0.02;
+		gScaleElSF = 1. - 0.02;
+ 		// fillYields(S, gRegion["TTbarWSelLD"]);
+		fillSigEventTree(S, gSystematics["LepDown"]);
 
 		// Muon pts scaled up
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
 		resetJetPts();
-		gScaleMuSF = 1. + sqrt(0.03*0.03 + 0.02*0.02);
+		gScaleMuSF = 1. + 0.03;
 		gScaleElSF = 1.;
  		// fillYields(S, gRegion["TTbarWSelLU"]);
 		fillSigEventTree(S, gSystematics["MuUp"]);
@@ -792,7 +792,7 @@ void SSDLDumper::loopEvents(Sample *S){
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
 		resetJetPts();
-		gScaleMuSF = 1. - sqrt(0.03*0.03 + 0.02*0.02);
+		gScaleMuSF = 1. - 0.03;
 		gScaleElSF = 1.;
  		// fillYields(S, gRegion["TTbarWSelLD"]);
 		fillSigEventTree(S, gSystematics["MuDown"]);
@@ -802,7 +802,7 @@ void SSDLDumper::loopEvents(Sample *S){
 		resetBTags(); // reset to scaled btag values
 		resetJetPts();
 		gScaleMuSF = 1.;
-		gScaleElSF = 1. + sqrt(0.05*0.05 + 0.02*0.02);
+		gScaleElSF = 1. + 0.05;
  		// fillYields(S, gRegion["TTbarWSelLU"]);
 		fillSigEventTree(S, gSystematics["ElUp"]);
 
@@ -811,7 +811,7 @@ void SSDLDumper::loopEvents(Sample *S){
 		resetBTags(); // reset to scaled btag values
 		resetJetPts();
 		gScaleMuSF = 1.;
-		gScaleElSF = 1. - sqrt(0.05*0.05 + 0.02*0.02);
+		gScaleElSF = 1. - 0.05;
  		// fillYields(S, gRegion["TTbarWSelLD"]);
 		fillSigEventTree(S, gSystematics["ElDown"]);
 
