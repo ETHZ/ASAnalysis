@@ -178,8 +178,8 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
 
   #cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
   #cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-  #cmd = " ".join(['qsub','-q all.q','-l h_vmem=6g','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-  cmd = " ".join(['qsub','-q short.q','-l h_vmem=6g','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  cmd = " ".join(['qsub','-q all.q','-l h_vmem=6g','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  #cmd = " ".join(['qsub','-q short.q','-l h_vmem=6g','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
   if options.verbose: print cmd
   if options.dryrun: return thisjobnumber
 
