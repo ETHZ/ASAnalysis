@@ -119,6 +119,9 @@ def getModelText(model):
 	if model == 'TTWJets':
 		texts.append('doesn\'t apply')
 		texts.append('not useful')
+	if model == 'WZTo3LNu':
+		texts.append('doesn\'t apply')
+		texts.append('not useful')
 	return texts
 
 	##"pp#rightarrow#tilde{g}#tilde{g}, #tilde{g}#rightarrow t#bar{t}#tilde{#chi}^{0}_{1}",

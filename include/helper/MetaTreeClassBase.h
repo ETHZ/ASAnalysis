@@ -190,11 +190,11 @@ public :
    Float_t         JetBetaSq[30];   //[NJets]
    Float_t         JetRMSCand[30];   //[NJets]
    Int_t           NPdf1;
-   Float_t         WPdf1[1];   //[NPdf1]
+   Float_t         WPdf1[100];   //[NPdf1]
    Int_t           NPdf2;
-   Float_t         WPdf2[1];   //[NPdf2]
+   Float_t         WPdf2[100];   //[NPdf2]
    Int_t           NPdf3;
-   Float_t         WPdf3[1];   //[NPdf3]
+   Float_t         WPdf3[100];   //[NPdf3]
 
    // List of branches
    TBranch        *b_Run;   //!

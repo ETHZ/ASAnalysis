@@ -26896,13 +26896,13 @@ void SSDLPlotter::scanModelGeneric( const char * filestring, int reg, TString mo
 			scaleBTags(S, 0, btagCorrection); // this applies the bTagSF
 
 			if (!doSystematic && i!=0) continue;
-			if (i == 1) smearJetPts(S, 1);
-			if (i == 2) smearJetPts(S, 2);
-			if (i == 3) smearJetPts(S, 3);
-			if (i == 4) {resetBTags(); scaleBTags(S, 1, btagCorrection);}
-			if (i == 5) {resetBTags(); scaleBTags(S, 2, btagCorrection);}
-			if (i == 6) scaleMET(S, 0);
-			if (i == 7) scaleMET(S, 1);
+			//if (i == 1) smearJetPts(S, 1);
+			//if (i == 2) smearJetPts(S, 2);
+			//if (i == 3) smearJetPts(S, 3);
+			//if (i == 4) {resetBTags(); scaleBTags(S, 1, btagCorrection);}
+			//if (i == 5) {resetBTags(); scaleBTags(S, 2, btagCorrection);}
+			//if (i == 6) scaleMET(S, 0);
+			//if (i == 7) scaleMET(S, 1);
 
 			// T6ttWW     scan: xvar = mGlu and yvar = mChi
 			// T6ttWW x05 scan: xvar = mGlu and yvar = mLSP

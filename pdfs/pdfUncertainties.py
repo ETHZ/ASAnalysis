@@ -21,15 +21,24 @@ print 'running on model', model
 currentDir = '/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/pdfs/'
 
 
-if model == 'TTWJets':
+if model == 'TTWJets' or model == 'WZTo3LNu':
 	## define input files
-	subdir1 = currentDir+'Nov06-MSTW2008nlo68cl-NNPDF20_100_TTWJets_madgraph/'
-	subdir2 = currentDir+'Nov06-MSTW2008nlo68cl_+68cl-MSTW2008nlo68cl_+68clhalf_TTWJets_madgraph/'
-	subdir3 = currentDir+'Nov06-MSTW2008nlo68cl_-68cl-MSTW2008nlo68cl_-68clhalf_TTWJets_madgraph/'
-	subdir4 = currentDir+'Nov06-NNPDF20_as_0116_100-NNPDF20_as_0117_100_TTWJets_madgraph/'
-	subdir5 = currentDir+'Nov11-NNPDF20_as_0118_100-NNPDF20_as_0120_100_TTWJets_madgraph/'
-	subdir6 = currentDir+'Nov06-NNPDF20_as_0121_100-NNPDF20_as_0122_100_TTWJets_madgraph/'
-	subdir7 = currentDir+'Nov11-cteq6mE-CT10-CT10as_TTWJets_madgraph/'
+	if model == 'TTWJets':
+		subdir1 = currentDir+'Nov06-MSTW2008nlo68cl-NNPDF20_100_TTWJets_madgraph/'
+		subdir2 = currentDir+'Nov06-MSTW2008nlo68cl_+68cl-MSTW2008nlo68cl_+68clhalf_TTWJets_madgraph/'
+		subdir3 = currentDir+'Nov06-MSTW2008nlo68cl_-68cl-MSTW2008nlo68cl_-68clhalf_TTWJets_madgraph/'
+		subdir4 = currentDir+'Nov06-NNPDF20_as_0116_100-NNPDF20_as_0117_100_TTWJets_madgraph/'
+		subdir5 = currentDir+'Nov11-NNPDF20_as_0118_100-NNPDF20_as_0120_100_TTWJets_madgraph/'
+		subdir6 = currentDir+'Nov06-NNPDF20_as_0121_100-NNPDF20_as_0122_100_TTWJets_madgraph/'
+		subdir7 = currentDir+'Nov11-cteq6mE-CT10-CT10as_TTWJets_madgraph/'
+	if model == 'WZTo3LNu':
+		subdir1 = currentDir+'Mar10-MSTW2008nlo68cl-NNPDF20_100_WZTo3LNu/'
+		subdir2 = currentDir+'Mar10-MSTW2008nlo68cl_+68cl-MSTW2008nlo68cl_+68clhalf_WZTo3LNu/'
+		subdir3 = currentDir+'Mar10-MSTW2008nlo68cl_-68cl-MSTW2008nlo68cl_-68clhalf_WZTo3LNu/'
+		subdir4 = currentDir+'Mar10-NNPDF20_as_0116_100-NNPDF20_as_0117_100_WZTo3LNu/'
+		subdir5 = currentDir+'Mar10-NNPDF20_as_0118_100-NNPDF20_as_0120_100_WZTo3LNu/'
+		subdir6 = currentDir+'Mar10-NNPDF20_as_0121_100-NNPDF20_as_0122_100_WZTo3LNu/'
+		subdir7 = currentDir+'Mar10-cteq6mE-CT10-CT10as_WZTo3LNu/'
 
 	## set number of variations
 	npdf = {}
@@ -87,7 +96,8 @@ if model == 'TTWJets':
 	xvar = 'foobar'
 	yvar = 'foobar'
 	zmax = 15.
-	modelRoot = 'TTWJets_madgraph'
+#	modelRoot = 'TTWJets_madgraph'
+	modelRoot = 'WZTo3LNu'
 	relevantRegion = 'TTbarWSel'
 	#relevantRegion = 'TTbarWPresel'
 	modelPub = 'TTWJets'

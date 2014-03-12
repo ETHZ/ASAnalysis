@@ -16,7 +16,7 @@ const int SSDLAnalysis::nx;
 const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
 
 
-const bool gDoPDFs      = false;
+const bool gDoPDFs      = true;
 const bool gSaveGenInfo = false;
 
 
@@ -526,8 +526,8 @@ void SSDLAnalysis::FillAnalysisTree(){
 //			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz+68cl.LHgrid");
 //			LHAPDF::initPDFSetM(2,"MSTW2008nlo68cl_asmz-68cl.LHgrid");
 //			LHAPDF::initPDFSetM(2,"NNPDF20_as_0116_100.LHgrid");
-			LHAPDF::initPDFSetM(2,"NNPDF20_as_0118_100.LHgrid");
-//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
+//			LHAPDF::initPDFSetM(2,"NNPDF20_as_0118_100.LHgrid");
+			LHAPDF::initPDFSetM(2,"NNPDF20_as_0121_100.LHgrid");
 			LHAPDF::initPDFM(2,0);
 			fTNPdf2 = (int)LHAPDF::numberPDFM(2);
 			for(int pdf=0; pdf < fTNPdf2; pdf++){
@@ -545,8 +545,8 @@ void SSDLAnalysis::FillAnalysisTree(){
 //			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz+68clhalf.LHgrid");
 //			LHAPDF::initPDFSet(3,"MSTW2008nlo68cl_asmz-68clhalf.LHgrid");
 //			LHAPDF::initPDFSet(3,"NNPDF20_as_0117_100.LHgrid");
-			LHAPDF::initPDFSet(3,"NNPDF20_as_0120_100.LHgrid");
-//			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
+//			LHAPDF::initPDFSet(3,"NNPDF20_as_0120_100.LHgrid");
+			LHAPDF::initPDFSet(3,"NNPDF20_as_0122_100.LHgrid");
 			LHAPDF::initPDFM(3,0);
 			fTNPdf3 = (int)LHAPDF::numberPDFM(3);
 			for(int pdf=0; pdf < fTNPdf3; pdf++){

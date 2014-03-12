@@ -24,7 +24,7 @@
 ##SR27
 ##SR28
 TTbarWPresel
-TTbarWPresel1b
+#TTbarWPresel1b
 TTbarWSel
-TTbarWSel2b
-TTbarWSelOld
+#TTbarWSel2b
+#TTbarWSelOld
