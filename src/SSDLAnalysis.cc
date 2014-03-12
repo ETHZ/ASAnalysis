@@ -16,7 +16,7 @@ const int SSDLAnalysis::nx;
 const float SSDLAnalysis::x_values[nx] =  {0.05, 0.5, 0.95};
 
 
-const bool gDoPDFs      = true;
+const bool gDoPDFs      = false;
 const bool gSaveGenInfo = false;
 
 
