@@ -13009,7 +13009,7 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 		//if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 6 && gsystIt->second != 7) continue;
 		//if (gsystIt->second != 0 && gsystIt->second != 12 && gsystIt->second != 13 && gsystIt->second != 3) continue;
 		//if (gsystIt->second != 0 && gsystIt->second != 6 && gsystIt->second != 7) continue;
-		if (gsystIt->second != 0 && gsystIt->second != 14 && gsystIt->second != 15 && gsystIt->second != 16 && gsystIt->second != 17) continue;
+		//if (gsystIt->second != 0 && gsystIt->second != 14 && gsystIt->second != 15 && gsystIt->second != 16 && gsystIt->second != 17) continue;
 		//if (gsystIt->second != 0) continue;
 		ttwzpreds[gsystIt->first] = makePredictionSignalEvents(minHT, maxHT, minMET, maxMET, minNjets, minNbjetsL, minNbjetsM, pT1, pT2, chVeto, ttw, gsystIt->second);
 	// here we are. fix this stuff
@@ -14354,8 +14354,8 @@ map< TString, TTWZPrediction > SSDLPlotter::makeTTWIntPredictionsSigEvent(float 
 
 //	makeSystTable(outputdir, chargeString, "JER", ttwzpreds["JetSmear"], ttwzpreds["JetSmearUp"], ttwzpreds["JetSmearDown"]);
 	makeSystTable(outputdir, chargeString, "Lep", ttwzpreds["Normal"], ttwzpreds["LepUp"], ttwzpreds["LepDown"]);
-	makeSystTable(outputdir, chargeString, "Mu", ttwzpreds["Normal"], ttwzpreds["MuUp"], ttwzpreds["MuDown"]);
-	makeSystTable(outputdir, chargeString, "El", ttwzpreds["Normal"], ttwzpreds["ElUp"], ttwzpreds["ElDown"]);
+//	makeSystTable(outputdir, chargeString, "Mu", ttwzpreds["Normal"], ttwzpreds["MuUp"], ttwzpreds["MuDown"]);
+//	makeSystTable(outputdir, chargeString, "El", ttwzpreds["Normal"], ttwzpreds["ElUp"], ttwzpreds["ElDown"]);
 
 
 
