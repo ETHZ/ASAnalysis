@@ -31,7 +31,7 @@ def expected_significance(datacard, opt):
 	print 'expected significance ', exp_signif
 	return exp_signif
 
-def signal_strength(datacard, opt):
+def signal_strength(datacard, opt = ''):
 	print 'combine -M MaxLikelihoodFit '+datacard+' '+opt
 	os.system('combine -M MaxLikelihoodFit '+datacard+' '+opt)
 	rootFile = ROOT.TFile.Open("mlfit.root")
