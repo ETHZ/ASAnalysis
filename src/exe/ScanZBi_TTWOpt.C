@@ -22,7 +22,7 @@
 
 float fake_lumi_ = 19466.;
 
-
+bool gOptimizeXSecError = false;
 
 
 
@@ -128,13 +128,15 @@ int main( int argc, char* argv[] ) {
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep05-JetPt30-Iso5-ChMisID-1J";
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep08-JetPt30-Iso5-ChMisID-1J-allTTJets";
 //  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep22-JetPt30-Iso5-ChMisID-1J-EWKControlPlots-HLT_Mu24_eta2p1";
-  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct15-AwayJet40";
+//  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct15-AwayJet40";
+  std::string dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Mar05-Lep-Systs";
   std::string config = dir + "/dumperconfig.cfg";
 
   SSDLPlotter* plotter = new SSDLPlotter(config);
   //std::string outputdir = "/shome/pandolf/CMSSW_4_2_8/src/DiLeptonAnalysis/NTupleProducer/macros/" + selectionType;
 //  std::string outputdir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/" + selectionType + "_" + charge;
-  std::string outputdir = "plots/Oct15-AwayJet40";
+//  std::string outputdir = "plots/Oct15-AwayJet40";
+  std::string outputdir = "plots/Mar05-Lep-Systs";
   plotter->setVerbose(1);
   plotter->fDO_OPT = false;
   plotter->setOutputDir(outputdir);
@@ -573,6 +575,11 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
       if( selectionType_tstr.Contains("CSV_ML") ) continue;
       float nlo_syst = (ttwzpred.ttw_aMCatNLO / ttwzpred.ttw_aMCatNLO_gen) / (ttwzpred.ttw / ttwzpred.ttw_gen);
       datacard << Form("NLO lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-", nlo_syst, nlo_syst, nlo_syst);
+	} else if( gOptimizeXSecError && thisLine_tstr.BeginsWith("observation") ) {
+		datacard << Form("observation\t%5.3f\t%5.3f\t%5.3f",
+			ttwzpred.tot_mm + ttwzpred.ttw_mm,
+			ttwzpred.tot_em + ttwzpred.ttw_em,
+			ttwzpred.tot_ee + ttwzpred.ttw_ee) << endl;
     } else {
       datacard << thisLine << std::endl;
     }
@@ -587,6 +594,7 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
   sprintf( significanceFileName, "%s/significance_eff%d.txt", optcutsdir.c_str(), iEff*5 );
   std::string significanceFileName_str(significanceFileName);
   std::string combineCommand = "combine -M ProfileLikelihood --significance " + datacardName_str + "  -t -1 --expectSignal=1";
+  if (gOptimizeXSecError) combineCommand = "combine -M MaxLikelihoodFit " + datacardName_str;
 ////std::string combineCommand = "combine -M ProfileLikelihood --significance " + datacardName_str + "  -t -1 --expectSignal=1 >&! " + significanceFileName_str;
 //std::cout << combineCommand << std::endl;
 //system( combineCommand.c_str() );
@@ -600,12 +608,30 @@ float makeDatacard( TTWZPrediction ttwzpred, float lumiSF, float lumiSF_fake, co
   }
 
     float significance = 0.;
-  while(fgets(buff, sizeof(buff), in)!=NULL) {
+  while(!gOptimizeXSecError && fgets(buff, sizeof(buff), in)!=NULL) {
       TString buff_tstr(buff);
       if( buff_tstr.BeginsWith("Significance") ) {
         std::string sig_str;
         istringstream iss(buff);
         iss >> sig_str >> significance;
+      }
+  }
+	float sigstrength = 0.;
+	float errorup = 0.;
+	float errordn = 0.;
+  while(gOptimizeXSecError && fgets(buff, sizeof(buff), in)!=NULL) {
+      TString buff_tstr(buff);
+      if( buff_tstr.BeginsWith("Best fit r:") ) {
+        std::string trash;
+		std::string errors;
+//		buff_tstr.Replace(buff_tstr.Find('/'), 1, ' ');
+		buff_tstr.ReplaceAll("/", " ");
+        istringstream iss(buff);
+        //iss >> sig_str >> significance;
+		//     Best     fit     r:       0.789907      -0.470009/+0.495389  (68% CL)
+        iss >> trash >> trash>> trash >> sigstrength >> errordn >> errorup >>trash;
+		//errors.find('/')
+		cout << sigstrength << " " << errordn << " " << errorup << endl;
       }
   }
   pclose(in);
