@@ -9,6 +9,8 @@ class plotter :
 		self.ssdlfile = ROOT.TFile.Open(path, 'READ')
 		self.sigtree = ssdlfile.Get('SigEvents')
 
+		ROOT.gSystem.Load('./FakeRatios.so')
+
 		# systematic uncertainties
 		self.RareESyst  = 0.5
 		self.RareESyst2 = RareESyst*RareESyst
