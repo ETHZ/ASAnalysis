@@ -514,9 +514,9 @@ void SSDLPlotter::doAnalysis(){
   cout << "...done ====" << endl;
 
 
-//  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-//  makeTTWDiffPredictionsSigEvent();
-//  cout << "...done ===" << endl;
+  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+  makeTTWDiffPredictionsSigEvent();
+  cout << "...done ===" << endl;
 
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
@@ -530,7 +530,7 @@ void SSDLPlotter::doAnalysis(){
 //	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, gMinPt1_ttWSel_pp, gMinPt2_ttWSel_pp, 0, true);
 
 	// final selection w/o charge selection and loose lepton pT cut
-	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, 20., 20., 0, true);
+//	makeTTWIntPredictionsSigEvent(gMinHT_ttWSel_pp, 8000., gMinMET_ttWSel_pp, 8000., gMinNjets_ttWSel_pp, gMinNbjetsL_ttWSel_pp, gMinNbjetsM_ttWSel_pp, 20., 20., 0, true);
 
 
 
@@ -14585,10 +14585,10 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
 //////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
 	// 3 J   1 bJ
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
 //	// 3 J   2 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  9, +1);
@@ -14600,7 +14600,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  8,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  8,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  8,  0);
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  8,  0);
 //	// >=2 J   ==0 bJ  pt > 40 GeV
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 11,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0, 11,  0);
@@ -14609,12 +14609,14 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	// final sel
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, +1);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1, -1);
-//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1,  0);
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  1,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 10,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
 	// == 3 J  == 1 bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 12,  0);
+	// 4 J 2bJ
+	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 13,  0);
 
 	return;
 	diffVarName.clear();
@@ -14685,6 +14687,7 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 	if (region_sel == 9)  fOutputSubDir = "DiffPredictionSigEventTree/3J2bJ/";
 	if (region_sel == 11) fOutputSubDir = "DiffPredictionSigEventTree/2JnobJ40pt/";
 	if (region_sel == 12) fOutputSubDir = "DiffPredictionSigEventTree/3J1bJnotMore/";
+	if (region_sel == 13) fOutputSubDir = "DiffPredictionSigEventTree/4J2bJ/";
 
 //	gApplyZVeto = true;
 //	if (gApplyZVeto) {
@@ -14901,6 +14904,17 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 		minNjets   =   3 , maxNjets   =     3 ;
 		minNbjetsL =   1 , maxNbjetsL =    99 ;
 		minNbjetsM =   1 , maxNbjetsM =     1 ;
+		minPt1     =  20., maxPt1     =  8000.;
+		minPt2     =  20., maxPt2     =  8000.;
+		minMll     =   8.; // 8.
+	}
+	if (region_sel == 13) {
+		systflag   =   0 ;
+		minHT      =   0., maxHT      =  8000.;
+		minMET     =   0., maxMET     =  8000.;
+		minNjets   =   4 , maxNjets   =    99 ;
+		minNbjetsL =   2 , maxNbjetsL =    99 ;
+		minNbjetsM =   2 , maxNbjetsM =    99 ;
 		minPt1     =  20., maxPt1     =  8000.;
 		minPt2     =  20., maxPt2     =  8000.;
 		minMll     =   8.; // 8.
