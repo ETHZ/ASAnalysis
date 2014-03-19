@@ -809,6 +809,8 @@ public:
 	virtual void scalePileup(int flag = 0);
 	virtual float getJetPt(int); // for shifting and smearing
 	virtual float getM3();
+	virtual float getM3new();
+	virtual double getDeltaR3Vectors(TLorentzVector, TLorentzVector, TLorentzVector);
 	virtual void  setMET(float );
 	virtual float getMET();
 	virtual float getMETPhi();

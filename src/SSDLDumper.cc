@@ -2083,7 +2083,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		fSETree_M3      = getM3();
+		fSETree_M3      = getM3new();
 		if( isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightMuon(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 2;
@@ -2187,7 +2187,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		fSETree_M3      = getM3();
+		fSETree_M3      = getM3new();
 		if( isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2280,7 +2280,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		fSETree_M3      = getM3();
+		fSETree_M3      = getM3new();
 		if( isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightElectron(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2371,7 +2371,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 //				fSETree_BetaStar2 = getBetaStar(2);
 //				fSETree_BetaStar3 = getBetaStar(3);
 //				fSETree_BetaStar4 = getBetaStar(4);
-//				fSETree_M3      = getM3();
+//				fSETree_M3      = getM3new();
 //				fSETree_BetaStar5 = getBetaStar(5);
 ////				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 ////				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
@@ -2420,7 +2420,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_BetaStar3 = getBetaStar(3);
 				fSETree_BetaStar4 = getBetaStar(4);
 				fSETree_BetaStar5 = getBetaStar(5);
-				fSETree_M3      = getM3();
+				fSETree_M3      = getM3new();
 				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
@@ -2468,7 +2468,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_BetaStar3 = getBetaStar(3);
 				fSETree_BetaStar4 = getBetaStar(4);
 				fSETree_BetaStar5 = getBetaStar(5);
-				fSETree_M3      = getM3();
+				fSETree_M3      = getM3new();
 				if( isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel/Barrel
 				if( isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Barrel/Endcap
 				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 2; // TLCat == 2 if Endcap/Barrel
@@ -5272,6 +5272,45 @@ float SSDLDumper::getM3(){
 		}
 	}	
 	return m3;
+}
+float SSDLDumper::getM3new() {
+	// Return M3
+	int njets = getNJets();
+	if(njets < 3) return -1.;
+
+	float triJetPtMax = 0.;
+	double triJetDeltaRMin = 9999.;
+	float m3 = 0.;
+	for(size_t i = 0; i < NJets; ++i){
+		if(!isGoodJet(i)) continue;
+		for(size_t j = i+1; j < NJets; ++j){
+			if(!isGoodJet(j)) continue;
+			for(size_t k = j+1; k < NJets; ++k){
+				if(!isGoodJet(k)) continue;
+				if (JetCSVBTag[i] < 0.679 && JetCSVBTag[j] < 0.679 && JetCSVBTag[k] < 0.679) continue; // at least one jet is b-tagged
+				TLorentzVector jet1; jet1.SetPtEtaPhiE(JetPt[i], JetEta[i], JetPhi[i], JetEnergy[i]);
+				TLorentzVector jet2; jet2.SetPtEtaPhiE(JetPt[j], JetEta[j], JetPhi[j], JetEnergy[j]);
+				TLorentzVector jet3; jet3.SetPtEtaPhiE(JetPt[k], JetEta[k], JetPhi[k], JetEnergy[k]);
+				TLorentzVector triJet = jet1 + jet2 + jet3;
+
+				double deltaR3jets_tmp = getDeltaR3Vectors(jet1, jet2, jet3);
+
+				if (deltaR3jets_tmp < triJetDeltaRMin) {
+					triJetDeltaRMin = deltaR3jets_tmp;
+					m3 = triJet.M();
+				}
+			} // end third jet loop
+		} // end second jet loop
+	} // end first jet loop
+	return m3;
+}
+double SSDLDumper::getDeltaR3Vectors(TLorentzVector vec1, TLorentzVector vec2, TLorentzVector vec3) {
+	TLorentzVector triVec = vec1 + vec2 + vec3;
+	double deltaR1 = Util::GetDeltaR(vec1.Eta(), triVec.Eta(), vec1.Phi(), triVec.Phi());
+	double deltaR2 = Util::GetDeltaR(vec2.Eta(), triVec.Eta(), vec2.Phi(), triVec.Phi());
+	double deltaR3 = Util::GetDeltaR(vec3.Eta(), triVec.Eta(), vec3.Phi(), triVec.Phi());
+	double deltaR = sqrt(deltaR1*deltaR1 + deltaR2*deltaR2 + deltaR3*deltaR3);
+	return deltaR;
 }
 float SSDLDumper::getNthJetPt(int n, bool bJet){
 	std::vector< ValueAndIndex> sorted;
