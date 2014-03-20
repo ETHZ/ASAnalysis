@@ -2,6 +2,8 @@
 #import os, sys, commands, subprocess, math
 import ROOT
 import sys
+import selection as sel
+import sample
 
 class plotter :
 	'''read sigtree and produces plots'''
@@ -14,6 +16,15 @@ class plotter :
 		print '[status] loaded SigEventsTree with %d events' % (self.sigtree.GetEntries())
 
 		ROOT.gSystem.Load('./FakeRatios.so')
+
+		# selections
+		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
+		#print presel.get_selectionString()
+		self.selections = {}
+		self.selections[presel.name] = presel
+
+		# samples
+		self.samples = {}
 
 		# systematic uncertainties
 		# TODO: read these from file
@@ -31,8 +42,12 @@ class plotter :
 		self.ChMisESyst2 = self.ChMisESyst * self.ChMisESyst
 
 
-	def do_analyis(self) :
+	def do_analysis(self, cardfile) :
 		print '[statur] starting analysis..'
+
+		# samples
+		self.samples = self.readDatacard(cardfile)
+
 		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
 		## if(readHistos(fOutputFileName) != 0) return;
 		## 
@@ -60,6 +75,42 @@ class plotter :
 		## storeWeightedPred(gRegion[gBaseRegion]);
 		## ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
 		## cout << "...done ====" << endl;
+
+
+	def readDatacard(self, cardfile, verbose = 0) :
+		'''reads datacard file'''
+		print '[status] reading datacard %s' % (cardfile)
+		samples = {}
+		## line format:
+		##
+		## data:
+		##  0: sample name
+		##  1: input file
+		##  2: data mc type
+		##  3: channel (0: DoubleMu, 1: DoubleEle, 2: MuEG, 5: SingleMu)
+		##
+		## mc:
+		##  0: sample name
+		##  1: input file
+		##  2: data mc type
+		##  3: channel (-1)
+		##  4: cross section
+		with open(cardfile, 'r') as file :
+			for i, line in enumerate(file.readlines()) :
+				if line[0] is '#' : continue
+				splitline = line.split()
+				if (len(splitline) < 4) or (len(splitline) > 5) or (len(splitline) == 4 and int(splitline[2]) != 0) or (len(splitline) == 5 and int(splitline[2]) == 0) :
+					print '[error] check format of your datacard (line %d)!' % (i)
+					sys.exit(1)
+				[name, inputfile, datamc, channel] = splitline[:4]
+				datamc = int(datamc)
+				channel = int(channel)
+				xsec = -1.
+				if len(splitline) == 5 :
+					xsec = float(splitline[4])
+				samples[name] = sample.sample(name = name, datamc = datamc, channel = channel, xsec = xsec, ngen = -1)
+				if verbose > 0 : print samples[name]
+		return samples
 
 
 	def read_histos(self) :
@@ -311,12 +362,17 @@ class plotter :
 
 if __name__ == '__main__' :
 	args = sys.argv
-	if ('--help' in args) or ('-h' in args) or ('-d' not in args) :
+	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) :
 		print 'usage: ..'
-		sys.exit()
+		sys.exit(1)
 
 	if ('-d' in args) and (args[args.index('-d')+1] is not '') :
 		path = str(args[args.index('-d')+1])
 		print path
 
+	if ('-c' in args) and (args[args.index('-c')+1] is not '') :
+		cardfile = str(args[args.index('-c')+1])
+		print cardfile
+
 	plotter = plotter(path)
+	plotter.do_analysis(cardfile)
