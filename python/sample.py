@@ -6,11 +6,16 @@ class sample :
 	'''stores informations and numbers about a sample'''
 
 
-	def __init__(self, name, datamc, xsec, ngen) :
-		self.name   = name
-		self.datamc = datamc
-		self.xsec   = xsec
-		self.ngen   = ngen
+	def __init__(self, name = '', datamc = -1, channel = -1, xsec = -1, ngen = -1) :
+		self.name    = name
+		self.datamc  = datamc
+		self.channel = channel
+		self.xsec    = xsec
+		self.ngen    = ngen
+
+
+	def __str__(self) :
+		return '%s:\tdatamc: %d, channel: %d, xsec: %f, ngen: %d, lumi: %f' % (self.name, self.datamc, self.channel, self.xsec, self.ngen, self.getLumi())
 
 
 	def getLumi(self) :
