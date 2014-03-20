@@ -1,32 +1,38 @@
 #! /usr/bin/python
 #import os, sys, commands, subprocess, math
 import ROOT
+import sys
 
 class plotter :
 	'''read sigtree and produces plots'''
 
-	def __init__(self) :
-		self.ssdlfile = ROOT.TFile.Open(path, 'READ')
-		self.sigtree = ssdlfile.Get('SigEvents')
+	def __init__(self, path) :
+		print '[status] initialize plotter..'
+		self.path = path
+		self.ssdlfile = ROOT.TFile.Open(path + '/SSDLYields.root', 'READ')
+		self.sigtree = self.ssdlfile.Get('SigEvents')
+		print '[status] loaded SigEventsTree with %d events' % (self.sigtree.GetEntries())
 
 		ROOT.gSystem.Load('./FakeRatios.so')
 
 		# systematic uncertainties
-		self.RareESyst  = 0.5
-		self.RareESyst2 = RareESyst*RareESyst
-		self.FakeESyst  = 0.5
-		self.FakeESyst2 = FakeESyst*FakeESyst
-		self.WZESyst  = 0.15
-		self.WZESyst2 = WZESyst*WZESyst
-		self.TTZESyst  = 0.5
-		self.TTZESyst2 = TTZESyst*TTZESyst
-		self.TTWESyst  = 0.5
-		self.TTWESyst2 = TTWESyst*TTWESyst
+		# TODO: read these from file
+		self.RareESyst   = 0.5
+		self.RareESyst2  = self.RareESyst * self.RareESyst
+		self.FakeESyst   = 0.5
+		self.FakeESyst2  = self.FakeESyst * self.FakeESyst
+		self.WZESyst     = 0.15
+		self.WZESyst2    = self.WZESyst * self.WZESyst
+		self.TTZESyst    = 0.5
+		self.TTZESyst2   = self.TTZESyst * self.TTZESyst
+		self.TTWESyst    = 0.5
+		self.TTWESyst2   = self.TTWESyst * self.TTWESyst
 		self.ChMisESyst  = 0.3
-		self.ChMisESyst2 = ChMisESyst*ChMisESyst
+		self.ChMisESyst2 = self.ChMisESyst * self.ChMisESyst
 
 
-	def do_analyis() :
+	def do_analyis(self) :
+		print '[statur] starting analysis..'
 		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
 		## if(readHistos(fOutputFileName) != 0) return;
 		## 
@@ -56,14 +62,17 @@ class plotter :
 		## cout << "...done ====" << endl;
 
 
-	def read_histos() :
+	def read_histos(self) :
 		'''reads histograms for all samples from SSDLYields.root'''
+		print '[status] reading histograms..'
 
 
-	def get_ChMisID_SF() :
+	def get_ChMisID_SF(self) :
+		foo = 0
 
 
-	def fill_ratios() :
+	def fill_ratios(self) :
+		print '[status] filling fake and prompt ratio histograms..'
 		## void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples,
 		## 			     int datamc, bool applyEwkSubtr, bool printOutput){
 		## 	if(datamc == 0){
@@ -91,7 +100,8 @@ class plotter :
 		## }
 
 
-	def fill_ratio(chan, samples, region, applyEwkSubtr) :
+	def fill_ratio(self, chan, samples, region, applyEwkSubtr) :
+		foo = 0
 		# sets up the histograms and calls calculateRatio
 
 		## TH2D* SSDLPlotter::fillRatio(gChannel chan, vector<int> samples, gFPSwitch fp, bool applyEwkSubtr, bool output){
@@ -124,7 +134,8 @@ class plotter :
 		## }
 
 
-	def calculateRatio() :
+	def calculateRatio(self) :
+		foo = 0
 		# - sets up ratio histos
 		# - calls getPassedTotal to get ntight and nloose histos
 
@@ -244,10 +255,12 @@ class plotter :
 		## }
 
 
-	def makeRatioControlPlots
+	def makeRatioControlPlots(self) :
+		foo = 0
 
 
-	def storeWeightedPred() :
+	def storeWeightedPred(self) :
+		foo = 0
 		# only nsst, nssl, nzt, nzl for each sample and channel is needed in calculateRatio -> just read those from file and don't loop over tree
 
 		## if(chan != ElMu){
@@ -261,11 +274,12 @@ class plotter :
 		## }
 
 
-	def make_IntPredictions(selections) :
+	def make_IntPredictions(self, selections) :
 		'''oberservation and prediction for different selections'''
+		foo = 0
 
 
-	def make_DiffPredictions(selections) :
+	def make_DiffPredictions(self, selections) :
 		'''plot observed and predicted distributions of various variables'''
 
 		# create subdirectories for selections
@@ -291,7 +305,18 @@ class plotter :
 			
 
 
-	def make_KinPlots
+	def make_KinPlots(self) :
+		foo = 0
 
 
+if __name__ == '__main__' :
+	args = sys.argv
+	if ('--help' in args) or ('-h' in args) or ('-d' not in args) :
+		print 'usage: ..'
+		sys.exit()
 
+	if ('-d' in args) and (args[args.index('-d')+1] is not '') :
+		path = str(args[args.index('-d')+1])
+		print path
+
+	plotter = plotter(path)
