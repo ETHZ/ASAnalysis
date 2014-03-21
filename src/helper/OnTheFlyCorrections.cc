@@ -24,6 +24,27 @@ OnTheFlyCorrections::OnTheFlyCorrections(std::string gt, bool isdata){
 	fJetUncertainty = new JetCorrectionUncertainty(path+gt+"_Uncertainty_AK5PF.txt");
 }
 
+OnTheFlyCorrections::OnTheFlyCorrections(std::string gt, bool isdata, std::string path){
+	JetCorrectorParameters *ResJetPar = new JetCorrectorParameters(path+gt+"_L2L3Residual_AK5PF.txt");
+	JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(path+gt+"_L3Absolute_AK5PF.txt");
+	JetCorrectorParameters *L2JetPar  = new JetCorrectorParameters(path+gt+"_L2Relative_AK5PF.txt");
+	JetCorrectorParameters *L1JetPar  = new JetCorrectorParameters(path+gt+"_L1FastJet_AK5PF.txt");
+	fJetCorPar.push_back(*L1JetPar);
+	fJetCorPar.push_back(*L2JetPar);
+	fJetCorPar.push_back(*L3JetPar);
+	if (isdata) fJetCorPar.push_back(*ResJetPar);
+	fJetCorrector = new FactorizedJetCorrector(fJetCorPar);
+	fIsData = isdata;
+	
+	delete L1JetPar;
+	delete L2JetPar;
+	delete L3JetPar; 
+	delete ResJetPar; 
+
+	fJetUncertainty = new JetCorrectionUncertainty(path+gt+"_Uncertainty_AK5PF.txt");
+}
+
+
 float OnTheFlyCorrections::getJECUncertainty(float pt, float eta){
 	if      (eta> 5.0) eta = 5.0;
 	else if (eta<-5.0) eta =-5.0;

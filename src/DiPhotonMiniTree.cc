@@ -346,6 +346,11 @@ void DiPhotonMiniTree::Begin(){
 
   InitEnergyScalesAndSmearingsDatabase();
 
+  std::string mygtag = "FT_R_53_LV3";
+  std::string mypath = "/shome/peruzzi/CMSSW_5_3_10_patch2/src/DiLeptonAnalysis/NTupleProducer/test/ASAnalysis/src/helper/JetCorrectionFiles/";
+  MyJetCorrector = new OnTheFlyCorrections(mygtag,isdata,mypath);
+  cout << "Using GTAG " << mygtag << " for JEC/JER" << endl;
+
 }
 
 void DiPhotonMiniTree::Analyze(){
@@ -420,8 +425,15 @@ void DiPhotonMiniTree::Analyze(){
   bool passtrigger = TriggerSelection();
 
   std::vector<std::pair<int,float> > ordering;
+  std::vector<std::pair<int,float> > ordering_jets;
   std::vector<float> unscaled_r9;
   std::vector<float> unscaled_sieie;
+
+  std::vector<float> jet_jecunc;
+  std::vector<float> jet_jer;
+  std::vector<float> jet_jerup;
+  std::vector<float> jet_jerdown;
+
   // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
     unscaled_r9.push_back(fTR->PhoR9[i]);
@@ -432,6 +444,18 @@ void DiPhotonMiniTree::Analyze(){
     ordering.push_back(std::pair<int,float>(i,fTR->PhoPt[i]));
   }
   std::sort(ordering.begin(),ordering.end(),indexComparator);
+
+  // on-the-fly JEC/JER corrections
+  for (int i=0; i<fTR->NJets; i++){
+    float jecunc,jer,jerup,jerdown;
+    JECJERCorrection(i,jecunc,jer,jerup,jerdown);
+    jet_jecunc.push_back(jecunc);
+    jet_jer.push_back(jer);
+    jet_jerup.push_back(jerup);
+    jet_jerdown.push_back(jerdown);
+    ordering_jets.push_back(std::pair<int,float>(i,fTR->JPt[i]));
+  }
+  std::sort(ordering_jets.begin(),ordering_jets.end(),indexComparator);
   
   photon_jet_matching.clear();
   for (int i=0; i<fTR->NPhotons; i++) photon_jet_matching.push_back(PFMatchPhotonToJet(i));
@@ -479,7 +503,7 @@ void DiPhotonMiniTree::Analyze(){
       }
       passing = PhotonPreSelection(fTR,passing);
 
-      for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(i);
+      for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(ordering_jets.at(i).first);
       for (int i=0; i<(int)(passing_jets.size())-1; i++){
 	if (!(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)])) cout << event_run << ":" << event_lumi << ":" << event_number << " " << fTR->JPt[passing_jets.at(i)] << " " << fTR->JPt[passing_jets.at(i+1)] << endl;
         assert(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)]);
@@ -916,7 +940,7 @@ void DiPhotonMiniTree::Analyze(){
     passing = PhotonSelection(fTR,passing);
     
     std::vector<int> passing_jets;
-    for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(i);
+    for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(ordering_jets.at(i).first);
     for (int i=0; i<(int)(passing_jets.size())-1; i++){
       assert(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)]);
     }
@@ -2709,6 +2733,7 @@ void DiPhotonMiniTree::JetSelection(std::vector<int> &passing_jets){
     bool pass=1;
     if (pt<20) pass=0;
     if (fabs(eta)>4.7) pass=0;
+    if (!(fTR->JEcorr[*it]>0)) pass=0;
     if (!(fTR->JPassPileupIDM0[fTR->JVrtxListStart[*it]+0])) pass=0; // pileup ID medium cut-based
     if (!pass) it=passing_jets.erase(it); else it++;
   }
@@ -3329,7 +3354,7 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
 
   // init ranking
   std::vector<std::pair<int,float> > ranking;
-  for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) ranking.push_back(std::pair<int,float>(i,0));
+  for (int i=0; i<fTR->NJets; i++) ranking.push_back(std::pair<int,float>(i,0));
   if (ranking.size()==0) {
     //    cout << "PFMatchPhotonToJet: no jets in the event! Returning error state" << endl;
     return out;
@@ -3934,5 +3959,91 @@ void DiPhotonMiniTree::InsertEnergySmearingItem(float meta, float Meta, float mr
   a.err = err;
 
   energySmearingDatabase.push_back(a);
+
+};
+
+void DiPhotonMiniTree::JECJERCorrection(int jetindex, float &jecunc, float &jer, float &jerup, float &jerdown){
+
+  // JEC
+
+  if (!MyJetCorrector) {
+    cout << "ERROR: NO JET ENERGY CORRECTOR INITIALIZED!!!" << endl;
+    return;
+  }
+
+  const int i = jetindex;
+  std::vector<float> corr = MyJetCorrector->getCorrPtECorr(fTR->JPt[i],fTR->JEta[i],fTR->JE[i],fTR->JEcorr[i],fTR->JArea[i],fTR->Rho);
+  fTR->JPt[i] = corr.at(0);
+  fTR->JE[i] = corr.at(1);
+  fTR->JEcorr[i] = corr.at(2);
+  // WARNING: the other jet quantities are not recorrected, do not use them!!!
+
+  jecunc = MyJetCorrector->getJECUncertainty(fTR->JPt[i],fTR->JEta[i]);
+
+  // JER
+
+  {
+
+    float thiseta = fabs(fTR->JEta[i]);
+    float smear,smearup,smeardown;
+
+    if (thiseta<0.5) smear=1.052;
+    else if (thiseta<1.1) smear=1.057;
+    else if (thiseta<1.7) smear=1.096;
+    else if (thiseta<2.3) smear=1.134;
+    else smear=1.288;
+
+    if (thiseta<0.5) smearup=1.115;
+    else if (thiseta<1.1) smearup=1.114;
+    else if (thiseta<1.7) smearup=1.161;
+    else if (thiseta<2.3) smearup=1.228;
+    else smearup=1.488;
+
+    if (thiseta<0.5) smeardown=0.990;
+    else if (thiseta<1.1) smeardown=1.001;
+    else if (thiseta<1.7) smeardown=1.032;
+    else if (thiseta<2.3) smeardown=1.142;
+    else smeardown=1.089;
+
+    float pt = fTR->JPt[i];
+    float ptgen = (fTR->JGenJetIndex[i]<0) ? pt : fTR->GenJetPt[fTR->JGenJetIndex[i]]; // no smearing for jets not matched to genjets
+    jer = TMath::Max(float(0),float((ptgen+smear*(pt-ptgen))))/pt;
+    jerup = TMath::Max(float(0),float((ptgen+smearup*(pt-ptgen))))/pt;
+    jerdown = TMath::Max(float(0),float((ptgen+smeardown*(pt-ptgen))))/pt;
+    fTR->JPt[i] *= jer;
+    fTR->JE[i] *= jer;
+
+  }
+
+//  float OnTheFlyCorrections::getJECUncertainty(float pt, float eta){
+//    if      (eta> 5.0) eta = 5.0;
+//    else if (eta<-5.0) eta =-5.0;
+//    fJetUncertainty->setJetPt(pt);
+//    fJetUncertainty->setJetEta(eta);
+//    float uncert= fJetUncertainty->getUncertainty(true);
+//    return uncert;
+//
+//  }
+//
+//  std::vector< float > OnTheFlyCorrections::getCorrPtECorr(float jetpt, float jeteta, float jetenergy, float jecorr, float jetarea, float rho){
+//    // give this function a corrected jet and it will return a vector with the 
+//    // corrected jet-pt, jet-energy and the new correction according to the global tag that is set
+//
+//    float rawpt = jetpt/jecorr;
+//    float rawe  = jetenergy/jecorr;
+//    fJetCorrector->setJetPt(rawpt); // raw-pT here
+//    fJetCorrector->setJetEta(jeteta);
+//    fJetCorrector->setRho(rho);
+//    fJetCorrector->setJetA(jetarea);
+//
+//    float corr = fJetCorrector->getCorrection();
+//    std::vector< float > corrected;
+//
+//    // new jetpt = old jet-pt * new correction / old correction
+//    corrected.push_back(corr*rawpt); // new corrected pt as 0th item
+//    corrected.push_back(corr*rawe);  // new corrected energy as 1st item
+//    corrected.push_back(corr);       // new correction as 2nd item
+//    return corrected;
+//  }
 
 };

@@ -241,6 +241,9 @@ private:
 
   jetmatching_struct PFMatchPhotonToJet(int phoqi);
 
+  OnTheFlyCorrections *MyJetCorrector;
+  void JECJERCorrection(int jetindex, float &jecunc, float &jer, float &jerup, float &jerdown);
+
   TRandom3 *randomgen;
   TRandom3 *randomgen_forEsmearing;
 
