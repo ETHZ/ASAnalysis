@@ -346,8 +346,10 @@ void DiPhotonMiniTree::Begin(){
 
   InitEnergyScalesAndSmearingsDatabase();
 
-  std::string mygtag = "FT_R_53_LV3";
-  std::string mypath = "/shome/peruzzi/CMSSW_5_3_10_patch2/src/DiLeptonAnalysis/NTupleProducer/test/ASAnalysis/src/helper/JetCorrectionFiles/";
+  std::string mygtag="";
+  if (year==2011) mygtag = (isdata) ? "FT_R_53_LV3" : "START53_LV4";
+  else if (year==2012) mygtag="TODO";
+  std::string mypath = "/shome/peruzzi/JetCorrectionFiles/";
   MyJetCorrector = new OnTheFlyCorrections(mygtag,isdata,mypath);
   cout << "Using GTAG " << mygtag << " for JEC/JER" << endl;
 
@@ -3980,7 +3982,7 @@ void DiPhotonMiniTree::JECJERCorrection(int jetindex, float &jecunc, float &jer,
 
   jecunc = MyJetCorrector->getJECUncertainty(fTR->JPt[i],fTR->JEta[i]);
 
-  // JER
+  // JER, good for both 2011 and 2012
 
   {
 

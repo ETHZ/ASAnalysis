@@ -53,7 +53,7 @@ const int global_maxN_jets = 200;
 const int global_size_pfcandarrays = 30;
 
 const float global_dR_cut_acceptance = 0.45;
-// const float global_mindR_photon_jet = 1.0; unused
+// const float global_mindR_photon_jet = 1.0; unused, is implemented at a later stage to keep all jets for the inclusive case
 
 const bool do_only_light_tree = false; // set this to true to run only the efficiency/unfolding light tree
 const int dy_dataset_id = 30; // be SURE to know where to propagate this if you change it
