@@ -55,9 +55,9 @@ class plotter :
 		self.samples = self.readDatacard(cardfile)
 		self.read_ngen()
 
-		self.get_EWK_SF('el')
-		self.get_EWK_SF('mu17')
-		self.get_EWK_SF('mu24')
+		el_EWK_SF   = self.get_EWK_SF('el')
+		mu17_EWK_SF = self.get_EWK_SF('mu17')
+		mu24_EWK_SF = self.get_EWK_SF('mu24')
 
 		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
 		## if(readHistos(fOutputFileName) != 0) return;
@@ -153,6 +153,7 @@ class plotter :
 
 
 	def get_EWK_SF(self, chan_str) :
+		print '[status] calculating EWK scale factor for %s trigger' % (chan_str)
 		samples_wjets = []
 		samples_zjets = []
 		samples_qcd = [] # TODO
@@ -195,7 +196,6 @@ class plotter :
 			else :
 				h_ntight.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar), scale)
 				h_nloose.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar), scale)
-			print 'scale: %s, getentries: %f' % (scale, h_ntight.GetEntries())
 		return (h_ntight, h_nloose)
 
 
