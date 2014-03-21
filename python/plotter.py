@@ -157,7 +157,7 @@ class plotter :
 		samples_zjets = []
 		samples_qcd = [] # TODO
 		if chan_str is 'el'   : samples_data = self.get_samples('DoubleEle')
-		if chan_str is 'mu17' : samples_data = self.get_samples('SingleMu')
+		if chan_str is 'mu17' : samples_data = self.get_samples('DoubleMu')
 		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
 		samples_wjets.append('WJets')
 		samples_zjets.append('DYJets')
@@ -172,13 +172,9 @@ class plotter :
 		n_data = h_ntight_data.Integral(bin_min, bin_max)
 		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
 
-		print 'SF = data / (WJets + DYJets) = %f / %f = %f' % (n_data, n_mc, n_data/n_mc)
+		print '%s SF = data / (WJets + DYJets) = %f / %f = %f' % (chan_str, n_data, n_mc, n_data/n_mc)
 
-
-#		h_ntight.Draw()
-#		raw_input('ok? ')
-#		h_nloose.Draw()
-#		raw_input('ok? ')
+		return n_data / n_mc
 
 
 	def get_fRatioPlots(self, samples, chan_str, ratiovar) :
@@ -196,8 +192,10 @@ class plotter :
 				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar)
 				h_ntight.Scale(scale)
 				h_nloose.Scale(scale)
-			h_ntight.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar), scale)
-			h_nloose.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar), scale)
+			else :
+				h_ntight.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar), scale)
+				h_nloose.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar), scale)
+			print 'scale: %s, getentries: %f' % (scale, h_ntight.GetEntries())
 		return (h_ntight, h_nloose)
 
 
