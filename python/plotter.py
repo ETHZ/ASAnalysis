@@ -26,6 +26,12 @@ class plotter :
 		# samples
 		self.samples = {}
 
+		# lumi norm
+		self.lumi = 19466.
+		self.lumi_HLTMu17       = 24.9
+		self.lumi_HLTMu24Eta2p1 = 116.
+		self.lumi_HLTEl17Jet30  = 23.845
+
 		# systematic uncertainties
 		# TODO: read these from file
 		self.RareESyst   = 0.5
@@ -47,6 +53,11 @@ class plotter :
 
 		# samples
 		self.samples = self.readDatacard(cardfile)
+		self.read_ngen()
+
+		self.get_EWK_SF('el')
+		self.get_EWK_SF('mu17')
+		self.get_EWK_SF('mu24')
 
 		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
 		## if(readHistos(fOutputFileName) != 0) return;
@@ -113,9 +124,81 @@ class plotter :
 		return samples
 
 
+	def read_ngen(self) :
+		for name, s in self.samples.iteritems() :
+			if s.datamc is 0 : continue
+			s.ngen = int(self.ssdlfile.Get(s.name+'/'+s.name+'_EventCount').GetEntries())
+
+
+	def get_samples(self, channel) :
+		samplelist = []
+		if channel == 'DoubleMu' :
+			for name, sample in self.samples.iteritems() :
+				if (sample.datamc == 0) and (sample.channel == 0) : samplelist.append(sample.name)
+		if channel == 'DoubleEle' :
+			for name, sample in self.samples.iteritems() :
+				if (sample.datamc == 0) and (sample.channel == 1) : samplelist.append(sample.name)
+		if channel == 'MuEG' :
+			for name, sample in self.samples.iteritems() :
+				if (sample.datamc == 0) and (sample.channel == 2) : samplelist.append(sample.name)
+		if channel == 'SingleMu' :
+			for name, sample in self.samples.iteritems() :
+				if (sample.datamc == 0) and (sample.channel == 5) : samplelist.append(sample.name)
+		return samplelist
+
+
 	def read_histos(self) :
 		'''reads histograms for all samples from SSDLYields.root'''
 		print '[status] reading histograms..'
+
+
+	def get_EWK_SF(self, chan_str) :
+		samples_wjets = []
+		samples_zjets = []
+		samples_qcd = [] # TODO
+		if chan_str is 'el'   : samples_data = self.get_samples('DoubleEle')
+		if chan_str is 'mu17' : samples_data = self.get_samples('SingleMu')
+		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
+		samples_wjets.append('WJets')
+		samples_zjets.append('DYJets')
+
+		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30')
+		(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT_MET30')
+		(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT_MET30')
+
+		bin_min = h_ntight_data.FindBin(60.)
+		bin_max = h_ntight_data.FindBin(90.)-1
+
+		n_data = h_ntight_data.Integral(bin_min, bin_max)
+		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
+
+		print 'SF = data / (WJets + DYJets) = %f / %f = %f' % (n_data, n_mc, n_data/n_mc)
+
+
+#		h_ntight.Draw()
+#		raw_input('ok? ')
+#		h_nloose.Draw()
+#		raw_input('ok? ')
+
+
+	def get_fRatioPlots(self, samples, chan_str, ratiovar) :
+		'''gets ntight and loose histograms for various variables'''
+		## chan_str = 'mu', 'el', 'mu17', 'mu24'
+		lumi = self.lumi
+		if chan_str is 'el'   : lumi = self.lumi_HLTEl17Jet30
+		if chan_str is 'mu17' : lumi = self.lumi_HLTMu17
+		if chan_str is 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
+		for i, s in enumerate(samples) :
+			scale = lumi / self.samples[s].getLumi()
+			if self.samples[s].datamc == 0 : scale = 1.
+			if i is 0 :
+				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar)
+				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar)
+				h_ntight.Scale(scale)
+				h_nloose.Scale(scale)
+			h_ntight.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar), scale)
+			h_nloose.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar), scale)
+		return (h_ntight, h_nloose)
 
 
 	def get_ChMisID_SF(self) :
@@ -132,10 +215,10 @@ class plotter :
 		## NOT NEEDED 	  fH1D_MupRatio = fillRatioPt(Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
 		## NOT NEEDED 	  fH1D_ElfRatio = fillRatioPt(Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
 		## NOT NEEDED 	  fH1D_ElpRatio = fillRatioPt(Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
-		self.fH2D_MufRatio = fillRatio(  Muon, musamples, SigSup, applyEwkSubtr, printOutput)
-		self.fH2D_MupRatio = fillRatio(  Muon, musamples, ZDecay, applyEwkSubtr, printOutput)
-		self.fH2D_ElfRatio = fillRatio(  Elec, elsamples, SigSup, applyEwkSubtr, printOutput)
-		self.fH2D_ElpRatio = fillRatio(  Elec, elsamples, ZDecay, applyEwkSubtr, printOutput)
+		self.fH2D_MufRatio = fillRatio('Muon', musamples, 'SigSup', applyEwkSubtr, printOutput)
+		self.fH2D_MupRatio = fillRatio('Muon', musamples, 'ZDecay', applyEwkSubtr, printOutput)
+		self.fH2D_ElfRatio = fillRatio('Elec', elsamples, 'SigSup', applyEwkSubtr, printOutput)
+		self.fH2D_ElpRatio = fillRatio('Elec', elsamples, 'ZDecay', applyEwkSubtr, printOutput)
 		## 	}
 		## NOT NEEDED 	if(datamc == 1){
 		## NOT NEEDED 	  cout << "Filling ratios for MC... " << endl;
