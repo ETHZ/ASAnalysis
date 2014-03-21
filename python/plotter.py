@@ -59,6 +59,11 @@ class plotter :
 		mu17_EWK_SF = self.get_EWK_SF('mu17')
 		mu24_EWK_SF = self.get_EWK_SF('mu24')
 
+		#(h2_tight, h2_loose) = self.get_TightLoose(self.get_samples('DoubleEle'), 'EE', 'SigSup')
+		(h2_tight, h2_loose) = self.get_TightLoose(['DYJets'], 'MM', 'ZDecay')
+		h2_tight.Draw('box')
+		raw_input('ok? ')
+
 		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
 		## if(readHistos(fOutputFileName) != 0) return;
 		## 
@@ -215,8 +220,8 @@ class plotter :
 		## NOT NEEDED 	  fH1D_ElpRatio = fillRatioPt(Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
 		self.fH2D_MufRatio = fillRatio('Muon', musamples, 'SigSup', applyEwkSubtr, printOutput)
 		self.fH2D_MupRatio = fillRatio('Muon', musamples, 'ZDecay', applyEwkSubtr, printOutput)
-		self.fH2D_ElfRatio = fillRatio('Elec', elsamples, 'SigSup', applyEwkSubtr, printOutput)
-		self.fH2D_ElpRatio = fillRatio('Elec', elsamples, 'ZDecay', applyEwkSubtr, printOutput)
+		self.fH2D_ElfRatio = fillRatio('Elec', self.get_samples('DoubleEle'), 'SigSup', applyEwkSubtr, printOutput)
+		self.fH2D_ElpRatio = fillRatio('Elec', self.get_samples('DoubleEle'), 'ZDecay', applyEwkSubtr, printOutput)
 		## 	}
 		## NOT NEEDED 	if(datamc == 1){
 		## NOT NEEDED 	  cout << "Filling ratios for MC... " << endl;
@@ -266,10 +271,10 @@ class plotter :
 		## }
 
 
-	def calculateRatio(self) :
+	def calculateRatio(self, applyEwkSubtr, EWK_SF) :
 		foo = 0
 		# - sets up ratio histos
-		# - calls getPassedTotal to get ntight and nloose histos
+		# - calls getPassedTotal / get_TightLoose to get ntight and nloose histos
 
 		## void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, 
 		## 				 TH2D*& h_2d, TH1D*& h_pt, TH1D*& h_eta, TH1D*& h_nv, 
@@ -384,6 +389,53 @@ class plotter :
 		## 		fOutputSubDir = "";
 		## 	}
 		## 	delete H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, hmuloosept, hmulooseeta, hmutightpt, hmutighteta;
+		## }
+
+
+	def get_TightLoose(self, samples, chan_str, fp) :
+		## chan_str: 'MM', 'EE'
+
+		for i, s in enumerate(samples) :
+			scale = 1.
+			if self.samples[s].datamc != 0 : scale = self.lumi / self.samples[s].getLumi()
+			if fp is 'SigSup' :
+				h2_ntight   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight')
+				h2_nloose   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose')
+				h_ntight_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight_nv')
+				h_nloose_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose_nv')
+			elif fp is 'ZDecay' :
+				h2_ntight   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNTight')
+				h2_nloose   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNLoose')
+				h_ntight_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNTight_nv')
+				h_nloose_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNLoose_nv')
+			if i is 0 :
+				h2_passed   = h2_ntight
+				h2_total    = h2_nloose
+				h_passed_nv = h_ntight_nv
+				h_total_nv  = h_nloose_nv
+				h2_passed  .Scale(scale)
+				h2_total   .Scale(scale)
+				h_passed_nv.Scale(scale)
+				h_total_nv .Scale(scale)
+			else :
+				h2_passed  .Add(h2_ntight  , scale)
+				h2_total   .Add(h2_nloose  , scale)
+				h_passed_nv.Add(h_ntight_nv, scale)
+				h_total_nv .Add(h_nloose_nv, scale)
+
+		return (h2_passed, h2_total)
+		## 	TString name = "";
+		## 	for(size_t i = 0; i < samples.size(); ++i){
+		## 		int sample = samples[i];
+		## 		if(i > 0) name += "_";
+		## 		name += fSamples[sample]->sname;
+		## 	}
+		## 	/*
+		## 	if(output){
+		## 		printObject(h_passed, TString("Passed") + name, "colz");
+		## 		printObject(h_total,  TString("Total")  + name, "colz");
+		## 	}
+		## 	*/	
 		## }
 
 
