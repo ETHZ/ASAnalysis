@@ -4008,7 +4008,8 @@ void DiPhotonMiniTree::JECJERCorrection(int jetindex, float &jecunc, float &jer,
     else smeardown=1.089;
 
     float pt = fTR->JPt[i];
-    float ptgen = (fTR->JGenJetIndex[i]<0) ? pt : fTR->GenJetPt[fTR->JGenJetIndex[i]]; // no smearing for jets not matched to genjets
+    float ptgen = pt;
+    if (!isdata && fTR->NGenJets>0 && fTR->JGenJetIndex[i]>=0) ptgen = fTR->GenJetPt[fTR->JGenJetIndex[i]]; // no smearing for jets not matched to genjets
     jer = TMath::Max(float(0),float((ptgen+smear*(pt-ptgen))))/pt;
     jerup = TMath::Max(float(0),float((ptgen+smearup*(pt-ptgen))))/pt;
     jerdown = TMath::Max(float(0),float((ptgen+smeardown*(pt-ptgen))))/pt;
