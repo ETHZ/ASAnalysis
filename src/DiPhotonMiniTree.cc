@@ -438,7 +438,7 @@ void DiPhotonMiniTree::Analyze(){
 
   // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
-    FixMatchingStatusElectrons(i); // correct match exit code for photons matched to gen electrons
+    if (!isdata) FixMatchingStatusElectrons(i); // correct match exit code for photons matched to gen electrons
     unscaled_r9.push_back(fTR->PhoR9[i]);
     unscaled_sieie.push_back(fTR->PhoSigmaIetaIeta[i]);
     fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
