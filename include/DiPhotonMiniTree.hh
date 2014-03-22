@@ -46,6 +46,12 @@ enum ChoiceMixingTemplates {
   k2Events = 1
 };
 
+enum MatchingStatus {
+  kSignal = 0,
+  kBackground = 1,
+  kElectron = 2
+};
+
 const int global_maxN_photonpfcandidates = 2000;
 const int global_maxN_vetoobjects = 200;
 const int global_maxN_jets = 200;
@@ -218,6 +224,9 @@ private:
   isolations_struct RandomConeIsolation(TreeReader *fTR, int phoqi, TString mod="");
   isolations_struct PFConeIsolation(TreeReader *fTR, int phoqi);
   int FindPFCandType(int id);
+
+  MatchingStatus check_matching_status(int phoindex);
+  void FixMatchingStatusElectrons(int phoindex);
 
   int CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std::set<int> removals = std::set<int>(), bool skipvetocones=false);
   std::set<int> NChargedHadronsInConeSelection(TreeReader *fTR, std::vector<int> passing, int minimum=0, int maximum=9999);

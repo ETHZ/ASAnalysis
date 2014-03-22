@@ -438,6 +438,7 @@ void DiPhotonMiniTree::Analyze(){
 
   // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
+    FixMatchingStatusElectrons(i); // correct match exit code for photons matched to gen electrons
     unscaled_r9.push_back(fTR->PhoR9[i]);
     unscaled_sieie.push_back(fTR->PhoSigmaIetaIeta[i]);
     fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
@@ -1026,8 +1027,8 @@ void DiPhotonMiniTree::Analyze(){
       bool match0;
       bool match1;
       if (!isdy){
-      match0 = ( (fTR->PhoMCmatchexitcode[passing.at(0)]==1 || fTR->PhoMCmatchexitcode[passing.at(0)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(0)]]<5 );
-      match1 = ( (fTR->PhoMCmatchexitcode[passing.at(1)]==1 || fTR->PhoMCmatchexitcode[passing.at(1)]==2) && fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[passing.at(1)]]<5 );
+      match0 = (check_matching_status(passing.at(0))==kSignal);
+      match1 = (check_matching_status(passing.at(1))==kSignal);
       m0 = (match0) ? fTR->PhoMCmatchindex[passing.at(0)] : -999;
       m1 = (match1) ? fTR->PhoMCmatchindex[passing.at(1)] : -999;
       }
@@ -1458,6 +1459,9 @@ std::vector<int> DiPhotonMiniTree::MuonSelection(TreeReader *fTR, std::vector<in
 
 std::vector<int> DiPhotonMiniTree::GenLevelIsolationCut(TreeReader *fTR, std::vector<int> passing){
 
+  cout << "DO NOT USE, SUPERSEDED" << endl;
+  assert(false);
+
   // Genlevel isolation cut for MC
   // selects only photons matched to gen level, with gen-level iso < 5 GeV
 
@@ -1466,15 +1470,7 @@ std::vector<int> DiPhotonMiniTree::GenLevelIsolationCut(TreeReader *fTR, std::ve
     return passing;
   }
   
-  for (std::vector<int>::iterator it = passing.begin(); it != passing.end(); ){
-      bool pass=0;
-      if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2)
-	if(fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[*it]]<5)
-	  pass=1;
-      if (!pass) it=passing.erase(it); else it++;
-    }
-
-  return passing;
+  return std::vector<int>();
 
 };
 
@@ -1554,7 +1550,7 @@ std::vector<int> DiPhotonMiniTree::SignalSelection(TreeReader *fTR, std::vector<
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
     bool pass=0;
-    if (fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2) pass=1;
+    if (check_matching_status(*it)==kSignal) pass=1;
     if (pass) {
       float dR = Util::GetDeltaR(fTR->GenPhotonEta[fTR->PhoMCmatchindex[*it]],fTR->PhoEta[*it],fTR->GenPhotonPhi[fTR->PhoMCmatchindex[*it]],fTR->PhoPhi[*it]);
       if (dR>0.1) cout << "PATHOLOGICAL MATCHING DR " << dR << endl;
@@ -1562,9 +1558,7 @@ std::vector<int> DiPhotonMiniTree::SignalSelection(TreeReader *fTR, std::vector<
     if (!pass) it=passing.erase(it); else it++;
   }
 
-  std::vector<int> passing2 = GenLevelIsolationCut(fTR,passing);
-
-  return passing2;
+  return passing;
 
 };
 
@@ -1572,12 +1566,7 @@ std::vector<int> DiPhotonMiniTree::BackgroundSelection(TreeReader *fTR, std::vec
 
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){
     bool pass=0;
-    if (!(fTR->PhoMCmatchexitcode[*it]==1 || fTR->PhoMCmatchexitcode[*it]==2)) {
-      pass=1;
-    }
-    else {
-      if (fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[*it]]>5) pass=1;
-    }
+    if (check_matching_status(*it)==kBackground) pass=1;
     if (!pass) it=passing.erase(it); else it++;
   }
 
@@ -4048,5 +4037,39 @@ void DiPhotonMiniTree::JECJERCorrection(int jetindex, float &jecunc, float &jer,
 //    corrected.push_back(corr);       // new correction as 2nd item
 //    return corrected;
 //  }
+
+};
+
+MatchingStatus DiPhotonMiniTree::check_matching_status(int phoindex){
+
+  int status = fTR->PhoMCmatchexitcode[phoindex];
+  float geniso = (status==1 || status==2) ? fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[phoindex]] : 999;
+
+  if ((status==1 || status==2) && (geniso<5)) return kSignal;
+  else if (status==4) return kElectron;
+  else return kBackground;
+
+};
+
+void DiPhotonMiniTree::FixMatchingStatusElectrons(int phoindex){
+
+  // Correct matching code to 4 if matched to electron
+
+  if (fTR->PhoMCmatchexitcode[phoindex]!=0) return;
+  
+  for (int i=0; i<fTR->NGenLeptons; i++){
+
+    if (abs(fTR->GenLeptonID[i])!=11) continue;
+
+    float dr = Util::GetDeltaR(fTR->GenLeptonEta[i],fTR->PhoEta[phoindex],fTR->GenLeptonPhi[i],fTR->PhoPhi[phoindex]);
+    if(dr > 0.2) continue;
+
+    double ndpt = fabs(fTR->GenLeptonPt[i] - fTR->PhoPt[phoindex])/fTR->GenLeptonPt[i];
+    if(ndpt > 2.) continue;
+
+    fTR->PhoMCmatchexitcode[phoindex]=4;
+    return;
+
+  }
 
 };
