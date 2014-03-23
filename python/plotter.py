@@ -71,20 +71,24 @@ class plotter :
 		print 'MupRatio: %f +/- %f' % (self.MupRatio, self.MupRatioE)
 		print 'ElpRatio: %f +/- %f' % (self.ElpRatio, self.ElpRatioE)
 
-		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
-		c1.Divide(2, 2)
-		c1.cd(1)
-		self.h2_MufRatio.Draw('colztext')
-		c1.cd(2)
-		self.h2_ElfRatio.Draw('colztext')
-		c1.cd(3)
-		self.h2_MupRatio.Draw('colztext')
-		c1.cd(4)
-		self.h2_ElpRatio.Draw('colztext')
+		print "self.get_fRatio('Muon', 35., 0.5, 0):", self.get_fRatio('Muon', 35., 0.5, 0)
+		print "self.get_fRatio('Muon', 55., 0.5, 0):", self.get_fRatio('Muon', 55., 0.5, 0)
+		print "self.get_pRatio('Muon', 55., 0     ):", self.get_pRatio('Muon', 55., 0     )
 
-
-
-		raw_input('ok? ')
+#		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
+#		c1.Divide(2, 2)
+#		c1.cd(1)
+#		self.h2_MufRatio.Draw('colztext')
+#		c1.cd(2)
+#		self.h2_ElfRatio.Draw('colztext')
+#		c1.cd(3)
+#		self.h2_MupRatio.Draw('colztext')
+#		c1.cd(4)
+#		self.h2_ElpRatio.Draw('colztext')
+#
+		self.make_IntPredictions(presel)
+#
+#		raw_input('ok? ')
 
 		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
 		## if(readHistos(fOutputFileName) != 0) return;
@@ -175,6 +179,23 @@ class plotter :
 			for name, sample in self.samples.iteritems() :
 				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
 		return samplelist
+
+
+	def get_channelString(self, flavor, opt = 0) :
+		if opt is 0 :
+			if flavor is 0 : return 'Muon'
+			if flavor is 1 : return 'ElMu'
+			if flavor is 2 : return 'Elec'
+			return ''
+
+		if opt is 1 :
+			if flavor is 0 : return 'MM'
+			if flavor is 1 : return 'EM'
+			if flavor is 2 : return 'EE'
+			if flavor is 3 : return 'MM_OS'
+			if flavor is 4 : return 'EM_OS'
+			if flavor is 5 : return 'EE_OS'
+			return ''
 
 
 	def read_histos(self) :
@@ -395,6 +416,8 @@ class plotter :
 
 ##		if histo.GetEntries() is 0   ## TODO: check if histo exists
 
+		if chan != 'Muon' and chan != 'Elec' : print chan
+
 		if pt >= flatout :
 			bin = histo.FindBin(flatout-1., eta)
 			return histo.GetBinContent(bin)
@@ -404,8 +427,6 @@ class plotter :
 
 
 	def get_pRatio(self, chan, pt, datamc) :
-		eta = abs(eta)
-
 		if chan is 'Muon' :
 			if datamc is 0 : histo = self.h_MupRatio_pt
 			else           : histo = self.h_MupRatio_pt_MC
@@ -438,7 +459,7 @@ class plotter :
 		## }
 
 
-	def make_IntPredictions(self, selection) :
+	def make_IntPredictions(self, sel) :
 		'''oberservation and prediction for different selections'''
 		## for now only with one selection
 
@@ -463,14 +484,95 @@ class plotter :
 		# the numbers are calculated earlier with ewk subtraction and stored in self.MufRatio, ...
 
 		##	FakeRatios *FR = new FakeRatios();
-		FR = FakeRatios.FakeRatios()
+		#ROOT.gSystem.Load('./FakeRatios.so')
+		FR = ROOT.FakeRatios()
 
-		for event in self.sigtree :
+		# init variables
+		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
+		nt2_em = 0.; nt10_em = 0.; nt01_em = 0.; nt0_em = 0.;
+		nt2_ee = 0.; nt10_ee = 0.; nt01_ee = 0.; nt0_ee = 0.;
+
+		# FR Predictions from event-by-event weights (pre stored)
+		npp_mm = 0.; npf_mm = 0.; nfp_mm = 0.; nff_mm = 0.;
+		npp_em = 0.; npf_em = 0.; nfp_em = 0.; nff_em = 0.;
+		npp_ee = 0.; npf_ee = 0.; nfp_ee = 0.; nff_ee = 0.;
+
+		# OS yields
+		nt2_ee_BB_os = 0.; nt2_ee_EE_os = 0.; nt2_ee_EB_os = 0.;
+		nt2_em_BB_os = 0.; nt2_em_EE_os = 0.;
+
+		# TODO
+#	// only take half the events for ++/--
+#	float chargeFactor = chVeto ? 0.5:1.;
+
+		# rare SM yields
+		nt2_rare_mc_mm = 0.;    nt2_rare_mc_em = 0.;    nt2_rare_mc_ee = 0.;
+		nt2_rare_mc_mm_e2 = 0.; nt2_rare_mc_em_e2 = 0.; nt2_rare_mc_ee_e2 = 0.;
+
+		nt2_wz_mc_mm = 0.;    nt2_wz_mc_em = 0.;    nt2_wz_mc_ee = 0.;
+		nt2_wz_mc_mm_e2 = 0.; nt2_wz_mc_em_e2 = 0.; nt2_wz_mc_ee_e2 = 0.;
+
+		last_sample = ''
+
+		for i, event in enumerate(self.sigtree) :
+			if last_sample != str(event.SName) :
+				print '[status] processing %s..' % (event.SName)
+				last_sample = str(event.SName)
+#			if i%100000 is 0 : print '[status] processing event %d' % (i)
 			if not sel.passes_selection(event, False, False) : continue
+			chan = self.get_channelString(int(event.Flavor))
 
 			# get all data events
 			if event.SType < 3 :
-				
+				if event.Flavor < 3 :
+					if chan is 'ElMu' :
+						f1 = self.get_fRatio('Muon', event.pT1, event.eta1, 0)
+						f2 = self.get_fRatio('Elec', event.pT2, event.eta2, 0)
+						p1 = self.get_pRatio('Muon', event.pT1, 0)
+						p2 = self.get_pRatio('Elec', event.pT2, 0)
+					else :
+						f1 = self.get_fRatio(chan, event.pT1, event.eta1, 0)
+						f2 = self.get_fRatio(chan, event.pT2, event.eta2, 0)
+						p1 = self.get_pRatio(chan, event.pT1, 0)
+						p2 = self.get_pRatio(chan, event.pT2, 0)
+
+					npp = FR.getWpp(event.TLCat, f1, f2, p1, p2)
+					npf = FR.getWpf(event.TLCat, f1, f2, p1, p2)
+					nfp = FR.getWfp(event.TLCat, f1, f2, p1, p2)
+					nff = FR.getWff(event.TLCat, f1, f2, p1, p2)
+
+					# MM
+					if event.Flavor is 0 :
+						npp_mm += npp;
+						npf_mm += npf;
+						nfp_mm += nfp;
+						nff_mm += nff;
+						if event.TLCat is 0 : nt2_mm  += 1
+						if event.TLCat is 1 : nt10_mm += 1
+						if event.TLCat is 2 : nt01_mm += 1
+						if event.TLCat is 3 : nt0_mm  += 1
+
+					# EM
+					if event.Flavor is 1 :
+						npp_em += npp
+						npf_em += npf
+						nfp_em += nfp
+						nff_em += nff
+						if event.TLCat is 0 : nt2_em  += 1
+					 	if event.TLCat is 1 : nt10_em += 1
+					 	if event.TLCat is 2 : nt01_em += 1
+					 	if event.TLCat is 3 : nt0_em  += 1
+
+					# EE
+					if event.Flavor is 2 :
+						npp_ee += npp
+						npf_ee += npf
+						nfp_ee += nfp
+						nff_ee += nff
+						if event.TLCat is 0 : nt2_ee  += 1
+						if event.TLCat is 1 : nt10_ee += 1
+						if event.TLCat is 2 : nt01_ee += 1
+						if event.TLCat is 3 : nt0_ee  += 1
 
 
 	def make_DiffPredictions(self, selections) :
@@ -509,11 +611,11 @@ if __name__ == '__main__' :
 		print 'usage: ..'
 		sys.exit(1)
 
-	if ('-d' in args) and (args[args.index('-d')+1] is not '') :
+	if ('-d' in args) and (args[args.index('-d')+1] != '') :
 		path = str(args[args.index('-d')+1])
 		print path
 
-	if ('-c' in args) and (args[args.index('-c')+1] is not '') :
+	if ('-c' in args) and (args[args.index('-c')+1] != '') :
 		cardfile = str(args[args.index('-c')+1])
 		print cardfile
 
