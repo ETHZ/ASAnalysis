@@ -4,6 +4,7 @@ import ROOT
 import sys
 import selection as sel
 import sample
+import helper
 
 class plotter :
 	'''the plotter reads sigtree and produces plots'''
@@ -64,6 +65,11 @@ class plotter :
 
 		applyEwkSubtr = True
 		self.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
+
+		print 'MufRatio: %f +/- %f' % (self.MufRatio, self.MufRatioE)
+		print 'ElfRatio: %f +/- %f' % (self.ElfRatio, self.ElfRatioE)
+		print 'MupRatio: %f +/- %f' % (self.MupRatio, self.MupRatioE)
+		print 'ElpRatio: %f +/- %f' % (self.ElpRatio, self.ElpRatioE)
 
 		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 		c1.Divide(2, 2)
@@ -231,16 +237,16 @@ class plotter :
 		print '[status] filling fake and prompt ratio histograms..'
 
 		if datamc is 0 :
-			(self.h2_MufRatio   , self.h_MufRatio_pt   , self.h_MufRatio_eta   , self.h_MufRatio_nv   ) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
-			(self.h2_ElfRatio   , self.h_ElfRatio_pt   , self.h_ElfRatio_eta   , self.h_ElfRatio_nv   ) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
-			(self.h2_MupRatio   , self.h_MupRatio_pt   , self.h_MupRatio_eta   , self.h_MupRatio_nv   ) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
-			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
+			(self.h2_MufRatio   , self.h_MufRatio_pt   , self.h_MufRatio_eta   , self.h_MufRatio_nv   , self.MufRatio   , self.MufRatioE   ) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_ElfRatio   , self.h_ElfRatio_pt   , self.h_ElfRatio_eta   , self.h_ElfRatio_nv   , self.ElfRatio   , self.ElfRatioE   ) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_MupRatio   , self.h_MupRatio_pt   , self.h_MupRatio_eta   , self.h_MupRatio_nv   , self.MupRatio   , self.MupRatioE   ) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
+			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   , self.ElpRatio   , self.ElpRatioE   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
 
 		else :
-			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
-			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
-			(self.h2_MupRatio_MC, self.h_MupRatio_pt_MC, self.h_MupRatio_eta_MC, self.h_MupRatio_nv_MC) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
-			(self.h2_ElpRatio_MC, self.h_ElpRatio_pt_MC, self.h_ElpRatio_eta_MC, self.h_ElpRatio_nv_MC) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
+			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC, self.MufRatio_MC, self.MufRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC, self.ElfRatio_MC, self.ElfRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_MupRatio_MC, self.h_MupRatio_pt_MC, self.h_MupRatio_eta_MC, self.h_MupRatio_nv_MC, self.MupRatio_MC, self.MupRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
+			(self.h2_ElpRatio_MC, self.h_ElpRatio_pt_MC, self.h_ElpRatio_eta_MC, self.h_ElpRatio_nv_MC, self.ElpRatio_MC, self.ElpRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
 
 
 	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = {}) :
@@ -292,7 +298,12 @@ class plotter :
 		h_ratio_pt .Divide(h_ntight_pt , h_nloose_pt , 1., 1., 'B')
 		h_ratio_eta.Divide(h_ntight_eta, h_nloose_eta, 1., 1., 'B')
 
-		return (h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv)
+		# flat ratios
+		ntight = h2_ntight.Integral()
+		nloose = h2_nloose.Integral()
+		(ratio, ratioe) = helper.ratioWithBinomErrors(ntight, nloose)
+
+		return (h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv, ratio, ratioe)
 		## 	TString name = "";
 		## 	if (fp == SigSup) name += "F";
 		## 	if (fp == ZDecay) name += "P";
