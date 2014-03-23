@@ -503,8 +503,7 @@ class plotter :
 
 		# TODO
 		chargeFactor = 1.
-#	// only take half the events for ++/--
-#	float chargeFactor = chVeto ? 0.5:1.;
+		if sel.charge != 0 : chargeFactor = 0.5
 
 		# rare SM yields
 		nt2_rare_mc_mm = 0.;    nt2_rare_mc_em = 0.;    nt2_rare_mc_ee = 0.;
@@ -513,6 +512,19 @@ class plotter :
 		nt2_wz_mc_mm = 0.;    nt2_wz_mc_em = 0.;    nt2_wz_mc_ee = 0.;
 		nt2_wz_mc_mm_e2 = 0.; nt2_wz_mc_em_e2 = 0.; nt2_wz_mc_ee_e2 = 0.;
 
+		rareMapMM = {}
+		rareMapEM = {}
+		rareMapEE = {}
+
+		rareMapMM_npass = {}
+		rareMapEM_npass = {}
+		rareMapEE_npass = {}
+
+		for s in self.samples :
+			rareMapMM[s] = 0.; rareMapMM_npass[s] = 0;
+			rareMapEM[s] = 0.; rareMapEM_npass[s] = 0;
+			rareMapEE[s] = 0.; rareMapEE_npass[s] = 0;
+
 		last_sample = ''
 
 		for i, event in enumerate(self.sigtree) :
@@ -520,12 +532,13 @@ class plotter :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
 #			if i%100000 is 0 : print '[status] processing event %d' % (i)
-			if not sel.passes_selection(event, False, False) : continue
+			if not sel.passes_selection(event, False, True, True) : continue
 			chan = self.get_channelString(int(event.Flavor))
 
-			# get all data events
+			# GET ALL DATA EVENTS
 			if event.SType < 3 :
 				if event.Flavor < 3 :
+					if sel.charge != 0 and event.Charge != sel.charge : continue
 					if chan is 'ElMu' :
 						f1 = self.get_fRatio('Muon', event.pT1, event.eta1, 0)
 						f2 = self.get_fRatio('Elec', event.pT2, event.eta2, 0)
@@ -581,10 +594,28 @@ class plotter :
 					if event.TLCat is 1 : nt2_em_EE_os += chargeFactor
 
 				# EE OS
-				if(Flavor == 5) {       // E-E OS
+				if event.Flavor is 5 :
 					if event.TLCat is 0                     : nt2_ee_BB_os += chargeFactor
 					if event.TLCat is 1 or event.TLCat is 2 : nt2_ee_EB_os += chargeFactor
 					if event.TLCat is 3                     : nt2_ee_EE_os += chargeFactor
+
+			# GET RARE MC EVENTS
+			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
+				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
+				if sel.charge != 0 and event.Charge != sel.charge : continue
+				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[event.SName]
+
+				if event.Flavor is 0 :
+					rareMapMM      [event.SName] += scale
+					rareMapMM_npass[event.SName] += 1
+
+				if event.Flavor is 1 :
+					rareMapEM      [event.SName] += scale
+					rareMapEM_npass[event.SName] += 1
+
+				if event.Flavor is 2 :
+					rareMapEE      [event.SName] += scale
+					rareMapEE_npass[event.SName] += 1
 
 
 	def make_DiffPredictions(self, selections) :
