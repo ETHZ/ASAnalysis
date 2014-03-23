@@ -26,7 +26,7 @@ class selection :
 		self.mll        = mll
 
 
-	def passes_selection(self, event, ttLeptons = True, OSwoZVeto = False) :
+	def passes_selection(self, event, ttLeptons = True, OSwoZVeto = False, noChargeSel = False) :
 		if event.HT     < self.minHT      : return False
 		if event.HT     > self.maxHT      : return False
 		if event.MET    < self.minMET     : return False
@@ -41,11 +41,11 @@ class selection :
 		if max(event.pT1, event.pT2) < self.minPt1                                     : return False
 		if min(event.pT1, event.pT2) < self.minPt2                                     : return False
 		if not (OSwoZVeto and self.Flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
-		if self.charge is not 0 and event.Charge is not self.charge                    : return False
+		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)      : return False
 		if ttLeptons and event.TLCat > 0                                               : return False
-		if self.flavor > -1  and event.Flavor is not self.flavor                       : return False
+		if self.flavor > -1  and event.Flavor != self.flavor                           : return False
 		if self.flavor is -1 and event.Flavor > 2 and not (OSwoZVeto)                  : return False
-		if event.SystFlag is not self.systflag                                         : return False
+		if event.SystFlag != self.systflag                                             : return False
 
 		return True
 
