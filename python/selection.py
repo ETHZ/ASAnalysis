@@ -40,7 +40,7 @@ class selection :
 		if event.Mll    < self.mll        : return False
 		if max(event.pT1, event.pT2) < self.minPt1                                     : return False
 		if min(event.pT1, event.pT2) < self.minPt2                                     : return False
-		if not (OSwoZVeto and self.Flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
+		if not (OSwoZVeto and self.flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
 		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)      : return False
 		if ttLeptons and event.TLCat > 0                                               : return False
 		if self.flavor > -1  and event.Flavor != self.flavor                           : return False
