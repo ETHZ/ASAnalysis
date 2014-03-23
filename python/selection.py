@@ -17,14 +17,14 @@ class selection :
 		self.maxNbjetsM = maxNbjetsM
 		self.minPt1     = minPt1
 		self.minPt2     = minPt2
-		self.applyZVeto = applyZVeto
+		self.ZVeto      = applyZVeto
 		self.charge     = charge     # 0: all, +1: ++, -1: --
 		self.ttw        = ttw
 		self.systflag   = systflag
 		self.flavor     = flavor     # -2: all, -1: same-sign, 0: mu-mu, 1: el-mu, 2: el-el, 3: mu-mu OS, 4: el-mu OS, 5: el-el OS
 		self.mll        = mll
 
-	def passes_selection(self, event, ttLeptons = True) :
+	def passes_selection(self, event, ttLeptons = True, woZVeto = False) :
 		if event.HT     < self.minHT      : return False
 		if event.HT     > self.maxHT      : return False
 		if event.MET    < self.minMET     : return False
@@ -36,14 +36,14 @@ class selection :
 		if event.NbJmed < self.minNbjetsM : return False
 		if event.NbJmed > self.maxNbjetsM : return False
 		if event.Mll    < self.mll        : return False
-		if max(event.pT1, event.pT2) < self.minPt1  : return False
-		if min(event.pT1, event.pT2) < self.minPt2  : return False
-		if self.applyZVeto and event.PassZVeto is 0 : return False
+		if max(event.pT1, event.pT2) < self.minPt1                  : return False
+		if min(event.pT1, event.pT2) < self.minPt2                  : return False
+		if !(woZVeto) and self.ZVeto and event.PassZVeto is 0       : return False
 		if self.charge is not 0 and event.Charge is not self.charge : return False
-		if ttLeptons and event.TLCat > 0  : return False
-		if self.flavor > -1  and event.Flavor is not self.flavor : return False
-		if self.flavor is -1 and event.Flavor > 2                : return False
-		if event.SystFlag is not self.systflag : return False
+		if ttLeptons and event.TLCat > 0                            : return False
+		if self.flavor > -1  and event.Flavor is not self.flavor    : return False
+		if self.flavor is -1 and event.Flavor > 2                   : return False
+		if event.SystFlag is not self.systflag                      : return False
 		return True
 
 	def get_selectionString(self, ttLeptons = True) :
