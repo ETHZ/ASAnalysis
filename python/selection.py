@@ -3,6 +3,7 @@
 class selection :
 	'''define and store selections'''
 
+
 	def __init__(self, name, minHT = 0., maxHT = 8000., minMET = 0., maxMET = 8000, minNjets = 0, maxNjets = 99, minNbjetsL = 0, maxNbjetsL = 99, minNbjetsM = 0, maxNbjetsM = 99, minPt1 = 20., minPt2 = 20., applyZVeto = True, charge = 0, ttw = True, systflag = 0, flavor = -1, mll = 8.) :
 		self.name       = name
 		self.minHT      = minHT
@@ -24,7 +25,8 @@ class selection :
 		self.flavor     = flavor     # -2: all, -1: same-sign, 0: mu-mu, 1: el-mu, 2: el-el, 3: mu-mu OS, 4: el-mu OS, 5: el-el OS
 		self.mll        = mll
 
-	def passes_selection(self, event, ttLeptons = True, woZVeto = False) :
+
+	def passes_selection(self, event, ttLeptons = True, OSwoZVeto = False) :
 		if event.HT     < self.minHT      : return False
 		if event.HT     > self.maxHT      : return False
 		if event.MET    < self.minMET     : return False
@@ -36,15 +38,17 @@ class selection :
 		if event.NbJmed < self.minNbjetsM : return False
 		if event.NbJmed > self.maxNbjetsM : return False
 		if event.Mll    < self.mll        : return False
-		if max(event.pT1, event.pT2) < self.minPt1                  : return False
-		if min(event.pT1, event.pT2) < self.minPt2                  : return False
-		if !(woZVeto) and self.ZVeto and event.PassZVeto is 0       : return False
-		if self.charge is not 0 and event.Charge is not self.charge : return False
-		if ttLeptons and event.TLCat > 0                            : return False
-		if self.flavor > -1  and event.Flavor is not self.flavor    : return False
-		if self.flavor is -1 and event.Flavor > 2                   : return False
-		if event.SystFlag is not self.systflag                      : return False
+		if max(event.pT1, event.pT2) < self.minPt1                                  : return False
+		if min(event.pT1, event.pT2) < self.minPt2                                  : return False
+		if !(OSwoZVeto and self.Flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
+		if self.charge is not 0 and event.Charge is not self.charge                 : return False
+		if ttLeptons and event.TLCat > 0                                            : return False
+		if self.flavor > -1  and event.Flavor is not self.flavor                    : return False
+		if self.flavor is -1 and event.Flavor > 2 and !(OSwoZVeto)                  : return False
+		if event.SystFlag is not self.systflag                                      : return False
+
 		return True
+
 
 	def get_selectionString(self, ttLeptons = True) :
 		'''return a selection string which can be used to draw directly from the tree'''
@@ -68,4 +72,5 @@ class selection :
 		if ttLeptons            : selectionString += ' && TLCat == 0'
 		if self.flavor > -1     : selectionString += ' && Flavor == %d' % (self.flavor)
 		if self.flavor is -1    : selectionString += ' && Flavor < 3'
+
 		return selectionString
