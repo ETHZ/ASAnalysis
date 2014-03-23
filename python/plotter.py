@@ -69,11 +69,6 @@ class plotter :
 #		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('DoubleEle'), 'EE', 'SigSup', False, EWK_SF)
 #		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup', False, EWK_SF)
 
-		for s in self.get_samples('SingleDoubleMu') :
-			print s
-		for s in self.get_samples('DoubleEle') :
-			print s
-
 #		h_mu_TightLoose = self.get_TightLoose(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup')
 #		h_el_TightLoose = self.get_TightLoose(self.get_samples('DoubleEle')     , 'EE', 'SigSup')
 #
@@ -328,86 +323,20 @@ class plotter :
 		samples_ewk.append('WJets')
 		samples_ewk.append('DYJets')
 
-		## void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, 
-		## 				 TH2D*& h_2d, TH1D*& h_pt, TH1D*& h_eta, TH1D*& h_nv, 
-		## 				 bool applyEwkSubtr, bool output, bool ttbarMatched){
-		## /*
-		## TODO Fix treatment of statistical errors and luminosity scaling here!
-		## */
-		## 	gStyle->SetOptStat(0);
-		## 
-		## 	h_2d->Sumw2();
-		## 	h_pt->Sumw2();
-		## 	h_eta->Sumw2();
-		## 
-		## 	vector<int> wjets_samples, zjets_samples;
-		## 	wjets_samples.push_back(WJets);
-		## 	zjets_samples.push_back(DYJets);
-		## 
-		## 	TH2D *H_ntight = new TH2D("NTight", "NTight Muons", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
-		## 	TH2D *H_nloose = new TH2D("NLoose", "NLoose Muons", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
-		## 	H_ntight->Sumw2();
-		## 	H_nloose->Sumw2();
-		## 	TH2D *H_ntight_wjets = new TH2D("NTight_WJets", "NTight Muons WJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
-		## 	TH2D *H_nloose_wjets = new TH2D("NLoose_WJets", "NLoose Muons WJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
-		## 	H_ntight_wjets->Sumw2();
-		## 	H_nloose_wjets->Sumw2();
-		## 	TH2D *H_ntight_zjets = new TH2D("NTight_ZJets", "NTight Muons ZJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
-		## 	TH2D *H_nloose_zjets = new TH2D("NLoose_ZJets", "NLoose Muons ZJets", h_2d->GetNbinsX(), h_2d->GetXaxis()->GetXbins()->GetArray(), h_2d->GetNbinsY(),  h_2d->GetYaxis()->GetXbins()->GetArray());
-		## 	H_ntight_zjets->Sumw2();
-		## 	H_nloose_zjets->Sumw2();
-		## 
-		## 	TH1D *H_ntight_nv = new TH1D("NTight_NV", "NTight Muons NV", 18, 0., 36.); H_ntight_nv->Sumw2();
-		## 	TH1D *H_nloose_nv = new TH1D("NLoose_NV", "NLoose Muons NV", 18, 0., 36.); H_nloose_nv->Sumw2();
-		## 	TH1D *H_ntight_nv_wjets = new TH1D("NTight_NV_WJets", "NTight Muons NV WJets", 18, 0., 36.); H_ntight_nv_wjets->Sumw2();
-		## 	TH1D *H_nloose_nv_wjets = new TH1D("NLoose_NV_WJets", "NLoose Muons NV WJets", 18, 0., 36.); H_nloose_nv_wjets->Sumw2();
-		## 	TH1D *H_ntight_nv_zjets = new TH1D("NTight_NV_ZJets", "NTight Muons NV ZJets", 18, 0., 36.); H_ntight_nv_zjets->Sumw2();
-		## 	TH1D *H_nloose_nv_zjets = new TH1D("NLoose_NV_ZJets", "NLoose Muons NV ZJets", 18, 0., 36.); H_nloose_nv_zjets->Sumw2();
-		## 	if (gRatiosFromTTbar || ttbarMatched) getPassedTotalTTbar(samples, chan, fp, H_ntight, H_nloose, output);
-		## 	// marc jan 27 else getPassedTotal(samples, chan, fp, H_ntight, H_nloose, output);
-		## 	else {
-		## 		getPassedTotal(samples, chan, fp, H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, output);
-		## 		getPassedTotal(wjets_samples, chan, fp, H_ntight_wjets, H_nloose_wjets, H_ntight_nv_wjets, H_nloose_nv_wjets, output);
-		## 		getPassedTotal(zjets_samples, chan, fp, H_ntight_zjets, H_nloose_zjets, H_ntight_nv_zjets, H_nloose_nv_zjets, output);
-		## 	}
 		(h2_ntight, h2_nloose, h_ntight_nv, h_nloose_nv) = self.get_TightLoose(samples, chan_str, fp)
+
 		if fp is 'SigSup' and applyEwkSubtr :
+
 			(h2_ntight_ewk, h2_nloose_ewk, h_ntight_nv_ewk, h_nloose_nv_ewk) = self.get_TightLoose(samples_ewk, chan_str, fp)
-		## 	//if (fp == SigSup && gEWKCorrection) {
-		## 	if (fp == SigSup && applyEwkSubtr) {
-		## 		float lumi(1.);
+
 			if chan_str is 'EE' :
 				scale = EWK_SF['el'] * self.lumi_HLTEl17Jet30 / self.lumi  # MC samples are scaled to self.lumi. Rescale them now to prescaled triggers and apply correction factor
 				h2_ntight  .Add(h2_ntight_ewk  , (-1.) * scale)
 				h2_nloose  .Add(h2_nloose_ewk  , (-1.) * scale)
 				h_ntight_nv.Add(h_ntight_nv_ewk, (-1.) * scale)
 				h_nloose_nv.Add(h_nloose_nv_ewk, (-1.) * scale)
-		## 		//if (chan == Muon) lumi = fLumiNormHLTMu17      * fEWKMuSF; //Can we remove this line ?? BM
-		## 		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30 * fEWKElSF;
-		## 		// mc samples are scaled to fLumiNorm. now scale to prescaled triggers.
-		## 		float scale_vjets = lumi / fLumiNorm;
-		## 		if (chan == Elec) {
-		## 			H_ntight   ->Add(H_ntight_wjets   , (-1.) * scale_vjets);
-		## 			H_ntight   ->Add(H_ntight_zjets   , (-1.) * scale_vjets);
-		## 			H_nloose   ->Add(H_nloose_wjets   , (-1.) * scale_vjets);
-		## 			H_nloose   ->Add(H_nloose_zjets   , (-1.) * scale_vjets);
-		## 			H_ntight_nv->Add(H_ntight_nv_wjets, (-1.) * scale_vjets);
-		## 			H_ntight_nv->Add(H_ntight_nv_zjets, (-1.) * scale_vjets);
-		## 			H_nloose_nv->Add(H_nloose_nv_wjets, (-1.) * scale_vjets);
-		## 			H_nloose_nv->Add(H_nloose_nv_zjets, (-1.) * scale_vjets);
-		## 		}
+
 			if chan_str is 'MM' :
-#				c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
-#				c1.Divide(2, 2)
-#				c1.cd(1)
-#				h2_ntight.Draw('colztext')
-#				c1.cd(2)
-#				h2_ntight_ewk.Draw('colztext')
-#				c1.cd(3)
-#				h2_nloose.Draw('colztext')
-#				c1.cd(4)
-#				h2_nloose_ewk.Draw('colztext')
-#				raw_input('ok? ')
 				for pt_bin in range(1, h2_ntight.GetXaxis().GetNbins()+1) :
 					for eta_bin in range(1, h2_ntight.GetYaxis().GetNbins()+1) :
 						bin = h2_ntight.GetBin(pt_bin, eta_bin)
@@ -420,34 +349,11 @@ class plotter :
 						h2_ntight.AddBinContent(bin, (-1.) * scale * h2_ntight_ewk.GetBinContent(pt_bin, eta_bin))
 						h2_nloose.AddBinContent(bin, (-1.) * scale * h2_nloose_ewk.GetBinContent(pt_bin, eta_bin))
 
-		## 		if (chan == Muon) {
-		## 			for (int ptbin = 1; ptbin < gNMuFPtBins+1; ptbin++) {
-		## 				for (int etabin = 1; etabin < gNMuEtabins+1; etabin++) {
-		## 					int bin = H_nloose->GetBin(ptbin, etabin);
-		## 					//if (ptbin > 1 && etabin < 3) lumi = fLumiNormHLTMu24Eta2p1 * fEWKMu24SF;
-		## 					if(H_nloose->GetXaxis()->GetBinLowEdge(ptbin)>=25.0 && 
-		## 					   H_nloose->GetYaxis()->GetBinUpEdge(etabin)<=2.1 ) lumi = fLumiNormHLTMu24Eta2p1 * fEWKMu24SF;
-		## 					else                         lumi = fLumiNormHLTMu17       * fEWKMu17SF;
-		## 					float scale = lumi / fLumiNorm;
-		## 					H_ntight   ->AddBinContent(bin, (-1.) * scale * H_ntight_wjets->GetBinContent(bin));
-		## 					H_ntight   ->AddBinContent(bin, (-1.) * scale * H_ntight_zjets->GetBinContent(bin));
-		## 					H_nloose   ->AddBinContent(bin, (-1.) * scale * H_nloose_wjets->GetBinContent(bin));
-		## 					H_nloose   ->AddBinContent(bin, (-1.) * scale * H_nloose_zjets->GetBinContent(bin));
-		## 				}
-		## 			}
-		## 		}
-		## 	}
 		h2_ratio   = h2_ntight  .Clone('h2_'+chan_str+'_'+fp+'_ratio_vs_pt_eta')
 		h_ratio_nv = h_ntight_nv.Clone('h_'+chan_str+'_'+fp+'_ratio_vs_nv')
 		h2_ratio  .Divide(h2_ntight  , h2_nloose  , 1., 1., 'B')
 		h_ratio_nv.Divide(h_ntight_nv, h_nloose_nv, 1., 1., 'B')
-		## 	h_2d->Divide(H_ntight,    H_nloose,    1., 1., "B");
-		## 	h_nv->Divide(H_ntight_nv, H_nloose_nv, 1., 1., "B");
 
-		## 	TH1D *hmuloosept  = H_nloose->ProjectionX();
-		## 	TH1D *hmulooseeta = H_nloose->ProjectionY();
-		## 	TH1D *hmutightpt  = H_ntight->ProjectionX();
-		## 	TH1D *hmutighteta = H_ntight->ProjectionY();
 		h_nloose_pt  = h2_nloose.ProjectionX()
 		h_nloose_eta = h2_nloose.ProjectionY()
 		h_ntight_pt  = h2_ntight.ProjectionX()
@@ -459,9 +365,6 @@ class plotter :
 		h_ratio_eta.Divide(h_ntight_eta, h_nloose_eta, 1., 1., 'B')
 
 		return (h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv)
-		## 
-		## 	h_pt ->Divide(hmutightpt,  hmuloosept,  1., 1., "B"); // binomial
-		## 	h_eta->Divide(hmutighteta, hmulooseeta, 1., 1., "B"); // weights are ignored
 		## 	TString name = "";
 		## 	if (fp == SigSup) name += "F";
 		## 	if (fp == ZDecay) name += "P";
@@ -488,24 +391,17 @@ class plotter :
 		## 		printObject(H_nloose, TString("NLoose")   + name, "colz text");
 		## 		fOutputSubDir = "";
 		## 	}
-		## 	delete H_ntight, H_nloose, H_ntight_nv, H_nloose_nv, hmuloosept, hmulooseeta, hmutightpt, hmutighteta;
-		## }
 
 
 	def get_TightLoose(self, samples, chan_str, fp) :
 		## chan_str: 'MM', 'EE'
 
-		sum = 0
 		for i, s in enumerate(samples) :
 			scale = 1.
 			if self.samples[s].datamc != 0 : scale = self.lumi / self.samples[s].getLumi()
 			if fp is 'SigSup' :
 				h2_ntight   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight').Clone()
 				h2_nloose   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose').Clone()
-				print 'getting ' +              s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose'
-				sum += h2_nloose.GetEntries()
-				#h2_nloose.Draw('colztext')
-				#raw_input('ok? ')
 				h_ntight_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight_nv').Clone()
 				h_nloose_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose_nv').Clone()
 			elif fp is 'ZDecay' :
@@ -527,8 +423,6 @@ class plotter :
 				h2_total   .Add(h2_nloose  , scale)
 				h_passed_nv.Add(h_ntight_nv, scale)
 				h_total_nv .Add(h_nloose_nv, scale)
-
-		print 'sum = %d, h2_total.GetEntries() = %f' % (sum, h2_total.GetEntries())
 
 		return (h2_passed, h2_total, h_passed_nv, h_total_nv)
 		## 	TString name = "";
