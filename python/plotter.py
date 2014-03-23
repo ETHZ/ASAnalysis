@@ -532,6 +532,9 @@ class plotter :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
 #			if i%100000 is 0 : print '[status] processing event %d' % (i)
+
+			if event.SType > 2 : continue # only data
+
 			if not sel.passes_selection(event, False, True, True) : continue
 			chan = self.get_channelString(int(event.Flavor))
 
@@ -625,6 +628,68 @@ class plotter :
 		print "         YIELDS  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  ||"
 		print "-------------------------------------------------------------------------------------------------------------"
 		print "%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f" % ("Data", nt2_mm, nt10_mm, nt01_mm, nt0_mm, nt2_em, nt10_em, nt01_em, nt0_em, nt2_ee, nt10_ee, nt01_ee, nt0_ee)
+
+
+		# numbers from SSDLPlotter.cc just to check
+		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
+		mupratio_data = 0.804292; mupratio_data_e = 0.001193;
+		elfratio_data = 0.069959; elfratio_data_e = 0.001419;
+		elpratio_data = 0.750609; elpratio_data_e = 0.001473;
+
+		FR.setNToyMCs(100)
+		FR.setAddESyst(0.5)
+
+		# numbers from SSDLPlotter.cc just to check
+		FR.setMFRatio(mufratio_data, mufratio_data_e) # set error to pure statistical of ratio
+		FR.setEFRatio(elfratio_data, elfratio_data_e)
+		FR.setMPRatio(mupratio_data, mupratio_data_e)
+		FR.setEPRatio(elpratio_data, elpratio_data_e)
+
+#		# TODO: use these (ratios with ewk subtraction)
+#		FR.setMFRatio(self.MufRatio, self.MufRatioE) # set error to pure statistical of ratio
+#		FR.setEFRatio(self.ElfRatio, self.ElfRatioE)
+#		FR.setMPRatio(self.MupRatio, self.MupRatioE)
+#		FR.setEPRatio(self.ElpRatio, self.ElpRatioE)
+
+		FR.setMMNtl(nt2_mm, nt10_mm, nt01_mm, nt0_mm)
+		FR.setEENtl(nt2_ee, nt10_ee, nt01_ee, nt0_ee)
+		FR.setEMNtl(nt2_em, nt10_em, nt01_em, nt0_em)
+
+		nF_mm = npf_mm + nfp_mm + nff_mm
+		nF_em = npf_em + nfp_em + nff_em
+		nF_ee = npf_ee + nfp_ee + nff_ee
+		nSF   = npf_mm + nfp_mm + npf_em + nfp_em + npf_ee + nfp_ee
+		nDF   = nff_mm + nff_em + nff_ee
+		nF    = nF_mm + nF_em + nF_ee
+
+		print "  Fake Predictions:"
+		print "------------------------------------------------------------------------------------------"
+		print "                 |          Mu/Mu        |         El/El         |          El/Mu        |"
+		print "------------------------------------------------------------------------------------------"
+		print " Npp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
+			npp_mm, FR.getMMNppEStat(), self.FakeESyst*npp_mm,
+			npp_ee, FR.getEENppEStat(), self.FakeESyst*npp_ee, 
+			npp_em, FR.getEMNppEStat(), self.FakeESyst*npp_em)
+		print " Npf             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
+			npf_mm, FR.getMMNpfEStat(), self.FakeESyst*npf_mm,
+			npf_ee, FR.getEENpfEStat(), self.FakeESyst*npf_ee, 
+			npf_em, FR.getEMNpfEStat(), self.FakeESyst*npf_em)
+		print " Nfp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
+			nfp_mm, FR.getMMNfpEStat(), self.FakeESyst*nfp_mm,
+			nfp_ee, FR.getEENfpEStat(), self.FakeESyst*nfp_ee, 
+			nfp_em, FR.getEMNfpEStat(), self.FakeESyst*nfp_em)
+		print " Nff             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
+			nff_mm, FR.getMMNffEStat(), self.FakeESyst*nff_mm,
+			nff_ee, FR.getEENffEStat(), self.FakeESyst*nff_ee, 
+			nff_em, FR.getEMNffEStat(), self.FakeESyst*nff_em)
+		print "------------------------------------------------------------------------------------------"
+		print " Total Fakes     |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
+			nF_mm, FR.getMMTotEStat(), self.FakeESyst*nF_mm,
+			nF_ee, FR.getEETotEStat(), self.FakeESyst*nF_ee, 
+			nF_em, FR.getEMTotEStat(), self.FakeESyst*nF_em)
+		print "------------------------------------------------------------------------------------------"
+		print " (Value +/- E_stat +/- E_syst) "
+		print "//////////////////////////////////////////////////////////////////////////////////////////"
 
 
 	def make_DiffPredictions(self, selections) :
