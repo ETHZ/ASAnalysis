@@ -6,7 +6,7 @@ import selection as sel
 import sample
 
 class plotter :
-	'''read sigtree and produces plots'''
+	'''the plotter reads sigtree and produces plots'''
 
 	def __init__(self, path) :
 		print '[status] initialize plotter..'
@@ -17,14 +17,11 @@ class plotter :
 
 		ROOT.gSystem.Load('./FakeRatios.so')
 
-		# selections
-		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
-		#print presel.get_selectionString()
-		self.selections = {}
-		self.selections[presel.name] = presel
-
 		# samples
 		self.samples = {}
+
+		# selections
+		self.selections = {}
 
 		# lumi norm
 		self.lumi = 19466.
@@ -55,13 +52,62 @@ class plotter :
 		self.samples = self.readDatacard(cardfile)
 		self.read_ngen()
 
-		el_EWK_SF   = self.get_EWK_SF('el')
-		mu17_EWK_SF = self.get_EWK_SF('mu17')
-		mu24_EWK_SF = self.get_EWK_SF('mu24')
+		# selections
+		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
+		#print presel.get_selectionString()
+		self.selections[presel.name] = presel
 
-		#(h2_tight, h2_loose) = self.get_TightLoose(self.get_samples('DoubleEle'), 'EE', 'SigSup')
-		(h2_tight, h2_loose) = self.get_TightLoose(['DYJets'], 'MM', 'ZDecay')
-		h2_tight.Draw('box')
+		EWK_SF = {}
+		EWK_SF['el']   = self.get_EWK_SF('el')
+		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
+		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
+
+#		(h2_tight, h2_loose, h_tight_nv, h_loose_nv) = self.get_TightLoose(self.get_samples('DoubleEle'), 'EE', 'SigSup')
+#		(h2_tight, h2_loose, h_tight_nv, h_loose_nv) = self.get_TightLoose(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup')
+#		(h2_tight, h2_loose, h_tight, h_loose) = self.get_TightLoose(['DYJets'], 'MM', 'ZDecay')
+#		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('DoubleEle'), 'EE', 'SigSup', True, EWK_SF)
+#		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('DoubleEle'), 'EE', 'SigSup', False, EWK_SF)
+#		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup', False, EWK_SF)
+
+		for s in self.get_samples('SingleDoubleMu') :
+			print s
+		for s in self.get_samples('DoubleEle') :
+			print s
+
+#		h_mu_TightLoose = self.get_TightLoose(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup')
+#		h_el_TightLoose = self.get_TightLoose(self.get_samples('DoubleEle')     , 'EE', 'SigSup')
+#
+#		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
+#		c1.Divide(2, 2)
+#		c1.cd(1)
+#		h_mu_TightLoose[0].Draw('colztext')
+#		c1.cd(2)
+#		h_mu_TightLoose[1].Draw('colztext')
+#		c1.cd(3)
+#		h_el_TightLoose[0].Draw('colztext')
+#		c1.cd(4)
+#		h_el_TightLoose[1].Draw('colztext')
+
+		h_mu      = self.calculateRatio(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup', False, EWK_SF)
+		h_mu_corr = self.calculateRatio(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup', True , EWK_SF)
+		h_el      = self.calculateRatio(self.get_samples('DoubleEle')     , 'EE', 'SigSup', False, EWK_SF)
+		h_el_corr = self.calculateRatio(self.get_samples('DoubleEle')     , 'EE', 'SigSup', True , EWK_SF)
+
+		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
+		c1.Divide(2, 2)
+		c1.cd(1)
+		h_mu[0].Draw('colztext')
+		c1.cd(2)
+		h_mu_corr[0].Draw('colztext')
+		c1.cd(3)
+		h_el[0].Draw('colztext')
+		c1.cd(4)
+		h_el_corr[0].Draw('colztext')
+
+#		h2_tight.Draw('box')
+
+#		h2_ratio.Draw('colztext')
+
 		raw_input('ok? ')
 
 		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
@@ -149,6 +195,9 @@ class plotter :
 		if channel == 'SingleMu' :
 			for name, sample in self.samples.iteritems() :
 				if (sample.datamc == 0) and (sample.channel == 5) : samplelist.append(sample.name)
+		if channel == 'SingleDoubleMu' :
+			for name, sample in self.samples.iteritems() :
+				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
 		return samplelist
 
 
@@ -194,8 +243,8 @@ class plotter :
 			scale = lumi / self.samples[s].getLumi()
 			if self.samples[s].datamc == 0 : scale = 1.
 			if i is 0 :
-				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar)
-				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar)
+				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar).Clone()
+				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Clone()
 				h_ntight.Scale(scale)
 				h_nloose.Scale(scale)
 			else :
@@ -271,10 +320,13 @@ class plotter :
 		## }
 
 
-	def calculateRatio(self, applyEwkSubtr, EWK_SF) :
-		foo = 0
+	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = []) :
 		# - sets up ratio histos
 		# - calls getPassedTotal / get_TightLoose to get ntight and nloose histos
+
+		samples_ewk = []
+		samples_ewk.append('WJets')
+		samples_ewk.append('DYJets')
 
 		## void SSDLPlotter::calculateRatio(vector<int> samples, gChannel chan, gFPSwitch fp, 
 		## 				 TH2D*& h_2d, TH1D*& h_pt, TH1D*& h_eta, TH1D*& h_nv, 
@@ -318,9 +370,18 @@ class plotter :
 		## 		getPassedTotal(wjets_samples, chan, fp, H_ntight_wjets, H_nloose_wjets, H_ntight_nv_wjets, H_nloose_nv_wjets, output);
 		## 		getPassedTotal(zjets_samples, chan, fp, H_ntight_zjets, H_nloose_zjets, H_ntight_nv_zjets, H_nloose_nv_zjets, output);
 		## 	}
+		(h2_ntight, h2_nloose, h_ntight_nv, h_nloose_nv) = self.get_TightLoose(samples, chan_str, fp)
+		if fp is 'SigSup' and applyEwkSubtr :
+			(h2_ntight_ewk, h2_nloose_ewk, h_ntight_nv_ewk, h_nloose_nv_ewk) = self.get_TightLoose(samples_ewk, chan_str, fp)
 		## 	//if (fp == SigSup && gEWKCorrection) {
 		## 	if (fp == SigSup && applyEwkSubtr) {
 		## 		float lumi(1.);
+			if chan_str is 'EE' :
+				scale = EWK_SF['el'] * self.lumi_HLTEl17Jet30 / self.lumi  # MC samples are scaled to self.lumi. Rescale them now to prescaled triggers and apply correction factor
+				h2_ntight  .Add(h2_ntight_ewk  , (-1.) * scale)
+				h2_nloose  .Add(h2_nloose_ewk  , (-1.) * scale)
+				h_ntight_nv.Add(h_ntight_nv_ewk, (-1.) * scale)
+				h_nloose_nv.Add(h_nloose_nv_ewk, (-1.) * scale)
 		## 		//if (chan == Muon) lumi = fLumiNormHLTMu17      * fEWKMuSF; //Can we remove this line ?? BM
 		## 		if (chan == Elec) lumi = fLumiNormHLTEl17Jet30 * fEWKElSF;
 		## 		// mc samples are scaled to fLumiNorm. now scale to prescaled triggers.
@@ -335,6 +396,30 @@ class plotter :
 		## 			H_nloose_nv->Add(H_nloose_nv_wjets, (-1.) * scale_vjets);
 		## 			H_nloose_nv->Add(H_nloose_nv_zjets, (-1.) * scale_vjets);
 		## 		}
+			if chan_str is 'MM' :
+#				c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
+#				c1.Divide(2, 2)
+#				c1.cd(1)
+#				h2_ntight.Draw('colztext')
+#				c1.cd(2)
+#				h2_ntight_ewk.Draw('colztext')
+#				c1.cd(3)
+#				h2_nloose.Draw('colztext')
+#				c1.cd(4)
+#				h2_nloose_ewk.Draw('colztext')
+#				raw_input('ok? ')
+				for pt_bin in range(1, h2_ntight.GetXaxis().GetNbins()+1) :
+					for eta_bin in range(1, h2_ntight.GetYaxis().GetNbins()+1) :
+						bin = h2_ntight.GetBin(pt_bin, eta_bin)
+						# MC samples are scaled to self.lumi. Rescale them now to prescaled triggers and apply correction factor
+						if (h2_ntight.GetXaxis().GetBinCenter(pt_bin) > 25.) and (h2_ntight.GetYaxis().GetBinCenter(eta_bin) < 2.1) :
+							scale = EWK_SF['mu24'] * self.lumi_HLTMu24Eta2p1 / self.lumi
+						else :
+							scale = EWK_SF['mu17'] * self.lumi_HLTMu17 / self.lumi
+#						print 'pt bin (%d) center: %f.3, eta bin (%d) center: %f.3, scale: %f' % (pt_bin, h2_ntight.GetXaxis().GetBinCenter(pt_bin), eta_bin, h2_ntight.GetYaxis().GetBinCenter(eta_bin), scale)
+						h2_ntight.AddBinContent(bin, (-1.) * scale * h2_ntight_ewk.GetBinContent(pt_bin, eta_bin))
+						h2_nloose.AddBinContent(bin, (-1.) * scale * h2_nloose_ewk.GetBinContent(pt_bin, eta_bin))
+
 		## 		if (chan == Muon) {
 		## 			for (int ptbin = 1; ptbin < gNMuFPtBins+1; ptbin++) {
 		## 				for (int etabin = 1; etabin < gNMuEtabins+1; etabin++) {
@@ -352,13 +437,28 @@ class plotter :
 		## 			}
 		## 		}
 		## 	}
+		h2_ratio   = h2_ntight  .Clone('h2_'+chan_str+'_'+fp+'_ratio_vs_pt_eta')
+		h_ratio_nv = h_ntight_nv.Clone('h_'+chan_str+'_'+fp+'_ratio_vs_nv')
+		h2_ratio  .Divide(h2_ntight  , h2_nloose  , 1., 1., 'B')
+		h_ratio_nv.Divide(h_ntight_nv, h_nloose_nv, 1., 1., 'B')
 		## 	h_2d->Divide(H_ntight,    H_nloose,    1., 1., "B");
 		## 	h_nv->Divide(H_ntight_nv, H_nloose_nv, 1., 1., "B");
-		## 
+
 		## 	TH1D *hmuloosept  = H_nloose->ProjectionX();
 		## 	TH1D *hmulooseeta = H_nloose->ProjectionY();
 		## 	TH1D *hmutightpt  = H_ntight->ProjectionX();
 		## 	TH1D *hmutighteta = H_ntight->ProjectionY();
+		h_nloose_pt  = h2_nloose.ProjectionX()
+		h_nloose_eta = h2_nloose.ProjectionY()
+		h_ntight_pt  = h2_ntight.ProjectionX()
+		h_ntight_eta = h2_ntight.ProjectionY()
+
+		h_ratio_pt  = h_ntight_pt .Clone('h_'+chan_str+'_'+fp+'_ratio_vs_pt')
+		h_ratio_eta = h_ntight_eta.Clone('h_'+chan_str+'_'+fp+'_ratio_vs_eta')
+		h_ratio_pt .Divide(h_ntight_pt , h_nloose_pt , 1., 1., 'B')
+		h_ratio_eta.Divide(h_ntight_eta, h_nloose_eta, 1., 1., 'B')
+
+		return (h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv)
 		## 
 		## 	h_pt ->Divide(hmutightpt,  hmuloosept,  1., 1., "B"); // binomial
 		## 	h_eta->Divide(hmutighteta, hmulooseeta, 1., 1., "B"); // weights are ignored
@@ -395,19 +495,24 @@ class plotter :
 	def get_TightLoose(self, samples, chan_str, fp) :
 		## chan_str: 'MM', 'EE'
 
+		sum = 0
 		for i, s in enumerate(samples) :
 			scale = 1.
 			if self.samples[s].datamc != 0 : scale = self.lumi / self.samples[s].getLumi()
 			if fp is 'SigSup' :
-				h2_ntight   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight')
-				h2_nloose   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose')
-				h_ntight_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight_nv')
-				h_nloose_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose_nv')
+				h2_ntight   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight').Clone()
+				h2_nloose   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose').Clone()
+				print 'getting ' +              s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose'
+				sum += h2_nloose.GetEntries()
+				#h2_nloose.Draw('colztext')
+				#raw_input('ok? ')
+				h_ntight_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNTight_nv').Clone()
+				h_nloose_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_fNLoose_nv').Clone()
 			elif fp is 'ZDecay' :
-				h2_ntight   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNTight')
-				h2_nloose   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNLoose')
-				h_ntight_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNTight_nv')
-				h_nloose_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNLoose_nv')
+				h2_ntight   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNTight')   .Clone()
+				h2_nloose   = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNLoose')   .Clone()
+				h_ntight_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNTight_nv').Clone()
+				h_nloose_nv = self.ssdlfile.Get(s+'/TLRatios/'+s+'_'+chan_str+'_pNLoose_nv').Clone()
 			if i is 0 :
 				h2_passed   = h2_ntight
 				h2_total    = h2_nloose
@@ -423,7 +528,9 @@ class plotter :
 				h_passed_nv.Add(h_ntight_nv, scale)
 				h_total_nv .Add(h_nloose_nv, scale)
 
-		return (h2_passed, h2_total)
+		print 'sum = %d, h2_total.GetEntries() = %f' % (sum, h2_total.GetEntries())
+
+		return (h2_passed, h2_total, h_passed_nv, h_total_nv)
 		## 	TString name = "";
 		## 	for(size_t i = 0; i < samples.size(); ++i){
 		## 		int sample = samples[i];
