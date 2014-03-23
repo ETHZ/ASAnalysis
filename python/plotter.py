@@ -62,46 +62,21 @@ class plotter :
 		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
 		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 
-#		(h2_tight, h2_loose, h_tight_nv, h_loose_nv) = self.get_TightLoose(self.get_samples('DoubleEle'), 'EE', 'SigSup')
-#		(h2_tight, h2_loose, h_tight_nv, h_loose_nv) = self.get_TightLoose(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup')
-#		(h2_tight, h2_loose, h_tight, h_loose) = self.get_TightLoose(['DYJets'], 'MM', 'ZDecay')
-#		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('DoubleEle'), 'EE', 'SigSup', True, EWK_SF)
-#		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('DoubleEle'), 'EE', 'SigSup', False, EWK_SF)
-#		(h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv) = self.calculateRatio(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup', False, EWK_SF)
-
-#		h_mu_TightLoose = self.get_TightLoose(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup')
-#		h_el_TightLoose = self.get_TightLoose(self.get_samples('DoubleEle')     , 'EE', 'SigSup')
-#
-#		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
-#		c1.Divide(2, 2)
-#		c1.cd(1)
-#		h_mu_TightLoose[0].Draw('colztext')
-#		c1.cd(2)
-#		h_mu_TightLoose[1].Draw('colztext')
-#		c1.cd(3)
-#		h_el_TightLoose[0].Draw('colztext')
-#		c1.cd(4)
-#		h_el_TightLoose[1].Draw('colztext')
-
-		h_mu      = self.calculateRatio(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup', False, EWK_SF)
-		h_mu_corr = self.calculateRatio(self.get_samples('SingleDoubleMu'), 'MM', 'SigSup', True , EWK_SF)
-		h_el      = self.calculateRatio(self.get_samples('DoubleEle')     , 'EE', 'SigSup', False, EWK_SF)
-		h_el_corr = self.calculateRatio(self.get_samples('DoubleEle')     , 'EE', 'SigSup', True , EWK_SF)
+		applyEwkSubtr = True
+		self.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
 
 		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 		c1.Divide(2, 2)
 		c1.cd(1)
-		h_mu[0].Draw('colztext')
+		self.h2_MufRatio.Draw('colztext')
 		c1.cd(2)
-		h_mu_corr[0].Draw('colztext')
+		self.h2_ElfRatio.Draw('colztext')
 		c1.cd(3)
-		h_el[0].Draw('colztext')
+		self.h2_MupRatio.Draw('colztext')
 		c1.cd(4)
-		h_el_corr[0].Draw('colztext')
+		self.h2_ElpRatio.Draw('colztext')
 
-#		h2_tight.Draw('box')
 
-#		h2_ratio.Draw('colztext')
 
 		raw_input('ok? ')
 
@@ -252,70 +227,23 @@ class plotter :
 		foo = 0
 
 
-	def fill_ratios(self) :
+	def fill_ratios(self, mu_samples, el_samples, datamc, applyEwkSubtr = False, EWK_SF = {}) :
 		print '[status] filling fake and prompt ratio histograms..'
-		## void SSDLPlotter::fillRatios(vector<int> musamples, vector<int> elsamples,
-		## 			     int datamc, bool applyEwkSubtr, bool printOutput){
-		## 	if(datamc == 0){
-		## 	  cout << "Filling ratios for Data... " << endl; 
-		## NOT NEEDED 	  fH1D_MufRatio = fillRatioPt(Muon, musamples, SigSup, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH1D_MupRatio = fillRatioPt(Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH1D_ElfRatio = fillRatioPt(Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH1D_ElpRatio = fillRatioPt(Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
-		self.fH2D_MufRatio = fillRatio('Muon', musamples, 'SigSup', applyEwkSubtr, printOutput)
-		self.fH2D_MupRatio = fillRatio('Muon', musamples, 'ZDecay', applyEwkSubtr, printOutput)
-		self.fH2D_ElfRatio = fillRatio('Elec', self.get_samples('DoubleEle'), 'SigSup', applyEwkSubtr, printOutput)
-		self.fH2D_ElpRatio = fillRatio('Elec', self.get_samples('DoubleEle'), 'ZDecay', applyEwkSubtr, printOutput)
-		## 	}
-		## NOT NEEDED 	if(datamc == 1){
-		## NOT NEEDED 	  cout << "Filling ratios for MC... " << endl;
-		## NOT NEEDED 	  fH1D_MufRatio_MC = fillRatioPt(Muon, musamples, SigSup, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH1D_MupRatio_MC = fillRatioPt(Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH1D_ElfRatio_MC = fillRatioPt(Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH1D_ElpRatio_MC = fillRatioPt(Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH2D_MufRatio_MC = fillRatio(  Muon, musamples, SigSup, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH2D_MupRatio_MC = fillRatio(  Muon, musamples, ZDecay, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH2D_ElfRatio_MC = fillRatio(  Elec, elsamples, SigSup, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	  fH2D_ElpRatio_MC = fillRatio(  Elec, elsamples, ZDecay, applyEwkSubtr, printOutput);
-		## NOT NEEDED 	}
-		## }
+
+		if datamc is 0 :
+			(self.h2_MufRatio   , self.h_MufRatio_pt   , self.h_MufRatio_eta   , self.h_MufRatio_nv   ) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_ElfRatio   , self.h_ElfRatio_pt   , self.h_ElfRatio_eta   , self.h_ElfRatio_nv   ) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_MupRatio   , self.h_MupRatio_pt   , self.h_MupRatio_eta   , self.h_MupRatio_nv   ) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
+			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
+
+		else :
+			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
+			(self.h2_MupRatio_MC, self.h_MupRatio_pt_MC, self.h_MupRatio_eta_MC, self.h_MupRatio_nv_MC) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
+			(self.h2_ElpRatio_MC, self.h_ElpRatio_pt_MC, self.h_ElpRatio_eta_MC, self.h_ElpRatio_nv_MC) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
 
 
-	def fill_ratio(self, chan, samples, region, applyEwkSubtr) :
-		foo = 0
-		# sets up the histograms and calls calculateRatio
-
-		## TH2D* SSDLPlotter::fillRatio(gChannel chan, vector<int> samples, gFPSwitch fp, bool applyEwkSubtr, bool output){
-		## 	gStyle->SetOptStat(0);
-		## 	TString shortname[2] = {"Mu", "El"};
-		## 	TString longname[2] = {"Muons", "Electrons"};
-		## 	int muelswitch = 0;
-		## 	if(chan == Elec) muelswitch = 1;
-		## 
-		## 	TH2D *h_2d;
-		## 	TH1D *h_pt, *h_eta;
-		## 	if(fp == SigSup){
-		## 		h_2d  = new TH2D(Form("%sRatio",   shortname[muelswitch].Data()), Form("Ratio of tight to loose %s vs Pt vs Eta", longname[muelswitch].Data()), getNFPtBins(chan), getFPtBins(chan), getNEtaBins(chan), getEtaBins(chan));
-		## 		h_pt  = new TH1D(Form("%sRatioPt" ,shortname[muelswitch].Data()), Form("Ratio of tight to loose %s vs Pt"       , longname[muelswitch].Data()), getNFPtBins(chan), getFPtBins(chan));
-		## 		h_eta = new TH1D(Form("%sRatioEta",shortname[muelswitch].Data()), Form("Ratio of tight to loose %s vs Eta"      , longname[muelswitch].Data()), getNEtaBins(chan), getEtaBins(chan));
-		## 	}
-		## 	if(fp == ZDecay){
-		## 		h_2d  = new TH2D(Form("%sRatio",   shortname[muelswitch].Data()), Form("Ratio of tight to loose %s vs Pt vs Eta", longname[muelswitch].Data()), getNPPtBins(chan), getPPtBins(chan), getNEtaBins(chan), getEtaBins(chan));
-		## 		h_pt  = new TH1D(Form("%sRatioPt" ,shortname[muelswitch].Data()), Form("Ratio of tight to loose %s vs Pt"       , longname[muelswitch].Data()), getNPPtBins(chan), getPPtBins(chan));
-		## 		h_eta = new TH1D(Form("%sRatioEta",shortname[muelswitch].Data()), Form("Ratio of tight to loose %s vs Eta"      , longname[muelswitch].Data()), getNEtaBins(chan), getEtaBins(chan));
-		## 	}
-		## 
-		## 	h_2d->SetXTitle("p_{#perp} (GeV)");
-		## 	h_2d->SetYTitle("#eta");
-		## 	h_2d->SetZTitle("# Tight / # Loose");
-		## 
-		## 	calculateRatio(samples, chan, fp, h_2d, h_pt, h_eta, applyEwkSubtr, output);
-		## 	delete h_pt, h_eta;
-		## 	return h_2d;
-		## }
-
-
-	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = []) :
+	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = {}) :
 		# - sets up ratio histos
 		# - calls getPassedTotal / get_TightLoose to get ntight and nloose histos
 
