@@ -502,6 +502,7 @@ class plotter :
 		nt2_em_BB_os = 0.; nt2_em_EE_os = 0.;
 
 		# TODO
+		chargeFactor = 1.
 #	// only take half the events for ++/--
 #	float chargeFactor = chVeto ? 0.5:1.;
 
@@ -573,6 +574,17 @@ class plotter :
 						if event.TLCat is 1 : nt10_ee += 1
 						if event.TLCat is 2 : nt01_ee += 1
 						if event.TLCat is 3 : nt0_ee  += 1
+
+				# EM OS
+				if event.Flavor is 4 :
+					if event.TLCat is 0 : nt2_em_BB_os += chargeFactor
+					if event.TLCat is 1 : nt2_em_EE_os += chargeFactor
+
+				# EE OS
+				if(Flavor == 5) {       // E-E OS
+					if event.TLCat is 0                     : nt2_ee_BB_os += chargeFactor
+					if event.TLCat is 1 or event.TLCat is 2 : nt2_ee_EB_os += chargeFactor
+					if event.TLCat is 3                     : nt2_ee_EE_os += chargeFactor
 
 
 	def make_DiffPredictions(self, selections) :
