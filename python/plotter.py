@@ -603,19 +603,28 @@ class plotter :
 			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
 				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
 				if sel.charge != 0 and event.Charge != sel.charge : continue
-				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[event.SName]
+				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[str(event.SName)].getLumi()
 
 				if event.Flavor is 0 :
-					rareMapMM      [event.SName] += scale
-					rareMapMM_npass[event.SName] += 1
+					rareMapMM      [str(event.SName)] += scale
+					rareMapMM_npass[str(event.SName)] += 1
 
 				if event.Flavor is 1 :
-					rareMapEM      [event.SName] += scale
-					rareMapEM_npass[event.SName] += 1
+					rareMapEM      [str(event.SName)] += scale
+					rareMapEM_npass[str(event.SName)] += 1
 
 				if event.Flavor is 2 :
-					rareMapEE      [event.SName] += scale
-					rareMapEE_npass[event.SName] += 1
+					rareMapEE      [str(event.SName)] += scale
+					rareMapEE_npass[str(event.SName)] += 1
+
+		# end of sigevents loop
+
+		# PRINTOUT
+		print "-------------------------------------------------------------------------------------------------------------"
+		print "                 |               Mu/Mu               |                E/Mu               |                E/E                ||"
+		print "         YIELDS  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  ||"
+		print "-------------------------------------------------------------------------------------------------------------"
+		print "%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f" % ("Data", nt2_mm, nt10_mm, nt01_mm, nt0_mm, nt2_em, nt10_em, nt01_em, nt0_em, nt2_ee, nt10_ee, nt01_ee, nt0_ee)
 
 
 	def make_DiffPredictions(self, selections) :
