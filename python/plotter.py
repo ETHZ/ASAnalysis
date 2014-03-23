@@ -379,6 +379,46 @@ class plotter :
 		## }
 
 
+	def get_fRatio(self, chan, pt, eta, datamc) :
+		mu_flatout = 40.
+		el_flatout = 40.
+		eta = abs(eta)
+
+		if chan is 'Muon' :
+			if datamc is 0 : histo = self.h2_MufRatio
+			else           : histo = self.h2_MufRatio_MC
+			flatout = mu_flatout
+		elif chan is 'Elec' :
+			if datamc is 0 : histo = self.h2_ElfRatio
+			else           : histo = self.h2_ElfRatio_MC
+			flatout = el_flatout
+
+##		if histo.GetEntries() is 0   ## TODO: check if histo exists
+
+		if pt >= flatout :
+			bin = histo.FindBin(flatout-1., eta)
+			return histo.GetBinContent(bin)
+
+		bin = histo.FindBin(pt, eta)
+		return histo.GetBinContent(bin)
+
+
+	def get_pRatio(self, chan, pt, datamc) :
+		eta = abs(eta)
+
+		if chan is 'Muon' :
+			if datamc is 0 : histo = self.h_MupRatio_pt
+			else           : histo = self.h_MupRatio_pt_MC
+		elif chan is 'Elec' :
+			if datamc is 0 : histo = self.h_ElpRatio_pt
+			else           : histo = self.h_ElpRatio_pt_MC
+
+##		if histo.GetEntries() is 0   ## TODO: check if histo exists
+
+		bin = histo.FindBin(pt)
+		return histo.GetBinContent(bin)
+
+
 	def makeRatioControlPlots(self) :
 		foo = 0
 
@@ -398,9 +438,39 @@ class plotter :
 		## }
 
 
-	def make_IntPredictions(self, selections) :
+	def make_IntPredictions(self, selection) :
 		'''oberservation and prediction for different selections'''
+		## for now only with one selection
+
 		foo = 0
+
+		# this gets the flat ratio numbers (w/o ewk subtraction)
+
+		##	///////////////////////////////////////////////////////////////////////////////////
+		##	// RATIOS /////////////////////////////////////////////////////////////////////////
+		##	///////////////////////////////////////////////////////////////////////////////////
+		##	float mufratio_data(0.),  mufratio_data_e(0.);
+		##	float mupratio_data(0.),  mupratio_data_e(0.);
+		##	float elfratio_data(0.),  elfratio_data_e(0.);
+		##	float elpratio_data(0.),  elpratio_data_e(0.);
+		##
+		##	calculateRatio(fMuData, Muon, SigSup, mufratio_data, mufratio_data_e);
+		##	calculateRatio(fMuData, Muon, ZDecay, mupratio_data, mupratio_data_e);
+		##
+		##	calculateRatio(fEGData, Elec, SigSup, elfratio_data, elfratio_data_e);
+		##	calculateRatio(fEGData, Elec, ZDecay, elpratio_data, elpratio_data_e);
+
+		# the numbers are calculated earlier with ewk subtraction and stored in self.MufRatio, ...
+
+		##	FakeRatios *FR = new FakeRatios();
+		FR = FakeRatios.FakeRatios()
+
+		for event in self.sigtree :
+			if not sel.passes_selection(event, False, False) : continue
+
+			# get all data events
+			if event.SType < 3 :
+				
 
 
 	def make_DiffPredictions(self, selections) :
