@@ -810,6 +810,7 @@ public:
 	virtual float getJetPt(int); // for shifting and smearing
 	virtual float getM3();
 	virtual float getM3new();
+	virtual float getM3new(TLorentzVector lep1, TLorentzVector lep2);
 	virtual double getDeltaR3Vectors(TLorentzVector, TLorentzVector, TLorentzVector);
 	virtual void  setMET(float );
 	virtual float getMET();

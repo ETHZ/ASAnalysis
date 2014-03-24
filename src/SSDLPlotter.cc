@@ -498,9 +498,9 @@ void SSDLPlotter::doAnalysis(){
   /* Here I produce the control plots without re-calculating the
      EWK MC scale factors, but instead using the numbers obtained above. 
      NB: without the previous calls, a SF=1 would be used (FIXME: this is bad design)*/
-  makeRatioControlPlots(1, false, saveRatioControlPlots); // El
-  makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
-  makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
+//  makeRatioControlPlots(1, false, saveRatioControlPlots); // El
+//  makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
+//  makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
 
 
   bool saveRatioPlots = false;
@@ -14614,7 +14614,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  3, 10,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  5, 10,  0);
 	// == 3 J  == 1 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 12,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 12,  0);
 	// 4 J 2bJ
 	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 13,  0);
 

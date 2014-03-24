@@ -2083,7 +2083,10 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		fSETree_M3      = getM3new();
+		TLorentzVector lep1, lep2;
+		lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
+		lep2.SetPtEtaPhiM(MuPt[ind2], MuEta[ind2], MuPhi[ind2], gMMU);
+		fSETree_M3      = getM3new(lep1, lep2);
 		if( isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightMuon(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 2;
@@ -2187,7 +2190,10 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		fSETree_M3      = getM3new();
+		TLorentzVector lep1, lep2;
+		lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
+		lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
+		fSETree_M3      = getM3new(lep1, lep2);
 		if( isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2280,7 +2286,10 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		fSETree_BetaStar3 = getBetaStar(3);
 		fSETree_BetaStar4 = getBetaStar(4);
 		fSETree_BetaStar5 = getBetaStar(5);
-		fSETree_M3      = getM3new();
+		TLorentzVector lep1, lep2;
+		lep1.SetPtEtaPhiM(ElPt[ind1], ElEta[ind1], ElPhi[ind1], gMEL);
+		lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
+		fSETree_M3      = getM3new(lep1, lep2);
 		if( isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightElectron(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2371,7 +2380,10 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 //				fSETree_BetaStar2 = getBetaStar(2);
 //				fSETree_BetaStar3 = getBetaStar(3);
 //				fSETree_BetaStar4 = getBetaStar(4);
-//				fSETree_M3      = getM3new();
+//				TLorentzVector lep1, lep2;
+//				lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
+//				lep2.SetPtEtaPhiM(MuPt[ind2], MuEta[ind2], MuPhi[ind2], gMMU);
+//				fSETree_M3      = getM3new(lep1, lep2);
 //				fSETree_BetaStar5 = getBetaStar(5);
 ////				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 ////				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
@@ -2420,7 +2432,10 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_BetaStar3 = getBetaStar(3);
 				fSETree_BetaStar4 = getBetaStar(4);
 				fSETree_BetaStar5 = getBetaStar(5);
-				fSETree_M3      = getM3new();
+				TLorentzVector lep1, lep2;
+				lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
+				lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
+				fSETree_M3      = getM3new(lep1, lep2);
 				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
@@ -2468,7 +2483,10 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_BetaStar3 = getBetaStar(3);
 				fSETree_BetaStar4 = getBetaStar(4);
 				fSETree_BetaStar5 = getBetaStar(5);
-				fSETree_M3      = getM3new();
+				TLorentzVector lep1, lep2;
+				lep1.SetPtEtaPhiM(ElPt[ind1], ElEta[ind1], ElPhi[ind1], gMEL);
+				lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
+				fSETree_M3      = getM3new(lep1, lep2);
 				if( isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel/Barrel
 				if( isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Barrel/Endcap
 				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 2; // TLCat == 2 if Endcap/Barrel
@@ -5303,6 +5321,65 @@ float SSDLDumper::getM3new() {
 		} // end second jet loop
 	} // end first jet loop
 	return m3;
+}
+float SSDLDumper::getM3new(TLorentzVector lep1, TLorentzVector lep2) {
+	// Return M3
+	int njets = getNJets();
+	if(njets < 3) return -1.;
+
+	float triJetPtMax = 0.;
+	double triJetDeltaRMin = 9999.;
+	double lb_mindr = 9999.;
+	float m3 = -1.;
+	float m3_fallback = -1.;
+
+	for (int b1 = 0; b1 < NJets; b1++) {
+		if (JetCSVBTag[b1] < 0.679) continue;
+
+		for (int b2 = NJets-1; b2 >= 0; b2--) {
+			if (b2 == b1) continue;
+			if (JetCSVBTag[b2] < 0.679) continue;
+
+			for (int j1 = 0; j1 < NJets; j1++) {
+				if (j1 == b1 || j1 == b2) continue;
+
+				for (int j2 = j1+1; j2 < NJets; j2++) {
+					if (j2 == b1 || j2 == b2) continue;
+
+					TLorentzVector jet1; jet1.SetPtEtaPhiE(JetPt[j1], JetEta[j1], JetPhi[j1], JetEnergy[j1]);
+					TLorentzVector jet2; jet2.SetPtEtaPhiE(JetPt[j2], JetEta[j2], JetPhi[j2], JetEnergy[j2]);
+					TLorentzVector jet3; jet3.SetPtEtaPhiE(JetPt[b1], JetEta[b1], JetPhi[b1], JetEnergy[b1]);
+					TLorentzVector jet4; jet4.SetPtEtaPhiE(JetPt[b2], JetEta[b2], JetPhi[b2], JetEnergy[b2]);
+					TLorentzVector triJet = jet1 + jet2 + jet3;
+
+					double deltaR3jets_tmp = getDeltaR3Vectors(jet1, jet2, jet3);
+
+					if (deltaR3jets_tmp < triJetDeltaRMin) {
+						triJetDeltaRMin = deltaR3jets_tmp;
+//            			recobHi = b1;
+//            			recoj1i = j1;
+//            			recoj2i = j2;
+//            			recobLi = b2;
+						m3_fallback = triJet.M();
+					}
+
+					if ((lep1 + jet4).M() < 173. || (lep2 + jet4).M() < 173.) {
+						if(deltaR3jets_tmp < lb_mindr ){
+							lb_mindr = deltaR3jets_tmp;
+//							lb_recobHi = b1;
+//							lb_recoj1i = j1;
+//							lb_recoj2i = j2;
+//							lb_recobLi = b2;
+							m3 = triJet.M();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (m3 != -1.) return m3;
+	return m3_fallback;
 }
 double SSDLDumper::getDeltaR3Vectors(TLorentzVector vec1, TLorentzVector vec2, TLorentzVector vec3) {
 	TLorentzVector triVec = vec1 + vec2 + vec3;
