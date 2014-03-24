@@ -16,8 +16,21 @@ class plotter :
 		print '[status] initialize plotter..'
 		self.path = path
 		self.ssdlfile = ROOT.TFile.Open(path + '/SSDLYields.root', 'READ')
+		if self.ssdlfile == None :
+			sys.exit(1)
 		self.sigtree = self.ssdlfile.Get('SigEvents')
 		print '[status] loaded SigEventsTree with %d events' % (self.sigtree.GetEntries())
+
+		self.datafile = ROOT.TFile.Open(path + '/SSDLDataYields.root', 'READ')
+		if self.datafile == None :
+			print 'creating data tree file..'
+			self.datafile = ROOT.TFile.Open(path + '/SSDLDataYields.root', 'RECREATE')
+			self.datafile.cd()
+			self.datatree = self.sigtree.CopyTree('SType < 3 && Flavor < 3')
+			self.datatree.AutoSave()
+			self.datafile.Write()
+		else :
+			self.datatree = self.datafile.Get('SigEvents')
 
 		ROOT.gSystem.Load('./FakeRatios.so')
 
@@ -400,15 +413,15 @@ class plotter :
 
 #		data_tree = self.sigtree.CopyTree(sel.get_selectionString(False))
 
-		for i, event in enumerate(self.sigtree) :
-#		for i, event in enumerate(data_tree) :
+#		for i, event in enumerate(self.sigtree) :
+		for i, event in enumerate(self.datatree) :
 #			if last_sample == 'DoubleEle2' : break
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
 #			if i%100000 is 0 : print '[status] processing event %d' % (i)
 
-			if event.SType != 1 or event.Flavor < 3 : continue
+#			if event.SType != 1 or event.Flavor < 3 : continue
 #			if event.SType > 2 : continue # only data
 
 			if not sel.passes_selection(event, False, True, True) : continue
