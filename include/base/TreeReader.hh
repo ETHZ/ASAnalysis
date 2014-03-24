@@ -28,7 +28,7 @@ public:
   inline virtual bool AtEnd() { return fEvent->atEnd(); }
   virtual const TreeReader &operator++();
   inline virtual const bool CheckLoading() const {
-    return (Run>0)&&(LumiSection>0)&&(Event>0); 
+    return true; //(Run>0)&&(LumiSection>0)&&(Event>0); 
   }
 
     

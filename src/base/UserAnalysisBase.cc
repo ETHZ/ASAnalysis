@@ -26,6 +26,8 @@ UserAnalysisBase::UserAnalysisBase(TreeReader *tr, bool isData, string globaltag
 
 
   if(globaltag == "") globaltag = "START53_V7A"; // need a default GT, otherwise the next line crashes
+  if(globaltag != "")
+    cout << "running JECs for globaltag: " << globaltag << endl;
   fMetCorrector = new OnTheFlyCorrections(globaltag, isData);
 }
 

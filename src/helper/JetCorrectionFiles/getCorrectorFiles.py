@@ -4,7 +4,9 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 # define your favorite global tag
 ## globalTag = 'START53_V7A'
-globalTag = 'START52_V9'
+#globalTag = 'START52_V9'
+#globalTag = 'START53_V20'
+globalTag = 'GR_P_V42_AN2'
 
 process.GlobalTag.globaltag = globalTag+'::All'
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(1))

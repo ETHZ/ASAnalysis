@@ -9,13 +9,13 @@
 ## /SingleMu/pablom-V03-09-01_SingleMu-Run2012D-PromptReco-v1-ed27575347012eeeb5efebc15a8ff0a1/USER           ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
 ###
 ### #### DoubleMu  #####
-/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012A-13Jul2012-v1-8b40af1c1a7112b82abff0ac5ab711c2/USER			' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1
-/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012B-13Jul2012-v4-8b40af1c1a7112b82abff0ac5ab711c2/USER			' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 10 -1
-/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012A-recover-06Aug2012-v1-e70166c5bed902d2bd92edbda9fa107a/USER		' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 1 -1
-/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012C-24Aug2012-v1-8bfe2e4ea3f2513d64bd97608ee8b69e/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 3 -1
-/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012C-PromptReco-v2-RETRY-274a619113c85d842e3dd58dec83f5eb/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
-/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012D-PromptReco-v1-RETRY-87eb78fbd8f3b8706be023253eaf999d/USER				        ' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
-/DoubleMu/mdunser-V03-09-01_DoubleMu-Run2012C-EcalRecover-11Dec2012-v1-274a619113c85d842e3dd58dec83f5eb/USER	' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 20 -1
+## /DoubleMu-Run2012A-13Jul2012-v1               	' -v 1 -j /shome/mdunser/jsons/fakeSUSY/fullJSON_SUSYFakes.json -g FT_P_V42_AN3 ' 5 -1
+## /DoubleMu-Run2012B-13Jul2012-v4               	' -v 1 -j /shome/mdunser/jsons/fakeSUSY/fullJSON_SUSYFakes.json -g FT_P_V42_AN3 ' 10 -1
+/DoubleMu-Run2012A-recover-06Aug2012-v1       	' -v 1 -j /shome/mdunser/jsons/fakeSUSY/fullJSON_SUSYFakes.json -g FT_P_V42_AN3 ' 3 -1
+## /DoubleMu-Run2012C-24Aug2012-v1               	' -v 1 -j /shome/mdunser/jsons/fakeSUSY/fullJSON_SUSYFakes.json -g FT_P_V42_AN3 ' 3 -1
+## /DoubleMu-Run2012C-PromptReco-v2-RETRY          ' -v 1 -j /shome/mdunser/jsons/fakeSUSY/fullJSON_SUSYFakes.json -g FT_P_V42_AN3 ' 20 -1
+## /DoubleMu-Run2012C-EcalRecover-11Dec2012-v1	    ' -v 1 -j /shome/mdunser/jsons/fakeSUSY/fullJSON_SUSYFakes.json -g FT_P_V42_AN3 ' 20 -1
+## /DoubleMu-Run2012D-PromptReco-v1-RETRY        ' -v 1 -j /shome/mdunser/jsons/fakeSUSY/fullJSON_SUSYFakes.json -g FT_P_V42_AN3 ' 60 -1
 ###
 ### #### MuEG #####
 #/MuEG/fronga-V03-09-01_MuEG-Run2012A-13Jul2012-v1-bc9c2b19fb3a6c32e68e698da0c1a6a2/USER					' -v 1 -j /shome/mdunser/jsons/full2012/thisShouldBeAll.txt' 5 -1

@@ -104,16 +104,6 @@ private:
 	vector<float> fTmupfiso ; vector<float> * p_fTmupfiso ;
 	vector< int > fTmucharge; vector< int > * p_fTmucharge;
 	vector<float> fTmud0    ; vector<float> * p_fTmud0    ;
-	vector<float> fTmuMT    ; vector<float> * p_fTmuMT    ;
-
-	vector<bool>  fTis_global        ;vector<bool>  * p_fTis_global        ;
-	vector<bool>  fTis_pf            ;vector<bool>  * p_fTis_pf            ;
-	vector<float> fTndof             ;vector<float> * p_fTndof             ;
-	vector<int>   fTchamber_hits     ;vector<int>   * p_fTchamber_hits     ;
-    vector<int>   fTmatched_stations ;vector<int>   * p_fTmatched_stations ;
-	vector<float> fTdz               ;vector<float> * p_fTdz               ;
-	vector<int>   fTpixel_hits       ;vector<int>   * p_fTpixel_hits       ;
-	vector<int>   fTnlayers          ;vector<int>   * p_fTnlayers          ;
 
 	vector<bool>  fTmuisveto ; vector<bool> * p_fTmuisveto ;
 	vector<bool>  fTmuisloose; vector<bool> * p_fTmuisloose;
@@ -126,7 +116,6 @@ private:
 	vector<float> fTelpfiso ; vector<float> * p_fTelpfiso ;
 	vector< int > fTelcharge; vector< int > * p_fTelcharge;
 	vector<float> fTeld0    ; vector<float> * p_fTeld0    ;
-	vector<float> fTelMT    ; vector<float> * p_fTelMT    ;
 
 	vector<bool>  fTelisveto ; vector<bool> * p_fTelisveto ;
 	vector<bool>  fTelisloose; vector<bool> * p_fTelisloose;
@@ -135,6 +124,8 @@ private:
 	// Jet and MET properties
 	float fTpfMET;
 	float fTpfMETphi;
+	float fTpfMET1;
+	float fTpfMET1phi;
 
 	vector<float> fTJetpt        ; vector<float> * p_fTJetpt        ;
 	vector<float> fTJetrawpt     ; vector<float> * p_fTJetrawpt     ;

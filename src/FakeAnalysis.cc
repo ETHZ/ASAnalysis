@@ -171,16 +171,6 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("MuCharge" , "std::vector<int>"  , &p_fTmucharge      );
 	fAnalysisTree->Branch("MuPFIso"  , "std::vector<float>", &p_fTmupfiso       );
 	fAnalysisTree->Branch("MuD0"     , "std::vector<float>", &p_fTmud0          );
-	fAnalysisTree->Branch("MuMT"     , "std::vector<float>", &p_fTmuMT          );
-
-	fAnalysisTree->Branch("MuIsGlobal"        ,  "std::vector<bool>" , &p_fTis_global        );
-	fAnalysisTree->Branch("MuIsPF"            ,  "std::vector<bool>" , &p_fTis_pf            );
-	fAnalysisTree->Branch("MuChi2"            ,  "std::vector<float>", &p_fTndof             );
-	fAnalysisTree->Branch("MuChamberHits"     ,  "std::vector<int>"  , &p_fTchamber_hits     );
-    fAnalysisTree->Branch("MuMatchedStations" ,  "std::vector<int>"  , &p_fTmatched_stations );
-	fAnalysisTree->Branch("MuDz"              ,  "std::vector<float>", &p_fTdz               );
-	fAnalysisTree->Branch("MuPixelHits"       ,  "std::vector<int>"  , &p_fTpixel_hits       );
-	fAnalysisTree->Branch("MuNLayers"         ,  "std::vector<int>"  , &p_fTnlayers          );
 
 	fAnalysisTree->Branch("MuIsVeto"      , "std::vector<bool>", &p_fTmuisveto  );
 	fAnalysisTree->Branch("MuIsLoose"     , "std::vector<bool>", &p_fTmuisloose );
@@ -193,7 +183,6 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElCharge" , "std::vector<int>"  , &p_fTelcharge      );
 	fAnalysisTree->Branch("ElPFIso"  , "std::vector<float>", &p_fTelpfiso       );
 	fAnalysisTree->Branch("ElD0"     , "std::vector<float>", &p_fTeld0          );
-	fAnalysisTree->Branch("ElMT"     , "std::vector<float>", &p_fTelMT          );
 
 	fAnalysisTree->Branch("ElIsVeto"      , "std::vector<bool>", &p_fTelisveto  );
 	fAnalysisTree->Branch("ElIsLoose"     , "std::vector<bool>", &p_fTelisloose );
@@ -202,6 +191,8 @@ void FakeAnalysis::BookTree(){
 	// // jet-MET properties
 	fAnalysisTree->Branch("pfMET"         ,&fTpfMET         , "pfMET/F"                );
 	fAnalysisTree->Branch("pfMETPhi"      ,&fTpfMETphi      , "pfMETPhi/F"             );
+	fAnalysisTree->Branch("pfMET1"        ,&fTpfMET1        , "pfMET1/F"                );
+	fAnalysisTree->Branch("pfMET1Phi"     ,&fTpfMET1phi     , "pfMET1Phi/F"             );
 
 	fAnalysisTree->Branch("JetPt"         , "std::vector<float>" , &p_fTJetpt         );
 	fAnalysisTree->Branch("JetRawPt"      , "std::vector<float>" , &p_fTJetrawpt      );
@@ -221,7 +212,6 @@ void FakeAnalysis::Analyze(){
 }
 void FakeAnalysis::FillAnalysisTree(){
 
-if(fTR->Event == 72652549) cout << "i ran on this event!!!!" << endl;
 	fCounter.fill(fCutnames[0]);
 	// initial event selection: good event trigger, good primary vertex...
 	if( !IsGoodEvent() ) return;
@@ -260,14 +250,14 @@ if(fTR->Event == 72652549) cout << "i ran on this event!!!!" << endl;
 
 	// Get METs
 	std::pair<float, float> newmet = GetOnTheFlyCorrections();
-	// fTpfMET     = fGlobalTag == "" ? fTR->PFType1MET   : newmet.first ;
-	// fTpfMETphi  = fGlobalTag == "" ? fTR->PFType1METphi: newmet.second;
-	fTpfMET     = fGlobalTag == "" ? fTR->PFMET   : newmet.first ;
-	fTpfMETphi  = fGlobalTag == "" ? fTR->PFMETphi: newmet.second;
+	fTpfMET1    = fGlobalTag == "" ? fTR->PFType1MET   : newmet.first ;
+	fTpfMET1phi = fGlobalTag == "" ? fTR->PFType1METphi: newmet.second;
+	fTpfMET     = fTR->PFMET   ;
+	fTpfMETphi  = fTR->PFMETphi;
 
 	// fill a met TLorentzVector
 	TLorentzVector met;
-	met.SetPtEtaPhiM(fTpfMET, 0., fTpfMETphi, 0.);
+	met .SetPtEtaPhiM(fTpfMET , 0., fTpfMETphi , 0.);
 
 	// PU correction
 	fTnvrtx = fTR->NVrtx;
@@ -302,21 +292,8 @@ if(fTR->Event == 72652549) cout << "i ran on this event!!!!" << endl;
 		p_fTmuisloose ->push_back( IsLooseMuon(ind) );
 		p_fTmuistight ->push_back( IsTightMuon(ind) );
 		
-		// Calculate mT:
-		TLorentzVector pmu;
-		pmu.SetPtEtaPhiM(fTR->MuPt[ind], 0., fTR->MuPhi[ind], 0.105);	
-		p_fTmuMT->push_back( (met+pmu).M() );
-
 		if(IsLooseMuon(ind)) nLooseLeptons++;
 
-	p_fTis_global        -> push_back( fTR->MuIsGlobalMuon[ind]     );
-	p_fTis_pf            -> push_back( fTR->MuIsPFMuon[ind]         );
-	p_fTndof             -> push_back( fTR->MuNChi2[ind]            );
-	p_fTchamber_hits     -> push_back( fTR->MuNGlMuHits [ind]       ); // muon.globalTrack()-> hitPattern().numberOfValidMuonHits()
-    p_fTmatched_stations -> push_back( fTR->MuNMatchedStations[ind] ); // muon.numberOfMatchedStations()
-	p_fTdz               -> push_back( fTR->MuDzPV[ind]             );
-	p_fTpixel_hits       -> push_back( fTR->MuNPxHits[ind]          ); // muon.innerTrack()-> hitPattern().numberOfValidPixelHits()
-	p_fTnlayers          -> push_back( fTR->MuNSiLayers[ind]        ); // muon.innerTrack()-> hitPattern().trackerLayersWithMeasurement()
 	}
 
 
@@ -335,10 +312,6 @@ if(fTR->Event == 72652549) cout << "i ran on this event!!!!" << endl;
 		p_fTelisloose ->push_back( IsLooseElectron(ind) );
 		p_fTelistight ->push_back( IsTightElectron(ind) );
 		
-		// Calculate mT:
-		TLorentzVector pel;
-		pel.SetPtEtaPhiM(fTR->ElPt[ind], 0., fTR->ElPhi[ind], 0.0005);
-		p_fTelMT->push_back( (met+pel).M() );
 		if(IsLooseElectron(ind)) nLooseLeptons++;
 	}
 
@@ -372,16 +345,6 @@ void FakeAnalysis::ResetTree(){
 	p_fTmupfiso = &fTmupfiso ; p_fTmupfiso ->reserve(fTR->NMus) ; p_fTmupfiso ->clear();
 	p_fTmucharge= &fTmucharge; p_fTmucharge->reserve(fTR->NMus) ; p_fTmucharge->clear();
 	p_fTmud0    = &fTmud0    ; p_fTmud0    ->reserve(fTR->NMus) ; p_fTmud0    ->clear();
-	p_fTmuMT    = &fTmuMT    ; p_fTmuMT    ->reserve(fTR->NMus) ; p_fTmuMT    ->clear();
-
-	p_fTis_global        = &fTis_global       ; p_fTis_global       -> reserve(fTR->NMus) ;p_fTis_global        -> clear();
-	p_fTis_pf            = &fTis_pf           ; p_fTis_pf           -> reserve(fTR->NMus) ;p_fTis_pf            -> clear();
-	p_fTndof             = &fTndof            ; p_fTndof            -> reserve(fTR->NMus) ;p_fTndof             -> clear();
-	p_fTchamber_hits     = &fTchamber_hits    ; p_fTchamber_hits    -> reserve(fTR->NMus) ;p_fTchamber_hits     -> clear();
-    p_fTmatched_stations = &fTmatched_stations; p_fTmatched_stations-> reserve(fTR->NMus) ;p_fTmatched_stations -> clear();
-	p_fTdz               = &fTdz              ; p_fTdz              -> reserve(fTR->NMus) ;p_fTdz               -> clear();
-	p_fTpixel_hits       = &fTpixel_hits      ; p_fTpixel_hits      -> reserve(fTR->NMus) ;p_fTpixel_hits       -> clear();
-	p_fTnlayers          = &fTnlayers         ; p_fTnlayers         -> reserve(fTR->NMus) ;p_fTnlayers          -> clear();
 
 	p_fTmuisveto   = &fTmuisveto  ; p_fTmuisveto   ->reserve(fTR->NMus) ; p_fTmuisveto  ->clear();
 	p_fTmuisloose  = &fTmuisloose ; p_fTmuisloose  ->reserve(fTR->NMus) ; p_fTmuisloose ->clear();
@@ -394,7 +357,6 @@ void FakeAnalysis::ResetTree(){
 	p_fTelpfiso = &fTelpfiso ; p_fTelpfiso ->reserve(fTR->NEles); p_fTelpfiso ->clear();
 	p_fTelcharge= &fTelcharge; p_fTelcharge->reserve(fTR->NEles); p_fTelcharge->clear();
 	p_fTeld0    = &fTeld0    ; p_fTeld0    ->reserve(fTR->NEles); p_fTeld0    ->clear();
-	p_fTelMT    = &fTelMT    ; p_fTelMT    ->reserve(fTR->NEles); p_fTelMT    ->clear();
 
 	p_fTelisveto   = &fTelisveto  ; p_fTelisveto   ->reserve(fTR->NEles) ; p_fTelisveto  ->clear();
 	p_fTelisloose  = &fTelisloose ; p_fTelisloose  ->reserve(fTR->NEles) ; p_fTelisloose ->clear();
@@ -403,6 +365,8 @@ void FakeAnalysis::ResetTree(){
 	// // jet-MET properties
 	fTpfMET         = -999.99;
 	fTpfMETphi      = -999.99;
+	fTpfMET1        = -999.99;
+	fTpfMET1phi     = -999.99;
 
 	p_fTJetpt        = &fTJetpt        ; p_fTJetpt        ->reserve(fTR->NJets); p_fTJetpt        ->clear();
 	p_fTJetrawpt     = &fTJetrawpt     ; p_fTJetrawpt     ->reserve(fTR->NJets); p_fTJetrawpt     ->clear();
