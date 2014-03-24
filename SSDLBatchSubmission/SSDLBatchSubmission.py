@@ -262,6 +262,7 @@ def do_stuff(config_name):
 		os.system('mkdir '+output_location)
 		# copy the dumper_config into the output directory for future reference and the plotter
 		os.system('cp '+dumper_config+' '+output_location+'/dumperconfig.cfg')
+		os.system('cp '+info_dict['cardfile_name']+' '+output_location+'/DataCard_SSDL.dat')
 	else:
 		print '[WARNING] output directory', output_location, 'already exists, this might lead to problems.'
 
