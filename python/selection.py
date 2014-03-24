@@ -27,6 +27,12 @@ class selection :
 
 
 	def passes_selection(self, event, ttLeptons = True, OSwoZVeto = False, noChargeSel = False) :
+		if event.SystFlag != self.systflag                                              : return False
+		if not (OSwoZVeto and event.Flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
+		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)       : return False
+		if ttLeptons and event.TLCat > 0                                                : return False
+		if self.flavor > -1  and event.Flavor != self.flavor                            : return False
+		if self.flavor is -1 and event.Flavor > 2 and not (OSwoZVeto)                   : return False
 		if event.HT     < self.minHT      : return False
 		if event.HT     > self.maxHT      : return False
 		if event.MET    < self.minMET     : return False
@@ -40,12 +46,6 @@ class selection :
 		if event.Mll    < self.mll        : return False
 		if max(event.pT1, event.pT2) < self.minPt1                                     : return False
 		if min(event.pT1, event.pT2) < self.minPt2                                     : return False
-		if not (OSwoZVeto and self.flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
-		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)      : return False
-		if ttLeptons and event.TLCat > 0                                               : return False
-		if self.flavor > -1  and event.Flavor != self.flavor                           : return False
-		if self.flavor is -1 and event.Flavor > 2 and not (OSwoZVeto)                  : return False
-		if event.SystFlag != self.systflag                                             : return False
 
 		return True
 
@@ -67,7 +67,7 @@ class selection :
 		selectionString += ' && TMath::Max(pT1,pT2) >= %f' % (self.minPt1)
 		selectionString += ' && TMath::Min(pT1,pT2) >= %f' % (self.minPt2)
 		selectionString += ' && SystFlag == %d'            % (self.systflag)
-		if self.applyZVeto      : selectionString += ' && PassZVeto != 0'
+		if self.ZVeto           : selectionString += ' && PassZVeto != 0'
 		if self.charge is not 0 : selectionString += ' && Charge == %d' % (self.charge)
 		if ttLeptons            : selectionString += ' && TLCat == 0'
 		if self.flavor > -1     : selectionString += ' && Flavor == %d' % (self.flavor)
