@@ -441,7 +441,7 @@ int Hemisphere::Reconstruct(){
 			// or the Lund distance (method 3)
 							if (hemi_meth == 3) {
 								mass1 *= NewAxis1_E/((NewAxis1_E+Object_E[i])*(NewAxis1_E+Object_E[i]));
-								mass2 *= NewAxis2_E/((NewAxis2_E+Object_E[i])*(NewAxis1_E+Object_E[i]));
+								mass2 *= NewAxis2_E/((NewAxis2_E+Object_E[i])*(NewAxis2_E+Object_E[i]));
 							}
 			// and associate the object to the best hemisphere and add it to the sum
 							if (mass1 < mass2) {
