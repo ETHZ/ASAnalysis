@@ -2,6 +2,7 @@
 #import os, sys, commands, subprocess, math
 import ROOT
 import sys
+import math
 import selection as sel
 import sample
 import helper
@@ -273,8 +274,8 @@ class plotter :
 			if self.samples[s].datamc is 0 : scale = 1.
 			else                           : scale = self.lumi / self.samples[s].getLumi()
 
-			ospairtmp = self.ssdlfile.Get(s+'/ChMisID/'+s+'_EE_ospairs').Clone()
-			sspairtmp = self.ssdlfile.Get(s+'/ChMisID/'+s+'_EE_sspairs').Clone()
+			ospairstmp = self.ssdlfile.Get(s+'/ChMisID/'+s+'_EE_ospairs').Clone()
+			sspairstmp = self.ssdlfile.Get(s+'/ChMisID/'+s+'_EE_sspairs').Clone()
 
 			if chmid_reg is 'BB' :
 				ospair   += ospairstmp.GetBinContent(1,1) * scale
@@ -395,6 +396,7 @@ class plotter :
 		last_sample = ''
 
 		for i, event in enumerate(self.sigtree) :
+#			if last_sample == 'DoubleEle2' : break
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
@@ -557,6 +559,40 @@ class plotter :
 		print "------------------------------------------------------------------------------------------"
 		print " (Value +/- E_stat +/- E_syst) "
 		print "//////////////////////////////////////////////////////////////////////////////////////////"
+
+		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
+		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
+		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
+
+#		(fbb_mc, fbbE_mc) = calculateChMisIdProb(fMCBG, 'BB')
+#		(feb_mc, febE_mc) = calculateChMisIdProb(fMCBG, 'EB')
+#		(fee_mc, feeE_mc) = calculateChMisIdProb(fMCBG, 'EE')
+
+		print "this is the number of OS events in EE, BB, and EB from the SigEventsTree:", nt2_ee_EE_os, nt2_ee_BB_os, nt2_ee_EB_os
+		print "this is the charge mis ID probabilities: fee, fbb, feb:", fee, fbb, feb
+
+		# Simple error propagation assuming error on number of events is sqrt(N)
+		nt2_ee_chmid    = 2*fbb*nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
+		nt2_ee_chmid_e1 = math.sqrt( 4*fbb*fbb*FR.getEStat2(nt2_ee_BB_os)  + 4*fee*fee*FR.getEStat2(nt2_ee_EE_os)   + 4*feb*feb*FR.getEStat2(nt2_ee_EB_os) )  # stat only
+		nt2_ee_chmid_e2 = math.sqrt( 4*fbbE*fbbE*nt2_ee_BB_os*nt2_ee_BB_os  + 4*feeE*feeE*nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE*nt2_ee_EB_os*nt2_ee_EB_os     + self.ChMisESyst2*nt2_ee_chmid*nt2_ee_chmid                                                                        )  # syst only
+
+		nt2_em_chmid    = fbb*nt2_em_BB_os + fee*nt2_em_EE_os;
+		nt2_em_chmid_e1 = math.sqrt( fbb*fbb*FR.getEStat2(nt2_em_BB_os) + fee*fee*FR.getEStat2(nt2_em_EE_os) )
+		nt2_em_chmid_e2 = math.sqrt( fbbE*fbbE*nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os	                        + self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid                         )
+
+
+		print "----------------------------------------------------------------------------------------------"
+		print "       SUMMARY   ||         Mu/Mu         ||         E/Mu          ||          E/E          ||"
+		print "=============================================================================================="
+		print "%16s || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. fakes",
+			nF_mm, FR.getMMTotEStat(), self.FakeESyst*nF_mm,
+			nF_em, FR.getEMTotEStat(), self.FakeESyst*nF_em,
+			nF_ee, FR.getEETotEStat(), self.FakeESyst*nF_ee)
+		print "%16s ||                       || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. chmisid",
+			nt2_em_chmid, nt2_em_chmid_e1, nt2_em_chmid_e2, nt2_ee_chmid, nt2_ee_chmid_e1, nt2_ee_chmid_e2)
+
+		print "----------------------------------------------------------------------------------------------"
+		print "----------------------------------------------------------------------------------------------"
 
 
 	def make_DiffPredictions(self, selections) :
