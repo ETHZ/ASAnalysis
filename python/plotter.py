@@ -372,6 +372,7 @@ class plotter :
 		# TODO
 		chargeFactor = 1.
 		if sel.charge != 0 : chargeFactor = 0.5
+		print 'chargeFactor:', chargeFactor
 
 		# rare SM yields
 		nt2_rare_mc_mm = 0.;    nt2_rare_mc_em = 0.;    nt2_rare_mc_ee = 0.;
@@ -395,14 +396,20 @@ class plotter :
 
 		last_sample = ''
 
+		print sel.get_selectionString(False)
+
+#		data_tree = self.sigtree.CopyTree(sel.get_selectionString(False))
+
 		for i, event in enumerate(self.sigtree) :
+#		for i, event in enumerate(data_tree) :
 #			if last_sample == 'DoubleEle2' : break
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
 #			if i%100000 is 0 : print '[status] processing event %d' % (i)
 
-			if event.SType > 2 : continue # only data
+			if event.SType != 1 or event.Flavor < 3 : continue
+#			if event.SType > 2 : continue # only data
 
 			if not sel.passes_selection(event, False, True, True) : continue
 			chan = self.get_channelString(int(event.Flavor))
@@ -563,6 +570,10 @@ class plotter :
 		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
 		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
 		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
+
+		print '(fbb: %f, fbbE: %f)' % (fbb, fbbE)
+		print '(feb: %f, febE: %f)' % (feb, febE)
+		print '(fee: %f, feeE: %f)' % (fee, feeE)
 
 #		(fbb_mc, fbbE_mc) = calculateChMisIdProb(fMCBG, 'BB')
 #		(feb_mc, febE_mc) = calculateChMisIdProb(fMCBG, 'EB')

@@ -44,8 +44,8 @@ class selection :
 		if event.NbJmed < self.minNbjetsM : return False
 		if event.NbJmed > self.maxNbjetsM : return False
 		if event.Mll    < self.mll        : return False
-		if max(event.pT1, event.pT2) < self.minPt1                                     : return False
-		if min(event.pT1, event.pT2) < self.minPt2                                     : return False
+		if max(event.pT1, event.pT2) < self.minPt1 : return False
+		if min(event.pT1, event.pT2) < self.minPt2 : return False
 
 		return True
 
