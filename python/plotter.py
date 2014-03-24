@@ -63,6 +63,8 @@ class plotter :
 		#print presel.get_selectionString()
 		self.selections[presel.name] = presel
 
+		self.chmid_sf = 1.62
+
 		EWK_SF = {}
 		EWK_SF['el']   = self.get_EWK_SF('el')
 		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
@@ -259,6 +261,50 @@ class plotter :
 
 	def get_ChMisID_SF(self) :
 		foo = 0
+
+
+	def calculateChMisIdProb(self, samples, chmid_reg, chmid_sf = 1.) :
+		ospair = 0.
+		sspair = 0.
+		ospair_e = 0.
+		sspair_e = 0.
+
+		for s in samples :
+			if self.samples[s].datamc is 0 : scale = 1.
+			else                           : scale = self.lumi / self.samples[s].getLumi()
+
+			ospairtmp = self.ssdlfile.Get(s+'/ChMisID/'+s+'_EE_ospairs').Clone()
+			sspairtmp = self.ssdlfile.Get(s+'/ChMisID/'+s+'_EE_sspairs').Clone()
+
+			if chmid_reg is 'BB' :
+				ospair   += ospairstmp.GetBinContent(1,1) * scale
+				sspair   += sspairstmp.GetBinContent(1,1) * scale
+				ospair_e += ospairstmp.GetBinError(1,1)   * scale
+				sspair_e += sspairstmp.GetBinError(1,1)   * scale
+
+			elif chmid_reg is 'EB' :
+				ospair   += (ospairstmp.GetBinContent(1,2) + ospairstmp.GetBinContent(2,1)) * scale
+				sspair   += (sspairstmp.GetBinContent(1,2) + sspairstmp.GetBinContent(2,1)) * scale
+				ospair_e += (ospairstmp.GetBinError(1,2)   + ospairstmp.GetBinError(2,1)  ) * scale
+				sspair_e += (sspairstmp.GetBinError(1,2)   + sspairstmp.GetBinError(2,1)  ) * scale
+
+			elif chmid_reg is 'EE' :
+				ospair   += ospairstmp.GetBinContent(2,2) * scale
+				sspair   += sspairstmp.GetBinContent(2,2) * scale
+				ospair_e += ospairstmp.GetBinError(2,2)   * scale
+				sspair_e += sspairstmp.GetBinError(2,2)   * scale
+
+		(chmid, chmide) = helper.ratioWithBinomErrors(sspair, ospair)
+
+		# Divide to get the per-electron probability...
+		chmid  = chmid  / 2.
+		chmide = chmide / 2.
+
+		# apply correction scale factor
+		chmid  = chmid  * chmid_sf
+		chmide = chmide * chmid_sf
+
+		return (chmid, chmide)
 
 
 	def makeRatioControlPlots(self) :
