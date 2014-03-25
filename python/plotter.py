@@ -344,31 +344,13 @@ class plotter :
 		'''oberservation and prediction for different selections'''
 		## for now only with one selection
 
-		foo = 0
+		##################
+		# INIT VARIABLES #
+		##################
 
-		# this gets the flat ratio numbers (w/o ewk subtraction)
-
-		##	///////////////////////////////////////////////////////////////////////////////////
-		##	// RATIOS /////////////////////////////////////////////////////////////////////////
-		##	///////////////////////////////////////////////////////////////////////////////////
-		##	float mufratio_data(0.),  mufratio_data_e(0.);
-		##	float mupratio_data(0.),  mupratio_data_e(0.);
-		##	float elfratio_data(0.),  elfratio_data_e(0.);
-		##	float elpratio_data(0.),  elpratio_data_e(0.);
-		##
-		##	calculateRatio(fMuData, Muon, SigSup, mufratio_data, mufratio_data_e);
-		##	calculateRatio(fMuData, Muon, ZDecay, mupratio_data, mupratio_data_e);
-		##
-		##	calculateRatio(fEGData, Elec, SigSup, elfratio_data, elfratio_data_e);
-		##	calculateRatio(fEGData, Elec, ZDecay, elpratio_data, elpratio_data_e);
-
-		# the numbers are calculated earlier with ewk subtraction and stored in self.MufRatio, ...
-
-		##	FakeRatios *FR = new FakeRatios();
-		#ROOT.gSystem.Load('./FakeRatios.so')
 		FR = ROOT.FakeRatios()
 
-		# init variables
+		# tight-tight, tight-loose, loose-tight and loose-loose data yields
 		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
 		nt2_em = 0.; nt10_em = 0.; nt01_em = 0.; nt0_em = 0.;
 		nt2_ee = 0.; nt10_ee = 0.; nt01_ee = 0.; nt0_ee = 0.;
@@ -378,22 +360,23 @@ class plotter :
 		npp_em = 0.; npf_em = 0.; nfp_em = 0.; nff_em = 0.;
 		npp_ee = 0.; npf_ee = 0.; nfp_ee = 0.; nff_ee = 0.;
 
-		# OS yields
+		# OS yields (tight-tight)
 		nt2_ee_BB_os = 0.; nt2_ee_EE_os = 0.; nt2_ee_EB_os = 0.;
 		nt2_em_BB_os = 0.; nt2_em_EE_os = 0.;
 
-		# TODO
+		# charge factor: only takes half of the ChMisID prediction if a charge selection is applied
 		chargeFactor = 1.
 		if sel.charge != 0 : chargeFactor = 0.5
-		print 'chargeFactor:', chargeFactor
 
-		# rare SM yields
+		# rare SM yields (tight-tight)
 		nt2_rare_mc_mm = 0.;    nt2_rare_mc_em = 0.;    nt2_rare_mc_ee = 0.;
 		nt2_rare_mc_mm_e2 = 0.; nt2_rare_mc_em_e2 = 0.; nt2_rare_mc_ee_e2 = 0.;
 
+		# WZ yields (tight-tight)
 		nt2_wz_mc_mm = 0.;    nt2_wz_mc_em = 0.;    nt2_wz_mc_ee = 0.;
 		nt2_wz_mc_mm_e2 = 0.; nt2_wz_mc_em_e2 = 0.; nt2_wz_mc_ee_e2 = 0.;
 
+		# all rares, ttW and ttZ yields (tight-tight)
 		rareMapMM = {}
 		rareMapEM = {}
 		rareMapEE = {}
@@ -433,13 +416,11 @@ class plotter :
 ##		print '============================='
 ##		print 'rares sum:', rares_sum
 
-		print '[status] getting opposite-sign yields'
+		#######################
+		# ChMisID predictions #
+		#######################
 
-		print sel.get_selectionString((4,0))
-		print sel.get_selectionString((4,1))
-		print sel.get_selectionString((5,0))
-		print sel.get_selectionString((5,4))
-		print sel.get_selectionString((5,3))
+		print '[status] getting opposite-sign yields'
 
 		# EM OS
 		nt2_em_BB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((4,0)))
@@ -450,9 +431,29 @@ class plotter :
 		nt2_ee_EB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,4)))
 		nt2_ee_EE_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,3)))
 
-		last_sample = ''
+		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
+		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
+		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
+
+#		(fbb_mc, fbbE_mc) = calculateChMisIdProb(fMCBG, 'BB')
+#		(feb_mc, febE_mc) = calculateChMisIdProb(fMCBG, 'EB')
+#		(fee_mc, feeE_mc) = calculateChMisIdProb(fMCBG, 'EE')
+
+		# Simple error propagation assuming error on number of events is sqrt(N)
+		nt2_ee_chmid    = 2*fbb* nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
+		nt2_ee_chmid_e1 = math.sqrt( 4*fbb*fbb * FR.getEStat2(nt2_ee_BB_os)  + 4*fee*fee * FR.getEStat2(nt2_ee_EE_os)    + 4*feb*feb * FR.getEStat2(nt2_ee_EB_os) )  # stat only
+		nt2_ee_chmid_e2 = math.sqrt( 4*fbbE*fbbE * nt2_ee_BB_os*nt2_ee_BB_os + 4*feeE*feeE * nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE * nt2_ee_EB_os*nt2_ee_EB_os + self.ChMisESyst2 * nt2_ee_chmid*nt2_ee_chmid )  # syst only
+
+		nt2_em_chmid    = fbb * nt2_em_BB_os + fee * nt2_em_EE_os;
+		nt2_em_chmid_e1 = math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
+		nt2_em_chmid_e2 = math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid )
+
+		####################################
+		# Loop over skimmed SigEvents tree #
+		####################################
 
 		print '[status] looping over skimmed tree'
+		last_sample = ''
 #		for i, event in enumerate(self.sigtree) :
 		for i, event in enumerate(self.skimtree) :
 			if last_sample != str(event.SName) :
@@ -515,16 +516,16 @@ class plotter :
 						if event.TLCat is 2 : nt01_ee += 1
 						if event.TLCat is 3 : nt0_ee  += 1
 
-				# EM OS
-				if event.Flavor is 4 :
-					if event.TLCat is 0 : nt2_em_BB_os += chargeFactor
-					if event.TLCat is 1 : nt2_em_EE_os += chargeFactor
-
-				# EE OS
-				if event.Flavor is 5 :
-					if event.TLCat is 0                     : nt2_ee_BB_os += chargeFactor
-					if event.TLCat is 1 or event.TLCat is 2 : nt2_ee_EB_os += chargeFactor
-					if event.TLCat is 3                     : nt2_ee_EE_os += chargeFactor
+#				# EM OS
+#				if event.Flavor is 4 :
+#					if event.TLCat is 0 : nt2_em_BB_os += chargeFactor
+#					if event.TLCat is 1 : nt2_em_EE_os += chargeFactor
+#
+#				# EE OS
+#				if event.Flavor is 5 :
+#					if event.TLCat is 0                     : nt2_ee_BB_os += chargeFactor
+#					if event.TLCat is 1 or event.TLCat is 2 : nt2_ee_EB_os += chargeFactor
+#					if event.TLCat is 3                     : nt2_ee_EE_os += chargeFactor
 
 			# GET RARE MC EVENTS
 			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
@@ -544,7 +545,7 @@ class plotter :
 					rareMapEE      [str(event.SName)] += scale
 					rareMapEE_npass[str(event.SName)] += 1
 
-		# end of sigevents loop
+		# END LOOP OVER TREE
 
 		sum_rares = 0.
 		for name, value in rareMapMM.iteritems() :
@@ -625,30 +626,6 @@ class plotter :
 		print "------------------------------------------------------------------------------------------"
 		print " (Value +/- E_stat +/- E_syst) "
 		print "//////////////////////////////////////////////////////////////////////////////////////////"
-
-		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
-		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
-		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
-
-		print '(fbb: %f, fbbE: %f)' % (fbb, fbbE)
-		print '(feb: %f, febE: %f)' % (feb, febE)
-		print '(fee: %f, feeE: %f)' % (fee, feeE)
-
-#		(fbb_mc, fbbE_mc) = calculateChMisIdProb(fMCBG, 'BB')
-#		(feb_mc, febE_mc) = calculateChMisIdProb(fMCBG, 'EB')
-#		(fee_mc, feeE_mc) = calculateChMisIdProb(fMCBG, 'EE')
-
-		print "this is the number of OS events in EE, BB, and EB from the SigEventsTree:", nt2_ee_EE_os, nt2_ee_BB_os, nt2_ee_EB_os
-		print "this is the charge mis ID probabilities: fee, fbb, feb:", fee, fbb, feb
-
-		# Simple error propagation assuming error on number of events is sqrt(N)
-		nt2_ee_chmid    = 2*fbb*nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
-		nt2_ee_chmid_e1 = math.sqrt( 4*fbb*fbb*FR.getEStat2(nt2_ee_BB_os)  + 4*fee*fee*FR.getEStat2(nt2_ee_EE_os)   + 4*feb*feb*FR.getEStat2(nt2_ee_EB_os) )  # stat only
-		nt2_ee_chmid_e2 = math.sqrt( 4*fbbE*fbbE*nt2_ee_BB_os*nt2_ee_BB_os  + 4*feeE*feeE*nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE*nt2_ee_EB_os*nt2_ee_EB_os     + self.ChMisESyst2*nt2_ee_chmid*nt2_ee_chmid                                                                        )  # syst only
-
-		nt2_em_chmid    = fbb*nt2_em_BB_os + fee*nt2_em_EE_os;
-		nt2_em_chmid_e1 = math.sqrt( fbb*fbb*FR.getEStat2(nt2_em_BB_os) + fee*fee*FR.getEStat2(nt2_em_EE_os) )
-		nt2_em_chmid_e2 = math.sqrt( fbbE*fbbE*nt2_em_BB_os*nt2_em_BB_os + feeE*feeE*nt2_em_EE_os*nt2_em_EE_os	                        + self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid                         )
 
 
 		print "----------------------------------------------------------------------------------------------"
