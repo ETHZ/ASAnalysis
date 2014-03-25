@@ -21,16 +21,16 @@ class plotter :
 		self.sigtree = self.ssdlfile.Get('SigEvents')
 		print '[status] loaded SigEventsTree with %d events' % (self.sigtree.GetEntries())
 
-		self.datafile = ROOT.TFile.Open(path + '/SSDLDataYields.root', 'READ')
-		if self.datafile == None :
-			print 'creating data tree file..'
-			self.datafile = ROOT.TFile.Open(path + '/SSDLDataYields.root', 'RECREATE')
-			self.datafile.cd()
-			self.datatree = self.sigtree.CopyTree('SType < 3 && Flavor < 3')
-			self.datatree.AutoSave()
-			self.datafile.Write()
+		self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'READ')
+		if self.skimfile == None :
+			print 'creating skimmed tree file..'
+			self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'RECREATE')
+			self.skimfile.cd()
+			self.skimtree = self.sigtree.CopyTree('Flavor < 3 && (SType < 3 || TLCat == 0)') # only same-sign, if MC only tight-tight
+			self.skimtree.AutoSave()
+			self.skimfile.Write()
 		else :
-			self.datatree = self.datafile.Get('SigEvents')
+			self.skimtree = self.skimfile.Get('SigEvents')
 
 		ROOT.gSystem.Load('./FakeRatios.so')
 
@@ -414,43 +414,52 @@ class plotter :
 
 		rares_sum = 0.
 
-		# check if this is faster
-		for s in self.samples :
-			if self.samples[s].datamc == 0 : continue
-			else : scale = self.lumi / self.samples[s].getLumi()
-#			print self.sigtree.GetEntries(sel.get_selectionString(False) + ' && SName == ' + s)
-#			print s, scale * self.sigtree.GetEntries('PUWeight * HLTSF * ('+sel.get_selectionString(False)+'&& SName == \"'+s+'\")')
+##		# check if this is faster
+##		for s in self.samples :
+##			if self.samples[s].datamc == 0 : continue
+##			else : scale = self.lumi / self.samples[s].getLumi()
+###			print self.sigtree.GetEntries(sel.get_selectionString(False) + ' && SName == ' + s)
+###			print s, scale * self.sigtree.GetEntries('PUWeight * HLTSF * ('+sel.get_selectionString(False)+'&& SName == \"'+s+'\")')
+##
+##			if s == 'WWTo2L2Nu' : continue
+##			h_nt2[s] = ROOT.TH1D(s+'_flavor', s + ' flavor', 3, 0., 3.)
+##			self.sigtree.Draw('Flavor>>'+s, '%s * PUWeight * HLTSF * (' % (scale) + sel.get_selectionString() + '&& SType == 15 && SName == \"'+s+'\")', 'goff')
+###			print 'Flavor>>'+s, '%s * PUWeight * HLTSF * ('%(scale)+sel.get_selectionString(False)+'&& SName == \"'+s+'\")'
+##			rares_sum += h_nt2[s].Integral()
+##			print s, h_nt2[s].Integral()
+###			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
+###				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
+##
+##		print '============================='
+##		print 'rares sum:', rares_sum
 
-			if s == 'WWTo2L2Nu' : continue
-			h_nt2[s] = ROOT.TH1D(s, s + ' flavor', 3, 0., 3.)
-			self.sigtree.Draw('Flavor>>'+s, '%s * PUWeight * HLTSF * (' % (scale) + sel.get_selectionString() + '&& SType == 15 && SName == \"'+s+'\")', 'goff')
-#			print 'Flavor>>'+s, '%s * PUWeight * HLTSF * ('%(scale)+sel.get_selectionString(False)+'&& SName == \"'+s+'\")'
-			rares_sum += h_nt2[s].Integral()
-			print s, h_nt2[s].Integral()
-#			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
-#				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
+		print '[status] getting opposite-sign yields'
 
-		print '============================='
-		print 'rares sum:', rares_sum
+		print sel.get_selectionString((4,0))
+		print sel.get_selectionString((4,1))
+		print sel.get_selectionString((5,0))
+		print sel.get_selectionString((5,4))
+		print sel.get_selectionString((5,3))
+
+		# EM OS
+		nt2_em_BB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((4,0)))
+		nt2_em_EE_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((4,1)))
+
+		# EE OS
+		nt2_ee_BB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,0)))
+		nt2_ee_EB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,4)))
+		nt2_ee_EE_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,3)))
 
 		last_sample = ''
 
-		print sel.get_selectionString(False)
-
-#		data_tree = self.sigtree.CopyTree(sel.get_selectionString(False))
-
-		for i, event in enumerate(self.sigtree) :
-#		for i, event in enumerate(self.datatree) :
-#			if last_sample == 'DoubleEle2' : break
+		print '[status] looping over skimmed tree'
+#		for i, event in enumerate(self.sigtree) :
+		for i, event in enumerate(self.skimtree) :
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
-#			if i%100000 is 0 : print '[status] processing event %d' % (i)
 
-#			if event.SType != 1 or event.Flavor < 3 : continue
-#			if event.SType > 2 : continue # only data
-
-			if not sel.passes_selection(event, False, True, True) : continue
+			if not sel.passes_selection(event = event, ttLeptons = False) : continue
 			chan = self.get_channelString(int(event.Flavor))
 
 			# GET ALL DATA EVENTS
