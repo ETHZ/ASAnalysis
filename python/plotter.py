@@ -407,14 +407,40 @@ class plotter :
 			rareMapEM[s] = 0.; rareMapEM_npass[s] = 0;
 			rareMapEE[s] = 0.; rareMapEE_npass[s] = 0;
 
+		nt2_all_mm = {}
+		nt2_all_em = {}
+		nt2_all_ee = {}
+		h_nt2 = {}
+
+		rares_sum = 0.
+
+		# check if this is faster
+		for s in self.samples :
+			if self.samples[s].datamc == 0 : continue
+			else : scale = self.lumi / self.samples[s].getLumi()
+#			print self.sigtree.GetEntries(sel.get_selectionString(False) + ' && SName == ' + s)
+#			print s, scale * self.sigtree.GetEntries('PUWeight * HLTSF * ('+sel.get_selectionString(False)+'&& SName == \"'+s+'\")')
+
+			if s == 'WWTo2L2Nu' : continue
+			h_nt2[s] = ROOT.TH1D(s, s + ' flavor', 3, 0., 3.)
+			self.sigtree.Draw('Flavor>>'+s, '%s * PUWeight * HLTSF * (' % (scale) + sel.get_selectionString() + '&& SType == 15 && SName == \"'+s+'\")', 'goff')
+#			print 'Flavor>>'+s, '%s * PUWeight * HLTSF * ('%(scale)+sel.get_selectionString(False)+'&& SName == \"'+s+'\")'
+			rares_sum += h_nt2[s].Integral()
+			print s, h_nt2[s].Integral()
+#			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
+#				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
+
+		print '============================='
+		print 'rares sum:', rares_sum
+
 		last_sample = ''
 
 		print sel.get_selectionString(False)
 
 #		data_tree = self.sigtree.CopyTree(sel.get_selectionString(False))
 
-#		for i, event in enumerate(self.sigtree) :
-		for i, event in enumerate(self.datatree) :
+		for i, event in enumerate(self.sigtree) :
+#		for i, event in enumerate(self.datatree) :
 #			if last_sample == 'DoubleEle2' : break
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
@@ -510,6 +536,17 @@ class plotter :
 					rareMapEE_npass[str(event.SName)] += 1
 
 		# end of sigevents loop
+
+		sum_rares = 0.
+		for name, value in rareMapMM.iteritems() :
+			sum_rares += value
+		for name, value in rareMapEM.iteritems() :
+			sum_rares += value
+		for name, value in rareMapEE.iteritems() :
+			sum_rares += value
+
+		print '======================'
+		print 'sum rares:', sum_rares
 
 		# PRINTOUT
 		print "-------------------------------------------------------------------------------------------------------------"
