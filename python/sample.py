@@ -6,12 +6,22 @@ class sample :
 	'''stores informations and numbers about a sample'''
 
 
-	def __init__(self, name = '', datamc = -1, channel = -1, xsec = -1, ngen = -1) :
+	def __init__(self, name, datamc = -1, channel = -1, xsec = -1, ngen = -1) :
 		self.name    = name
 		self.datamc  = datamc
 		self.channel = channel
 		self.xsec    = xsec
 		self.ngen    = ngen
+
+		self.qcd     = ['QCD', 'MuEnr15', 'MuEnr10', 'MuEnr20', 'MuEnr30']
+		self.top     = ['SingleT', 'TTJets']
+		self.ewk     = ['DYJets', 'GJets', 'WJets', 'WbbJets']
+		self.rare    = ['HWW', 'HZZ', 'HTauTau', 'TTbarW', 'TTbarZ', 'TTbarG', 'TbZ', 'DPSWW', 'WWZ', 'WZZ', 'WZZ', 'WWG', 'ZZZ', 'WWW', 'W+W+', 'W-W-', 'TTbarWW']
+		self.diboson = ['GVJets', 'WGstarMu', 'WGstarTau', 'WWTo2L2Nu', 'WZTo3LNu', 'ZZTo4L']
+
+		# the order matters here:
+		setType()
+		setSampleType()
 
 
 	def __str__(self) :
@@ -23,6 +33,51 @@ class sample :
 		if self.datamc is 0 : return -1.
 		if self.ngen > 0 and self.xsec > 0 : return float(self.ngen)/self.xsec
 		else : return -1.
+
+
+	def setType(self) :
+		'''-1: undef, 0: data, 1: QCD, 2: top, 3: EWK, 4: Rare SM, 5: diboson'''
+		if self.datamc == 0                              : self.type = 0
+		elif any([i in self.name for i in self.qcd    ]) : self.type = 1
+		elif any([i in self.name for i in self.top    ]) : self.type = 2
+		elif any([i in self.name for i in self.ewk    ]) : self.type = 3
+		elif any([i in self.name for i in self.rare   ]) : self.type = 4
+		elif any([i in self.name for i in self.diboson]) : self.type = 5
+		else :
+			print '[error] type of %s is not defined!' % (self.name)
+			self.type = -1
+
+
+	def getType(self) :
+		'''-1: undef, 0: data, 1: QCD, 2: top, 3: EWK, 4: Rare SM, 5: diboson'''
+		if self.type == -1 :
+			print '[error] type of %s is not defined!' % (self.name)
+			return -1
+		return self.type
+
+
+	def setSampleType(self) :
+		'''set sample type'''
+		if   self.name.startswith('DoubleMu' ) : self.sampletype = 0
+		elif self.name.startswith('DoubleEle') : self.sampletype = 1
+		elif self.name.startswith('MuEG'     ) : self.sampletype = 2
+		elif self.name.startswith('MuHad'    ) : self.sampletype = 3
+		elif self.name.startswith('EleHad'   ) : self.sampletype = 4
+		elif self.name.startswith('SingleMu' ) : self.sampletype = 5
+		elif self.datamc > 0 and self.getType() != 4 and self.getType() != 5 : self.sampletype = 10  # SM MC without RARE and di-BOSON
+		elif self.getType() == 4 or self.getType() == 5                      : self.sampletype = 15  # RARE MC + di-BOSON
+		elif self.datamc == 2                                                : self.sampletype = 20  # signal
+		else :
+			print '[error] sample type of %s is not defined!' % (self.name)
+			self.sampletype = -1
+
+
+	def getSampleType(self) :
+		'''return sample type'''
+		if self.sampletype == -1 :
+			print '[error] sample type of %s is not defined!' % (self.name)
+			return -1
+		return self.sampletype
 
 
 	def getError(self, n) :

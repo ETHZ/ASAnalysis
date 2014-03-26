@@ -386,6 +386,7 @@ class plotter :
 		rareMapEE_npass = {}
 
 		for s in self.samples :
+			if self.samples[s].datamc == 0 : continue
 			rareMapMM[s] = 0.; rareMapMM_npass[s] = 0;
 			rareMapEM[s] = 0.; rareMapEM_npass[s] = 0;
 			rareMapEE[s] = 0.; rareMapEE_npass[s] = 0;
@@ -466,7 +467,8 @@ class plotter :
 			# GET ALL DATA EVENTS
 			if event.SType < 3 :
 				if event.Flavor < 3 :
-					if sel.charge != 0 and event.Charge != sel.charge : continue
+
+					# fake, prompt predictions
 					if chan is 'ElMu' :
 						f1 = self.fpr.get_fRatio('Muon', event.pT1, event.eta1, 0)
 						f2 = self.fpr.get_fRatio('Elec', event.pT2, event.eta2, 0)
@@ -530,7 +532,6 @@ class plotter :
 			# GET RARE MC EVENTS
 			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
 				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
-				if sel.charge != 0 and event.Charge != sel.charge : continue
 				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[str(event.SName)].getLumi()
 
 				if event.Flavor is 0 :
