@@ -5342,58 +5342,38 @@ float SSDLDumper::getM3new(TLorentzVector lep1, TLorentzVector lep2) {
 		if (!isGoodJet(b1)) continue;
 		if (JetCSVBTag[b1] < 0.679) continue;
 
-		for (int b2 = NJets-1; b2 >= 0; b2--) {
-			if (!isGoodJet(b2)) continue;
-			if ((b2 == b1 || JetCSVBTag[b2] < 0.679) && b2 > 0) continue;
-			if (!btag2) b2 = -1;
+		for (int j1 = 0; j1 < NJets; j1++) {
+			if (!isGoodJet(j1)) continue;
+			if (j1 == b1) continue;
 
-			for (int j1 = 0; j1 < NJets; j1++) {
-				if (!isGoodJet(j1)) continue;
-				if (j1 == b1 || j1 == b2) continue;
+			for (int j2 = j1+1; j2 < NJets; j2++) {
+				if (!isGoodJet(j2)) continue;
+				if (j2 == b1) continue;
 
-				for (int j2 = j1+1; j2 < NJets; j2++) {
-					if (!isGoodJet(j2)) continue;
-					if (j2 == b1 || j2 == b2) continue;
+				TLorentzVector jet1; jet1.SetPtEtaPhiE(JetPt[j1], JetEta[j1], JetPhi[j1], JetEnergy[j1]);
+				TLorentzVector jet2; jet2.SetPtEtaPhiE(JetPt[j2], JetEta[j2], JetPhi[j2], JetEnergy[j2]);
+				TLorentzVector jet3; jet3.SetPtEtaPhiE(JetPt[b1], JetEta[b1], JetPhi[b1], JetEnergy[b1]);
+				TLorentzVector triJet = jet1 + jet2 + jet3;
 
-					TLorentzVector jet1; jet1.SetPtEtaPhiE(JetPt[j1], JetEta[j1], JetPhi[j1], JetEnergy[j1]);
-					TLorentzVector jet2; jet2.SetPtEtaPhiE(JetPt[j2], JetEta[j2], JetPhi[j2], JetEnergy[j2]);
-					TLorentzVector jet3; jet3.SetPtEtaPhiE(JetPt[b1], JetEta[b1], JetPhi[b1], JetEnergy[b1]);
+				double deltaR3jets_tmp = getDeltaR3Vectors(jet1, jet2, jet3);
+
+				if (deltaR3jets_tmp < triJetDeltaRMin) {
+					triJetDeltaRMin = deltaR3jets_tmp;
+					m3_fallback = triJet.M();
+				}
+
+				for (int b2 = NJets-1; b2 >= 0; b2--) {
+					if (!isGoodJet(b2)) continue;
+					if (b2 == b1 || b2 == j1 || b2 == j2) continue;
+
+					if (btag2 && JetCSVBTag[b2] < 0.679) continue;
+
 					TLorentzVector jet4; if (btag2) jet4.SetPtEtaPhiE(JetPt[b2], JetEta[b2], JetPhi[b2], JetEnergy[b2]);
-					TLorentzVector triJet = jet1 + jet2 + jet3;
 
-					double deltaR3jets_tmp = getDeltaR3Vectors(jet1, jet2, jet3);
-
-					if (deltaR3jets_tmp < triJetDeltaRMin) {
-						triJetDeltaRMin = deltaR3jets_tmp;
-//            			recobHi = b1;
-//            			recoj1i = j1;
-//            			recoj2i = j2;
-//            			recobLi = b2;
-						m3_fallback = triJet.M();
-					}
-
-					if (btag2 && ((lep1 + jet4).M() < 173. || (lep2 + jet4).M() < 173.)) {
+					if (((lep1 + jet4).M() < 173. || (lep2 + jet4).M() < 173.)) {
 						if(deltaR3jets_tmp < lb_mindr ){
 							lb_mindr = deltaR3jets_tmp;
-//							lb_recobHi = b1;
-//							lb_recoj1i = j1;
-//							lb_recoj2i = j2;
-//							lb_recobLi = b2;
 							m3 = triJet.M();
-						}
-					}
-
-					else if (!btag2) {
-						// find another jet
-						for (int j4 = 0; j4 < NJets; j4++) {
-							if (j4 == j1 || j4 == j2 || j4 == b1) continue;
-							jet4.SetPtEtaPhiE(JetPt[j4], JetEta[j4], JetPhi[j4], JetEnergy[j4]);
-							if ((lep1 + jet4).M() < 173. || (lep2 + jet4).M() < 173.) {
-								if (deltaR3jets_tmp < lb_mindr) {
-									lb_mindr = deltaR3jets_tmp;
-									m3 = triJet.M();
-								}
-							}
 						}
 					}
 				}
@@ -5401,8 +5381,8 @@ float SSDLDumper::getM3new(TLorentzVector lep1, TLorentzVector lep2) {
 		}
 	}
 
-	if (m3 != -1.) return m3;
-	return m3_fallback;
+	if (m3 < 0.) return m3_fallback;
+	return m3;
 }
 double SSDLDumper::getDeltaR3Vectors(TLorentzVector vec1, TLorentzVector vec2, TLorentzVector vec3) {
 	TLorentzVector triVec = vec1 + vec2 + vec3;
