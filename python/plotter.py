@@ -377,19 +377,19 @@ class plotter :
 		nt2_wz_mc_mm_e2 = 0.; nt2_wz_mc_em_e2 = 0.; nt2_wz_mc_ee_e2 = 0.;
 
 		# all rares, ttW and ttZ yields (tight-tight)
-		rareMapMM = {}
-		rareMapEM = {}
-		rareMapEE = {}
+		rares_mm = {}
+		rares_em = {}
+		rares_ee = {}
 
-		rareMapMM_npass = {}
-		rareMapEM_npass = {}
-		rareMapEE_npass = {}
+		rares_mm_npass = {}
+		rares_em_npass = {}
+		rares_ee_npass = {}
 
 		for s in self.samples :
 			if self.samples[s].datamc == 0 : continue
-			rareMapMM[s] = 0.; rareMapMM_npass[s] = 0;
-			rareMapEM[s] = 0.; rareMapEM_npass[s] = 0;
-			rareMapEE[s] = 0.; rareMapEE_npass[s] = 0;
+			rares_mm[s] = 0.; rares_mm_npass[s] = 0;
+			rares_em[s] = 0.; rares_em_npass[s] = 0;
+			rares_ee[s] = 0.; rares_ee_npass[s] = 0;
 
 		nt2_all_mm = {}
 		nt2_all_em = {}
@@ -535,25 +535,25 @@ class plotter :
 				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[str(event.SName)].getLumi()
 
 				if event.Flavor is 0 :
-					rareMapMM      [str(event.SName)] += scale
-					rareMapMM_npass[str(event.SName)] += 1
+					rares_mm      [str(event.SName)] += scale
+					rares_mm_npass[str(event.SName)] += 1
 
 				if event.Flavor is 1 :
-					rareMapEM      [str(event.SName)] += scale
-					rareMapEM_npass[str(event.SName)] += 1
+					rares_em      [str(event.SName)] += scale
+					rares_em_npass[str(event.SName)] += 1
 
 				if event.Flavor is 2 :
-					rareMapEE      [str(event.SName)] += scale
-					rareMapEE_npass[str(event.SName)] += 1
+					rares_ee      [str(event.SName)] += scale
+					rares_ee_npass[str(event.SName)] += 1
 
 		# END LOOP OVER TREE
 
 		sum_rares = 0.
-		for name, value in rareMapMM.iteritems() :
+		for name, value in rares_mm.iteritems() :
 			sum_rares += value
-		for name, value in rareMapEM.iteritems() :
+		for name, value in rares_em.iteritems() :
 			sum_rares += value
-		for name, value in rareMapEE.iteritems() :
+		for name, value in rares_ee.iteritems() :
 			sum_rares += value
 
 		print '======================'
