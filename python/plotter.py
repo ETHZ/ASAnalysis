@@ -634,12 +634,22 @@ class plotter :
 		# Rares #
 		#########
 
-		rare_mm = 0.
-		rare_em = 0.
-		rare_ee = 0.
-		rare_staterr2_mm = 0.
-		rare_staterr2_em = 0.
-		rare_staterr2_ee = 0.
+		wz_mm = 0.; wz_staterr2_mm = 0.;
+		wz_em = 0.; wz_staterr2_em = 0.;
+		wz_ee = 0.; wz_staterr2_ee = 0.;
+
+		ttw_mm = 0.; ttw_staterr2_mm = 0.;
+		ttw_em = 0.; ttw_staterr2_em = 0.;
+		ttw_ee = 0.; ttw_staterr2_ee = 0.;
+
+		ttz_mm = 0.; ttz_staterr2_mm = 0.;
+		ttz_em = 0.; ttz_staterr2_em = 0.;
+		ttz_ee = 0.; ttz_staterr2_ee = 0.;
+
+		rare_mm = 0.; rare_staterr2_mm = 0.;
+		rare_em = 0.; rare_staterr2_em = 0.;
+		rare_ee = 0.; rare_staterr2_ee = 0.;
+
 		for s in yields.rares_mm :
 			scale = self.lumi / self.samples[s].getLumi()
 			staterr_mm = scale * self.samples[s].getError(yields.rares_mm_npass[s])
@@ -650,11 +660,29 @@ class plotter :
 			yields.rares_staterr_em[s] = staterr_em
 			yields.rares_staterr_ee[s] = staterr_ee
 
-			if s is 'TTbarW' :
-				foo = 1
+			if s is 'WZTo3LNu' :
+				wz_mm += yields.rares_mm[s]
+				wz_em += yields.rares_em[s]
+				wz_ee += yields.rares_ee[s]
+				wz_staterr2_mm += staterr_mm * staterr_mm
+				wz_staterr2_em += staterr_em * staterr_em
+				wz_staterr2_ee += staterr_ee * staterr_ee
+
+			elif s is 'TTbarW' :
+				ttw_mm += yields.rares_mm[s]
+				ttw_em += yields.rares_em[s]
+				ttw_ee += yields.rares_ee[s]
+				ttw_staterr2_mm += staterr_mm * staterr_mm
+				ttw_staterr2_em += staterr_em * staterr_em
+				ttw_staterr2_ee += staterr_ee * staterr_ee
 
 			elif s is 'TTbarZ' :
-				foo = 1
+				ttz_mm += yields.rares_mm[s]
+				ttz_em += yields.rares_em[s]
+				ttz_ee += yields.rares_ee[s]
+				ttz_staterr2_mm += staterr_mm * staterr_mm
+				ttz_staterr2_em += staterr_em * staterr_em
+				ttz_staterr2_ee += staterr_ee * staterr_ee
 
 			else :
 				rare_mm += yields.rares_mm[s]
@@ -663,6 +691,36 @@ class plotter :
 				rare_staterr2_mm += staterr_mm * staterr_mm
 				rare_staterr2_em += staterr_em * staterr_em
 				rare_staterr2_ee += staterr_ee * staterr_ee
+
+		# store WZ yields
+		yields.wz            = wz_mm + wz_em + wz_ee
+		yields.wz_mm         = wz_mm
+		yields.wz_ee         = wz_em
+		yields.wz_em         = wz_ee
+		yields.wz_err        = math.sqrt(wz_staterr2_mm + wz_staterr2_em + wz_staterr2_ee + self.WZESyst2 * (wz_mm + wz_em + wz_ee))
+		yields.wz_err_mm     = math.sqrt(wz_staterr2_mm + self.WZESyst2 * wz_mm * wz_mm)
+		yields.wz_err_ee     = math.sqrt(wz_staterr2_em + self.WZESyst2 * wz_em * wz_em)
+		yields.wz_err_em     = math.sqrt(wz_staterr2_ee + self.WZESyst2 * wz_ee * wz_ee)
+
+		# store ttW mc yields
+		yields.ttw            = ttw_mm + ttw_em + ttw_ee
+		yields.ttw_mm         = ttw_mm
+		yields.ttw_ee         = ttw_em
+		yields.ttw_em         = ttw_ee
+		yields.ttw_err        = math.sqrt(ttw_staterr2_mm + ttw_staterr2_em + ttw_staterr2_ee + self.TTWESyst2 * (ttw_mm + ttw_em + ttw_ee))
+		yields.ttw_err_mm     = math.sqrt(ttw_staterr2_mm + self.TTWESyst2 * ttw_mm * ttw_mm)
+		yields.ttw_err_ee     = math.sqrt(ttw_staterr2_em + self.TTWESyst2 * ttw_em * ttw_em)
+		yields.ttw_err_em     = math.sqrt(ttw_staterr2_ee + self.TTWESyst2 * ttw_ee * ttw_ee)
+
+		# store ttZ mc yields
+		yields.ttz            = ttz_mm + ttz_em + ttz_ee
+		yields.ttz_mm         = ttz_mm
+		yields.ttz_ee         = ttz_em
+		yields.ttz_em         = ttz_ee
+		yields.ttz_err        = math.sqrt(ttz_staterr2_mm + ttz_staterr2_em + ttz_staterr2_ee + self.TTZESyst2 * (ttz_mm + ttz_em + ttz_ee))
+		yields.ttz_err_mm     = math.sqrt(ttz_staterr2_mm + self.TTZESyst2 * ttz_mm * ttz_mm)
+		yields.ttz_err_ee     = math.sqrt(ttz_staterr2_em + self.TTZESyst2 * ttz_em * ttz_em)
+		yields.ttz_err_em     = math.sqrt(ttz_staterr2_ee + self.TTZESyst2 * ttz_ee * ttz_ee)
 
 		# store rare mc yields
 		yields.rare            = rare_mm + rare_em + rare_ee
