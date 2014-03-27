@@ -379,20 +379,20 @@ class plotter :
 		nt2_wz_mc_mm = 0.;    nt2_wz_mc_em = 0.;    nt2_wz_mc_ee = 0.;
 		nt2_wz_mc_mm_e2 = 0.; nt2_wz_mc_em_e2 = 0.; nt2_wz_mc_ee_e2 = 0.;
 
-		# all rares, ttW and ttZ yields (tight-tight)
-		rares_mm = {}
-		rares_em = {}
-		rares_ee = {}
-
-		rares_mm_npass = {}
-		rares_em_npass = {}
-		rares_ee_npass = {}
-
-		for s in self.samples :
-			if self.samples[s].datamc == 0 : continue
-			rares_mm[s] = 0.; rares_mm_npass[s] = 0;
-			rares_em[s] = 0.; rares_em_npass[s] = 0;
-			rares_ee[s] = 0.; rares_ee_npass[s] = 0;
+##		# all rares, ttW and ttZ yields (tight-tight)
+#		rares_mm = {}
+#		rares_em = {}
+#		rares_ee = {}
+#
+#		rares_mm_npass = {}
+#		rares_em_npass = {}
+#		rares_ee_npass = {}
+#
+#		for s in self.samples :
+#			if self.samples[s].datamc == 0 : continue
+#			yields.rares_mm[s] = 0.; yields.rares_mm_npass[s] = 0;
+#			yields.rares_em[s] = 0.; yields.rares_em_npass[s] = 0;
+#			yields.rares_ee[s] = 0.; yields.rares_ee_npass[s] = 0;
 
 		nt2_all_mm = {}
 		nt2_all_em = {}
@@ -419,6 +419,8 @@ class plotter :
 ##
 ##		print '============================='
 ##		print 'rares sum:', rares_sum
+
+		print sel.get_selectionString()
 
 		#######################
 		# ChMisID predictions #
@@ -544,30 +546,38 @@ class plotter :
 				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
 				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[str(event.SName)].getLumi()
 
+				if str(event.SName) not in yields.rares_mm :
+					yields.rares_mm      [str(event.SName)] = 0.
+					yields.rares_mm_npass[str(event.SName)] = 0
+					yields.rares_em      [str(event.SName)] = 0.
+					yields.rares_em_npass[str(event.SName)] = 0
+					yields.rares_ee      [str(event.SName)] = 0.
+					yields.rares_ee_npass[str(event.SName)] = 0
+
 				if event.Flavor is 0 :
-					rares_mm      [str(event.SName)] += scale
-					rares_mm_npass[str(event.SName)] += 1
+					yields.rares_mm      [str(event.SName)] += scale
+					yields.rares_mm_npass[str(event.SName)] += 1
 
 				if event.Flavor is 1 :
-					rares_em      [str(event.SName)] += scale
-					rares_em_npass[str(event.SName)] += 1
+					yields.rares_em      [str(event.SName)] += scale
+					yields.rares_em_npass[str(event.SName)] += 1
 
 				if event.Flavor is 2 :
-					rares_ee      [str(event.SName)] += scale
-					rares_ee_npass[str(event.SName)] += 1
+					yields.rares_ee      [str(event.SName)] += scale
+					yields.rares_ee_npass[str(event.SName)] += 1
 
 		# END LOOP OVER TREE
 
-		sum_rares = 0.
-		for name, value in rares_mm.iteritems() :
-			sum_rares += value
-		for name, value in rares_em.iteritems() :
-			sum_rares += value
-		for name, value in rares_ee.iteritems() :
-			sum_rares += value
-
-		print '======================'
-		print 'sum rares:', sum_rares
+#		sum_rares = 0.
+#		for name, value in rares_mm.iteritems() :
+#			sum_rares += value
+#		for name, value in rares_em.iteritems() :
+#			sum_rares += value
+#		for name, value in rares_ee.iteritems() :
+#			sum_rares += value
+#
+#		print '======================'
+#		print 'sum rares:', sum_rares
 
 		#####################
 		# Fakes predictions #
@@ -619,6 +629,50 @@ class plotter :
 		yields.fake_err_mm = math.sqrt(FR.getMMTotEStat()*FR.getMMTotEStat() + self.FakeESyst2*yields.fake_mm*yields.fake_mm)
 		yields.fake_err_em = math.sqrt(FR.getEMTotEStat()*FR.getEMTotEStat() + self.FakeESyst2*yields.fake_em*yields.fake_em)
 		yields.fake_err_ee = math.sqrt(FR.getEETotEStat()*FR.getEETotEStat() + self.FakeESyst2*yields.fake_ee*yields.fake_ee)
+
+		#########
+		# Rares #
+		#########
+
+		rare_mm = 0.
+		rare_em = 0.
+		rare_ee = 0.
+		rare_staterr2_mm = 0.
+		rare_staterr2_em = 0.
+		rare_staterr2_ee = 0.
+		for s in yields.rares_mm :
+			scale = self.lumi / self.samples[s].getLumi()
+			staterr_mm = scale * self.samples[s].getError(yields.rares_mm_npass[s])
+			staterr_em = scale * self.samples[s].getError(yields.rares_em_npass[s])
+			staterr_ee = scale * self.samples[s].getError(yields.rares_ee_npass[s])
+
+			yields.rares_staterr_mm[s] = staterr_mm
+			yields.rares_staterr_em[s] = staterr_em
+			yields.rares_staterr_ee[s] = staterr_ee
+
+			if s is 'TTbarW' :
+				foo = 1
+
+			elif s is 'TTbarZ' :
+				foo = 1
+
+			else :
+				rare_mm += yields.rares_mm[s]
+				rare_em += yields.rares_em[s]
+				rare_ee += yields.rares_ee[s]
+				rare_staterr2_mm += staterr_mm * staterr_mm
+				rare_staterr2_em += staterr_em * staterr_em
+				rare_staterr2_ee += staterr_ee * staterr_ee
+
+		# store rare mc yields
+		yields.rare            = rare_mm + rare_em + rare_ee
+		yields.rare_mm         = rare_mm
+		yields.rare_ee         = rare_em
+		yields.rare_em         = rare_ee
+		yields.rare_err        = math.sqrt(rare_staterr2_mm + rare_staterr2_em + rare_staterr2_ee + self.RareESyst2 * (rare_mm + rare_em + rare_ee))
+		yields.rare_err_mm     = math.sqrt(rare_staterr2_mm + self.RareESyst2 * rare_mm * rare_mm)
+		yields.rare_err_ee     = math.sqrt(rare_staterr2_em + self.RareESyst2 * rare_em * rare_em)
+		yields.rare_err_em     = math.sqrt(rare_staterr2_ee + self.RareESyst2 * rare_ee * rare_ee)
 
 		##########################################
 		# print all observations and predictions #

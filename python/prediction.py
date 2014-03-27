@@ -40,13 +40,17 @@ class prediction :
 		self.nff_ee = 0.; self.nff_staterr_ee = 0.; self.nff_systerr_ee = 0.;
 
 		# all rares, ttW and ttZ yields (tight-tight)
-		rares_mm = {}
-		rares_em = {}
-		rares_ee = {}
+		self.rares_mm = {}
+		self.rares_em = {}
+		self.rares_ee = {}
 
-		rares_mm_npass = {}
-		rares_em_npass = {}
-		rares_ee_npass = {}
+		self.rares_mm_npass = {}
+		self.rares_em_npass = {}
+		self.rares_ee_npass = {}
+
+		self.rares_staterr_mm = {}
+		self.rares_staterr_em = {}
+		self.rares_staterr_ee = {}
 
 		# observations
 		self.obs    = 0
@@ -219,6 +223,14 @@ class prediction :
 		print "------------------------------------------------------------------------------------------------------"
 		print " (Value +/- E_stat +/- E_syst) "
 		print "//////////////////////////////////////////////////////////////////////////////////////////"
+
+		print 'rares:'
+
+		for s in self.rares_mm :
+			print "%16s || %5.2f +/- %5.2f || %5.2f +/- %5.2f || %5.2f +/- %5.2f ||" % (s, 
+				self.rares_mm[s], self.rares_staterr_mm[s],
+				self.rares_em[s], self.rares_staterr_em[s],
+				self.rares_ee[s], self.rares_staterr_ee[s])
 
 
 #		print "----------------------------------------------------------------------------------------------"
