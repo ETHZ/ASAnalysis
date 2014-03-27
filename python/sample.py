@@ -20,8 +20,8 @@ class sample :
 		self.diboson = ['GVJets', 'WGstarMu', 'WGstarTau', 'WWTo2L2Nu', 'WZTo3LNu', 'ZZTo4L']
 
 		# the order matters here:
-		setType()
-		setSampleType()
+		self.setType()
+		self.setSampleType()
 
 
 	def __str__(self) :

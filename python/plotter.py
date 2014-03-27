@@ -7,6 +7,7 @@ import selection as sel
 import sample
 import helper
 import ratios
+import prediction
 
 
 class plotter :
@@ -350,19 +351,21 @@ class plotter :
 
 		FR = ROOT.FakeRatios()
 
-		# tight-tight, tight-loose, loose-tight and loose-loose data yields
-		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
-		nt2_em = 0.; nt10_em = 0.; nt01_em = 0.; nt0_em = 0.;
-		nt2_ee = 0.; nt10_ee = 0.; nt01_ee = 0.; nt0_ee = 0.;
+		yields = prediction.prediction()
 
-		# FR Predictions from event-by-event weights (pre stored)
-		npp_mm = 0.; npf_mm = 0.; nfp_mm = 0.; nff_mm = 0.;
-		npp_em = 0.; npf_em = 0.; nfp_em = 0.; nff_em = 0.;
-		npp_ee = 0.; npf_ee = 0.; nfp_ee = 0.; nff_ee = 0.;
+#		# tight-tight, tight-loose, loose-tight and loose-loose data yields
+#		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
+#		nt2_em = 0.; nt10_em = 0.; nt01_em = 0.; nt0_em = 0.;
+#		nt2_ee = 0.; nt10_ee = 0.; nt01_ee = 0.; nt0_ee = 0.;
 
-		# OS yields (tight-tight)
-		nt2_ee_BB_os = 0.; nt2_ee_EE_os = 0.; nt2_ee_EB_os = 0.;
-		nt2_em_BB_os = 0.; nt2_em_EE_os = 0.;
+#		# FR Predictions from event-by-event weights (pre stored)
+#		npp_mm = 0.; npf_mm = 0.; nfp_mm = 0.; nff_mm = 0.;
+#		npp_em = 0.; npf_em = 0.; nfp_em = 0.; nff_em = 0.;
+#		npp_ee = 0.; npf_ee = 0.; nfp_ee = 0.; nff_ee = 0.;
+
+#		# OS yields (tight-tight)
+#		nt2_ee_BB_os = 0.; nt2_ee_EE_os = 0.; nt2_ee_EB_os = 0.;
+#		nt2_em_BB_os = 0.; nt2_em_EE_os = 0.;
 
 		# charge factor: only takes half of the ChMisID prediction if a charge selection is applied
 		chargeFactor = 1.
@@ -449,6 +452,13 @@ class plotter :
 		nt2_em_chmid_e1 = math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
 		nt2_em_chmid_e2 = math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid )
 
+		yields.cmid        = nt2_ee_chmid + nt2_em_chmid
+		yields.cmid_em     = nt2_em_chmid
+		yields.cmid_ee     = nt2_ee_chmid
+		yields.cmid_err    = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
+		yields.cmid_err_ee = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
+		yields.cmid_err_em = math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
+
 		####################################
 		# Loop over skimmed SigEvents tree #
 		####################################
@@ -487,36 +497,36 @@ class plotter :
 
 					# MM
 					if event.Flavor is 0 :
-						npp_mm += npp;
-						npf_mm += npf;
-						nfp_mm += nfp;
-						nff_mm += nff;
-						if event.TLCat is 0 : nt2_mm  += 1
-						if event.TLCat is 1 : nt10_mm += 1
-						if event.TLCat is 2 : nt01_mm += 1
-						if event.TLCat is 3 : nt0_mm  += 1
+						yields.npp_mm += npp;
+						yields.npf_mm += npf;
+						yields.nfp_mm += nfp;
+						yields.nff_mm += nff;
+						if event.TLCat is 0 : yields.nt2_mm  += 1
+						if event.TLCat is 1 : yields.nt10_mm += 1
+						if event.TLCat is 2 : yields.nt01_mm += 1
+						if event.TLCat is 3 : yields.nt0_mm  += 1
 
 					# EM
 					if event.Flavor is 1 :
-						npp_em += npp
-						npf_em += npf
-						nfp_em += nfp
-						nff_em += nff
-						if event.TLCat is 0 : nt2_em  += 1
-					 	if event.TLCat is 1 : nt10_em += 1
-					 	if event.TLCat is 2 : nt01_em += 1
-					 	if event.TLCat is 3 : nt0_em  += 1
+						yields.npp_em += npp
+						yields.npf_em += npf
+						yields.nfp_em += nfp
+						yields.nff_em += nff
+						if event.TLCat is 0 : yields.nt2_em  += 1
+						if event.TLCat is 1 : yields.nt10_em += 1
+						if event.TLCat is 2 : yields.nt01_em += 1
+						if event.TLCat is 3 : yields.nt0_em  += 1
 
 					# EE
 					if event.Flavor is 2 :
-						npp_ee += npp
-						npf_ee += npf
-						nfp_ee += nfp
-						nff_ee += nff
-						if event.TLCat is 0 : nt2_ee  += 1
-						if event.TLCat is 1 : nt10_ee += 1
-						if event.TLCat is 2 : nt01_ee += 1
-						if event.TLCat is 3 : nt0_ee  += 1
+						yields.npp_ee += npp
+						yields.npf_ee += npf
+						yields.nfp_ee += nfp
+						yields.nff_ee += nff
+						if event.TLCat is 0 : yields.nt2_ee  += 1
+						if event.TLCat is 1 : yields.nt10_ee += 1
+						if event.TLCat is 2 : yields.nt01_ee += 1
+						if event.TLCat is 3 : yields.nt0_ee  += 1
 
 #				# EM OS
 #				if event.Flavor is 4 :
@@ -559,24 +569,18 @@ class plotter :
 		print '======================'
 		print 'sum rares:', sum_rares
 
-		# PRINTOUT
-		print "-------------------------------------------------------------------------------------------------------------"
-		print "                 |               Mu/Mu               |                E/Mu               |                E/E                ||"
-		print "         YIELDS  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  ||"
-		print "-------------------------------------------------------------------------------------------------------------"
-		print "%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f" % ("Data", nt2_mm, nt10_mm, nt01_mm, nt0_mm, nt2_em, nt10_em, nt01_em, nt0_em, nt2_ee, nt10_ee, nt01_ee, nt0_ee)
+		#####################
+		# Fakes predictions #
+		#####################
 
+		FR.setNToyMCs(100)
+		FR.setAddESyst(0.5)
 
 		# numbers from SSDLPlotter.cc just to check
 		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
 		mupratio_data = 0.804292; mupratio_data_e = 0.001193;
 		elfratio_data = 0.069959; elfratio_data_e = 0.001419;
 		elpratio_data = 0.750609; elpratio_data_e = 0.001473;
-
-		FR.setNToyMCs(100)
-		FR.setAddESyst(0.5)
-
-		# numbers from SSDLPlotter.cc just to check
 		FR.setMFRatio(mufratio_data, mufratio_data_e) # set error to pure statistical of ratio
 		FR.setEFRatio(elfratio_data, elfratio_data_e)
 		FR.setMPRatio(mupratio_data, mupratio_data_e)
@@ -588,59 +592,39 @@ class plotter :
 #		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
 #		FR.setEPRatio(self.fpr.ElpRatio, self.fpr.ElpRatioE)
 
-		FR.setMMNtl(nt2_mm, nt10_mm, nt01_mm, nt0_mm)
-		FR.setEENtl(nt2_ee, nt10_ee, nt01_ee, nt0_ee)
-		FR.setEMNtl(nt2_em, nt10_em, nt01_em, nt0_em)
+		FR.setMMNtl(yields.nt2_mm, yields.nt10_mm, yields.nt01_mm, yields.nt0_mm)
+		FR.setEENtl(yields.nt2_ee, yields.nt10_ee, yields.nt01_ee, yields.nt0_ee)
+		FR.setEMNtl(yields.nt2_em, yields.nt10_em, yields.nt01_em, yields.nt0_em)
 
-		nF_mm = npf_mm + nfp_mm + nff_mm
-		nF_em = npf_em + nfp_em + nff_em
-		nF_ee = npf_ee + nfp_ee + nff_ee
-		nSF   = npf_mm + nfp_mm + npf_em + nfp_em + npf_ee + nfp_ee
-		nDF   = nff_mm + nff_em + nff_ee
-		nF    = nF_mm + nF_em + nF_ee
+		# store stat and syst errors
+		yields.npp_staterr_mm = FR.getMMNppEStat(); yields.npp_systerr_mm = self.FakeESyst*yields.npp_mm;
+		yields.npp_staterr_em = FR.getEMNppEStat(); yields.npp_systerr_em = self.FakeESyst*yields.npp_em;
+		yields.npp_staterr_ee = FR.getEENppEStat(); yields.npp_systerr_ee = self.FakeESyst*yields.npp_ee;
+ 
+		yields.npf_staterr_mm = FR.getMMNpfEStat(); yields.npf_systerr_mm = self.FakeESyst*yields.npf_mm;
+		yields.npf_staterr_em = FR.getEMNpfEStat(); yields.npf_systerr_em = self.FakeESyst*yields.npf_em;
+		yields.npf_staterr_ee = FR.getEENpfEStat(); yields.npf_systerr_ee = self.FakeESyst*yields.npf_ee; 
 
-		print "  Fake Predictions:"
-		print "------------------------------------------------------------------------------------------"
-		print "                 |          Mu/Mu        |         El/El         |          El/Mu        |"
-		print "------------------------------------------------------------------------------------------"
-		print " Npp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			npp_mm, FR.getMMNppEStat(), self.FakeESyst*npp_mm,
-			npp_ee, FR.getEENppEStat(), self.FakeESyst*npp_ee, 
-			npp_em, FR.getEMNppEStat(), self.FakeESyst*npp_em)
-		print " Npf             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			npf_mm, FR.getMMNpfEStat(), self.FakeESyst*npf_mm,
-			npf_ee, FR.getEENpfEStat(), self.FakeESyst*npf_ee, 
-			npf_em, FR.getEMNpfEStat(), self.FakeESyst*npf_em)
-		print " Nfp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			nfp_mm, FR.getMMNfpEStat(), self.FakeESyst*nfp_mm,
-			nfp_ee, FR.getEENfpEStat(), self.FakeESyst*nfp_ee, 
-			nfp_em, FR.getEMNfpEStat(), self.FakeESyst*nfp_em)
-		print " Nff             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			nff_mm, FR.getMMNffEStat(), self.FakeESyst*nff_mm,
-			nff_ee, FR.getEENffEStat(), self.FakeESyst*nff_ee, 
-			nff_em, FR.getEMNffEStat(), self.FakeESyst*nff_em)
-		print "------------------------------------------------------------------------------------------"
-		print " Total Fakes     |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			nF_mm, FR.getMMTotEStat(), self.FakeESyst*nF_mm,
-			nF_ee, FR.getEETotEStat(), self.FakeESyst*nF_ee, 
-			nF_em, FR.getEMTotEStat(), self.FakeESyst*nF_em)
-		print "------------------------------------------------------------------------------------------"
-		print " (Value +/- E_stat +/- E_syst) "
-		print "//////////////////////////////////////////////////////////////////////////////////////////"
+		yields.nfp_staterr_mm = FR.getMMNfpEStat(); yields.nfp_systerr_mm = self.FakeESyst*yields.nfp_mm;
+		yields.nfp_staterr_em = FR.getEMNfpEStat(); yields.nfp_systerr_em = self.FakeESyst*yields.nfp_em;
+		yields.nfp_staterr_ee = FR.getEENfpEStat(); yields.nfp_systerr_ee = self.FakeESyst*yields.nfp_ee; 
 
+		yields.nff_staterr_mm = FR.getMMNffEStat(); yields.nff_systerr_mm = self.FakeESyst*yields.nff_mm;
+		yields.nff_staterr_em = FR.getEMNffEStat(); yields.nff_systerr_em = self.FakeESyst*yields.nff_em;
+		yields.nff_staterr_ee = FR.getEENffEStat(); yields.nff_systerr_ee = self.FakeESyst*yields.nff_ee;
 
-		print "----------------------------------------------------------------------------------------------"
-		print "       SUMMARY   ||         Mu/Mu         ||         E/Mu          ||          E/E          ||"
-		print "=============================================================================================="
-		print "%16s || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. fakes",
-			nF_mm, FR.getMMTotEStat(), self.FakeESyst*nF_mm,
-			nF_em, FR.getEMTotEStat(), self.FakeESyst*nF_em,
-			nF_ee, FR.getEETotEStat(), self.FakeESyst*nF_ee)
-		print "%16s ||                       || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. chmisid",
-			nt2_em_chmid, nt2_em_chmid_e1, nt2_em_chmid_e2, nt2_ee_chmid, nt2_ee_chmid_e1, nt2_ee_chmid_e2)
+		# store fake predictions
+		yields.set_fakePredictions()
+		yields.fake_err    = math.sqrt(FR.getTotEStat()  *FR.getTotEStat()   + self.FakeESyst2*yields.fake   *yields.fake   )
+		yields.fake_err_mm = math.sqrt(FR.getMMTotEStat()*FR.getMMTotEStat() + self.FakeESyst2*yields.fake_mm*yields.fake_mm)
+		yields.fake_err_em = math.sqrt(FR.getEMTotEStat()*FR.getEMTotEStat() + self.FakeESyst2*yields.fake_em*yields.fake_em)
+		yields.fake_err_ee = math.sqrt(FR.getEETotEStat()*FR.getEETotEStat() + self.FakeESyst2*yields.fake_ee*yields.fake_ee)
 
-		print "----------------------------------------------------------------------------------------------"
-		print "----------------------------------------------------------------------------------------------"
+		##########################################
+		# print all observations and predictions #
+		##########################################
+
+		yields.printout()
 
 
 	def make_DiffPredictions(self, selections) :
