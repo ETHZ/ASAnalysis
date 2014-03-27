@@ -5,11 +5,63 @@ class prediction :
 
 	def __init__(self) :
 
+		# same-sign tight-tight, tight-loose, loose-tight and loose-loose data yields
+		self.nt2_mm  = 0.
+		self.nt2_em  = 0.
+		self.nt2_ee  = 0.
+
+		self.nt10_mm = 0.
+		self.nt10_em = 0.
+		self.nt10_ee = 0.
+
+		self.nt01_mm = 0.
+		self.nt01_em = 0.
+		self.nt01_ee = 0.
+
+		self.nt0_mm  = 0.
+		self.nt0_em  = 0.
+		self.nt0_ee  = 0.
+
+		# opposite-sign data yields (tight-tight)
+		self.nt2_ee_BB_os = 0.
+		self.nt2_em_BB_os = 0.
+		self.nt2_ee_EE_os = 0.
+		self.nt2_em_EE_os = 0.
+		self.nt2_ee_EB_os = 0.
+
+		# FR Predictions from event-by-event weights (pre stored)
+		self.npp_mm = 0.
+		self.npp_em = 0.
+		self.npp_ee = 0.
+
+		self.npf_mm = 0.
+		self.npf_em = 0.
+		self.npf_ee = 0.
+
+		self.nfp_mm = 0.
+		self.nfp_em = 0.
+		self.nfp_ee = 0.
+
+		self.nff_mm = 0.
+		self.nff_em = 0.
+		self.nff_ee = 0.
+
+		# all rares, ttW and ttZ yields (tight-tight)
+		rares_mm = {}
+		rares_em = {}
+		rares_ee = {}
+
+		rares_mm_npass = {}
+		rares_em_npass = {}
+		rares_ee_npass = {}
+
+		# observations
 		self.obs    = 0
 		self.obs_mm = 0
 		self.obs_ee = 0
 		self.obs_em = 0
 
+		# predictions
 		self.ttw             = 0.
 		self.ttw_mm          = 0.
 		self.ttw_ee          = 0.
@@ -47,7 +99,6 @@ class prediction :
 		self.ttz_Nmc_mm      = 0
 		self.ttz_Nmc_ee      = 0
 		self.ttz_Nmc_em      = 0
-
 
 		self.tth             = 0.
 		self.tth_mm          = 0.
