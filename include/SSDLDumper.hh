@@ -1085,6 +1085,8 @@ public:
 	float       fSETree_BetaStar4;
 	float       fSETree_BetaStar5;
 	float       fSETree_M3;
+	float       fSETree_M3_v2;
+	float       fSETree_M3_v3;
 	int			fSETree_NVrtx;
 	int			fSETree_NTrue;
 //	float		fSETree_Ml1l3; // invariant mass of 3rd lepton pair

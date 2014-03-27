@@ -2086,7 +2086,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		TLorentzVector lep1, lep2;
 		lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
 		lep2.SetPtEtaPhiM(MuPt[ind2], MuEta[ind2], MuPhi[ind2], gMMU);
-		fSETree_M3      = getM3new(lep1, lep2);
+		fSETree_M3      = getM3();
+		fSETree_M3_v2   = getM3new();
+		fSETree_M3_v3   = getM3new(lep1, lep2);
 		if( isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightMuon(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightMuon(ind2)) fSETree_TLCat = 2;
@@ -2193,7 +2195,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		TLorentzVector lep1, lep2;
 		lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
 		lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
-		fSETree_M3      = getM3new(lep1, lep2);
+		fSETree_M3      = getM3();
+		fSETree_M3_v2   = getM3new();
+		fSETree_M3_v3   = getM3new(lep1, lep2);
 		if( isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightMuon(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightMuon(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2289,7 +2293,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		TLorentzVector lep1, lep2;
 		lep1.SetPtEtaPhiM(ElPt[ind1], ElEta[ind1], ElPhi[ind1], gMEL);
 		lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
-		fSETree_M3      = getM3new(lep1, lep2);
+		fSETree_M3      = getM3();
+		fSETree_M3_v2   = getM3new();
+		fSETree_M3_v3   = getM3new(lep1, lep2);
 		if( isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 0;
 		if( isTightElectron(ind1)&&!isTightElectron(ind2)) fSETree_TLCat = 1;
 		if(!isTightElectron(ind1)&& isTightElectron(ind2)) fSETree_TLCat = 2;
@@ -2383,7 +2389,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 //				TLorentzVector lep1, lep2;
 //				lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
 //				lep2.SetPtEtaPhiM(MuPt[ind2], MuEta[ind2], MuPhi[ind2], gMMU);
-//				fSETree_M3      = getM3new(lep1, lep2);
+//				fSETree_M3      = getM3();
+//				fSETree_M3_v2   = getM3new();
+//				fSETree_M3_v3   = getM3new(lep1, lep2);
 //				fSETree_BetaStar5 = getBetaStar(5);
 ////				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 ////				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
@@ -2435,7 +2443,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				TLorentzVector lep1, lep2;
 				lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
 				lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
-				fSETree_M3      = getM3new(lep1, lep2);
+				fSETree_M3      = getM3();
+				fSETree_M3_v2   = getM3new();
+				fSETree_M3_v3   = getM3new(lep1, lep2);
 				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
 				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
@@ -2486,7 +2496,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				TLorentzVector lep1, lep2;
 				lep1.SetPtEtaPhiM(ElPt[ind1], ElEta[ind1], ElPhi[ind1], gMEL);
 				lep2.SetPtEtaPhiM(ElPt[ind2], ElEta[ind2], ElPhi[ind2], gMEL);
-				fSETree_M3      = getM3new(lep1, lep2);
+				fSETree_M3      = getM3();
+				fSETree_M3_v2   = getM3new();
+				fSETree_M3_v3   = getM3new(lep1, lep2);
 				if( isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel/Barrel
 				if( isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Barrel/Endcap
 				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 2; // TLCat == 2 if Endcap/Barrel
@@ -3434,6 +3446,8 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("NTrue",       &fSETree_NTrue   , "NTrue/I");
 	fSigEv_Tree->Branch("GenWeight",   &fSETree_GenWeight, "GenWeight/F");
 	fSigEv_Tree->Branch("M3",          &fSETree_M3      , "M3/F");
+	fSigEv_Tree->Branch("M3v2",        &fSETree_M3_v2   , "M3v2/F");
+	fSigEv_Tree->Branch("M3v3",        &fSETree_M3_v3   , "M3v3/F");
 	
 }
 void SSDLDumper::resetSigEventTree(){
@@ -3491,6 +3505,8 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_NTrue    = -1.;
 	fSETree_GenWeight = -999.;
 	fSETree_M3       = -999.;
+	fSETree_M3_v2    = -999.;
+	fSETree_M3_v3    = -999.;
 }
 void SSDLDumper::writeSigEvTree(TFile *pFile){
 	pFile->cd();
