@@ -1,5 +1,6 @@
 #! /usr/bin/python
 import math
+import pickle
 
 
 def ratioWithBinomErrors(numerator, denominator) :
@@ -40,3 +41,13 @@ def ratioWithPoissErrors(numerator, denominator) :
 ## 	};
 ## 	delete eff;
 ## }
+
+
+def save_obj(obj, name):
+	with open('obj/' + name + '.pkl', 'w') as file:
+		pickle.dump(obj, file, pickle.HIGHEST_PROTOCOL)
+
+
+def load_obj(name):
+	with open('obj/' + name + '.pkl', 'r') as file:
+		return pickle.load(file)
