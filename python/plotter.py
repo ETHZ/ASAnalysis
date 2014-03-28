@@ -461,14 +461,62 @@ class plotter :
 		yields.cmid_err_ee = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
 		yields.cmid_err_em = math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
 
+		################
+		# Results tree #
+		################
+
+#		results_file = ROOT.TFile(self.path + '/SSDLResults.root', 'RECREATE')
+#		results_tree = ROOT.TTree('Results', 'ResultsTree')
+#
+#		# create branches
+#		results_tree.Branch("Weight",      Weight     , "Weight/F"   );
+#		results_tree.Branch("SystFlag",    SystFlag   , "SystFlag/I" );
+#		results_tree.Branch("SName",       SName);
+#		results_tree.Branch("SType",       SType      , "SType/I"    );
+#		results_tree.Branch("Run",         Run        , "Run/I"      );
+#		results_tree.Branch("LS",          LS         , "LS/I"       );
+#		results_tree.Branch("Event",       Event      , "Event/I"    );
+#		results_tree.Branch("Flavor",      Flavor     , "Flavor/I"   );
+#		results_tree.Branch("Charge",      Charge     , "Charge/I"   );
+#		results_tree.Branch("TLCat",       TLCat      , "TLCat/I"    );
+#		results_tree.Branch("PassZVeto",   ZVeto      , "PassZVeto/I");
+#		results_tree.Branch("HT",          HT         , "HT/F"       );
+#		results_tree.Branch("MET",         MET        , "MET/F"      );
+#		results_tree.Branch("NJ",          NJ         , "NJ/I"       );
+#		results_tree.Branch("NbJ",         NbJ        , "NbJ/I"      );
+#		results_tree.Branch("NbJmed",      NbJmed     , "NbJmed/I"   );
+#		results_tree.Branch("Mll",         Mll        , "Mll/F"      );
+#		results_tree.Branch("pT1",         pT1        , "pT1/F"      );
+#		results_tree.Branch("pT2",         pT2        , "pT2/F"      );
+#		results_tree.Branch("PFIso1",      PFIso1     , "PFIso1/F"   );
+#		results_tree.Branch("PFIso2",      PFIso2     , "PFIso2/F"   );
+#		results_tree.Branch("D01",         D01        , "D01/F"      );
+#		results_tree.Branch("D02",         D02        , "D02/F"      );
+#		results_tree.Branch("Rho",         Rho        , "Rho/F"      );
+#		results_tree.Branch("MTLep1",      MTLep1     , "MTLep1/F"   );
+#		results_tree.Branch("MTLep2",      MTLep2     , "MTLep2/F"   );
+#		results_tree.Branch("dRbJl1",      dRbJl1     , "dRbJl1/F"   );
+#		results_tree.Branch("dRbJl2",      dRbJl2     , "dRbJl2/F"   );
+#		results_tree.Branch("BetaStar1",   BetaStar1  , "BetaStar1/F");
+#		results_tree.Branch("BetaStar2",   BetaStar2  , "BetaStar2/F");
+#		results_tree.Branch("BetaStar3",   BetaStar3  , "BetaStar3/F");
+#		results_tree.Branch("BetaStar4",   BetaStar4  , "BetaStar4/F");
+#		results_tree.Branch("BetaStar5",   BetaStar5  , "BetaStar5/F");
+#		results_tree.Branch("NVrtx",       NVrtx      , "NVrtx/I"    );
+#		results_tree.Branch("M3",          M3         , "M3/F"       );
+
 		####################################
 		# Loop over skimmed SigEvents tree #
 		####################################
 
-		print '[status] looping over skimmed tree'
 		last_sample = ''
+		nevents = {}
+		for s in self.samples : nevents[s] = 0
+
+		print '[status] looping over skimmed tree'
 #		for i, event in enumerate(self.sigtree) :
 		for i, event in enumerate(self.skimtree) :
+			nevents[str(event.SName)] += 1
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
@@ -567,6 +615,11 @@ class plotter :
 					yields.rares_ee_npass[str(event.SName)] += 1
 
 		# END LOOP OVER TREE
+
+		# print number of events per sample in skimmed SigEvents tree
+		for name, n in nevents.iteritems() :
+			print '%12s: %8d' % (name, n)
+#		for name, value in rares_mm.iteritems() :
 
 #		sum_rares = 0.
 #		for name, value in rares_mm.iteritems() :
