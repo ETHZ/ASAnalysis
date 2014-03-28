@@ -9,6 +9,7 @@ import helper
 import ratios
 import prediction
 import result
+import time
 
 
 class plotter :
@@ -111,7 +112,16 @@ class plotter :
 #		c1.cd(4)
 #		self.h2_ElpRatio.Draw('colztext')
 #
-		self.make_IntPredictions(presel)
+#		res_syst = {}
+#		res_syst['Normal'] = self.make_IntPredictions(presel)
+#
+#		# saving results to file (just for development
+#		helper.save_obj(res_syst, 'bla')
+
+		res_safe = helper.load_obj('bla')
+		self.print_results(res_safe['Normal'])
+
+		self.make_datacard(res_safe, 'em')
 #
 #		raw_input('ok? ')
 
@@ -747,6 +757,8 @@ class plotter :
 #		yields.printout()
 		self.print_results(res)
 
+		return res
+
 
 	def print_results(self, res) :
 		# PRINTOUT
@@ -825,6 +837,161 @@ class plotter :
 #
 		print "----------------------------------------------------------------------------------------------"
 		print "----------------------------------------------------------------------------------------------"
+
+
+	def make_datacard(self, results, chan) :
+
+		ltrig_syst = 1.05
+
+		timestamp = time.asctime()
+		print '#========================================================================================='
+		print '# Systematics table for ttW analysis, same-sign channel, subchannels'
+		print '# Generated on: %s' % (timestamp)
+		print '# Copy between the dashed lines for datacard'
+		print '#-----------------------------------------------------------------------------------------'
+		print 'imax 1'
+		print 'jmax 5'
+		print 'kmax *'
+		print ''
+		print 'bin\t\t%s' % (chan)
+		##	if (gFullDataBlind)
+		##		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d", 999, 999, 999, 999, 999, 999) << endl;
+		##	else
+		print 'observation\t%d' % (results['Normal'][chan].obs)
+		print '\n'
+		print 'bin\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s' % (chan, chan, chan, chan, chan, chan)
+		print 'process\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare'
+		print 'process\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5'
+		print 'rate\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f' % (
+			results['Normal'][chan].ttw,
+			results['Normal'][chan].ttz,
+			results['Normal'][chan].fake,
+			results['Normal'][chan].cmid,
+			results['Normal'][chan].wz,
+			results['Normal'][chan].rare)
+		print '\n'
+		print '#syst'
+#		print 'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][chan].ttz_err  / results['Normal'][chan].ttz )
+		print 'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-' % (1. + results['Normal'][chan].fake_err / results['Normal'][chan].fake)
+		if chan != 'mm' :
+			print 'bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-' % (1. + results['Normal'][chan].cmid_err / results['Normal'][chan].cmid)
+#		print 'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][chan].wz_err   / results['Normal'][chan].wz  )
+		print 'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f' % (1. + results['Normal'][chan].rare_err / results['Normal'][chan].rare)
+		if 'LepUp' in results and 'LepDown' in results :
+			print 'lept     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+				results['LepDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['LepUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
+				results['LepDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['LepUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
+				results['LepDown'][chan].wz   / results['Normal'][chan].wz  ,
+				results['LepUp'  ][chan].wz   / results['Normal'][chan].wz  ,
+				results['LepDown'][chan].rare / results['Normal'][chan].rare,
+				results['LepUp'  ][chan].rare / results['Normal'][chan].rare)
+		if 'MuUp' in results and 'MuDown' in results :
+			print 'muon     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+				results['MuDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['MuUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
+				results['MuDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['MuUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
+				results['MuDown'][chan].wz   / results['Normal'][chan].wz  ,
+				results['MuUp'  ][chan].wz   / results['Normal'][chan].wz  ,
+				results['MuDown'][chan].rare / results['Normal'][chan].rare,
+				results['MuUp'  ][chan].rare / results['Normal'][chan].rare)
+		if 'ElUp' in results and 'ElDown' in results :
+			print 'elec     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+				results['ElDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['ElUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
+				results['ElDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['ElUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
+				results['ElDown'][chan].wz   / results['Normal'][chan].wz  ,
+				results['ElUp'  ][chan].wz   / results['Normal'][chan].wz  ,
+				results['ElDown'][chan].rare / results['Normal'][chan].rare,
+				results['ElUp'  ][chan].rare / results['Normal'][chan].rare)
+		print 'leptrig  lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f' % (
+			ltrig_syst,
+			ltrig_syst,
+			ltrig_syst,
+			ltrig_syst)
+		if 'BUp' in results and 'BDown' in results :
+			print 'btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+				results['BDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['BUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['BDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['BUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['BDown'][chan].wz   / results['Normal'][chan].wz,
+				results['BUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['BDown'][chan].rare / results['Normal'][chan].rare,
+				results['BUp  '][chan].rare / results['Normal'][chan].rare)
+		if 'JetUp' in results and 'JetDown' in results :
+			print 'jes      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+				results['JetDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetDown'][chan].wz   / results['Normal'][chan].wz,
+				results['JetUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['JetDown'][chan].rare / results['Normal'][chan].rare,
+				results['JetUp  '][chan].rare / results['Normal'][chan].rare)
+		##//	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
+		##//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
+		##//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+		if 'JetSmearUp' in results and 'JetSmearDown' in results :
+			print 'jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+				results['JetSmearDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetSmearUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetSmearDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetSmearUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetSmearDown'][chan].wz   / results['Normal'][chan].wz,
+				results['JetSmearUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['JetSmearDown'][chan].rare / results['Normal'][chan].rare,
+				results['JetSmearUp  '][chan].rare / results['Normal'][chan].rare)
+		if 'PileupUp' in results and 'PileupDown' in results :
+			print 'pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+				results['PileupDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['PileupUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['PileupDown'][chan].ttwz / results['Normal'][chan].ttwz,
+				results['PileupUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['PileupDown'][chan].wz   / results['Normal'][chan].wz,
+				results['PileupUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['PileupDown'][chan].rare / results['Normal'][chan].rare,
+				results['PileupUp  '][chan].rare / results['Normal'][chan].rare)
+		##//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
+		print 'scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+			scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn)
+		print 'tmass    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
+			tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn)
+		print 'gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (gen_syst)
+		print 'pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (pdf_syst)
+		##//	fOUTSTREAM << Form("NLO      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-",
+		##//						gen_syst_plpl, gen_syst_plpl, gen_syst_plpl,
+		##//						gen_syst_mimi, gen_syst_mimi, gen_syst_mimi
+		##//						) << endl;
 
 
 	def make_DiffPredictions(self, selections) :
