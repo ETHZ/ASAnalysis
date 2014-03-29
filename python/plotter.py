@@ -26,7 +26,7 @@ class plotter :
 
 		self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'READ')
 		if self.skimfile == None :
-			print 'creating skimmed tree file..'
+			print '[status] creating skimmed tree file..'
 			self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'RECREATE')
 			self.skimfile.cd()
 			self.skimtree = self.sigtree.CopyTree('Flavor < 3 && (SType < 3 || TLCat == 0)') # only same-sign, if MC only tight-tight
@@ -66,6 +66,27 @@ class plotter :
 		self.TTWESyst2   = self.TTWESyst * self.TTWESyst
 		self.ChMisESyst  = 0.3
 		self.ChMisESyst2 = self.ChMisESyst * self.ChMisESyst
+
+		# systematics
+		self.systematics = {}
+		self.systematics['Normal']       = 0
+		self.systematics['JetUp']        = 1
+		self.systematics['JetDown']      = 2
+		self.systematics['JetSmear']     = 3
+		self.systematics['BUp']          = 4
+		self.systematics['BDown']        = 5
+		self.systematics['LepUp']        = 6
+		self.systematics['LepDown']      = 7
+#		self.systematics['METUp']        = 8
+#		self.systematics['METDown']      = 9
+		self.systematics['PileupUp']     = 10
+		self.systematics['PileupDown']   = 11
+		self.systematics['JetSmearUp']   = 12
+		self.systematics['JetSmearDown'] = 13
+		self.systematics['MuUp']         = 14
+		self.systematics['MuDown']       = 15
+		self.systematics['ElUp']         = 16
+		self.systematics['ElDown']       = 17
 
 
 	def do_analysis(self, cardfile) :
@@ -114,14 +135,28 @@ class plotter :
 #
 #		res_syst = {}
 #		res_syst['Normal'] = self.make_IntPredictions(presel)
+
+		sels = {}
+#		systres = {}
+#		for syst in self.systematics :
+#			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
+#			systres[syst] = self.make_IntPredictions(sels[syst])
+#
+#		helper.save_obj(systres, 'systs')
+
+		systres = helper.load_obj('systs')
+		for syst in systres :
+			for chan in systres[syst] :
+				systres[syst][chan].set_ttwzPredictions()
+		self.make_datacard(systres, 'em')
 #
 #		# saving results to file (just for development
 #		helper.save_obj(res_syst, 'bla')
 
-		res_safe = helper.load_obj('bla')
-		self.print_results(res_safe['Normal'])
-
-		self.make_datacard(res_safe, 'em')
+#		res_safe = helper.load_obj('bla')
+#		self.print_results(res_safe['Normal'])
+#
+#		self.make_datacard(res_safe, 'em')
 #
 #		raw_input('ok? ')
 
@@ -646,6 +681,13 @@ class plotter :
 #		print '======================'
 #		print 'sum rares:', sum_rares
 
+		################
+		# Observations #
+		################
+
+		for chan in res :
+			res[chan].set_observations()
+
 		#####################
 		# Fakes predictions #
 		#####################
@@ -715,15 +757,17 @@ class plotter :
 				scale = self.lumi / self.samples[s].getLumi()
 				staterr = scale * self.samples[s].getError(rares_npass[s][chan])
 
-				if s is 'WZTo3LNu' :
+				print 'sample', s
+
+				if s == 'WZTo3LNu' :
 					wz += rares[s][chan]
 					wz_staterr2 += staterr * staterr
 
-				elif s is 'TTbarW' :
+				elif s == 'TTbarW' :
 					ttw += rares[s][chan]
 					ttw_staterr2 += staterr * staterr
 
-				elif s is 'TTbarZ' :
+				elif s == 'TTbarZ' :
 					ttz += rares[s][chan]
 					ttz_staterr2 += staterr * staterr
 
@@ -841,7 +885,13 @@ class plotter :
 
 	def make_datacard(self, results, chan) :
 
-		ltrig_syst = 1.05
+		scale_syst_up = 1.027
+		scale_syst_dn = 0.980
+		tmass_syst_up = 1.019
+		tmass_syst_dn = 0.983
+		ltrig_syst    = 1.050
+		pdf_syst      = 1.015
+		gen_syst      = 1.050
 
 		timestamp = time.asctime()
 		print '#========================================================================================='
@@ -871,11 +921,11 @@ class plotter :
 			results['Normal'][chan].rare)
 		print '\n'
 		print '#syst'
-#		print 'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][chan].ttz_err  / results['Normal'][chan].ttz )
+		print 'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][chan].ttz_err  / results['Normal'][chan].ttz )
 		print 'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-' % (1. + results['Normal'][chan].fake_err / results['Normal'][chan].fake)
 		if chan != 'mm' :
 			print 'bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-' % (1. + results['Normal'][chan].cmid_err / results['Normal'][chan].cmid)
-#		print 'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][chan].wz_err   / results['Normal'][chan].wz  )
+		print 'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][chan].wz_err   / results['Normal'][chan].wz  )
 		print 'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f' % (1. + results['Normal'][chan].rare_err / results['Normal'][chan].rare)
 		if 'LepUp' in results and 'LepDown' in results :
 			print 'lept     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
@@ -887,6 +937,8 @@ class plotter :
 				results['LepUp'  ][chan].wz   / results['Normal'][chan].wz  ,
 				results['LepDown'][chan].rare / results['Normal'][chan].rare,
 				results['LepUp'  ][chan].rare / results['Normal'][chan].rare)
+		else :
+			print '[WARNING] LepUp/Down systematic not found!'
 		if 'MuUp' in results and 'MuDown' in results :
 			print 'muon     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['MuDown'][chan].ttwz / results['Normal'][chan].ttwz,
@@ -897,6 +949,8 @@ class plotter :
 				results['MuUp'  ][chan].wz   / results['Normal'][chan].wz  ,
 				results['MuDown'][chan].rare / results['Normal'][chan].rare,
 				results['MuUp'  ][chan].rare / results['Normal'][chan].rare)
+		else :
+			print '[WARNING] MuUp/Down systematic not found!'
 		if 'ElUp' in results and 'ElDown' in results :
 			print 'elec     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['ElDown'][chan].ttwz / results['Normal'][chan].ttwz,
@@ -907,6 +961,8 @@ class plotter :
 				results['ElUp'  ][chan].wz   / results['Normal'][chan].wz  ,
 				results['ElDown'][chan].rare / results['Normal'][chan].rare,
 				results['ElUp'  ][chan].rare / results['Normal'][chan].rare)
+		else :
+			print '[WARNING] ElUp/Down systematic not found!'
 		print 'leptrig  lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f' % (
 			ltrig_syst,
 			ltrig_syst,
@@ -915,23 +971,27 @@ class plotter :
 		if 'BUp' in results and 'BDown' in results :
 			print 'btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['BDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['BUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['BUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['BDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['BUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['BUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['BDown'][chan].wz   / results['Normal'][chan].wz,
-				results['BUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['BUp'  ][chan].wz   / results['Normal'][chan].wz,
 				results['BDown'][chan].rare / results['Normal'][chan].rare,
-				results['BUp  '][chan].rare / results['Normal'][chan].rare)
+				results['BUp'  ][chan].rare / results['Normal'][chan].rare)
+		else :
+			print '[WARNING] BUp/Down systematic not found!'
 		if 'JetUp' in results and 'JetDown' in results :
 			print 'jes      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['JetDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['JetDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['JetDown'][chan].wz   / results['Normal'][chan].wz,
-				results['JetUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['JetUp'  ][chan].wz   / results['Normal'][chan].wz,
 				results['JetDown'][chan].rare / results['Normal'][chan].rare,
-				results['JetUp  '][chan].rare / results['Normal'][chan].rare)
+				results['JetUp'  ][chan].rare / results['Normal'][chan].rare)
+		else :
+			print '[WARNING] JetUp/Down systematic not found!'
 		##//	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
 		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
 		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
@@ -960,23 +1020,27 @@ class plotter :
 		if 'JetSmearUp' in results and 'JetSmearDown' in results :
 			print 'jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['JetSmearDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetSmearUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetSmearUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['JetSmearDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetSmearUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['JetSmearUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['JetSmearDown'][chan].wz   / results['Normal'][chan].wz,
-				results['JetSmearUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['JetSmearUp'  ][chan].wz   / results['Normal'][chan].wz,
 				results['JetSmearDown'][chan].rare / results['Normal'][chan].rare,
-				results['JetSmearUp  '][chan].rare / results['Normal'][chan].rare)
+				results['JetSmearUp'  ][chan].rare / results['Normal'][chan].rare)
+		else :
+			print '[WARNING] JetSmearUp/Down systematic not found!'
 		if 'PileupUp' in results and 'PileupDown' in results :
 			print 'pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['PileupDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['PileupUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['PileupUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['PileupDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['PileupUp  '][chan].ttwz / results['Normal'][chan].ttwz,
+				results['PileupUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
 				results['PileupDown'][chan].wz   / results['Normal'][chan].wz,
-				results['PileupUp  '][chan].wz   / results['Normal'][chan].wz,
+				results['PileupUp'  ][chan].wz   / results['Normal'][chan].wz,
 				results['PileupDown'][chan].rare / results['Normal'][chan].rare,
-				results['PileupUp  '][chan].rare / results['Normal'][chan].rare)
+				results['PileupUp'  ][chan].rare / results['Normal'][chan].rare)
+		else :
+			print '[WARNING] PileupUp/Down systematic not found!'
 		##//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
@@ -988,10 +1052,6 @@ class plotter :
 			tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn)
 		print 'gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (gen_syst)
 		print 'pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (pdf_syst)
-		##//	fOUTSTREAM << Form("NLO      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-",
-		##//						gen_syst_plpl, gen_syst_plpl, gen_syst_plpl,
-		##//						gen_syst_mimi, gen_syst_mimi, gen_syst_mimi
-		##//						) << endl;
 
 
 	def make_DiffPredictions(self, selections) :
