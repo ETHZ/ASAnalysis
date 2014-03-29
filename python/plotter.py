@@ -143,22 +143,32 @@ class plotter :
 #
 #		return
 
-		sels = {}
-		systres = {}
-		for syst in self.systematics :
-			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
-			systres[syst] = self.make_IntPredictions(sels[syst])
-
-		helper.save_obj(systres, 'systs')
-
-		return
+#		sels = {}
+#		systres = {}
+#		for syst in self.systematics :
+#			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
+#			systres[syst] = self.make_IntPredictions(sels[syst])
+#
+#		helper.save_obj(systres, 'systs')
+#
+#		return
 
 		systres = helper.load_obj('systs')
-		for syst in systres :
-			for chan in systres[syst] :
-				systres[syst][chan].set_ttwzPredictions()
-				systres[syst][chan].chan_str = chan
-		self.make_datacard(systres, 'em')
+#		for key1 in systres :
+#			print key1
+#			for key2 in systres[key1] :
+#				print key2
+#				for key3 in systres[key1][key2] :
+#					print key3
+		self.make_datacard(systres, 'mm', '++')
+
+
+
+#		for syst in systres :
+#			for chan in systres[syst] :
+#				systres[syst][chan].set_ttwzPredictions()
+#				systres[syst][chan].chan_str = chan
+#		self.make_datacard(systres, 'em')
 #
 #		# saving results to file (just for development
 #		helper.save_obj(res_syst, 'bla')
@@ -917,7 +927,7 @@ class plotter :
 		print "----------------------------------------------------------------------------------------------"
 
 
-	def make_datacard(self, results, chan) :
+	def make_datacard(self, results, chan, charge) :
 
 		scale_syst_up = 1.027
 		scale_syst_dn = 0.980
@@ -937,70 +947,70 @@ class plotter :
 		print 'jmax 5'
 		print 'kmax *'
 		print ''
-		print 'bin\t\t%s' % (results['Normal'][chan].chan_str)
+		print 'bin\t\t%s' % (results['Normal'][charge][chan].chan_str)
 		##	if (gFullDataBlind)
 		##		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d", 999, 999, 999, 999, 999, 999) << endl;
 		##	else
-		print 'observation\t%d' % (results['Normal'][chan].obs)
+		print 'observation\t%d' % (results['Normal'][charge][chan].obs)
 		print '\n'
 		print 'bin\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s' % (
-			results['Normal'][chan].chan_str,
-			results['Normal'][chan].chan_str,
-			results['Normal'][chan].chan_str,
-			results['Normal'][chan].chan_str,
-			results['Normal'][chan].chan_str,
-			results['Normal'][chan].chan_str)
+			results['Normal'][charge][chan].chan_str,
+			results['Normal'][charge][chan].chan_str,
+			results['Normal'][charge][chan].chan_str,
+			results['Normal'][charge][chan].chan_str,
+			results['Normal'][charge][chan].chan_str,
+			results['Normal'][charge][chan].chan_str)
 		print 'process\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare'
 		print 'process\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5'
 		print 'rate\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f' % (
-			results['Normal'][chan].ttw,
-			results['Normal'][chan].ttz,
-			results['Normal'][chan].fake,
-			results['Normal'][chan].cmid,
-			results['Normal'][chan].wz,
-			results['Normal'][chan].rare)
+			results['Normal'][charge][chan].ttw,
+			results['Normal'][charge][chan].ttz,
+			results['Normal'][charge][chan].fake,
+			results['Normal'][charge][chan].cmid,
+			results['Normal'][charge][chan].wz,
+			results['Normal'][charge][chan].rare)
 		print '\n'
 		print '#syst'
-		print 'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][chan].ttz_err  / results['Normal'][chan].ttz )
-		print 'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-' % (1. + results['Normal'][chan].fake_err / results['Normal'][chan].fake)
+		print 'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz )
+		print 'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake)
 		if chan != 'mm' :
-			print 'bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-' % (1. + results['Normal'][chan].cmid_err / results['Normal'][chan].cmid)
-		print 'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][chan].wz_err   / results['Normal'][chan].wz  )
-		print 'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f' % (1. + results['Normal'][chan].rare_err / results['Normal'][chan].rare)
+			print 'bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-' % (1. + results['Normal'][charge][chan].cmid_err / results['Normal'][charge][chan].cmid)
+		print 'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][charge][chan].wz_err   / results['Normal'][charge][chan].wz  )
+		print 'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f' % (1. + results['Normal'][charge][chan].rare_err / results['Normal'][charge][chan].rare)
 		if 'LepUp' in results and 'LepDown' in results :
 			print 'lept     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['LepDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['LepUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['LepDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['LepUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['LepDown'][chan].wz   / results['Normal'][chan].wz  ,
-				results['LepUp'  ][chan].wz   / results['Normal'][chan].wz  ,
-				results['LepDown'][chan].rare / results['Normal'][chan].rare,
-				results['LepUp'  ][chan].rare / results['Normal'][chan].rare)
+				results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['LepDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+				results['LepUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+				results['LepDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+				results['LepUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] LepUp/Down systematic not found!'
 		if 'MuUp' in results and 'MuDown' in results :
 			print 'muon     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['MuDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['MuUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['MuDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['MuUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['MuDown'][chan].wz   / results['Normal'][chan].wz  ,
-				results['MuUp'  ][chan].wz   / results['Normal'][chan].wz  ,
-				results['MuDown'][chan].rare / results['Normal'][chan].rare,
-				results['MuUp'  ][chan].rare / results['Normal'][chan].rare)
+				results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['MuDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+				results['MuUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+				results['MuDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+				results['MuUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] MuUp/Down systematic not found!'
 		if 'ElUp' in results and 'ElDown' in results :
 			print 'elec     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['ElDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['ElUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['ElDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['ElUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['ElDown'][chan].wz   / results['Normal'][chan].wz  ,
-				results['ElUp'  ][chan].wz   / results['Normal'][chan].wz  ,
-				results['ElDown'][chan].rare / results['Normal'][chan].rare,
-				results['ElUp'  ][chan].rare / results['Normal'][chan].rare)
+				results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['ElDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+				results['ElUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+				results['ElDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+				results['ElUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] ElUp/Down systematic not found!'
 		print 'leptrig  lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f' % (
@@ -1010,26 +1020,26 @@ class plotter :
 			ltrig_syst)
 		if 'BUp' in results and 'BDown' in results :
 			print 'btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['BDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['BUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['BDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['BUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['BDown'][chan].wz   / results['Normal'][chan].wz,
-				results['BUp'  ][chan].wz   / results['Normal'][chan].wz,
-				results['BDown'][chan].rare / results['Normal'][chan].rare,
-				results['BUp'  ][chan].rare / results['Normal'][chan].rare)
+				results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['BDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['BUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['BDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+				results['BUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] BUp/Down systematic not found!'
 		if 'JetUp' in results and 'JetDown' in results :
 			print 'jes      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['JetDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetDown'][chan].wz   / results['Normal'][chan].wz,
-				results['JetUp'  ][chan].wz   / results['Normal'][chan].wz,
-				results['JetDown'][chan].rare / results['Normal'][chan].rare,
-				results['JetUp'  ][chan].rare / results['Normal'][chan].rare)
+				results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['JetUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['JetDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+				results['JetUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] JetUp/Down systematic not found!'
 		##//	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
@@ -1059,26 +1069,26 @@ class plotter :
 		##//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
 		if 'JetSmearUp' in results and 'JetSmearDown' in results :
 			print 'jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['JetSmearDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetSmearUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetSmearDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetSmearUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['JetSmearDown'][chan].wz   / results['Normal'][chan].wz,
-				results['JetSmearUp'  ][chan].wz   / results['Normal'][chan].wz,
-				results['JetSmearDown'][chan].rare / results['Normal'][chan].rare,
-				results['JetSmearUp'  ][chan].rare / results['Normal'][chan].rare)
+				results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['JetSmearDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['JetSmearUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['JetSmearDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+				results['JetSmearUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] JetSmearUp/Down systematic not found!'
 		if 'PileupUp' in results and 'PileupDown' in results :
 			print 'pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['PileupDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['PileupUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['PileupDown'][chan].ttwz / results['Normal'][chan].ttwz,
-				results['PileupUp'  ][chan].ttwz / results['Normal'][chan].ttwz,
-				results['PileupDown'][chan].wz   / results['Normal'][chan].wz,
-				results['PileupUp'  ][chan].wz   / results['Normal'][chan].wz,
-				results['PileupDown'][chan].rare / results['Normal'][chan].rare,
-				results['PileupUp'  ][chan].rare / results['Normal'][chan].rare)
+				results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+				results['PileupDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['PileupUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+				results['PileupDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+				results['PileupUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] PileupUp/Down systematic not found!'
 		##//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
