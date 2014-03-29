@@ -148,6 +148,7 @@ class plotter :
 		for syst in systres :
 			for chan in systres[syst] :
 				systres[syst][chan].set_ttwzPredictions()
+				systres[syst][chan].chan_str = chan
 		self.make_datacard(systres, 'em')
 #
 #		# saving results to file (just for development
@@ -400,10 +401,10 @@ class plotter :
 		yields = prediction.prediction()
 
 		res = {}
-		res['al'] = result.result('al')
-		res['mm'] = result.result('mm')
-		res['em'] = result.result('em')
-		res['ee'] = result.result('ee')
+		res['al'] = result.result('al', 'int')
+		res['mm'] = result.result('mm', 'mm')
+		res['em'] = result.result('em', 'em')
+		res['ee'] = result.result('ee', 'ee')
 
 #		# tight-tight, tight-loose, loose-tight and loose-loose data yields
 #		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
@@ -903,13 +904,19 @@ class plotter :
 		print 'jmax 5'
 		print 'kmax *'
 		print ''
-		print 'bin\t\t%s' % (chan)
+		print 'bin\t\t%s' % (results['Normal'][chan].chan_str)
 		##	if (gFullDataBlind)
 		##		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d", 999, 999, 999, 999, 999, 999) << endl;
 		##	else
 		print 'observation\t%d' % (results['Normal'][chan].obs)
 		print '\n'
-		print 'bin\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s' % (chan, chan, chan, chan, chan, chan)
+		print 'bin\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s' % (
+			results['Normal'][chan].chan_str,
+			results['Normal'][chan].chan_str,
+			results['Normal'][chan].chan_str,
+			results['Normal'][chan].chan_str,
+			results['Normal'][chan].chan_str,
+			results['Normal'][chan].chan_str)
 		print 'process\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare'
 		print 'process\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5'
 		print 'rate\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f' % (

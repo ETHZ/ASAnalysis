@@ -4,9 +4,10 @@ import math
 
 class result :
 
-	def __init__(self, channel) :
+	def __init__(self, chan, chan_str) :
 
-		self.channel = channel
+		self.chan     = chan
+		self.chan_str = chan_str
 
 		# same-sign tight-tight, tight-loose, loose-tight and loose-loose data yields
 		self.nt2  = 0.
