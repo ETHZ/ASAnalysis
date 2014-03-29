@@ -1,4 +1,5 @@
 #! /usr/bin/python
+import math
 
 
 class result :
@@ -75,15 +76,19 @@ class result :
 #		dict['ee']  = value
 
 
-#	def set_observations(self) :
-#		self.obs    = self.nt2_mm + self.nt2_em + self.nt2_ee
-#		self.obs_mm = self.nt2_mm
-#		self.obs_ee = self.nt2_em
-#		self.obs_em = self.nt2_ee
-#
-#
+	def set_observations(self) :
+		self.obs    = self.nt2
+
+
 	def set_fakePredictions(self) :
 		self.fake  = self.npf + self.nfp + self.nff
+
+
+	def set_ttwzPredictions(self) :
+		self.ttwz         = self.ttw + self.ttwz
+		self.ttwz_err     = math.sqrt(self.ttw_err*self.ttw_err + self.ttz_err*self.ttz_err)
+		self.ttwz_staterr = math.sqrt(self.ttw_staterr*self.ttw_staterr + self.ttz_staterr*self.ttz_staterr)
+		self.ttwz_Nmc     = self.ttw_Nmc + self.ttz_Nmc
 #
 #
 #	def __str__(self) :
