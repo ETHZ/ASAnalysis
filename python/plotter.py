@@ -29,7 +29,7 @@ class plotter :
 			print '[status] creating skimmed tree file..'
 			self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'RECREATE')
 			self.skimfile.cd()
-			self.skimtree = self.sigtree.CopyTree('Flavor < 3 && (SType < 3 || TLCat == 0)') # only same-sign, if MC only tight-tight
+			self.skimtree = self.sigtree.CopyTree('Flavor < 3 && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0)') # Only same-sign, if MC only tight-tight. Only MC for syst studies.
 			self.skimtree.AutoSave()
 			self.skimfile.Write()
 		else :
