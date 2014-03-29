@@ -88,9 +88,14 @@ class plotter :
 		self.systematics['ElUp']         = 16
 		self.systematics['ElDown']       = 17
 
+		# charge strings
+		self.charges = {}
+		for charge in range(-1, 2) :
+			self.charges[self.get_chargeString(charge)] = charge
+
 
 	def do_analysis(self, cardfile) :
-		print '[statur] starting analysis..'
+		print '[status] starting analysis..'
 
 		# samples
 		self.samples = self.readDatacard(cardfile)
@@ -135,14 +140,18 @@ class plotter :
 #
 #		res_syst = {}
 #		res_syst['Normal'] = self.make_IntPredictions(presel)
+#
+#		return
 
 		sels = {}
-#		systres = {}
-#		for syst in self.systematics :
-#			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
-#			systres[syst] = self.make_IntPredictions(sels[syst])
-#
-#		helper.save_obj(systres, 'systs')
+		systres = {}
+		for syst in self.systematics :
+			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
+			systres[syst] = self.make_IntPredictions(sels[syst])
+
+		helper.save_obj(systres, 'systs')
+
+		return
 
 		systres = helper.load_obj('systs')
 		for syst in systres :
@@ -266,6 +275,14 @@ class plotter :
 			if flavor is 3 : return 'MM_OS'
 			if flavor is 4 : return 'EM_OS'
 			if flavor is 5 : return 'EE_OS'
+			return ''
+
+
+	def get_chargeString(self, charge, opt = 0) :
+		if opt is 0:
+			if charge ==  0 : return 'al'
+			if charge == +1 : return '++'
+			if charge == -1 : return '--'
 			return ''
 
 
@@ -401,10 +418,12 @@ class plotter :
 		yields = prediction.prediction()
 
 		res = {}
-		res['al'] = result.result('al', 'int')
-		res['mm'] = result.result('mm', 'mm')
-		res['em'] = result.result('em', 'em')
-		res['ee'] = result.result('ee', 'ee')
+		for ch_str, charge in self.charges.iteritems() :
+			res[ch_str] = {}
+			res[ch_str]['al'] = result.result('al', charge, 'al')
+			res[ch_str]['mm'] = result.result('mm', charge, 'mm')
+			res[ch_str]['em'] = result.result('em', charge, 'em')
+			res[ch_str]['ee'] = result.result('ee', charge, 'ee')
 
 #		# tight-tight, tight-loose, loose-tight and loose-loose data yields
 #		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
@@ -503,12 +522,16 @@ class plotter :
 			nt2_em_chmid_e1 = math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
 			nt2_em_chmid_e2 = math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid )
 
-			res['al'].cmid     = nt2_ee_chmid + nt2_em_chmid
-			res['em'].cmid     = nt2_em_chmid
-			res['ee'].cmid     = nt2_ee_chmid
-			res['al'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
-			res['em'].cmid_err = math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
-			res['ee'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
+			for ch_str, charge in self.charges.iteritems() :
+				factor = 1.
+				if charge != 0: factor = 0.5
+				# TODO: take care about the correct place to apply the chargeFactor to the uncertainties!!
+				res[ch_str]['al'].cmid     = factor * nt2_ee_chmid + nt2_em_chmid
+				res[ch_str]['em'].cmid     = factor * nt2_em_chmid
+				res[ch_str]['ee'].cmid     = factor * nt2_ee_chmid
+				res[ch_str]['al'].cmid_err = factor * math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
+				res[ch_str]['em'].cmid_err = factor * math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
+				res[ch_str]['ee'].cmid_err = factor * math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
 
 		else :
 			print '[status] skipped charge mis-ID prediction for systematics'
@@ -596,38 +619,41 @@ class plotter :
 					nfp = FR.getWfp(event.TLCat, f1, f2, p1, p2)
 					nff = FR.getWff(event.TLCat, f1, f2, p1, p2)
 
-					# MM
-					if event.Flavor is 0 :
-						res['mm'].npp += npp;
-						res['mm'].npf += npf;
-						res['mm'].nfp += nfp;
-						res['mm'].nff += nff;
-						if event.TLCat is 0 : res['mm'].nt2  += 1
-						if event.TLCat is 1 : res['mm'].nt10 += 1
-						if event.TLCat is 2 : res['mm'].nt01 += 1
-						if event.TLCat is 3 : res['mm'].nt0  += 1
+					for ch_str, charge in self.charges.iteritems() :
+						if charge != 0 and event.Charge != charge : continue
 
-					# EM
-					if event.Flavor is 1 :
-						res['em'].npp += npp
-						res['em'].npf += npf
-						res['em'].nfp += nfp
-						res['em'].nff += nff
-						if event.TLCat is 0 : res['em'].nt2  += 1
-						if event.TLCat is 1 : res['em'].nt10 += 1
-						if event.TLCat is 2 : res['em'].nt01 += 1
-						if event.TLCat is 3 : res['em'].nt0  += 1
+						# MM
+						if event.Flavor is 0 :
+							res[ch_str]['mm'].npp += npp;
+							res[ch_str]['mm'].npf += npf;
+							res[ch_str]['mm'].nfp += nfp;
+							res[ch_str]['mm'].nff += nff;
+							if event.TLCat is 0 : res[ch_str]['mm'].nt2  += 1
+							if event.TLCat is 1 : res[ch_str]['mm'].nt10 += 1
+							if event.TLCat is 2 : res[ch_str]['mm'].nt01 += 1
+							if event.TLCat is 3 : res[ch_str]['mm'].nt0  += 1
 
-					# EE
-					if event.Flavor is 2 :
-						res['ee'].npp += npp
-						res['ee'].npf += npf
-						res['ee'].nfp += nfp
-						res['ee'].nff += nff
-						if event.TLCat is 0 : res['ee'].nt2  += 1
-						if event.TLCat is 1 : res['ee'].nt10 += 1
-						if event.TLCat is 2 : res['ee'].nt01 += 1
-						if event.TLCat is 3 : res['ee'].nt0  += 1
+						# EM
+						if event.Flavor is 1 :
+							res[ch_str]['em'].npp += npp
+							res[ch_str]['em'].npf += npf
+							res[ch_str]['em'].nfp += nfp
+							res[ch_str]['em'].nff += nff
+							if event.TLCat is 0 : res[ch_str]['em'].nt2  += 1
+							if event.TLCat is 1 : res[ch_str]['em'].nt10 += 1
+							if event.TLCat is 2 : res[ch_str]['em'].nt01 += 1
+							if event.TLCat is 3 : res[ch_str]['em'].nt0  += 1
+
+						# EE
+						if event.Flavor is 2 :
+							res[ch_str]['ee'].npp += npp
+							res[ch_str]['ee'].npf += npf
+							res[ch_str]['ee'].nfp += nfp
+							res[ch_str]['ee'].nff += nff
+							if event.TLCat is 0 : res[ch_str]['ee'].nt2  += 1
+							if event.TLCat is 1 : res[ch_str]['ee'].nt10 += 1
+							if event.TLCat is 2 : res[ch_str]['ee'].nt01 += 1
+							if event.TLCat is 3 : res[ch_str]['ee'].nt0  += 1
 
 #				# EM OS
 #				if event.Flavor is 4 :
@@ -648,24 +674,30 @@ class plotter :
 				if str(event.SName) not in rares :
 					rares      [str(event.SName)] = {}
 					rares_npass[str(event.SName)] = {}
-					for chan in res :
-						rares      [str(event.SName)][chan] = 0.
-						rares_npass[str(event.SName)][chan] = 0
+					for ch_str, charge in self.charges.iteritems() :
+						rares      [str(event.SName)][ch_str] = {}
+						rares_npass[str(event.SName)][ch_str] = {}
+						for chan in res[ch_str] :
+							rares      [str(event.SName)][ch_str][chan] = 0.
+							rares_npass[str(event.SName)][ch_str][chan] = 0
 
-				rares      [str(event.SName)]['al'] += scale
-				rares_npass[str(event.SName)]['al'] += 1
+				for ch_str, charge in self.charges.iteritems() :
+					if charge != 0 and event.Charge != charge : continue
 
-				if event.Flavor is 0 :
-					rares      [str(event.SName)]['mm'] += scale
-					rares_npass[str(event.SName)]['mm'] += 1
+					rares      [str(event.SName)][ch_str]['al'] += scale
+					rares_npass[str(event.SName)][ch_str]['al'] += 1
 
-				if event.Flavor is 1 :
-					rares      [str(event.SName)]['em'] += scale
-					rares_npass[str(event.SName)]['em'] += 1
+					if event.Flavor is 0 :
+						rares      [str(event.SName)][ch_str]['mm'] += scale
+						rares_npass[str(event.SName)][ch_str]['mm'] += 1
 
-				if event.Flavor is 2 :
-					rares      [str(event.SName)]['ee'] += scale
-					rares_npass[str(event.SName)]['ee'] += 1
+					if event.Flavor is 1 :
+						rares      [str(event.SName)][ch_str]['em'] += scale
+						rares_npass[str(event.SName)][ch_str]['em'] += 1
+
+					if event.Flavor is 2 :
+						rares      [str(event.SName)][ch_str]['ee'] += scale
+						rares_npass[str(event.SName)][ch_str]['ee'] += 1
 
 		# END LOOP OVER TREE
 
@@ -674,23 +706,13 @@ class plotter :
 #			print '%12s: %8d' % (name, n)
 #		for name, value in rares_mm.iteritems() :
 
-#		sum_rares = 0.
-#		for name, value in rares_mm.iteritems() :
-#			sum_rares += value
-#		for name, value in rares_em.iteritems() :
-#			sum_rares += value
-#		for name, value in rares_ee.iteritems() :
-#			sum_rares += value
-#
-#		print '======================'
-#		print 'sum rares:', sum_rares
-
 		################
 		# Observations #
 		################
 
-		for chan in res :
-			res[chan].set_observations()
+		for ch_str in res :
+			for chan in res[ch_str] :
+				res[ch_str][chan].set_observations()
 
 		#####################
 		# Fakes predictions #
@@ -715,98 +737,103 @@ class plotter :
 #		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
 #		FR.setEPRatio(self.fpr.ElpRatio, self.fpr.ElpRatioE)
 
-		FR.setMMNtl(res['mm'].nt2, res['mm'].nt10, res['mm'].nt01, res['mm'].nt0)
-		FR.setEMNtl(res['em'].nt2, res['em'].nt10, res['em'].nt01, res['em'].nt0)
-		FR.setEENtl(res['ee'].nt2, res['ee'].nt10, res['ee'].nt01, res['ee'].nt0)
+		for ch_str in self.charges :
 
-		# store stat and syst errors
-		res['mm'].npp_staterr = FR.getMMNppEStat(); res['mm'].npp_systerr = self.FakeESyst*res['mm'].npp;
-		res['em'].npp_staterr = FR.getEMNppEStat(); res['em'].npp_systerr = self.FakeESyst*res['em'].npp;
-		res['ee'].npp_staterr = FR.getEENppEStat(); res['ee'].npp_systerr = self.FakeESyst*res['ee'].npp;
- 
-		res['mm'].npf_staterr = FR.getMMNpfEStat(); res['mm'].npf_systerr = self.FakeESyst*res['mm'].npf;
-		res['em'].npf_staterr = FR.getEMNpfEStat(); res['em'].npf_systerr = self.FakeESyst*res['em'].npf;
-		res['ee'].npf_staterr = FR.getEENpfEStat(); res['ee'].npf_systerr = self.FakeESyst*res['ee'].npf;
+			FR.setMMNtl(res[ch_str]['mm'].nt2, res[ch_str]['mm'].nt10, res[ch_str]['mm'].nt01, res[ch_str]['mm'].nt0)
+			FR.setEMNtl(res[ch_str]['em'].nt2, res[ch_str]['em'].nt10, res[ch_str]['em'].nt01, res[ch_str]['em'].nt0)
+			FR.setEENtl(res[ch_str]['ee'].nt2, res[ch_str]['ee'].nt10, res[ch_str]['ee'].nt01, res[ch_str]['ee'].nt0)
 
-		res['mm'].nfp_staterr = FR.getMMNfpEStat(); res['mm'].nfp_systerr = self.FakeESyst*res['mm'].nfp;
-		res['em'].nfp_staterr = FR.getEMNfpEStat(); res['em'].nfp_systerr = self.FakeESyst*res['em'].nfp;
-		res['ee'].nfp_staterr = FR.getEENfpEStat(); res['ee'].nfp_systerr = self.FakeESyst*res['ee'].nfp;
+			# store stat and syst errors
+			res[ch_str]['mm'].npp_staterr = FR.getMMNppEStat(); res[ch_str]['mm'].npp_systerr = self.FakeESyst*res[ch_str]['mm'].npp;
+			res[ch_str]['em'].npp_staterr = FR.getEMNppEStat(); res[ch_str]['em'].npp_systerr = self.FakeESyst*res[ch_str]['em'].npp;
+			res[ch_str]['ee'].npp_staterr = FR.getEENppEStat(); res[ch_str]['ee'].npp_systerr = self.FakeESyst*res[ch_str]['ee'].npp;
 
-		res['mm'].nff_staterr = FR.getMMNffEStat(); res['mm'].nff_systerr = self.FakeESyst*res['mm'].nff;
-		res['em'].nff_staterr = FR.getEMNffEStat(); res['em'].nff_systerr = self.FakeESyst*res['em'].nff;
-		res['ee'].nff_staterr = FR.getEENffEStat(); res['ee'].nff_systerr = self.FakeESyst*res['ee'].nff;
+			res[ch_str]['mm'].npf_staterr = FR.getMMNpfEStat(); res[ch_str]['mm'].npf_systerr = self.FakeESyst*res[ch_str]['mm'].npf;
+			res[ch_str]['em'].npf_staterr = FR.getEMNpfEStat(); res[ch_str]['em'].npf_systerr = self.FakeESyst*res[ch_str]['em'].npf;
+			res[ch_str]['ee'].npf_staterr = FR.getEENpfEStat(); res[ch_str]['ee'].npf_systerr = self.FakeESyst*res[ch_str]['ee'].npf;
 
-		# store fake predictions
-		res['mm'].set_fakePredictions()
-		res['em'].set_fakePredictions()
-		res['ee'].set_fakePredictions()
-		res['al'].fake = res['mm'].fake + res['em'].fake + res['ee'].fake
-		res['al'].fake_err = math.sqrt(FR.getTotEStat()  *FR.getTotEStat()   + self.FakeESyst2*res['al'].fake*res['al'].fake)
-		res['mm'].fake_err = math.sqrt(FR.getMMTotEStat()*FR.getMMTotEStat() + self.FakeESyst2*res['mm'].fake*res['mm'].fake)
-		res['em'].fake_err = math.sqrt(FR.getEMTotEStat()*FR.getEMTotEStat() + self.FakeESyst2*res['em'].fake*res['em'].fake)
-		res['ee'].fake_err = math.sqrt(FR.getEETotEStat()*FR.getEETotEStat() + self.FakeESyst2*res['ee'].fake*res['ee'].fake)
+			res[ch_str]['mm'].nfp_staterr = FR.getMMNfpEStat(); res[ch_str]['mm'].nfp_systerr = self.FakeESyst*res[ch_str]['mm'].nfp;
+			res[ch_str]['em'].nfp_staterr = FR.getEMNfpEStat(); res[ch_str]['em'].nfp_systerr = self.FakeESyst*res[ch_str]['em'].nfp;
+			res[ch_str]['ee'].nfp_staterr = FR.getEENfpEStat(); res[ch_str]['ee'].nfp_systerr = self.FakeESyst*res[ch_str]['ee'].nfp;
+
+			res[ch_str]['mm'].nff_staterr = FR.getMMNffEStat(); res[ch_str]['mm'].nff_systerr = self.FakeESyst*res[ch_str]['mm'].nff;
+			res[ch_str]['em'].nff_staterr = FR.getEMNffEStat(); res[ch_str]['em'].nff_systerr = self.FakeESyst*res[ch_str]['em'].nff;
+			res[ch_str]['ee'].nff_staterr = FR.getEENffEStat(); res[ch_str]['ee'].nff_systerr = self.FakeESyst*res[ch_str]['ee'].nff;
+
+			# store fake predictions
+			res[ch_str]['mm'].set_fakePredictions()
+			res[ch_str]['em'].set_fakePredictions()
+			res[ch_str]['ee'].set_fakePredictions()
+			res[ch_str]['al'].fake = res[ch_str]['mm'].fake + res[ch_str]['em'].fake + res[ch_str]['ee'].fake
+			res[ch_str]['al'].fake_err = math.sqrt(FR.getTotEStat()  *FR.getTotEStat()   + self.FakeESyst2*res[ch_str]['al'].fake*res[ch_str]['al'].fake)
+			res[ch_str]['mm'].fake_err = math.sqrt(FR.getMMTotEStat()*FR.getMMTotEStat() + self.FakeESyst2*res[ch_str]['mm'].fake*res[ch_str]['mm'].fake)
+			res[ch_str]['em'].fake_err = math.sqrt(FR.getEMTotEStat()*FR.getEMTotEStat() + self.FakeESyst2*res[ch_str]['em'].fake*res[ch_str]['em'].fake)
+			res[ch_str]['ee'].fake_err = math.sqrt(FR.getEETotEStat()*FR.getEETotEStat() + self.FakeESyst2*res[ch_str]['ee'].fake*res[ch_str]['ee'].fake)
 
 		#########
 		# Rares #
 		#########
 
-		for chan in res :
+		for ch_str in self.charges :
 
-			wz   = 0.; wz_staterr2   = 0.;
-			ttw  = 0.; ttw_staterr2  = 0.;
-			ttz  = 0.; ttz_staterr2  = 0.;
-			rare = 0.; rare_staterr2 = 0.;
+			for chan in res[ch_str] :
 
-			for s in rares :
-				scale = self.lumi / self.samples[s].getLumi()
-				staterr = scale * self.samples[s].getError(rares_npass[s][chan])
+				wz   = 0.; wz_staterr2   = 0.;
+				ttw  = 0.; ttw_staterr2  = 0.;
+				ttz  = 0.; ttz_staterr2  = 0.;
+				rare = 0.; rare_staterr2 = 0.;
 
-				print 'sample', s
+				for s in rares :
+					scale = self.lumi / self.samples[s].getLumi()
+					staterr = scale * self.samples[s].getError(rares_npass[s][ch_str][chan])
 
-				if s == 'WZTo3LNu' :
-					wz += rares[s][chan]
-					wz_staterr2 += staterr * staterr
+					print 'sample', s
 
-				elif s == 'TTbarW' :
-					ttw += rares[s][chan]
-					ttw_staterr2 += staterr * staterr
+					if s == 'WZTo3LNu' :
+						wz += rares[s][ch_str][chan]
+						wz_staterr2 += staterr * staterr
 
-				elif s == 'TTbarZ' :
-					ttz += rares[s][chan]
-					ttz_staterr2 += staterr * staterr
+					elif s == 'TTbarW' :
+						ttw += rares[s][ch_str][chan]
+						ttw_staterr2 += staterr * staterr
 
-				else :
-					rare += rares[s][chan]
-					rare_staterr2 += staterr * staterr
+					elif s == 'TTbarZ' :
+						ttz += rares[s][ch_str][chan]
+						ttz_staterr2 += staterr * staterr
 
-					res[chan].rares[s] = rares[s][chan]
-					res[chan].rares_staterr[s] = staterr
+					else :
+						rare += rares[s][ch_str][chan]
+						rare_staterr2 += staterr * staterr
 
-			# store WZ yields
-			res[chan].wz      = wz
-			res[chan].wz_err  = math.sqrt(wz_staterr2 + self.WZESyst2 * wz * wz)
+						res[ch_str][chan].rares[s] = rares[s][ch_str][chan]
+						res[ch_str][chan].rares_staterr[s] = staterr
 
-			# store ttW mc yields
-			res[chan].ttw     = ttw
-			res[chan].ttw_err = math.sqrt(ttw_staterr2 + self.TTWESyst2 * ttw * ttw)
+				# store WZ yields
+				res[ch_str][chan].wz      = wz
+				res[ch_str][chan].wz_err  = math.sqrt(wz_staterr2 + self.WZESyst2 * wz * wz)
 
-			# store ttZ mc yields
-			res[chan].ttz     = ttz
-			res[chan].ttz_err = math.sqrt(ttz_staterr2 + self.TTZESyst2 * ttz * ttz)
+				# store ttW mc yields
+				res[ch_str][chan].ttw     = ttw
+				res[ch_str][chan].ttw_err = math.sqrt(ttw_staterr2 + self.TTWESyst2 * ttw * ttw)
 
-			# store rare mc yields
-			res[chan].rare     = rare
-			res[chan].rare_err = math.sqrt(rare_staterr2 + self.RareESyst2 * rare * rare)
+				# store ttZ mc yields
+				res[ch_str][chan].ttz     = ttz
+				res[ch_str][chan].ttz_err = math.sqrt(ttz_staterr2 + self.TTZESyst2 * ttz * ttz)
 
-			# store ttW/Z mc yields
-			res[chan].set_ttwzPredictions()
+				# store rare mc yields
+				res[ch_str][chan].rare     = rare
+				res[ch_str][chan].rare_err = math.sqrt(rare_staterr2 + self.RareESyst2 * rare * rare)
+
+				# store ttW/Z mc yields
+				res[ch_str][chan].set_ttwzPredictions()
 
 		##########################################
 		# print all observations and predictions #
 		##########################################
 
 #		yields.printout()
-		self.print_results(res)
+		self.print_results(res['al'])
+		self.print_results(res['++'])
 
 		return res
 

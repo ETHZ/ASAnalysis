@@ -4,9 +4,10 @@ import math
 
 class result :
 
-	def __init__(self, chan, chan_str) :
+	def __init__(self, chan, charge, chan_str) :
 
 		self.chan     = chan
+		self.charge   = charge
 		self.chan_str = chan_str
 
 		# same-sign tight-tight, tight-loose, loose-tight and loose-loose data yields
