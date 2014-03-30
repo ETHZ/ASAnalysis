@@ -138,10 +138,16 @@ class plotter :
 #		c1.cd(4)
 #		self.h2_ElpRatio.Draw('colztext')
 #
-#		res_syst = {}
-#		res_syst['Normal'] = self.make_IntPredictions(presel)
-#
-#		return
+
+		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155.)
+
+		res_syst = {}
+		res_syst['Normal'] = self.make_IntPredictions(finalsel)
+
+		self.print_results(res_syst['Normal']['++'])
+		self.make_datacard(res_syst, 'mm', '++')
+
+		return
 
 #		sels = {}
 #		systres = {}
@@ -161,7 +167,10 @@ class plotter :
 #				for key3 in systres[key1][key2] :
 #					print key3
 		self.make_datacard(systres, 'mm', '++')
+		self.make_datacard(systres, 'em', '++')
+		self.make_datacard(systres, 'ee', '++')
 
+		self.print_results(systres['Normal']['++'])
 
 
 #		for syst in systres :
@@ -598,8 +607,12 @@ class plotter :
 		nevents = {}
 		for s in self.samples : nevents[s] = 0
 
+		# remove this again
+		HLTSF = 0.
+
 		print '[status] looping over skimmed tree'
 		for i, event in enumerate(self.skimtree) :
+			HLTSF = event.HLTSF
 			nevents[str(event.SName)] += 1
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
@@ -720,6 +733,8 @@ class plotter :
 		# Observations #
 		################
 
+		print '[status] storing observations..'
+
 		for ch_str in res :
 			for chan in res[ch_str] :
 				res[ch_str][chan].set_observations()
@@ -727,6 +742,8 @@ class plotter :
 		#####################
 		# Fakes predictions #
 		#####################
+
+		print '[status] calculating fake predictions..'
 
 		FR.setNToyMCs(100)
 		FR.setAddESyst(0.5)
@@ -784,6 +801,8 @@ class plotter :
 		# Rares #
 		#########
 
+		print '[status] storing all rare SM processes..'
+
 		for ch_str in self.charges :
 
 			for chan in res[ch_str] :
@@ -795,9 +814,8 @@ class plotter :
 
 				for s in rares :
 					scale = self.lumi / self.samples[s].getLumi()
+					#scale = HLTSF * self.lumi / self.samples[s].getLumi() # this reproduces the bug in the SSDLPlotter.cc
 					staterr = scale * self.samples[s].getError(rares_npass[s][ch_str][chan])
-
-					print 'sample', s
 
 					if s == 'WZTo3LNu' :
 						wz += rares[s][ch_str][chan]
