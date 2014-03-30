@@ -145,7 +145,8 @@ class plotter :
 		res_syst['Normal'] = self.make_IntPredictions(finalsel)
 
 		self.print_results(res_syst['Normal']['++'])
-		self.make_datacard(res_syst, 'mm', '++')
+		self.make_datacard(res_syst, 'em', '++')
+		self.make_datacard(res_syst, 'ee', '++')
 
 		return
 
@@ -516,13 +517,13 @@ class plotter :
 			print '[status] getting opposite-sign yields..'
 
 			# EM OS
-			nt2_em_BB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((4,0)))
-			nt2_em_EE_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((4,1)))
+			nt2_em_BB_os = self.sigtree.GetEntries(sel.get_selectionString((4,0)))
+			nt2_em_EE_os = self.sigtree.GetEntries(sel.get_selectionString((4,1)))
 
 			# EE OS
-			nt2_ee_BB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,0)))
-			nt2_ee_EB_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,4)))
-			nt2_ee_EE_os = chargeFactor * self.sigtree.GetEntries(sel.get_selectionString((5,3)))
+			nt2_ee_BB_os = self.sigtree.GetEntries(sel.get_selectionString((5,0)))
+			nt2_ee_EB_os = self.sigtree.GetEntries(sel.get_selectionString((5,4)))
+			nt2_ee_EE_os = self.sigtree.GetEntries(sel.get_selectionString((5,3)))
 
 			(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
 			(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
@@ -532,25 +533,25 @@ class plotter :
 	#		(feb_mc, febE_mc) = calculateChMisIdProb(fMCBG, 'EB')
 	#		(fee_mc, feeE_mc) = calculateChMisIdProb(fMCBG, 'EE')
 
-			# Simple error propagation assuming error on number of events is sqrt(N)
-			nt2_ee_chmid    = 2*fbb* nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os;
-			nt2_ee_chmid_e1 = math.sqrt( 4*fbb*fbb * FR.getEStat2(nt2_ee_BB_os)  + 4*fee*fee * FR.getEStat2(nt2_ee_EE_os)    + 4*feb*feb * FR.getEStat2(nt2_ee_EB_os) )  # stat only
-			nt2_ee_chmid_e2 = math.sqrt( 4*fbbE*fbbE * nt2_ee_BB_os*nt2_ee_BB_os + 4*feeE*feeE * nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE * nt2_ee_EB_os*nt2_ee_EB_os + self.ChMisESyst2 * nt2_ee_chmid*nt2_ee_chmid )  # syst only
-
-			nt2_em_chmid    = fbb * nt2_em_BB_os + fee * nt2_em_EE_os;
-			nt2_em_chmid_e1 = math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
-			nt2_em_chmid_e2 = math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid )
-
 			for ch_str, charge in self.charges.iteritems() :
-				factor = 1.
-				if charge != 0: factor = 0.5
-				# TODO: take care about the correct place to apply the chargeFactor to the uncertainties!!
-				res[ch_str]['al'].cmid     = factor * nt2_ee_chmid + nt2_em_chmid
-				res[ch_str]['em'].cmid     = factor * nt2_em_chmid
-				res[ch_str]['ee'].cmid     = factor * nt2_ee_chmid
-				res[ch_str]['al'].cmid_err = factor * math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
-				res[ch_str]['em'].cmid_err = factor * math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
-				res[ch_str]['ee'].cmid_err = factor * math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
+				chargeFactor = 1.
+				if charge != 0: chargeFactor = 0.5
+
+				# Simple error propagation assuming error on number of events is sqrt(N)
+				nt2_ee_chmid    = chargeFactor * (2*fbb* nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os)
+				nt2_ee_chmid_e1 = chargeFactor * math.sqrt( 4*fbb*fbb * FR.getEStat2(nt2_ee_BB_os)  + 4*fee*fee * FR.getEStat2(nt2_ee_EE_os)    + 4*feb*feb * FR.getEStat2(nt2_ee_EB_os) )  # stat only
+				nt2_ee_chmid_e2 = chargeFactor * math.sqrt( 4*fbbE*fbbE * nt2_ee_BB_os*nt2_ee_BB_os + 4*feeE*feeE * nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE * nt2_ee_EB_os*nt2_ee_EB_os + self.ChMisESyst2 * nt2_ee_chmid*nt2_ee_chmid/(chargeFactor*chargeFactor) )  # syst only
+
+				nt2_em_chmid    = chargeFactor * (fbb * nt2_em_BB_os + fee * nt2_em_EE_os)
+				nt2_em_chmid_e1 = chargeFactor * math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
+				nt2_em_chmid_e2 = chargeFactor * math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + 0.25*self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid/(chargeFactor*chargeFactor) )
+
+				res[ch_str]['al'].cmid     = nt2_ee_chmid + nt2_em_chmid
+				res[ch_str]['em'].cmid     = nt2_em_chmid
+				res[ch_str]['ee'].cmid     = nt2_ee_chmid
+				res[ch_str]['al'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
+				res[ch_str]['em'].cmid_err = math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
+				res[ch_str]['ee'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
 
 		else :
 			print '[status] skipped charge mis-ID prediction for systematics'
@@ -610,7 +611,7 @@ class plotter :
 		# remove this again
 		HLTSF = 0.
 
-		print '[status] looping over skimmed tree'
+		print '[status] looping over skimmed tree..'
 		for i, event in enumerate(self.skimtree) :
 			HLTSF = event.HLTSF
 			nevents[str(event.SName)] += 1
