@@ -188,6 +188,7 @@ class plotter :
 					charge_str = ''
 					if self.charges[ch_str] > 0 : charge_str = '+'
 					if self.charges[ch_str] < 0 : charge_str = '-'
+					# this fixes the chan_str (remove again!)
 					if chan == 'al' : channel_string = 'int'+charge_str+charge_str
 					if chan == 'mm' : channel_string = 'm'+charge_str+'m'+charge_str
 					if chan == 'em' : channel_string = 'e'+charge_str+'m'+charge_str
@@ -683,6 +684,12 @@ class plotter :
 
 					for ch_str, charge in self.charges.iteritems() :
 						if charge != 0 and event.Charge != charge : continue
+
+						# int
+						if event.TLCat is 0 : res[ch_str]['al'].nt2  += 1
+						if event.TLCat is 1 : res[ch_str]['al'].nt10 += 1
+						if event.TLCat is 2 : res[ch_str]['al'].nt01 += 1
+						if event.TLCat is 3 : res[ch_str]['al'].nt0  += 1
 
 						# MM
 						if event.Flavor is 0 :
