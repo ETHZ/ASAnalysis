@@ -459,10 +459,6 @@ class plotter :
 #		nt2_ee_BB_os = 0.; nt2_ee_EE_os = 0.; nt2_ee_EB_os = 0.;
 #		nt2_em_BB_os = 0.; nt2_em_EE_os = 0.;
 
-		# charge factor: only takes half of the ChMisID prediction if a charge selection is applied
-		chargeFactor = 1.
-		if sel.charge != 0 : chargeFactor = 0.5
-
 		# rare SM yields (tight-tight)
 		nt2_rare_mc_mm = 0.;    nt2_rare_mc_em = 0.;    nt2_rare_mc_ee = 0.;
 		nt2_rare_mc_mm_e2 = 0.; nt2_rare_mc_em_e2 = 0.; nt2_rare_mc_ee_e2 = 0.;
@@ -534,6 +530,8 @@ class plotter :
 	#		(fee_mc, feeE_mc) = calculateChMisIdProb(fMCBG, 'EE')
 
 			for ch_str, charge in self.charges.iteritems() :
+
+				# charge factor: only takes half of the ChMisID prediction if a charge selection is applied
 				chargeFactor = 1.
 				if charge != 0: chargeFactor = 0.5
 
@@ -750,20 +748,20 @@ class plotter :
 		FR.setAddESyst(0.5)
 
 		# numbers from SSDLPlotter.cc just to check
-		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
-		mupratio_data = 0.804292; mupratio_data_e = 0.001193;
-		elfratio_data = 0.069959; elfratio_data_e = 0.001419;
-		elpratio_data = 0.750609; elpratio_data_e = 0.001473;
-		FR.setMFRatio(mufratio_data, mufratio_data_e) # set error to pure statistical of ratio
-		FR.setEFRatio(elfratio_data, elfratio_data_e)
-		FR.setMPRatio(mupratio_data, mupratio_data_e)
-		FR.setEPRatio(elpratio_data, elpratio_data_e)
+#		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
+#		mupratio_data = 0.804292; mupratio_data_e = 0.001193;
+#		elfratio_data = 0.069959; elfratio_data_e = 0.001419;
+#		elpratio_data = 0.750609; elpratio_data_e = 0.001473;
+#		FR.setMFRatio(mufratio_data, mufratio_data_e) # set error to pure statistical of ratio
+#		FR.setEFRatio(elfratio_data, elfratio_data_e)
+#		FR.setMPRatio(mupratio_data, mupratio_data_e)
+#		FR.setEPRatio(elpratio_data, elpratio_data_e)
 
-#		# TODO: use these (ratios with ewk subtraction)
-#		FR.setMFRatio(self.fpr.MufRatio, self.fpr.MufRatioE) # set error to pure statistical of ratio
-#		FR.setEFRatio(self.fpr.ElfRatio, self.fpr.ElfRatioE)
-#		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
-#		FR.setEPRatio(self.fpr.ElpRatio, self.fpr.ElpRatioE)
+		# TODO: use these (ratios with ewk subtraction)
+		FR.setMFRatio(self.fpr.MufRatio, self.fpr.MufRatioE) # set error to pure statistical of ratio
+		FR.setEFRatio(self.fpr.ElfRatio, self.fpr.ElfRatioE)
+		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
+		FR.setEPRatio(self.fpr.ElpRatio, self.fpr.ElpRatioE)
 
 		for ch_str in self.charges :
 
