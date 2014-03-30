@@ -701,6 +701,8 @@ void SSDLDumper::loopEvents(Sample *S){
 
 		if(!gDoSystStudies) continue;
 
+		if (S->datamc == 0) continue;  // no SystStudies on data
+
 		// Jet pts scaled down
 		fChain->GetEntry(jentry); // reset tree vars
 		resetBTags(); // reset to scaled btag values
@@ -818,19 +820,19 @@ void SSDLDumper::loopEvents(Sample *S){
 		gScaleMuSF = 1.;
 		gScaleElSF = 1.;
 
-		// scale the unclustered MET up
-		fChain->GetEntry(jentry); // reset tree vars
-		resetBTags(); // reset to scaled btag values
-		resetJetPts();
-		scaleMET(S, 0);
-		fillSigEventTree(S, gSystematics["METUp"]);
-
-		// scale the unclustered MET down
-		fChain->GetEntry(jentry); // reset tree vars
-		resetBTags(); // reset to scaled btag values
-		resetJetPts();
-		scaleMET(S, 2);
-		fillSigEventTree(S, gSystematics["METDown"]);
+//		// scale the unclustered MET up
+//		fChain->GetEntry(jentry); // reset tree vars
+//		resetBTags(); // reset to scaled btag values
+//		resetJetPts();
+//		scaleMET(S, 0);
+//		fillSigEventTree(S, gSystematics["METUp"]);
+//
+//		// scale the unclustered MET down
+//		fChain->GetEntry(jentry); // reset tree vars
+//		resetBTags(); // reset to scaled btag values
+//		resetJetPts();
+//		scaleMET(S, 2);
+//		fillSigEventTree(S, gSystematics["METDown"]);
 
 		// Pileup scaled up
 		fChain->GetEntry(jentry); // reset tree vars
