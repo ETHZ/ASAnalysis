@@ -152,26 +152,47 @@ class plotter :
 
 		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155.)
 
-		res_syst = {}
-		res_syst['Normal'] = self.make_IntPredictions(finalsel)
-
-		self.print_results(res_syst['Normal']['++'])
-		self.make_datacard(res_syst, 'em', '++')
-		self.make_datacard(res_syst, 'ee', '++')
-
-		return
+#		res_syst = {}
+#		res_syst['Normal'] = self.make_IntPredictions(finalsel)
+#
+#		self.print_results(res_syst['Normal']['++'])
+#		self.make_datacard(res_syst, 'em', '++')
+#		self.make_datacard(res_syst, 'ee', '++')
+#
+#		return
 
 #		sels = {}
 #		systres = {}
+#		skim_systfile = {}
 #		for syst in self.systematics :
+#
+#			print '[status] creating skimmed tree file for %s systematic..' % (syst)
+#			skim_systfile[syst] = ROOT.TFile.Open(self.path + '/SSDLYields_skim_' + syst + '.root', 'RECREATE')
+#			skim_systfile[syst].cd()
+#			skim_systtree = self.skimtree.CopyTree('SystFlag == %d' % (self.systematics[syst]))
+#			skim_systtree.AutoSave()
+#			skim_systtree.Write()
+#
+#			print '[status] making predictions for %s systematic' % (syst)
 #			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
-#			systres[syst] = self.make_IntPredictions(sels[syst])
+#			systres[syst] = self.make_IntPredictions(sels[syst], skim_systtree)
 #
 #		helper.save_obj(systres, 'systs')
 #
 #		return
 
 		systres = helper.load_obj('systs')
+		for syst in systres :
+			for ch_str in systres[syst] :
+				for chan in systres[syst][ch_str] :
+					charge_str = ''
+					if self.charges[ch_str] > 0 : charge_str = '+'
+					if self.charges[ch_str] < 0 : charge_str = '-'
+					if chan == 'al' : channel_string = 'int'+charge_str+charge_str
+					if chan == 'mm' : channel_string = 'm'+charge_str+'m'+charge_str
+					if chan == 'em' : channel_string = 'e'+charge_str+'m'+charge_str
+					if chan == 'ee' : channel_string = 'e'+charge_str+'e'+charge_str
+					systres[syst][ch_str][chan].chan_str = channel_string
 #		for key1 in systres :
 #			print key1
 #			for key2 in systres[key1] :
@@ -436,7 +457,7 @@ class plotter :
 		## }
 
 
-	def make_IntPredictions(self, sel) :
+	def make_IntPredictions(self, sel, tree) :
 		'''oberservation and prediction for different selections'''
 		## for now only with one selection
 
@@ -451,10 +472,13 @@ class plotter :
 		res = {}
 		for ch_str, charge in self.charges.iteritems() :
 			res[ch_str] = {}
-			res[ch_str]['al'] = result.result('al', charge, 'al')
-			res[ch_str]['mm'] = result.result('mm', charge, 'mm')
-			res[ch_str]['em'] = result.result('em', charge, 'em')
-			res[ch_str]['ee'] = result.result('ee', charge, 'ee')
+			charge_str = ''
+			if charge > 0 : charge_str = '+'
+			if charge < 0 : charge_str = '-'
+			res[ch_str]['al'] = result.result('al', charge, 'int'+charge_str+charge_str)
+			res[ch_str]['mm'] = result.result('mm', charge, 'm'+charge_str+'m'+charge_str)
+			res[ch_str]['em'] = result.result('em', charge, 'e'+charge_str+'m'+charge_str)
+			res[ch_str]['ee'] = result.result('ee', charge, 'e'+charge_str+'e'+charge_str)
 
 #		# tight-tight, tight-loose, loose-tight and loose-loose data yields
 #		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
@@ -621,7 +645,8 @@ class plotter :
 		HLTSF = 0.
 
 		print '[status] looping over skimmed tree..'
-		for i, event in enumerate(self.skimtree) :
+#		for i, event in enumerate(self.skimtree) :
+		for i, event in enumerate(tree) :
 			HLTSF = event.HLTSF
 			nevents[str(event.SName)] += 1
 			if last_sample != str(event.SName) :
