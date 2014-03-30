@@ -17,7 +17,7 @@ class plotter :
 
 	def __init__(self, path) :
 		print '[status] initialize plotter..'
-		self.path = path
+		self.path = path + '/'
 		self.ssdlfile = ROOT.TFile.Open(path + '/SSDLYields.root', 'READ')
 		if self.ssdlfile == None :
 			sys.exit(1)
@@ -193,15 +193,19 @@ class plotter :
 					if chan == 'em' : channel_string = 'e'+charge_str+'m'+charge_str
 					if chan == 'ee' : channel_string = 'e'+charge_str+'e'+charge_str
 					systres[syst][ch_str][chan].chan_str = channel_string
+
+					if syst == 'Normal' : self.make_datacard(self.path, systres, chan, ch_str)
+
 #		for key1 in systres :
 #			print key1
 #			for key2 in systres[key1] :
 #				print key2
 #				for key3 in systres[key1][key2] :
 #					print key3
-		self.make_datacard(systres, 'mm', '++')
-		self.make_datacard(systres, 'em', '++')
-		self.make_datacard(systres, 'ee', '++')
+#		self.make_datacard(self.path, systres, 'al', '++')
+#		self.make_datacard(self.path, systres, 'mm', '++')
+#		self.make_datacard(self.path, systres, 'em', '++')
+#		self.make_datacard(self.path, systres, 'ee', '++')
 
 		self.print_results(systres['Normal']['++'])
 
@@ -980,167 +984,170 @@ class plotter :
 		print "----------------------------------------------------------------------------------------------"
 
 
-	def make_datacard(self, results, chan, charge) :
+	def make_datacard(self, path, results, chan, charge) :
 
-		timestamp = time.asctime()
-		print '#========================================================================================='
-		print '# Systematics table for ttW analysis, same-sign channel, subchannels'
-		print '# Generated on: %s' % (timestamp)
-		print '# Copy between the dashed lines for datacard'
-		print '#-----------------------------------------------------------------------------------------'
-		print 'imax 1'
-		print 'jmax 5'
-		print 'kmax *'
-		print ''
-		print 'bin\t\t%s' % (results['Normal'][charge][chan].chan_str)
-		##	if (gFullDataBlind)
-		##		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d", 999, 999, 999, 999, 999, 999) << endl;
-		##	else
-		print 'observation\t%d' % (results['Normal'][charge][chan].obs)
-		print '\n'
-		print 'bin\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s' % (
-			results['Normal'][charge][chan].chan_str,
-			results['Normal'][charge][chan].chan_str,
-			results['Normal'][charge][chan].chan_str,
-			results['Normal'][charge][chan].chan_str,
-			results['Normal'][charge][chan].chan_str,
-			results['Normal'][charge][chan].chan_str)
-		print 'process\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare'
-		print 'process\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5'
-		print 'rate\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f' % (
-			results['Normal'][charge][chan].ttw,
-			results['Normal'][charge][chan].ttz,
-			results['Normal'][charge][chan].fake,
-			results['Normal'][charge][chan].cmid,
-			results['Normal'][charge][chan].wz,
-			results['Normal'][charge][chan].rare)
-		print '\n'
-		print '#syst'
+		datacard_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
+		print '[status] writing %s' % datacard_name
+		with open(path + datacard_name, 'w') as file :
+			timestamp = time.asctime()
+			file.write('#=========================================================================================\n')
+			file.write('# Systematics table for ttW analysis, same-sign channel, subchannels\n')
+			file.write('# Generated on: %s\n' % (timestamp))
+			file.write('# Copy between the dashed lines for datacard\n')
+			file.write('#-----------------------------------------------------------------------------------------\n')
+			file.write('imax 1\n')
+			file.write('jmax 5\n')
+			file.write('kmax *\n')
+			file.write('\n')
+			file.write('bin\t\t%s\n' % (results['Normal'][charge][chan].chan_str))
+			##	if (gFullDataBlind)
+			##		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d", 999, 999, 999, 999, 999, 999) << endl;
+			##	else
+			file.write('observation\t%d\n' % (results['Normal'][charge][chan].obs))
+			file.write('\n')
+			file.write('bin\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n' % (
+				results['Normal'][charge][chan].chan_str,
+				results['Normal'][charge][chan].chan_str,
+				results['Normal'][charge][chan].chan_str,
+				results['Normal'][charge][chan].chan_str,
+				results['Normal'][charge][chan].chan_str,
+				results['Normal'][charge][chan].chan_str))
+			file.write('process\t\tttW\t\tttZ\t\tfake\t\tcmid\t\twz\t\trare\n')
+			file.write('process\t\t0\t\t1\t\t2\t\t3\t\t4\t\t5\n')
+			file.write('rate\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\n' % (
+				results['Normal'][charge][chan].ttw,
+				results['Normal'][charge][chan].ttz,
+				results['Normal'][charge][chan].fake,
+				results['Normal'][charge][chan].cmid,
+				results['Normal'][charge][chan].wz,
+				results['Normal'][charge][chan].rare))
+			file.write('\n')
+			file.write('#syst\n')
 
-		print 'lumi     lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f' % (
-			self.lumi_syst,
-			self.lumi_syst,
-			self.lumi_syst,
-			self.lumi_syst)
+			file.write('lumi     lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\n' % (
+				self.lumi_syst,
+				self.lumi_syst,
+				self.lumi_syst,
+				self.lumi_syst))
 
-		print     'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz )
-		print     'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake)
-		if chan != 'mm' :
-			print 'bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-' % (1. + results['Normal'][charge][chan].cmid_err / results['Normal'][charge][chan].cmid)
-		print     'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][charge][chan].wz_err   / results['Normal'][charge][chan].wz  )
-		print     'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f' % (1. + results['Normal'][charge][chan].rare_err / results['Normal'][charge][chan].rare)
+			file.write(    'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\n' % (1. + results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz ))
+			file.write(    'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\n' % (1. + results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake))
+			if chan != 'mm' :
+				file.write('bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-\n' % (1. + results['Normal'][charge][chan].cmid_err / results['Normal'][charge][chan].cmid))
+			file.write(    'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\n' % (1. + results['Normal'][charge][chan].wz_err   / results['Normal'][charge][chan].wz  ))
+			file.write(    'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f\n' % (1. + results['Normal'][charge][chan].rare_err / results['Normal'][charge][chan].rare))
 
-		if 'LepUp' in results and 'LepDown' in results :
-			print 'lept     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['LepDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
-				results['LepUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
-				results['LepDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
-				results['LepUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
-		else :
-			print '[WARNING] LepUp/Down systematic not found!'
+			if 'LepUp' in results and 'LepDown' in results :
+				file.write('lept     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+					results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['LepDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+					results['LepUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+					results['LepDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+					results['LepUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare))
+			else :
+				print '[WARNING] LepUp/Down systematic not found!'
 
-		if 'MuUp' in results and 'MuDown' in results :
-			print 'muon     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['MuDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
-				results['MuUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
-				results['MuDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
-				results['MuUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
-		else :
-			print '[WARNING] MuUp/Down systematic not found!'
+			if 'MuUp' in results and 'MuDown' in results :
+				file.write('muon     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+					results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['MuDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+					results['MuUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+					results['MuDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+					results['MuUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare))
+			else :
+				print '[WARNING] MuUp/Down systematic not found!'
 
-		if 'ElUp' in results and 'ElDown' in results :
-			print 'elec     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['ElDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
-				results['ElUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
-				results['ElDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
-				results['ElUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
-		else :
-			print '[WARNING] ElUp/Down systematic not found!'
+			if 'ElUp' in results and 'ElDown' in results :
+				file.write('elec     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+					results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['ElDown'][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+					results['ElUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz  ,
+					results['ElDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+					results['ElUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare))
+			else :
+				print '[WARNING] ElUp/Down systematic not found!'
 
-		print 'leptrig  lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f' % (
-			self.ltrig_syst,
-			self.ltrig_syst,
-			self.ltrig_syst,
-			self.ltrig_syst)
+			file.write('leptrig  lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\n' % (
+				self.ltrig_syst,
+				self.ltrig_syst,
+				self.ltrig_syst,
+				self.ltrig_syst))
 
-		if 'BUp' in results and 'BDown' in results :
-			print 'btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['BDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['BUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['BDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
-				results['BUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
-		else :
-			print '[WARNING] BUp/Down systematic not found!'
+			if 'BUp' in results and 'BDown' in results :
+				file.write('btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+					results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['BDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['BUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['BDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+					results['BUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare))
+			else :
+				print '[WARNING] BUp/Down systematic not found!'
 
-		if 'JetUp' in results and 'JetDown' in results :
-			print 'jes      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['JetUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['JetDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
-				results['JetUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
-		else :
-			print '[WARNING] JetUp/Down systematic not found!'
+			if 'JetUp' in results and 'JetDown' in results :
+				file.write('jes      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+					results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['JetUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['JetDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+					results['JetUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare))
+			else :
+				print '[WARNING] JetUp/Down systematic not found!'
 
-		if 'JetSmearUp' in results and 'JetSmearDown' in results :
-			print 'jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['JetSmearDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['JetSmearUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['JetSmearDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
-				results['JetSmearUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
-		else :
-			print '[WARNING] JetSmearUp/Down systematic not found!'
+			if 'JetSmearUp' in results and 'JetSmearDown' in results :
+				file.write('jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+					results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['JetSmearDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['JetSmearUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['JetSmearDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+					results['JetSmearUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare))
+			else :
+				print '[WARNING] JetSmearUp/Down systematic not found!'
 
-		if 'PileupUp' in results and 'PileupDown' in results :
-			print 'pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-				results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
-				results['PileupDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['PileupUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
-				results['PileupDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
-				results['PileupUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
-		else :
-			print '[WARNING] PileupUp/Down systematic not found!'
+			if 'PileupUp' in results and 'PileupDown' in results :
+				file.write('pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+					results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
+					results['PileupDown'][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['PileupUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz,
+					results['PileupDown'][charge][chan].rare / results['Normal'][charge][chan].rare,
+					results['PileupUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare))
+			else :
+				print '[WARNING] PileupUp/Down systematic not found!'
 
-		##//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
-		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
-		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
-		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
-		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
-		print 'scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-			self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn)
+			##//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
+			##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+			##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+			##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
+			##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
+			file.write('scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
+				self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn))
 
-		print 'tmass    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t-\t\t-' % (
-			self.tmass_syst_up, self.tmass_syst_dn, self.tmass_syst_up, self.tmass_syst_dn)
+			file.write('tmass    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t-\t\t-\n' % (
+				self.tmass_syst_up, self.tmass_syst_dn, self.tmass_syst_up, self.tmass_syst_dn))
 
-		print 'gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (self.gen_syst)
+			file.write('gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\n' % (self.gen_syst))
 
-		print 'pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (self.pdf_syst, self.wz_pdf_syst)
+			file.write('pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\n' % (self.pdf_syst, self.wz_pdf_syst))
 
 
 	def make_DiffPredictions(self, selections) :
