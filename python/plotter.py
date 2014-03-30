@@ -88,6 +88,17 @@ class plotter :
 		self.systematics['ElUp']         = 16
 		self.systematics['ElDown']       = 17
 
+		# systematic uncertainties for datacard
+		self.lumi_syst     = 1.026
+		self.scale_syst_up = 1.027
+		self.scale_syst_dn = 0.980
+		self.tmass_syst_up = 1.019
+		self.tmass_syst_dn = 0.983
+		self.ltrig_syst    = 1.050
+		self.pdf_syst      = 1.015
+		self.gen_syst      = 1.050
+		self.wz_pdf_syst   = 1.041
+
 		# charge strings
 		self.charges = {}
 		for charge in range(-1, 2) :
@@ -946,14 +957,6 @@ class plotter :
 
 	def make_datacard(self, results, chan, charge) :
 
-		scale_syst_up = 1.027
-		scale_syst_dn = 0.980
-		tmass_syst_up = 1.019
-		tmass_syst_dn = 0.983
-		ltrig_syst    = 1.050
-		pdf_syst      = 1.015
-		gen_syst      = 1.050
-
 		timestamp = time.asctime()
 		print '#========================================================================================='
 		print '# Systematics table for ttW analysis, same-sign channel, subchannels'
@@ -988,12 +991,20 @@ class plotter :
 			results['Normal'][charge][chan].rare)
 		print '\n'
 		print '#syst'
-		print 'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz )
-		print 'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake)
+
+		print 'lumi     lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f' % (
+			self.lumi_syst,
+			self.lumi_syst,
+			self.lumi_syst,
+			self.lumi_syst)
+
+		print     'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz )
+		print     'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-' % (1. + results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake)
 		if chan != 'mm' :
 			print 'bgUnccmi lnN\t-\t\t-\t\t-\t\t%5.3f\t\t-\t\t-' % (1. + results['Normal'][charge][chan].cmid_err / results['Normal'][charge][chan].cmid)
-		print 'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][charge][chan].wz_err   / results['Normal'][charge][chan].wz  )
-		print 'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f' % (1. + results['Normal'][charge][chan].rare_err / results['Normal'][charge][chan].rare)
+		print     'bgUncwz  lnN\t-\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (1. + results['Normal'][charge][chan].wz_err   / results['Normal'][charge][chan].wz  )
+		print     'bgUncrar lnN\t-\t\t-\t\t-\t\t-\t\t-\t\t%5.3f' % (1. + results['Normal'][charge][chan].rare_err / results['Normal'][charge][chan].rare)
+
 		if 'LepUp' in results and 'LepDown' in results :
 			print 'lept     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
@@ -1006,6 +1017,7 @@ class plotter :
 				results['LepUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] LepUp/Down systematic not found!'
+
 		if 'MuUp' in results and 'MuDown' in results :
 			print 'muon     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
@@ -1018,6 +1030,7 @@ class plotter :
 				results['MuUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] MuUp/Down systematic not found!'
+
 		if 'ElUp' in results and 'ElDown' in results :
 			print 'elec     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
@@ -1030,11 +1043,13 @@ class plotter :
 				results['ElUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] ElUp/Down systematic not found!'
+
 		print 'leptrig  lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f' % (
-			ltrig_syst,
-			ltrig_syst,
-			ltrig_syst,
-			ltrig_syst)
+			self.ltrig_syst,
+			self.ltrig_syst,
+			self.ltrig_syst,
+			self.ltrig_syst)
+
 		if 'BUp' in results and 'BDown' in results :
 			print 'btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
@@ -1047,6 +1062,7 @@ class plotter :
 				results['BUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] BUp/Down systematic not found!'
+
 		if 'JetUp' in results and 'JetDown' in results :
 			print 'jes      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
@@ -1059,31 +1075,7 @@ class plotter :
 				results['JetUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] JetUp/Down systematic not found!'
-		##//	fOUTSTREAM << Form("jer      lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f",
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_mm-ttwzpreds_plpl["Normal"].ttwz_mm)/ttwzpreds_plpl["Normal"].ttwz_mm,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_mm  -ttwzpreds_plpl["Normal"].wz_mm  )/ttwzpreds_plpl["Normal"].wz_mm,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_mm-ttwzpreds_plpl["Normal"].rare_mm)/ttwzpreds_plpl["Normal"].rare_mm,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_em-ttwzpreds_plpl["Normal"].ttwz_em)/ttwzpreds_plpl["Normal"].ttwz_em,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_em  -ttwzpreds_plpl["Normal"].wz_em  )/ttwzpreds_plpl["Normal"].wz_em,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_em-ttwzpreds_plpl["Normal"].rare_em)/ttwzpreds_plpl["Normal"].rare_em,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].ttwz_ee-ttwzpreds_plpl["Normal"].ttwz_ee)/ttwzpreds_plpl["Normal"].ttwz_ee,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].wz_ee  -ttwzpreds_plpl["Normal"].wz_ee  )/ttwzpreds_plpl["Normal"].wz_ee,
-		##//					   1.0+(ttwzpreds_plpl["JetSmear"].rare_ee-ttwzpreds_plpl["Normal"].rare_ee)/ttwzpreds_plpl["Normal"].rare_ee,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_mm-ttwzpreds_mimi["Normal"].ttwz_mm)/ttwzpreds_mimi["Normal"].ttwz_mm,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_mm  -ttwzpreds_mimi["Normal"].wz_mm  )/ttwzpreds_mimi["Normal"].wz_mm,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_mm-ttwzpreds_mimi["Normal"].rare_mm)/ttwzpreds_mimi["Normal"].rare_mm,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_em-ttwzpreds_mimi["Normal"].ttwz_em)/ttwzpreds_mimi["Normal"].ttwz_em,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_em  -ttwzpreds_mimi["Normal"].wz_em  )/ttwzpreds_mimi["Normal"].wz_em,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_em-ttwzpreds_mimi["Normal"].rare_em)/ttwzpreds_mimi["Normal"].rare_em,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].ttwz_ee-ttwzpreds_mimi["Normal"].ttwz_ee)/ttwzpreds_mimi["Normal"].ttwz_ee,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].wz_ee  -ttwzpreds_mimi["Normal"].wz_ee  )/ttwzpreds_mimi["Normal"].wz_ee,
-		##//					   1.0+(ttwzpreds_mimi["JetSmear"].rare_ee-ttwzpreds_mimi["Normal"].rare_ee)/ttwzpreds_mimi["Normal"].rare_ee) << endl;
+
 		if 'JetSmearUp' in results and 'JetSmearDown' in results :
 			print 'jer      lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
@@ -1096,6 +1088,7 @@ class plotter :
 				results['JetSmearUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] JetSmearUp/Down systematic not found!'
+
 		if 'PileupUp' in results and 'PileupDown' in results :
 			print 'pu       lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
 				results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz,
@@ -1108,17 +1101,21 @@ class plotter :
 				results['PileupUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare)
 		else :
 			print '[WARNING] PileupUp/Down systematic not found!'
+
 		##//	fOUTSTREAM << Form("matching lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f",
 		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 		##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
 		print 'scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-			scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn, scale_syst_up, scale_syst_dn)
-		print 'tmass    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f' % (
-			tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn, tmass_syst_up, tmass_syst_dn)
-		print 'gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (gen_syst)
-		print 'pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (pdf_syst)
+			self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn)
+
+		print 'tmass    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t-\t\t-' % (
+			self.tmass_syst_up, self.tmass_syst_dn, self.tmass_syst_up, self.tmass_syst_dn)
+
+		print 'gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-' % (self.gen_syst)
+
+		print 'pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-' % (self.pdf_syst, self.wz_pdf_syst)
 
 
 	def make_DiffPredictions(self, selections) :
