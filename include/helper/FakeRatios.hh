@@ -144,7 +144,11 @@ public:
 	float getNfpNpfNffSumEStat(float, float, float, float, float, float, float, float);
 	float getNfpNpfSumEStat(float, float, float, float, float, float, float, float);
 
+#ifdef __CINT__
+	float getESystFromToys2(float, float, float, float, float, float, float, float, float, float, float, float, float(*)(float, float, float, float, float, float, float, float));
+#else
 	float getESystFromToys2(float, float, float, float, float, float, float, float, float, float, float, float, float(FakeRatios::*)(float, float, float, float, float, float, float, float));
+#endif
 
 	// Event by event weights
 	float getWpp(gTLCat, float, float, float, float);

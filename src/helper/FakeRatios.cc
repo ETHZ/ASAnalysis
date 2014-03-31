@@ -660,7 +660,11 @@ float FakeRatios::getNfpNpfSumEStat(float Ntt, float Ntl, float Nlt, float Nll, 
 
 //____________________________________________________________________________________
 // Throw toy MC to determine systematics from errors on ratios
+#ifdef __CINT__
+float FakeRatios::getESystFromToys2(float Ntt, float Ntl, float Nlt, float Nll, float f1, float f2, float p1, float p2, float df1, float df2, float dp1, float dp2, float(*func)(float, float, float, float, float, float, float, float)){
+#else
 float FakeRatios::getESystFromToys2(float Ntt, float Ntl, float Nlt, float Nll, float f1, float f2, float p1, float p2, float df1, float df2, float dp1, float dp2, float(FakeRatios::*func)(float, float, float, float, float, float, float, float)){
+#endif
 	// Assume errors of p and f are uncorrelated
 	// Throw toys in a gaussian around f and p with df and dp as their sigmas
 	// Distributions for f and p are cut off at 0 and 1
