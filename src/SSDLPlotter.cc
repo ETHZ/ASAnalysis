@@ -14530,7 +14530,9 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	double Mllbins[20]   = {20.,  40.,  60.,  80., 84., 89, 91., 93., 95., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300.};
 	double NVrtxbins[41] = {0., 1., 2., 3., 4., 5., 6., 7., 8., 9.,  10.,  11.,  12.,  13.,  14.,  15.,  16.,  17.,  18.,  19.,  20.,  21.,  22.,  23.,  24.,  25.,  26.,  27.,  28.,  29.,  30.,  31.,  32.,  33.,  34.,  35.,  36.,  37.,  38.,  39.,  40.};
 	double minMTbins[21] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400.};
-	double minM3bins[31] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600.};
+//	double minM3bins[31] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600.};
+//	double minM3bins[21] = {0.,  30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300., 330., 360., 390., 420., 450., 480., 510., 540., 570., 600.};
+	double minM3bins[11] = {0.,  30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.};
 
 
 
@@ -15202,10 +15204,10 @@ void SSDLPlotter::makeTTWDiffPredictionSigEvent(vector<TString> diffVarName, vec
 					nfp = FR->getWfp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
 					nff = FR->getWff(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
 					
-					if (i < 100) cout << "FR->getWpp("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
-					if (i < 100) cout << "FR->getWpf("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpf(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
-					if (i < 100) cout << "FR->getWfp("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWfp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
-					if (i < 100) cout << "FR->getWff("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWff(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//					if (i < 100) cout << "FR->getWpp("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//					if (i < 100) cout << "FR->getWpf("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpf(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//					if (i < 100) cout << "FR->getWfp("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWfp(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
+//					if (i < 100) cout << "FR->getWff("<<FakeRatios::gTLCat(TLCat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWff(FakeRatios::gTLCat(TLCat), f1, f2, p1, p2);
 					
 					if (Flavor == 0 || Flavor == 1 || Flavor == 2) {	// MU-MU || E-MU || E-E
 						                 h_pred_fake   [var]->Fill(diffVar    , npf+nfp+nff);
@@ -24278,10 +24280,10 @@ void SSDLPlotter::storeWeightedPred(int baseRegion){
 		nfp = FR->getWfp(FakeRatios::gTLCat(cat), f1, f2, p1, p2);
 		nff = FR->getWff(FakeRatios::gTLCat(cat), f1, f2, p1, p2);
 
-		if (i < 100) cout << "FR->getWpp("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpp(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
-		if (i < 100) cout << "FR->getWpf("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpf(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
-		if (i < 100) cout << "FR->getWfp("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWfp(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
-		if (i < 100) cout << "FR->getWff("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWff(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
+//		if (i < 100) cout << "FR->getWpp("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpp(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
+//		if (i < 100) cout << "FR->getWpf("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWpf(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
+//		if (i < 100) cout << "FR->getWfp("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWfp(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
+//		if (i < 100) cout << "FR->getWff("<<FakeRatios::gTLCat(cat)<<", "<<f1<<", "<<f2<<", "<<p1<<", "<<p2<<") = " << FR->getWff(FakeRatios::gTLCat(cat), f1, f2, p1, p2) << endl;
 					
 		if (datamc == 0) {
 //			debugOUTSTREAM << Form("Event: %12d tlcat: %d pT1: %5.1f f1: %.3f pT2: %5.1f f2: %.3f npp: %.4f npf: %.4f nfp: %.4f nff: %.4f", event, cat, pT1, f2, pT2, f2, npp, npf, nfp, nff) << endl;
