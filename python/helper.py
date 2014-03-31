@@ -1,6 +1,7 @@
 #! /usr/bin/python
 import math
 import pickle
+import os
 
 
 def ratioWithBinomErrors(numerator, denominator) :
@@ -51,3 +52,8 @@ def save_obj(obj, name):
 def load_obj(name):
 	with open('obj/' + name + '.pkl', 'r') as file:
 		return pickle.load(file)
+
+
+def mkdir(path) :
+	if not os.path.exists(path) :
+		os.mkdir(path)
