@@ -14556,7 +14556,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	diffVarName.push_back("Mll"    );   nbins.push_back(          19 );   bins.push_back(                 Mllbins );   xAxisTitle.push_back("m_{ll} [GeV]"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("NVrtx"  );   nbins.push_back(          40 );   bins.push_back(               NVrtxbins );   xAxisTitle.push_back("N_{Vertices}"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("minMT"  );   nbins.push_back(          20 );   bins.push_back(               minMTbins );   xAxisTitle.push_back("M_{T}"                                );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("M3"     );   nbins.push_back(          30 );   bins.push_back(               minM3bins );   xAxisTitle.push_back("m_{jjj} [GeV]"                        );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("M3"     );   nbins.push_back(          10 );   bins.push_back(               minM3bins );   xAxisTitle.push_back("m_{jjj} [GeV]"                        );   yAxisTitle.push_back("Events"          );
 
 	// region_sel = 2 2J 1bJ
 	// region_sel = 3 2J 0bJ
