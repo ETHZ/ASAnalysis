@@ -160,8 +160,8 @@ class plotter :
 		sels = {}
 
 		if os.path.exists(resultspath) :
-			print '[status] loading results of predictions from %s..)' % (resultspath)
-			results = load_object(resultspath)
+			print '[status] loading results of predictions from %s..' % (resultspath)
+			results = helper.load_object(resultspath)
 
 		else :
 			for syst in self.systematics :
@@ -1039,8 +1039,10 @@ class plotter :
 	def make_datacard(self, results, chan, charge) :
 
 		datacard_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
+		datacard_path = self.path + '/datacards/'
+		helper.mkdir(datacard_path)
 		print '[status] writing %s' % datacard_name
-		with open(self.path + '/datacards/' + datacard_name, 'w') as file :
+		with open(datacard_path + datacard_name, 'w') as file :
 			timestamp = time.asctime()
 			file.write('#=========================================================================================\n')
 			file.write('# Systematics table for ttW analysis, same-sign channel, subchannels\n')
