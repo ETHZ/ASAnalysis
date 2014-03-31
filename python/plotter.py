@@ -10,6 +10,8 @@ import ratios
 import prediction
 import result
 import time
+import copytree
+import os
 
 
 class plotter :
@@ -152,6 +154,49 @@ class plotter :
 
 		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155.)
 
+		results = {}
+		resultspath = self.path + '/IntPredictions/results.pkl'
+
+		sels = {}
+
+		if os.path.exists(resultspath) :
+			print '[status] loading results of predictions from %s..)' % (resultspath)
+			results = load_object(resultspath)
+
+		else :
+			for syst in self.systematics :
+
+				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
+
+				if not os.path.exists(systpath) :
+					print '[status] creating skimmed tree file for %s systematic..' % (syst)
+					copytree.copytree(self.path + 'SSDLYields_skim.root', systpath, 'SigEvents', 'SystFlag == %d' % (self.systematics[syst]))
+
+				systfile = ROOT.TFile.Open(systpath, 'READ')
+				systtree = systfile.Get('SigEvents')
+
+				print '[status] making predictions for %s systematic' % (syst)
+				sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
+				results[syst] = self.make_IntPredictions(sels[syst], systtree)
+
+				systfile.Close()
+
+#
+#				skim_systfile[syst] = ROOT.TFile.Open(self.path + '/SSDLYields_skim_' + syst + '.root', 'RECREATE')
+#				skim_systfile[syst].cd()
+#				skim_systtree = self.skimtree.CopyTree('SystFlag == %d' % (self.systematics[syst]))
+#				skim_systtree.AutoSave()
+#				skim_systtree.Write()
+#
+#				systres[syst] = self.make_IntPredictions(sels[syst], skim_systtree)
+
+			helper.save_object(results, resultspath)
+
+		for ch_str in results['Normal'] :
+			for chan in results['Normal'][ch_str] :
+				self.make_datacard(results, chan, ch_str)
+		return
+
 #		res_syst = {}
 #		res_syst['Normal'] = self.make_IntPredictions(finalsel)
 #
@@ -195,7 +240,7 @@ class plotter :
 					if chan == 'ee' : channel_string = 'e'+charge_str+'e'+charge_str
 					systres[syst][ch_str][chan].chan_str = channel_string
 
-					if syst == 'Normal' : self.make_datacard(self.path, systres, chan, ch_str)
+					if syst == 'Normal' : self.make_datacard(systres, chan, ch_str)
 
 #		for key1 in systres :
 #			print key1
@@ -991,11 +1036,11 @@ class plotter :
 		print "----------------------------------------------------------------------------------------------"
 
 
-	def make_datacard(self, path, results, chan, charge) :
+	def make_datacard(self, results, chan, charge) :
 
 		datacard_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
 		print '[status] writing %s' % datacard_name
-		with open(path + datacard_name, 'w') as file :
+		with open(self.path + '/datacards/' + datacard_name, 'w') as file :
 			timestamp = time.asctime()
 			file.write('#=========================================================================================\n')
 			file.write('# Systematics table for ttW analysis, same-sign channel, subchannels\n')
