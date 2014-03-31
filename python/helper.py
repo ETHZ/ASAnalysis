@@ -44,13 +44,18 @@ def ratioWithPoissErrors(numerator, denominator) :
 ## }
 
 
-def save_obj(obj, name):
-	with open('obj/' + name + '.pkl', 'w') as file:
+def save_object(obj, filepath) :
+	dir = os.path.dirname(filepath)
+	mkdir(dir)
+	with open(filepath, 'w') as file :
 		pickle.dump(obj, file, pickle.HIGHEST_PROTOCOL)
 
 
-def load_obj(name):
-	with open('obj/' + name + '.pkl', 'r') as file:
+def load_object(filepath) :
+	if not os.path.exists(filepath) :
+		print '[ERROR] %s does not exist!' % (filepath)
+		return -1
+	with open(filepath, 'r') as file :
 		return pickle.load(file)
 
 

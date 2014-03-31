@@ -177,11 +177,11 @@ class plotter :
 #			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
 #			systres[syst] = self.make_IntPredictions(sels[syst], skim_systtree)
 #
-#		helper.save_obj(systres, 'systs')
+#		helper.save_object(systres, self.path + 'IntPredictions/results.pkl)
 #
 #		return
 
-		systres = helper.load_obj('systs')
+		systres = helper.load_object('obj/systs.pkl')
 		for syst in systres :
 			for ch_str in systres[syst] :
 				for chan in systres[syst][ch_str] :
@@ -218,9 +218,9 @@ class plotter :
 #		self.make_datacard(systres, 'em')
 #
 #		# saving results to file (just for development
-#		helper.save_obj(res_syst, 'bla')
+#		helper.save_object(res_syst, 'bla')
 
-#		res_safe = helper.load_obj('bla')
+#		res_safe = helper.load_object('bla')
 #		self.print_results(res_safe['Normal'])
 #
 #		self.make_datacard(res_safe, 'em')
