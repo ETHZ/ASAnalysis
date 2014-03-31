@@ -14532,7 +14532,8 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	double minMTbins[21] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400.};
 //	double minM3bins[31] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600.};
 	//double minM3bins[42] = {-10., 0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620.,  640.,  660.,  680., 700., 720.,  740.,  760.,  780., 800.};
-	double minM3bins[11] = {0.,  30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.};
+//	double minM3bins[11] = {0., 30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.};
+	double minM3bins[21] = {0., 30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300., 330.,  360.,  390., 420., 450., 480., 510., 540., 570., 600.};
 
 
 
@@ -14556,7 +14557,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	diffVarName.push_back("Mll"    );   nbins.push_back(          19 );   bins.push_back(                 Mllbins );   xAxisTitle.push_back("m_{ll} [GeV]"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("NVrtx"  );   nbins.push_back(          40 );   bins.push_back(               NVrtxbins );   xAxisTitle.push_back("N_{Vertices}"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("minMT"  );   nbins.push_back(          20 );   bins.push_back(               minMTbins );   xAxisTitle.push_back("M_{T}"                                );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("M3"     );   nbins.push_back(          10 );   bins.push_back(               minM3bins );   xAxisTitle.push_back("m_{jjj} [GeV]"                        );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("M3"     );   nbins.push_back(          20 );   bins.push_back(               minM3bins );   xAxisTitle.push_back("m_{jjj} [GeV]"                        );   yAxisTitle.push_back("Events"          );
 
 	// region_sel = 2 2J 1bJ
 	// region_sel = 3 2J 0bJ
