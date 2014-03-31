@@ -181,15 +181,6 @@ class plotter :
 
 				systfile.Close()
 
-#
-#				skim_systfile[syst] = ROOT.TFile.Open(self.path + '/SSDLYields_skim_' + syst + '.root', 'RECREATE')
-#				skim_systfile[syst].cd()
-#				skim_systtree = self.skimtree.CopyTree('SystFlag == %d' % (self.systematics[syst]))
-#				skim_systtree.AutoSave()
-#				skim_systtree.Write()
-#
-#				systres[syst] = self.make_IntPredictions(sels[syst], skim_systtree)
-
 			helper.save_object(results, resultspath)
 
 		for ch_str in results['Normal'] :
@@ -197,108 +188,8 @@ class plotter :
 				self.make_datacard(results, chan, ch_str)
 		return
 
-#		res_syst = {}
-#		res_syst['Normal'] = self.make_IntPredictions(finalsel)
-#
-#		self.print_results(res_syst['Normal']['++'])
-#		self.make_datacard(res_syst, 'em', '++')
-#		self.make_datacard(res_syst, 'ee', '++')
-#
-#		return
-
-#		sels = {}
-#		systres = {}
-#		skim_systfile = {}
-#		for syst in self.systematics :
-#
-#			print '[status] creating skimmed tree file for %s systematic..' % (syst)
-#			skim_systfile[syst] = ROOT.TFile.Open(self.path + '/SSDLYields_skim_' + syst + '.root', 'RECREATE')
-#			skim_systfile[syst].cd()
-#			skim_systtree = self.skimtree.CopyTree('SystFlag == %d' % (self.systematics[syst]))
-#			skim_systtree.AutoSave()
-#			skim_systtree.Write()
-#
-#			print '[status] making predictions for %s systematic' % (syst)
-#			sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
-#			systres[syst] = self.make_IntPredictions(sels[syst], skim_systtree)
-#
-#		helper.save_object(systres, self.path + 'IntPredictions/results.pkl)
-#
-#		return
-
-		systres = helper.load_object('obj/systs.pkl')
-		for syst in systres :
-			for ch_str in systres[syst] :
-				for chan in systres[syst][ch_str] :
-					charge_str = ''
-					if self.charges[ch_str] > 0 : charge_str = '+'
-					if self.charges[ch_str] < 0 : charge_str = '-'
-					# this fixes the chan_str (remove again!)
-					if chan == 'al' : channel_string = 'int'+charge_str+charge_str
-					if chan == 'mm' : channel_string = 'm'+charge_str+'m'+charge_str
-					if chan == 'em' : channel_string = 'e'+charge_str+'m'+charge_str
-					if chan == 'ee' : channel_string = 'e'+charge_str+'e'+charge_str
-					systres[syst][ch_str][chan].chan_str = channel_string
-
-					if syst == 'Normal' : self.make_datacard(systres, chan, ch_str)
-
-#		for key1 in systres :
-#			print key1
-#			for key2 in systres[key1] :
-#				print key2
-#				for key3 in systres[key1][key2] :
-#					print key3
-#		self.make_datacard(self.path, systres, 'al', '++')
-#		self.make_datacard(self.path, systres, 'mm', '++')
-#		self.make_datacard(self.path, systres, 'em', '++')
-#		self.make_datacard(self.path, systres, 'ee', '++')
-
-		self.print_results(systres['Normal']['++'])
-
-
-#		for syst in systres :
-#			for chan in systres[syst] :
-#				systres[syst][chan].set_ttwzPredictions()
-#				systres[syst][chan].chan_str = chan
-#		self.make_datacard(systres, 'em')
-#
-#		# saving results to file (just for development
-#		helper.save_object(res_syst, 'bla')
-
-#		res_safe = helper.load_object('bla')
-#		self.print_results(res_safe['Normal'])
-#
-#		self.make_datacard(res_safe, 'em')
 #
 #		raw_input('ok? ')
-
-		## cout << "=== Going to call makeRatioControlPlots and fillRatios methods..." << endl;
-		## if(readHistos(fOutputFileName) != 0) return;
-		## 
-		## #/* Here I calculate the EWK MC scale factors, but I don't use 
-		## #   them in producing any of the fakerate control plots   */
-		## bool saveRatioControlPlots = true;
-		## makeRatioControlPlots(1, true, saveRatioControlPlots); // El
-		## makeRatioControlPlots(2, true, saveRatioControlPlots); // Mu17
-		## makeRatioControlPlots(3, true, saveRatioControlPlots); // Mu24_eta2p1
-		## 
-		## #  /* Here I produce the control plots without re-calculating the
-		## #     EWK MC scale factors, but instead using the numbers obtained above. 
-		## #     NB: without the previous calls, a SF=1 would be used (FIXME: this is bad design)*/
-		## makeRatioControlPlots(1, false, saveRatioControlPlots); // El
-		## makeRatioControlPlots(2, false, saveRatioControlPlots); // Mu17
-		## makeRatioControlPlots(3, false, saveRatioControlPlots); // Mu24_eta2p1
-		## 
-		## 
-		## bool saveRatioPlots = false;
-		## fillRatios(fMuTotData,    fEGData,    0, false, saveRatioPlots);  //make FR plots without applying EWK subtraction
-		## fillRatios(fMuTotData,    fEGData,    0, true,  saveRatioPlots);  //make the same applying the EWK subtraction
-		## 
-		## 
-		## fillRatios(fMCBGMuEnr, fMCBGEMEnr, 1, false, false);
-		## storeWeightedPred(gRegion[gBaseRegion]);
-		## ttG_SR0 = setTTGammaPred(gRegion["SR00"]);
-		## cout << "...done ====" << endl;
 
 
 	def readDatacard(self, cardfile, verbose = 0) :
@@ -530,65 +421,9 @@ class plotter :
 			res[ch_str]['em'] = result.result('em', charge, 'e'+charge_str+'m'+charge_str)
 			res[ch_str]['ee'] = result.result('ee', charge, 'e'+charge_str+'e'+charge_str)
 
-#		# tight-tight, tight-loose, loose-tight and loose-loose data yields
-#		nt2_mm = 0.; nt10_mm = 0.; nt01_mm = 0.; nt0_mm = 0.;
-#		nt2_em = 0.; nt10_em = 0.; nt01_em = 0.; nt0_em = 0.;
-#		nt2_ee = 0.; nt10_ee = 0.; nt01_ee = 0.; nt0_ee = 0.;
-
-#		# FR Predictions from event-by-event weights (pre stored)
-#		npp_mm = 0.; npf_mm = 0.; nfp_mm = 0.; nff_mm = 0.;
-#		npp_em = 0.; npf_em = 0.; nfp_em = 0.; nff_em = 0.;
-#		npp_ee = 0.; npf_ee = 0.; nfp_ee = 0.; nff_ee = 0.;
-
-#		# OS yields (tight-tight)
-#		nt2_ee_BB_os = 0.; nt2_ee_EE_os = 0.; nt2_ee_EB_os = 0.;
-#		nt2_em_BB_os = 0.; nt2_em_EE_os = 0.;
-
-		# rare SM yields (tight-tight)
-		nt2_rare_mc_mm = 0.;    nt2_rare_mc_em = 0.;    nt2_rare_mc_ee = 0.;
-		nt2_rare_mc_mm_e2 = 0.; nt2_rare_mc_em_e2 = 0.; nt2_rare_mc_ee_e2 = 0.;
-
-		# WZ yields (tight-tight)
-		nt2_wz_mc_mm = 0.;    nt2_wz_mc_em = 0.;    nt2_wz_mc_ee = 0.;
-		nt2_wz_mc_mm_e2 = 0.; nt2_wz_mc_em_e2 = 0.; nt2_wz_mc_ee_e2 = 0.;
-
 		# all rares, ttW and ttZ yields (tight-tight)
 		rares = {}
 		rares_npass = {}
-#
-#		for s in self.samples :
-#			if self.samples[s].datamc == 0 : continue
-#			yields.rares_mm[s] = 0.; yields.rares_mm_npass[s] = 0;
-#			yields.rares_em[s] = 0.; yields.rares_em_npass[s] = 0;
-#			yields.rares_ee[s] = 0.; yields.rares_ee_npass[s] = 0;
-
-		nt2_all_mm = {}
-		nt2_all_em = {}
-		nt2_all_ee = {}
-		h_nt2 = {}
-
-		rares_sum = 0.
-
-##		# check if this is faster
-##		for s in self.samples :
-##			if self.samples[s].datamc == 0 : continue
-##			else : scale = self.lumi / self.samples[s].getLumi()
-###			print self.sigtree.GetEntries(sel.get_selectionString(False) + ' && SName == ' + s)
-###			print s, scale * self.sigtree.GetEntries('PUWeight * HLTSF * ('+sel.get_selectionString(False)+'&& SName == \"'+s+'\")')
-##
-##			if s == 'WWTo2L2Nu' : continue
-##			h_nt2[s] = ROOT.TH1D(s+'_flavor', s + ' flavor', 3, 0., 3.)
-##			self.sigtree.Draw('Flavor>>'+s, '%s * PUWeight * HLTSF * (' % (scale) + sel.get_selectionString() + '&& SType == 15 && SName == \"'+s+'\")', 'goff')
-###			print 'Flavor>>'+s, '%s * PUWeight * HLTSF * ('%(scale)+sel.get_selectionString(False)+'&& SName == \"'+s+'\")'
-##			rares_sum += h_nt2[s].Integral()
-##			print s, h_nt2[s].Integral()
-###			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
-###				if event.SName == 'WWTo2L2Nu' : continue # TODO: why?
-##
-##		print '============================='
-##		print 'rares sum:', rares_sum
-
-		print sel.get_selectionString()
 
 		#######################
 		# ChMisID predictions #
