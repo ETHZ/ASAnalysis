@@ -14533,7 +14533,9 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	double minM3bins[31] = {0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600.};
 	//double minM3bins[42] = {-10., 0.,  20.,  40.,  60.,  80., 100., 120., 140., 160., 180., 200., 220., 240., 260., 280., 300., 320., 340., 360., 380., 400., 420., 440., 460., 480., 500., 520., 540., 560., 580., 600., 620.,  640.,  660.,  680., 700., 720.,  740.,  760.,  780., 800.};
 //	double minM3bins[11] = {0., 30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.};
-	double minM3bins[21] = {0., 30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300., 330.,  360.,  390., 420., 450., 480., 510., 540., 570., 600.};
+//	double minM3bins[21] = {0., 30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300., 330.,  360.,  390., 420., 450., 480., 510., 540., 570., 600.};
+//	double minM3bins[15] = {0.,  40.,  80., 120., 160., 200., 240., 280., 320., 360., 400., 440., 480., 520., 580.};
+	double minM3bins[13] = {0.,  50., 100., 150., 200., 250., 300., 350., 400., 450., 500., 550., 600.};
 
 
 
@@ -14557,7 +14559,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //	diffVarName.push_back("Mll"    );   nbins.push_back(          19 );   bins.push_back(                 Mllbins );   xAxisTitle.push_back("m_{ll} [GeV]"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("NVrtx"  );   nbins.push_back(          40 );   bins.push_back(               NVrtxbins );   xAxisTitle.push_back("N_{Vertices}"                                );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("minMT"  );   nbins.push_back(          20 );   bins.push_back(               minMTbins );   xAxisTitle.push_back("M_{T}"                                );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("M3"     );   nbins.push_back(          20 );   bins.push_back(               minM3bins );   xAxisTitle.push_back("m_{jjj} [GeV]"                        );   yAxisTitle.push_back("Events"          );
+	diffVarName.push_back("M3"     );   nbins.push_back(          12 );   bins.push_back(               minM3bins );   xAxisTitle.push_back("m_{jjj} [GeV]"                        );   yAxisTitle.push_back("Events"          );
 
 	// region_sel = 2 2J 1bJ
 	// region_sel = 3 2J 0bJ
@@ -14588,7 +14590,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 //////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  6,  0);
 //////	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  6,  0);
 	// 3 J   1 bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  0,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  1,  7,  0);
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle,  2,  7,  0);
@@ -14619,7 +14621,7 @@ void SSDLPlotter::makeTTWDiffPredictionsSigEvent() {
 	// == 3 J  == 1 bJ
 //	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 12,  0);
 	// 4 J 2bJ
-	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 13,  0);
+//	makeTTWDiffPredictionSigEvent(diffVarName, nbins, bins, xAxisTitle, yAxisTitle, -1, 13,  0);
 
 	return;
 	diffVarName.clear();
