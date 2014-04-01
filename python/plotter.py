@@ -439,7 +439,7 @@ class plotter :
 		## }
 
 
-	def make_IntPredictions(self, sel, tree) :
+	def make_IntPredictions(self, sel, tree, write_ResTree = False) :
 		'''oberservation and prediction for different selections'''
 		## for now only with one selection
 
@@ -519,9 +519,10 @@ class plotter :
 		# Results tree #
 		################
 
-#		self.results_file = ROOT.TFile(self.path + '/SSDLResults.root', 'RECREATE')
-#		self.results_tree = ROOT.TTree('Results', 'ResultsTree')
-#		self.book_resultsTree()
+		if write_ResTree :
+			self.results_file = ROOT.TFile(self.path + '/SSDLResults.root', 'RECREATE')
+			self.results_tree = ROOT.TTree('Results', 'ResultsTree')
+			self.book_resultsTree()
 
 		####################################
 		# Loop over skimmed SigEvents tree #
@@ -547,9 +548,41 @@ class plotter :
 			chan = self.get_channelString(int(event.Flavor))
 
 			# SET VARIABLES FOR RESULTS TREE
-#			self.ResTree_Run[0]   = event.Run
-#			self.ResTree_LS [0]   = event.LS
-#			self.ResTree_Event[0] = event.Event
+#			if write_ResTree :
+#				self.ResTree_SystFlag [0] = event.SystFlag
+#				self.ResTree_SName    [0] = event.SName'
+				self.ResTree_SType    [0] = event.SType
+				self.ResTree_Run      [0] = event.Run
+				self.ResTree_LS       [0] = event.LS
+				self.ResTree_Event    [0] = event.Event
+				self.ResTree_Flavor   [0] = event.Flavor
+				self.ResTree_Charge   [0] = event.Charge
+#				self.ResTree_TLCat    [0] = event.TLCat
+#				self.ResTree_ZVeto    [0] = event.PassZVeto
+				self.ResTree_HT       [0] = event.HT
+				self.ResTree_MET      [0] = event.MET
+				self.ResTree_NJ       [0] = event.NJ
+				self.ResTree_NbJ      [0] = event.NbJ
+				self.ResTree_NbJmed   [0] = event.NbJmed
+				self.ResTree_Mll      [0] = event.Mll
+				self.ResTree_pT1      [0] = event.pT1
+				self.ResTree_pT2      [0] = event.pT2
+#				self.ResTree_PFIso1   [0] = event.PFIso1
+#				self.ResTree_PFIso2   [0] = event.PFIso2
+#				self.ResTree_D01      [0] = event.D01
+#				self.ResTree_D02      [0] = event.D02
+#				self.ResTree_Rho      [0] = event.Rho
+				self.ResTree_MTLep1   [0] = event.MTLep1
+#				self.ResTree_MTLep2   [0] = event.MTLep2
+#				self.ResTree_dRbJl1   [0] = event.dRbJl1
+#				self.ResTree_dRbJl2   [0] = event.dRbJl2
+#				self.ResTree_BetaStar1[0] = event.BetaStar1
+#				self.ResTree_BetaStar2[0] = event.BetaStar2
+#				self.ResTree_BetaStar3[0] = event.BetaStar3
+#				self.ResTree_BetaStar4[0] = event.BetaStar4
+#				self.ResTree_BetaStar5[0] = event.BetaStar5
+				self.ResTree_NVrtx    [0] = event.NVrtx
+				self.ResTree_M3       [0] = event.M3
 
 			# GET ALL DATA EVENTS
 			if event.SType < 3 :
@@ -614,16 +647,33 @@ class plotter :
 							if event.TLCat is 2 : res[ch_str]['ee'].nt01 += 1
 							if event.TLCat is 3 : res[ch_str]['ee'].nt0  += 1
 
-#				# EM OS
-#				if event.Flavor is 4 :
-#					if event.TLCat is 0 : nt2_em_BB_os += chargeFactor
-#					if event.TLCat is 1 : nt2_em_EE_os += chargeFactor
-#
-#				# EE OS
-#				if event.Flavor is 5 :
-#					if event.TLCat is 0                     : nt2_ee_BB_os += chargeFactor
-#					if event.TLCat is 1 or event.TLCat is 2 : nt2_ee_EB_os += chargeFactor
-#					if event.TLCat is 3                     : nt2_ee_EE_os += chargeFactor
+					if write_ResTree :
+						# store oberservations in results tree
+						if event.TLCat is 0 :
+							self.ResTree_ObsPred[0] = 0
+							self.ResTree_Weight [0] = 1.
+							self.results_tree.Fill()
+
+						# store fake predictions in results tree
+						self.ResTree_ObsPred[0] = 1
+						self.ResTree_Weight [0] = npf+nfp+nff
+						self.results_tree.Fill()
+
+				if write_ResTree :
+					self.ResTree_ObsPred[0] = 2
+
+					# EM OS
+					if event.Flavor is 4 :
+						if event.TLCat is 0 : self.ResTree_Weight[0] = fbb
+						if event.TLCat is 1 : self.ResTree_Weight[0] = fee
+
+					# EE OS
+					if event.Flavor is 5 :
+						if event.TLCat is 0                     : self.ResTree_Weight[0] = 2*fbb
+						if event.TLCat is 1 or event.TLCat is 2 : self.ResTree_Weight[0] = 2*feb
+						if event.TLCat is 3                     : self.ResTree_Weight[0] = 2*fee
+
+					self.results_tree.Fill()
 
 			# GET RARE MC EVENTS
 			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
@@ -658,7 +708,19 @@ class plotter :
 						rares      [str(event.SName)][ch_str]['ee'] += scale
 						rares_npass[str(event.SName)][ch_str]['ee'] += 1
 
+				if write_ResTree :
+					if   event.SName == 'WZTo3LNu' : self.ResTree_ObsPred[0] = 3
+					elif event.SName == 'TTbarW'   : self.ResTree_ObsPred[0] = 4
+					elif event.SName == 'TTbarZ'   : self.ResTree_ObsPred[0] = 5
+					else                           : self.ResTree_ObsPred[0] = 6
+					self.ResTree_Weight[0] = scale
+					self.results_tree.Fill()
+
 		# END LOOP OVER TREE
+
+		if write_ResTree :
+			self.results_file.Write()
+			self.results_file.Close()
 
 		# print number of events per sample in skimmed SigEvents tree
 #		for name, n in nevents.iteritems() :
