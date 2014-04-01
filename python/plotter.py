@@ -12,6 +12,7 @@ import result
 import time
 import copytree
 import os
+import numpy as np
 
 
 class plotter :
@@ -284,6 +285,46 @@ class plotter :
 		print '[status] reading histograms..'
 
 
+	def book_resultsTree(self) :
+		# create branches
+		self.ResTree_Weight    = np.zeros(1,, dtype=float); self.results_tree.Branch('Weight',      self.ResTree_Weight     , 'Weight/F'   );
+		self.ResTree_ObsPred   = np.zeros(1,, dtype=int  ); self.results_tree.Branch('ObsPred',     self.ResTree_ObsPred    , 'ObsPred/I'  );
+#		self.ResTree_SystFlag  = np.zeros(1,, dtype=int  ); self.results_tree.Branch('SystFlag',    self.ResTree_SystFlag   , 'SystFlag/I' );
+#		self.ResTree_SName     = np.zeros(1,, dtype=float); self.results_tree.Branch('SName',       self.ResTree_SName);
+		self.ResTree_SType     = np.zeros(1,, dtype=int  ); self.results_tree.Branch('SType',       self.ResTree_SType      , 'SType/I'    );
+		self.ResTree_Run       = np.zeros(1,, dtype=int  ); self.results_tree.Branch('Run',         self.ResTree_Run        , 'Run/I'      );
+		self.ResTree_LS        = np.zeros(1,, dtype=int  ); self.results_tree.Branch('LS',          self.ResTree_LS         , 'LS/I'       );
+		self.ResTree_Event     = np.zeros(1,, dtype=int  ); self.results_tree.Branch('Event',       self.ResTree_Event      , 'Event/I'    );
+		self.ResTree_Flavor    = np.zeros(1,, dtype=int  ); self.results_tree.Branch('Flavor',      self.ResTree_Flavor     , 'Flavor/I'   );
+		self.ResTree_Charge    = np.zeros(1,, dtype=int  ); self.results_tree.Branch('Charge',      self.ResTree_Charge     , 'Charge/I'   );
+#		self.ResTree_TLCat     = np.zeros(1,, dtype=int  ); self.results_tree.Branch('TLCat',       self.ResTree_TLCat      , 'TLCat/I'    );
+#		self.ResTree_ZVeto     = np.zeros(1,, dtype=int  ); self.results_tree.Branch('PassZVeto',   self.ResTree_ZVeto      , 'PassZVeto/I');
+		self.ResTree_HT        = np.zeros(1,, dtype=float); self.results_tree.Branch('HT',          self.ResTree_HT         , 'HT/F'       );
+		self.ResTree_MET       = np.zeros(1,, dtype=float); self.results_tree.Branch('MET',         self.ResTree_MET        , 'MET/F'      );
+		self.ResTree_NJ        = np.zeros(1,, dtype=int  ); self.results_tree.Branch('NJ',          self.ResTree_NJ         , 'NJ/I'       );
+		self.ResTree_NbJ       = np.zeros(1,, dtype=int  ); self.results_tree.Branch('NbJ',         self.ResTree_NbJ        , 'NbJ/I'      );
+		self.ResTree_NbJmed    = np.zeros(1,, dtype=int  ); self.results_tree.Branch('NbJmed',      self.ResTree_NbJmed     , 'NbJmed/I'   );
+		self.ResTree_Mll       = np.zeros(1,, dtype=float); self.results_tree.Branch('Mll',         self.ResTree_Mll        , 'Mll/F'      );
+		self.ResTree_pT1       = np.zeros(1,, dtype=float); self.results_tree.Branch('pT1',         self.ResTree_pT1        , 'pT1/F'      );
+		self.ResTree_pT2       = np.zeros(1,, dtype=float); self.results_tree.Branch('pT2',         self.ResTree_pT2        , 'pT2/F'      );
+#		self.ResTree_PFIso1    = np.zeros(1,, dtype=float); self.results_tree.Branch('PFIso1',      self.ResTree_PFIso1     , 'PFIso1/F'   );
+#		self.ResTree_PFIso2    = np.zeros(1,, dtype=float); self.results_tree.Branch('PFIso2',      self.ResTree_PFIso2     , 'PFIso2/F'   );
+#		self.ResTree_D01       = np.zeros(1,, dtype=float); self.results_tree.Branch('D01',         self.ResTree_D01        , 'D01/F'      );
+#		self.ResTree_D02       = np.zeros(1,, dtype=float); self.results_tree.Branch('D02',         self.ResTree_D02        , 'D02/F'      );
+#		self.ResTree_Rho       = np.zeros(1,, dtype=float); self.results_tree.Branch('Rho',         self.ResTree_Rho        , 'Rho/F'      );
+		self.ResTree_MTLep1    = np.zeros(1,, dtype=float); self.results_tree.Branch('MTLep1',      self.ResTree_MTLep1     , 'MTLep1/F'   );
+#		self.ResTree_MTLep2    = np.zeros(1,, dtype=float); self.results_tree.Branch('MTLep2',      self.ResTree_MTLep2     , 'MTLep2/F'   );
+#		self.ResTree_dRbJl1    = np.zeros(1,, dtype=float); self.results_tree.Branch('dRbJl1',      self.ResTree_dRbJl1     , 'dRbJl1/F'   );
+#		self.ResTree_dRbJl2    = np.zeros(1,, dtype=float); self.results_tree.Branch('dRbJl2',      self.ResTree_dRbJl2     , 'dRbJl2/F'   );
+#		self.ResTree_BetaStar1 = np.zeros(1,, dtype=float); self.results_tree.Branch('BetaStar1',   self.ResTree_BetaStar1  , 'BetaStar1/F');
+#		self.ResTree_BetaStar2 = np.zeros(1,, dtype=float); self.results_tree.Branch('BetaStar2',   self.ResTree_BetaStar2  , 'BetaStar2/F');
+#		self.ResTree_BetaStar3 = np.zeros(1,, dtype=float); self.results_tree.Branch('BetaStar3',   self.ResTree_BetaStar3  , 'BetaStar3/F');
+#		self.ResTree_BetaStar4 = np.zeros(1,, dtype=float); self.results_tree.Branch('BetaStar4',   self.ResTree_BetaStar4  , 'BetaStar4/F');
+#		self.ResTree_BetaStar5 = np.zeros(1,, dtype=float); self.results_tree.Branch('BetaStar5',   self.ResTree_BetaStar5  , 'BetaStar5/F');
+		self.ResTree_NVrtx     = np.zeros(1,, dtype=int  ); self.results_tree.Branch('NVrtx',       self.ResTree_NVrtx      , 'NVrtx/I'    );
+		self.ResTree_M3        = np.zeros(1,, dtype=float); self.results_tree.Branch('M3',          self.ResTree_M3         , 'M3/F'       );
+
+
 	def get_EWK_SF(self, chan_str) :
 		print '[status] calculating EWK scale factor for %s trigger' % (chan_str)
 		samples_wjets = []
@@ -478,45 +519,9 @@ class plotter :
 		# Results tree #
 		################
 
-#		results_file = ROOT.TFile(self.path + '/SSDLResults.root', 'RECREATE')
-#		results_tree = ROOT.TTree('Results', 'ResultsTree')
-#
-#		# create branches
-#		results_tree.Branch("Weight",      Weight     , "Weight/F"   );
-#		results_tree.Branch("SystFlag",    SystFlag   , "SystFlag/I" );
-#		results_tree.Branch("SName",       SName);
-#		results_tree.Branch("SType",       SType      , "SType/I"    );
-#		results_tree.Branch("Run",         Run        , "Run/I"      );
-#		results_tree.Branch("LS",          LS         , "LS/I"       );
-#		results_tree.Branch("Event",       Event      , "Event/I"    );
-#		results_tree.Branch("Flavor",      Flavor     , "Flavor/I"   );
-#		results_tree.Branch("Charge",      Charge     , "Charge/I"   );
-#		results_tree.Branch("TLCat",       TLCat      , "TLCat/I"    );
-#		results_tree.Branch("PassZVeto",   ZVeto      , "PassZVeto/I");
-#		results_tree.Branch("HT",          HT         , "HT/F"       );
-#		results_tree.Branch("MET",         MET        , "MET/F"      );
-#		results_tree.Branch("NJ",          NJ         , "NJ/I"       );
-#		results_tree.Branch("NbJ",         NbJ        , "NbJ/I"      );
-#		results_tree.Branch("NbJmed",      NbJmed     , "NbJmed/I"   );
-#		results_tree.Branch("Mll",         Mll        , "Mll/F"      );
-#		results_tree.Branch("pT1",         pT1        , "pT1/F"      );
-#		results_tree.Branch("pT2",         pT2        , "pT2/F"      );
-#		results_tree.Branch("PFIso1",      PFIso1     , "PFIso1/F"   );
-#		results_tree.Branch("PFIso2",      PFIso2     , "PFIso2/F"   );
-#		results_tree.Branch("D01",         D01        , "D01/F"      );
-#		results_tree.Branch("D02",         D02        , "D02/F"      );
-#		results_tree.Branch("Rho",         Rho        , "Rho/F"      );
-#		results_tree.Branch("MTLep1",      MTLep1     , "MTLep1/F"   );
-#		results_tree.Branch("MTLep2",      MTLep2     , "MTLep2/F"   );
-#		results_tree.Branch("dRbJl1",      dRbJl1     , "dRbJl1/F"   );
-#		results_tree.Branch("dRbJl2",      dRbJl2     , "dRbJl2/F"   );
-#		results_tree.Branch("BetaStar1",   BetaStar1  , "BetaStar1/F");
-#		results_tree.Branch("BetaStar2",   BetaStar2  , "BetaStar2/F");
-#		results_tree.Branch("BetaStar3",   BetaStar3  , "BetaStar3/F");
-#		results_tree.Branch("BetaStar4",   BetaStar4  , "BetaStar4/F");
-#		results_tree.Branch("BetaStar5",   BetaStar5  , "BetaStar5/F");
-#		results_tree.Branch("NVrtx",       NVrtx      , "NVrtx/I"    );
-#		results_tree.Branch("M3",          M3         , "M3/F"       );
+#		self.results_file = ROOT.TFile(self.path + '/SSDLResults.root', 'RECREATE')
+#		self.results_tree = ROOT.TTree('Results', 'ResultsTree')
+#		self.book_resultsTree()
 
 		####################################
 		# Loop over skimmed SigEvents tree #
@@ -540,6 +545,11 @@ class plotter :
 
 			if not sel.passes_selection(event = event, ttLeptons = False) : continue
 			chan = self.get_channelString(int(event.Flavor))
+
+			# SET VARIABLES FOR RESULTS TREE
+#			self.ResTree_Run[0]   = event.Run
+#			self.ResTree_LS [0]   = event.LS
+#			self.ResTree_Event[0] = event.Event
 
 			# GET ALL DATA EVENTS
 			if event.SType < 3 :
