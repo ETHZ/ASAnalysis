@@ -7,7 +7,6 @@ import selection as sel
 import sample
 import helper
 import ratios
-import prediction
 import result
 import time
 import copytree
@@ -117,6 +116,7 @@ class plotter :
 
 		# selections
 		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
+		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155.)
 		#print presel.get_selectionString()
 		self.selections[presel.name] = presel
 
@@ -153,9 +153,16 @@ class plotter :
 #		self.h2_ElpRatio.Draw('colztext')
 #
 
+		resultfile = ROOT.TFile.Open(self.path + 'SSDLResults.root', 'READ')
+		resulttree = resultfile.Get('Results')
+
+		self.plot_predictions(resulttree, finalsel)
+
+		return
+
 		nosyst_path = self.path + 'SSDLYields_Normal.root'
 		if not os.path.exists(nosyst_path) :
-			copytree.copytree(self.path + 'SSDLYields.root', nosyst_path, 'SigEvents', 'SystFlag == 0 && (SType < 3 || TLCat == 0) && (SType < 3 || Flavor < 3) && (SType < 2 || SType == 15)')
+			copytree.copytree(self.path + 'SSDLYields.root', nosyst_path, 'SigEvents', 'SystFlag == 0 && (SType < 3 || TLCat == 0) && (SType < 3 || Flavor < 3) && (SType < 3 || SType == 15)')
 
 		nosystfile = ROOT.TFile.Open(nosyst_path, 'READ')
 		nosysttree = nosystfile.Get('SigEvents')
@@ -166,7 +173,6 @@ class plotter :
 
 
 
-		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155.)
 
 		results = {}
 		resultspath = self.path + '/IntPredictions/results.pkl'
@@ -302,7 +308,7 @@ class plotter :
 		# create branches
 		self.ResTree_Weight    = np.zeros(1, dtype=float); self.results_tree.Branch('Weight',      self.ResTree_Weight     , 'Weight/D'   );
 		self.ResTree_ObsPred   = np.zeros(1, dtype=int  ); self.results_tree.Branch('ObsPred',     self.ResTree_ObsPred    , 'ObsPred/I'  );
-#		self.ResTree_SystFlag  = np.zeros(1, dtype=int  ); self.results_tree.Branch('SystFlag',    self.ResTree_SystFlag   , 'SystFlag/I' );
+		self.ResTree_SystFlag  = np.zeros(1, dtype=int  ); self.results_tree.Branch('SystFlag',    self.ResTree_SystFlag   , 'SystFlag/I' );
 #		self.ResTree_SName     = np.zeros(1, dtype=float); self.results_tree.Branch('SName',       self.ResTree_SName);
 		self.ResTree_SType     = np.zeros(1, dtype=int  ); self.results_tree.Branch('SType',       self.ResTree_SType      , 'SType/I'    );
 		self.ResTree_Run       = np.zeros(1, dtype=int  ); self.results_tree.Branch('Run',         self.ResTree_Run        , 'Run/I'      );
@@ -454,15 +460,16 @@ class plotter :
 
 	def make_IntPredictions(self, sel, tree, write_ResTree = False) :
 		'''oberservation and prediction for different selections'''
-		## for now only with one selection
+
+		if write_ResTree :
+			print '[status] getting observations and predictions for results tree with selection %s:' % (sel.name)
+			print sel
 
 		##################
 		# INIT VARIABLES #
 		##################
 
 		FR = ROOT.FakeRatios()
-
-		yields = prediction.prediction()
 
 		res = {}
 		for ch_str, charge in self.charges.iteritems() :
@@ -483,7 +490,15 @@ class plotter :
 		# ChMisID predictions #
 		#######################
 
-		if sel.systflag is 0 :
+		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
+		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
+		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
+
+#		(fbb_mc, fbbE_mc) = calculateChMisIdProb(fMCBG, 'BB')
+#		(feb_mc, febE_mc) = calculateChMisIdProb(fMCBG, 'EB')
+#		(fee_mc, feeE_mc) = calculateChMisIdProb(fMCBG, 'EE')
+
+		if sel.systflag is 0 and not write_ResTree :
 			print '[status] getting opposite-sign yields..'
 
 			# EM OS
@@ -494,14 +509,6 @@ class plotter :
 			nt2_ee_BB_os = self.sigtree.GetEntries(sel.get_selectionString((5,0)))
 			nt2_ee_EB_os = self.sigtree.GetEntries(sel.get_selectionString((5,4)))
 			nt2_ee_EE_os = self.sigtree.GetEntries(sel.get_selectionString((5,3)))
-
-			(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
-			(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
-			(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
-
-	#		(fbb_mc, fbbE_mc) = calculateChMisIdProb(fMCBG, 'BB')
-	#		(feb_mc, febE_mc) = calculateChMisIdProb(fMCBG, 'EB')
-	#		(fee_mc, feeE_mc) = calculateChMisIdProb(fMCBG, 'EE')
 
 			for ch_str, charge in self.charges.iteritems() :
 
@@ -557,18 +564,21 @@ class plotter :
 				print '[status] processing %s..' % (event.SName)
 				last_sample = str(event.SName)
 
-			if not sel.passes_selection(event = event, ttLeptons = False) : continue
+			if not sel.passes_selection(event = event, ttLeptons = False, OSwoZVeto = True) : continue
 			chan = self.get_channelString(int(event.Flavor))
 
 			# SET VARIABLES FOR RESULTS TREE
 			if write_ResTree :
-#				self.ResTree_SystFlag [0] = event.SystFlag
+				self.ResTree_SystFlag [0] = event.SystFlag
 #				self.ResTree_SName    [0] = event.SName
 				self.ResTree_SType    [0] = event.SType
 				self.ResTree_Run      [0] = event.Run
 				self.ResTree_LS       [0] = event.LS
 				self.ResTree_Event    [0] = event.Event
-				self.ResTree_Flavor   [0] = event.Flavor
+				if event.Flavor < 3 :
+					self.ResTree_Flavor   [0] = event.Flavor
+				else :
+					self.ResTree_Flavor   [0] = event.Flavor - 3
 				self.ResTree_Charge   [0] = event.Charge
 #				self.ResTree_TLCat    [0] = event.TLCat
 #				self.ResTree_ZVeto    [0] = event.PassZVeto
@@ -672,7 +682,7 @@ class plotter :
 						self.ResTree_Weight [0] = npf+nfp+nff
 						self.results_tree.Fill()
 
-				if write_ResTree :
+				if write_ResTree and event.Flavor > 2 :
 					self.ResTree_ObsPred[0] = 2
 
 					# EM OS
@@ -1122,6 +1132,62 @@ class plotter :
 			file.write('gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\n' % (self.gen_syst))
 
 			file.write('pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\n' % (self.pdf_syst, self.wz_pdf_syst))
+
+
+	def plot_predictions(self, tree, sel) :
+
+		print sel
+
+		nbins = 6
+		min = 0.
+		max = 600.
+		var = 'HT'
+
+		histos = {}
+
+		h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
+		h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
+		h_chmid_name = 'h_chmid_' + var; histos['chmid'] = ROOT.TH1D(h_chmid_name, h_chmid_name, nbins, min, max)
+		h_rare_name  = 'h_rare_'  + var; histos['rare' ] = ROOT.TH1D(h_rare_name , h_rare_name , nbins, min, max)
+		h_wz_name    = 'h_wz_'    + var; histos['wz'   ] = ROOT.TH1D(h_wz_name   , h_wz_name   , nbins, min, max)
+		h_ttz_name   = 'h_ttz_'   + var; histos['ttz'  ] = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
+		h_ttw_name   = 'h_ttw_'   + var; histos['ttw'  ] = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
+
+		tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_chmid_name, 'Weight*(ObsPred == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_wz_name   , 'Weight*(ObsPred == 3 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttw_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+
+		self.save_plot(histos)
+
+
+	def save_plot(self, histos) :
+		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
+
+		histos['fake' ].SetFillColor(46)
+		histos['chmid'].SetFillColor(49)
+		histos['rare' ].SetFillColor(38)
+		histos['wz'   ].SetFillColor(39)
+		histos['ttz'  ].SetFillColor(42)
+		histos['ttw'  ].SetFillColor(44)
+
+		hs_pred.Add(histos['fake' ])
+		hs_pred.Add(histos['chmid'])
+		hs_pred.Add(histos['rare' ])
+		hs_pred.Add(histos['wz'   ])
+		hs_pred.Add(histos['ttz'  ])
+		hs_pred.Add(histos['ttw'  ])
+
+		histos['obs'].SetMarkerStyle(20)
+		histos['obs'].SetMarkerSize(2.)
+
+		hs_pred.Draw()
+		histos['obs'].Draw('samep')
+#		histos['fake'].Draw('same')
+		raw_input('ok? ')
 
 
 	def make_DiffPredictions(self, selections) :
