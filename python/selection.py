@@ -26,6 +26,23 @@ class selection :
 		self.mll        = mll
 
 
+	def __str__(self) :
+		printout  = '\n%s applies the following cuts:\n' % (self.name)
+		printout += '\n   %5.1f <= HT                <= %6.1f' % (self.minHT     , self.maxHT     )
+		printout += '\n   %5.1f <= MET               <= %6.1f' % (self.minMET    , self.maxMET    )
+		printout += '\n   %3d   <= N jets            <= %4d'   % (self.minNjets  , self.maxNjets  )
+		printout += '\n   %3d   <= N b-tags loose    <= %4d'   % (self.minNbjetsL, self.maxNbjetsL)
+		printout += '\n   %3d   <= N b-tags medium   <= %4d'   % (self.minNbjetsM, self.maxNbjetsM)
+		printout += '\n   %5.1f <= lead. lept. pT'             % (self.minPt1    )
+		printout += '\n   %5.1f <= sublead. lept. pT'          % (self.minPt2    )
+		if self.ZVeto       : printout += '\n   Z veto'
+		if self.charge > 0  : printout += '\n   only l+l+ events'
+		if self.charge < 0  : printout += '\n   only l-l- events'
+		if self.flavor > -1 : printout += '\n   flavor = %d' % (self.flavor)
+		printout += '\n'
+		return printout
+
+
 	def passes_selection(self, event, ttLeptons = True, noChargeSel = False, OSwoZVeto = False) :
 		if event.SystFlag != self.systflag                                              : return False
 		if not (OSwoZVeto and event.Flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
@@ -50,7 +67,7 @@ class selection :
 		return True
 
 
-	def get_selectionString(self, OS_data = (-1, -1), ttLeptons = True) :
+	def get_selectionString(self, OS_data = (-1, -1), ttLeptons = True, ResTree = False) :
 		'''return a selection string which can be used to draw directly from the tree'''
 		selectionString = ''
 		selectionString +=     'HT >= %f'     % (self.minHT     )
@@ -67,20 +84,21 @@ class selection :
 		selectionString += ' && TMath::Max(pT1,pT2) >= %f' % (self.minPt1)
 		selectionString += ' && TMath::Min(pT1,pT2) >= %f' % (self.minPt2)
 		selectionString += ' && SystFlag == %d'            % (self.systflag)
-		if OS_data[0] < 0 :
-			if self.ZVeto           : selectionString += ' && PassZVeto != 0'
-			if self.charge is not 0 : selectionString += ' && Charge == %d' % (self.charge)
-			if ttLeptons            : selectionString += ' && TLCat == 0'
-			if self.flavor > -1     : selectionString += ' && Flavor == %d' % (self.flavor)
-			if self.flavor is -1    : selectionString += ' && Flavor < 3'
-		else :
-			if OS_data[1] < 0 : return -1
-			selectionString += ' && SType < 3'
-			selectionString += ' && Flavor == %d' % (OS_data[0])
-			if OS_data[1] is 4 :
-				selectionString += ' && (TLCat == 1 || TLCat == 2)'
+		if not ResTree :
+			if OS_data[0] < 0 :
+				if self.ZVeto           : selectionString += ' && PassZVeto != 0'
+				if self.charge is not 0 : selectionString += ' && Charge == %d' % (self.charge)
+				if ttLeptons            : selectionString += ' && TLCat == 0'
+				if self.flavor > -1     : selectionString += ' && Flavor == %d' % (self.flavor)
+				if self.flavor is -1    : selectionString += ' && Flavor < 3'
 			else :
-				selectionString += ' && TLCat == %d'  % (OS_data[1])
-			if self.flavor > -1 : selectionString += ' && Flavor == %d' % (self.flavor+3)
+				if OS_data[1] < 0 : return -1
+				selectionString += ' && SType < 3'
+				selectionString += ' && Flavor == %d' % (OS_data[0])
+				if OS_data[1] is 4 :
+					selectionString += ' && (TLCat == 1 || TLCat == 2)'
+				else :
+					selectionString += ' && TLCat == %d'  % (OS_data[1])
+				if self.flavor > -1 : selectionString += ' && Flavor == %d' % (self.flavor+3)
 
 		return selectionString
