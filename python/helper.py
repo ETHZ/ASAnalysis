@@ -47,68 +47,36 @@ def ratioWithPoissErrors(numerator, denominator) :
 
 
 def getGraphPoissonErrors(histo, nSigma = 1., xErrType = '0') :
-	##TGraphAsymmErrors* FakeRatios::getGraphPoissonErrors(TH1D* histo, float nSigma, const std::string& xErrType){
-	##	TGraphAsymmErrors* graph = new TGraphAsymmErrors(0);
-	graph = ROOT.TGraphAsymmErrors(0)
-	##
 
-	##	for(unsigned iBin=1; iBin<(histo->GetXaxis()->GetNbins()+1); ++iBin){
+	graph = ROOT.TGraphAsymmErrors(0)
+
 	for iBin in range(1, histo.GetXaxis().GetNbins()+1) :
 
-	##
-	##		int y; // these are data histograms, so y has to be integer
-	##		double x, xerr, yerrplus, yerrminus;
-	##
-	##		x = histo->GetBinCenter(iBin);
 		x = histo.GetBinCenter(iBin)
-	##		if( xErrType=="0" )
-	##			xerr = 0.;
+
 		if xErrType == '0' :
-				xerr = 0.
-	##		else if( xErrType=="binWidth" )
-	##			xerr = histo->GetBinWidth(iBin)/2.;
+			xerr = 0.
 		elif xErrType == 'binWidth' :
 			xerr = histo.GetBinWidth(iBin)/2.
-	##		else if( xErrType=="sqrt12" )
-	##			xerr = histo->GetBinWidth(iBin)/sqrt(12.);
 		elif xErrType == 'sqrt12' :
 			xerr = histo.GetBinWidth(iBin)/math.sqrt(12.)
-	##		else {
-	##			std::cout << "Unkown xErrType '" << xErrType << "'. Setting to bin width." << std::endl;
-	##			xerr = histo->GetBinWidth(iBin);
-	##		}
 		else :
 			print '[WARNING] Unkown xErrType %s. Setting to bin width.'
 			xerr = histo.GetBinWidth(iBin)
 
-	##		y = (int)histo->GetBinContent(iBin);
 		y = int(histo.GetBinContent(iBin))
-	##
-	##		double ym, yp;
 		ym = array.array('d', [0])
 		yp = array.array('d', [0])
-	##		RooHistError::instance().getPoissonInterval(y,ym,yp,nSigma);
-#		ROOT.RooHistError.instance().getPoissonInterval(y,ROOT.Double(ym),ROOT.Double(yp),nSigma)  # TODO: doesn't work so far
-		ROOT.RooHistError.instance().getPoissonInterval(y,ym,yp,nSigma)
 
-	##
-	##		yerrplus = yp - y;
-	##		yerrminus = y - ym;
+		ROOT.RooHistError.instance().getPoissonInterval(y, ym, yp, nSigma)
+
 		yerrplus = yp[0] - y
 		yerrminus = y - ym[0]
 
-	##
-	##		int thisPoint = graph->GetN();
 		thisPoint = graph.GetN()
-	##		graph->SetPoint( thisPoint, x, y );
-		graph.SetPoint( thisPoint, x, y )
-	##		graph->SetPointError( thisPoint, xerr, xerr, yerrminus, yerrplus );
-		graph.SetPointError( thisPoint, xerr, xerr, yerrminus, yerrplus )
-	##
-	##	}
-	##
-	##	return graph;
-	##}
+		graph.SetPoint(thisPoint, x, y )
+		graph.SetPointError(thisPoint, xerr, xerr, yerrminus, yerrplus )
+
 	return graph
 
 
