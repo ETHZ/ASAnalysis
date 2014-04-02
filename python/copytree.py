@@ -5,7 +5,11 @@ import ROOT
 
 def copytree(inputfile, outputfile, tree_name, cut_str):
 
-	print '[status] CopyTree'
+	print ''
+	print '============'
+	print '| CopyTree |'
+	print '============'
+	print ''
 	print '         Inputfile:  %s' % (inputfile)
 	print '         Outputfile: %s' % (outputfile)
 		
@@ -38,3 +42,4 @@ def copytree(inputfile, outputfile, tree_name, cut_str):
 	output.Write()
 	output.Close()
 	input.Close()
+	print '[status] exit CopyTree\n'
