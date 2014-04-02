@@ -1152,7 +1152,10 @@ class plotter :
 		h_wz_name    = 'h_wz_'    + var; histos['wz'   ] = ROOT.TH1D(h_wz_name   , h_wz_name   , nbins, min, max)
 		h_ttz_name   = 'h_ttz_'   + var; histos['ttz'  ] = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
 		h_ttw_name   = 'h_ttw_'   + var; histos['ttw'  ] = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
+		h_bgtot_name = 'h_bgtot_' + var; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
+		h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
 
+		# getting histograms from results tree
 		tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var+'>>'+h_chmid_name, 'Weight*(ObsPred == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
@@ -1161,19 +1164,35 @@ class plotter :
 		tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var+'>>'+h_ttw_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 
-		self.save_plot(histos)
+		# adding background predictions
+		histos['bgtot'].Add(histos['fake' ])
+		histos['bgtot'].Add(histos['chmid'])
+		histos['bgtot'].Add(histos['rare' ])
+		histos['bgtot'].Add(histos['wz'   ])
+		histos['bgtot'].Add(histos['ttz'  ])
+
+		# adding predictions
+		histos['pred'].Add(histos['fake' ])
+		histos['pred'].Add(histos['chmid'])
+		histos['pred'].Add(histos['rare' ])
+		histos['pred'].Add(histos['wz'   ])
+		histos['pred'].Add(histos['ttz'  ])
+		histos['pred'].Add(histos['ttw'  ])
+
+		self.save_plot(histos, self.path+'test/', 'H_{T}')
 
 
-	def save_plot(self, histos) :
+	def save_plot(self, histos, path, var_name) :
+		'''save plot with observation and predictions'''
+
+		gr_obs  = helper.getGraphPoissonErrors(histos['obs'])
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
 
-		histos['fake' ].SetFillColor(46)
-		histos['chmid'].SetFillColor(49)
-		histos['rare' ].SetFillColor(38)
-		histos['wz'   ].SetFillColor(39)
-		histos['ttz'  ].SetFillColor(42)
-		histos['ttw'  ].SetFillColor(44)
+		gr_obs.SetMarkerStyle(20)
+		gr_obs.SetMarkerSize(2.)
+		gr_obs.SetLineWidth(2)
 
+		# adding predictions to stack
 		hs_pred.Add(histos['fake' ])
 		hs_pred.Add(histos['chmid'])
 		hs_pred.Add(histos['rare' ])
@@ -1181,11 +1200,75 @@ class plotter :
 		hs_pred.Add(histos['ttz'  ])
 		hs_pred.Add(histos['ttw'  ])
 
-		histos['obs'].SetMarkerStyle(20)
-		histos['obs'].SetMarkerSize(2.)
+		# set minimum and maximum
+		maximum = 1.2 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
+		print histos['pred'].GetMaximum()
+		histos['obs'  ].SetMaximum(maximum)
+		histos['fake' ].SetMaximum(maximum)
+		histos['chmid'].SetMaximum(maximum)
+		histos['rare' ].SetMaximum(maximum)
+		histos['wz'   ].SetMaximum(maximum)
+		histos['ttz'  ].SetMaximum(maximum)
+		histos['ttw'  ].SetMaximum(maximum)
+		histos['bgtot'].SetMaximum(maximum)
+		histos['pred' ].SetMaximum(maximum)
+		hs_pred        .SetMaximum(maximum)
+#
+#		hs_pred.Draw('goff')
+
+		# set colors
+		histos['fake' ].SetFillColor(46)
+		histos['chmid'].SetFillColor(49)
+		histos['rare' ].SetFillColor(38)
+		histos['wz'   ].SetFillColor(39)
+		histos['ttz'  ].SetFillColor(42)
+		histos['ttw'  ].SetFillColor(44)
+		
+		histos['fake' ].SetLineColor(1)
+		histos['chmid'].SetLineColor(1)
+		histos['rare' ].SetLineColor(1)
+		histos['wz'   ].SetLineColor(1)
+		histos['ttz'  ].SetLineColor(1)
+		histos['ttw'  ].SetLineColor(1)
+		
+		histos['fake' ].SetLineWidth(1)
+		histos['chmid'].SetLineWidth(1)
+		histos['rare' ].SetLineWidth(1)
+		histos['wz'   ].SetLineWidth(1)
+		histos['ttz'  ].SetLineWidth(1)
+		histos['ttw'  ].SetLineWidth(1)
+
+		histos['bgtot'].SetLineWidth(3)
+		histos['bgtot'].SetLineColor(1)
+#		histos['bgtot'].SetFillColor(12)
+		histos['bgtot'].SetFillStyle(0)
+
+		histos['pred' ].SetLineWidth(3)
+		histos['pred' ].SetFillColor(12)
+		histos['pred' ].SetFillStyle(3005)
+
+		leg = ROOT.TLegend(0.55, 0.42, 0.90, 0.88)
+		leg.AddEntry(gr_obs         , 'Observed'         , 'p')
+		leg.AddEntry(histos['fake' ], 'Non-prompt lepton', 'f')
+		leg.AddEntry(histos['chmid'], 'Charge MisID'     , 'f')
+		leg.AddEntry(histos['rare' ], 'Rare SM'          , 'f')
+		leg.AddEntry(histos['wz'   ], 'WZ'               , 'f')
+		leg.AddEntry(histos['ttz'  ], 't#bar{t} + Z'     , 'f')
+		leg.AddEntry(histos['ttw'  ], 't#bar{t} + W'     , 'f')
+		leg.SetFillStyle(0)
+		leg.SetTextFont(42)
+		leg.SetBorderSize(0)
+
+		canvas = ROOT.TCanvas('C_ObsPred', 'Observed vs Predicted', 0, 0, 600, 600)
+		canvas.SetLeftMargin(0.12)
+		canvas.SetRightMargin(0.04)
+		canvas.cd()
 
 		hs_pred.Draw()
-		histos['obs'].Draw('samep')
+		leg.Draw()
+		histos['pred'].Draw('0 E2 same')
+		histos['bgtot'].Draw('same')
+		gr_obs.Draw('P same')
 #		histos['fake'].Draw('same')
 		raw_input('ok? ')
 
