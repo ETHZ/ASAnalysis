@@ -171,7 +171,7 @@ class ttwplot :
 		##		}
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
-		histos['bgtot'].Draw('same')
+		histos['bgtot'].Draw('hist same')
 #		gr_obs.Draw('P same')
 		histos['obs'  ].Draw('PE X0 same')
 #		self.drawTopLine(0.56, 0.8)
