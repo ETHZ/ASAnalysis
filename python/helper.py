@@ -3,7 +3,7 @@ import math
 import pickle
 import os
 import ROOT
-import array
+from array import array
 
 
 def ratioWithBinomErrors(numerator, denominator) :
@@ -65,8 +65,8 @@ def getGraphPoissonErrors(histo, nSigma = 1., xErrType = '0') :
 			xerr = histo.GetBinWidth(iBin)
 
 		y = int(histo.GetBinContent(iBin))
-		ym = array.array('d', [0])
-		yp = array.array('d', [0])
+		ym = array('d', [0])
+		yp = array('d', [0])
 
 		ROOT.RooHistError.instance().getPoissonInterval(y, ym, yp, nSigma)
 
