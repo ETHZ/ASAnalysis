@@ -1231,15 +1231,8 @@ class plotter :
 		histos['pred' ].SetFillColor(12)
 		histos['pred' ].SetFillStyle(3005)
 
-		#leg = ROOT.TLegend(0.55, 0.42, 0.90, 0.88)
-		#leg = ROOT.TLegend(0.68, 0.53, 0.88, 0.88) # this works to make the boxes squares
-		nEntries = 7
-		scale = 0.85
-#		leg = ROOT.TLegend(0.68, 0.88-nEntries*0.25*0.2*scale, 0.68+0.2*scale, 0.88)
+		# legend
 		leg = ROOT.TLegend()
-		leg.SetTextAlign(12)
-		print leg.GetTextFont()
-		print leg.GetTextSize()
 		leg.AddEntry(histos['obs'  ], 'Observed'         , 'p')
 		leg.AddEntry(histos['fake' ], 'Non-prompt lepton', 'f')
 		leg.AddEntry(histos['chmid'], 'Charge MisID'     , 'f')
@@ -1247,16 +1240,19 @@ class plotter :
 		leg.AddEntry(histos['wz'   ], 'WZ'               , 'f')
 		leg.AddEntry(histos['ttz'  ], 't#bar{t} + Z'     , 'f')
 		leg.AddEntry(histos['ttw'  ], 't#bar{t} + W'     , 'f')
-		print leg.GetNRows()
-		width = 0.2
-		leg.SetX1NDC(0.68)
-		leg.SetX2NDC(0.68+width)
-		leg.SetY1NDC(0.88-leg.GetNRows()*0.25*width)
-		leg.SetY2NDC(0.88)
+		# set position
+		width = 0.17
+		x = 0.68
+		y = 0.88
+		leg.SetX1NDC(x)
+		leg.SetX2NDC(x+width)
+		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
+		leg.SetY2NDC(y)
 		leg.SetFillStyle(0)
 		leg.SetTextFont(42)
 		leg.SetTextSize(0.03)
 		leg.SetBorderSize(0)
+		leg.SetTextAlign(12)
 
 		canvas = ROOT.TCanvas('C_ObsPred', 'Observed vs Predicted', 0, 0, 600, 600)
 		canvas.SetLeftMargin(0.12)
