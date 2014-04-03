@@ -97,7 +97,7 @@ class plotter :
 		self.scale_syst_dn = 0.980
 		self.tmass_syst_up = 1.019
 		self.tmass_syst_dn = 0.983
-		self.ltrig_syst    = 1.050
+		self.ltrig_syst    = 1.030
 		self.pdf_syst      = 1.015
 		self.gen_syst      = 1.050
 		self.wz_pdf_syst   = 1.041
