@@ -1180,7 +1180,8 @@ class plotter :
 		histos['pred'].Add(histos['ttz'  ])
 		histos['pred'].Add(histos['ttw'  ])
 
-		pl = ttwplot.ttwplot()
+		pl = ttwplot.ttwplot(self.path + 'test/')
+#		pl = ttwplot.ttwplot()
 		pl.save_plot(histos, self.path+'test/', 'H_{T}')
 		raw_input('ok? ')
 

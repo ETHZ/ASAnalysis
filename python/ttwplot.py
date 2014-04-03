@@ -5,8 +5,36 @@ import helper
 
 class ttwplot :
 
-	def __init__(self) :
-		foo = 0
+	def __init__(self, path) :
+		self.path = path
+		helper.mkdir(self.path)
+
+		# colors
+		self.colors = {}
+		self.colors['obs'  ] = 1
+		self.colors['fake' ] = 46
+		self.colors['chmid'] = 49
+		self.colors['rare' ] = 38
+		self.colors['wz'   ] = 39
+		self.colors['ttz'  ] = 42
+		self.colors['ttw'  ] = 44
+
+		# process names
+		self.process_names = {}
+		self.process_names['obs'  ] = 'Observed'
+		self.process_names['fake' ] = 'Non-prompt lepton'
+		self.process_names['chmid'] = 'Charge MisID'
+		self.process_names['rare' ] = 'Rare SM'
+		self.process_names['wz'   ] = 'WZ'
+		self.process_names['ttz'  ] = 't#bar{t} + Z'
+		self.process_names['ttw'  ] = 't#bar{t} + W'
+
+
+	def get_fillColor(self, process) :
+		if process in self.colors.keys() :
+			return self.colors[process]
+		else :
+			return 0
 
 
 	def save_plot(self, histos, path, var_name) :
@@ -25,20 +53,13 @@ class ttwplot :
 
 		# set minimum and maximum
 		maximum = 1.2 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
-		hs_pred        .SetMaximum(maximum)
+		hs_pred.SetMaximum(maximum)
 
 		for process, histo in histos.iteritems() :
 			histo.SetMaximum(maximum)
 			histo.SetLineColor(1)
 			histo.SetLineWidth(1)
-
-		# set colors
-		histos['fake' ].SetFillColor(46)
-		histos['chmid'].SetFillColor(49)
-		histos['rare' ].SetFillColor(38)
-		histos['wz'   ].SetFillColor(39)
-		histos['ttz'  ].SetFillColor(42)
-		histos['ttw'  ].SetFillColor(44)
+			histo.SetFillColor(self.get_fillColor(process))
 
 		# data histogram settings
 		histos['obs'  ].SetMarkerStyle(20)
@@ -60,13 +81,13 @@ class ttwplot :
 
 		# legend
 		leg = ROOT.TLegend()
-		leg.AddEntry(histos['obs'  ], 'Observed'         , 'p')
-		leg.AddEntry(histos['fake' ], 'Non-prompt lepton', 'f')
-		leg.AddEntry(histos['chmid'], 'Charge MisID'     , 'f')
-		leg.AddEntry(histos['rare' ], 'Rare SM'          , 'f')
-		leg.AddEntry(histos['wz'   ], 'WZ'               , 'f')
-		leg.AddEntry(histos['ttz'  ], 't#bar{t} + Z'     , 'f')
-		leg.AddEntry(histos['ttw'  ], 't#bar{t} + W'     , 'f')
+		leg.AddEntry(histos['obs'  ], self.process_names['obs'  ], 'p')
+		leg.AddEntry(histos['fake' ], self.process_names['fake' ], 'f')
+		leg.AddEntry(histos['chmid'], self.process_names['chmid'], 'f')
+		leg.AddEntry(histos['rare' ], self.process_names['rare' ], 'f')
+		leg.AddEntry(histos['wz'   ], self.process_names['wz'   ], 'f')
+		leg.AddEntry(histos['ttz'  ], self.process_names['ttz'  ], 'f')
+		leg.AddEntry(histos['ttw'  ], self.process_names['ttw'  ], 'f')
 		# set position
 		width = 0.17
 		x = 0.68
@@ -93,3 +114,6 @@ class ttwplot :
 #		gr_obs.Draw('P same')
 		histos['obs'  ].Draw('PE X0 same')
 #		histos['fake'].Draw('same')
+		raw_input('ok? ')
+
+		canvas.Print(path + 'HT' + '.pdf')
