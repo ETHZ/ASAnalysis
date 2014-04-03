@@ -1143,6 +1143,9 @@ class plotter :
 		min = 0.
 		max = 600.
 		var = 'HT'
+		nbins = 15
+		min = 0.
+		max = 300.
 		var = 'Mll'
 
 		histos = {}
@@ -1180,6 +1183,48 @@ class plotter :
 		histos['pred'].Add(histos['wz'   ])
 		histos['pred'].Add(histos['ttz'  ])
 		histos['pred'].Add(histos['ttw'  ])
+
+		# errors
+		for bin in range(1, histos['bgtot'].GetNbinsX()+1) :
+			err2 = 0.
+
+			# fakes
+			fake_nPass = histos['fake'].GetBinContent(bin)
+			fake_syst2 = self.FakeESyst2 * fake_nPass*fake_nPass
+			fake_stat2 = 0.
+			err2 += fake_syst2 + fake_stat2
+
+			# charge mis ID
+			#fake_nPass = histos['chmid'].GetBinContent(bin)
+			#fake_syst2 = self.FakeESyst2 * fake_nPass*fake_nPass
+			#fake_stat2 = 0.
+			#err2 += fake_syst2 + fake_stat2
+
+			# wz
+			#scale
+			#wz_nPass = 
+			wz_yield = histos['wz'].GetBinContent(bin)
+			wz_syst2 = self.WZESyst2 * wz_yield*wz_yield
+			wz_stat2 = 0.
+			err2 += wz_syst2 + wz_stat2
+
+			# ttz
+			#scale
+			#ttz_nPass = 
+			ttz_yield = histos['ttz'].GetBinContent(bin)
+			ttz_syst2 = self.TTZESyst2 * ttz_yield*ttz_yield
+			ttz_stat2 = 0.
+			err2 += ttz_syst2 + ttz_stat2
+
+			# rare
+			#scale
+			#rare_nPass = 
+			rare_yield = histos['rare'].GetBinContent(bin)
+			rare_syst2 = self.RareESyst2 * rare_yield*rare_yield
+			rare_stat2 = 0.
+			err2 += rare_syst2 + rare_stat2
+
+			histos['pred'].SetBinError(bin, math.sqrt(err2))
 
 		pl = ttwplot.ttwplot(self.path + 'test/')
 #		pl = ttwplot.ttwplot()
