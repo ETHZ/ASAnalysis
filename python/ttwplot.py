@@ -29,10 +29,12 @@ class ttwplot :
 		self.process_names['wz'   ] = 'WZ'
 		self.process_names['ttz'  ] = 't#bar{t} + Z'
 		self.process_names['ttw'  ] = 't#bar{t} + W'
+		self.process_names['bgtot'] = 'Backgrounds'
 
 		# variable names
 		self.var_names = {}
-		self.var_names['HT'] = 'H_{T} [GeV]'
+		self.var_names['HT']  = 'H_{T} [GeV]'
+		self.var_names['Mll'] = 'm_{ll} [GeV]'
 
 
 	def get_fillColor(self, process) :
@@ -62,7 +64,7 @@ class ttwplot :
 		hs_pred.Add(histos['ttw'  ])
 
 		# set minimum and maximum
-		maximum = 1.2 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
+		maximum = 1.8 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
 		hs_pred.SetMaximum(maximum)
 
 		for process, histo in histos.iteritems() :
@@ -85,23 +87,25 @@ class ttwplot :
 #		histos['bgtot'].SetFillColor(12)
 		histos['bgtot'].SetFillStyle(0)
 
-		histos['pred' ].SetLineWidth(3)
+		histos['pred' ].SetLineWidth(0)
 		histos['pred' ].SetFillColor(12)
 		histos['pred' ].SetFillStyle(3005)
 
 		# legend
 		leg = ROOT.TLegend()
-		leg.AddEntry(histos['obs'  ], self.process_names['obs'  ], 'p')
+		leg.AddEntry(histos['obs'  ], self.process_names['obs'  ], 'lp')
 		leg.AddEntry(histos['fake' ], self.process_names['fake' ], 'f')
 		leg.AddEntry(histos['chmid'], self.process_names['chmid'], 'f')
 		leg.AddEntry(histos['rare' ], self.process_names['rare' ], 'f')
 		leg.AddEntry(histos['wz'   ], self.process_names['wz'   ], 'f')
 		leg.AddEntry(histos['ttz'  ], self.process_names['ttz'  ], 'f')
 		leg.AddEntry(histos['ttw'  ], self.process_names['ttw'  ], 'f')
+		leg.AddEntry(histos['bgtot'], self.process_names['bgtot'], 'l')
+		leg.AddEntry(histos['pred' ], 'BG uncertainty', 'fl')
 		# set position
 		width = 0.17
-		x = 0.68
-		y = 0.88
+		x = 0.65
+		y = 0.93
 		leg.SetX1NDC(x)
 		leg.SetX2NDC(x+width)
 		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
@@ -113,17 +117,33 @@ class ttwplot :
 		leg.SetTextAlign(12)
 
 		canvas = ROOT.TCanvas('C_ObsPred', 'Observed vs Predicted', 0, 0, 600, 600)
+#		canvas.SetLeftMargin(0.12)
+#		canvas.SetRightMargin(0.04)
+		print 'left'  , canvas.GetLeftMargin()
+		print 'right' , canvas.GetRightMargin()
+		print 'top'   , canvas.GetTopMargin()
+		print 'bottom', canvas.GetBottomMargin()
 		canvas.SetLeftMargin(0.12)
 		canvas.SetRightMargin(0.04)
+		canvas.SetTopMargin(0.04)
+		canvas.SetBottomMargin(0.12)
 		canvas.cd()
 
 #		ROOT.gStyle.SetOptStat(0)
 		ROOT.gStyle.SetOptTitle(0)
+		ROOT.gPad.SetTicks(1,1)
 
 		# draw and set axis titles
 		hs_pred.Draw()
 		hs_pred.GetXaxis().SetTitle(self.get_varName(var))
 		hs_pred.GetYaxis().SetTitle('Events')
+		hs_pred.GetXaxis().SetTitleOffset(1.25)
+		hs_pred.GetYaxis().SetTitleOffset(1.25)
+		hs_pred.GetXaxis().SetTitleSize(0.04)
+		hs_pred.GetYaxis().SetTitleSize(0.04)
+		hs_pred.GetXaxis().SetLabelSize(0.04)
+		hs_pred.GetYaxis().SetLabelSize(0.04)
+		print hs_pred.GetXaxis().GetTitleSize()
 		##		hs_pred[var]->Draw("goff");
 		##		hs_pred[var]->GetXaxis()->SetTitle(xAxisTitle[var].Data());
 		##		hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
@@ -154,7 +174,8 @@ class ttwplot :
 		histos['bgtot'].Draw('same')
 #		gr_obs.Draw('P same')
 		histos['obs'  ].Draw('PE X0 same')
-		self.drawTopLine(0.56, 0.8)
+#		self.drawTopLine(0.56, 0.8)
+		self.draw_cmsLine()
 		raw_input('ok? ')
 
 		canvas.Print(path + 'HT' + '.pdf')
@@ -169,3 +190,15 @@ class ttwplot :
 		latex.SetTextFont(42)
 		latex.SetTextSize(scale * 0.04)
 		latex.DrawLatex(rightedge, 0.92, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))
+
+
+	def draw_cmsLine(self) :
+		latex = ROOT.TLatex()
+		latex.SetNDC()
+		latex.SetTextFont(62)
+		latex.SetTextSize(0.04)
+		latex.SetTextAlign(13)
+		latex.DrawLatex(0.15, 0.93, 'CMS')
+		latex.SetTextFont(42)
+		latex.SetTextSize(0.03)
+		latex.DrawLatex(0.15, 0.88, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))

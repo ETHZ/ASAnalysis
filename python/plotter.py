@@ -154,13 +154,14 @@ class plotter :
 #		self.h2_ElpRatio.Draw('colztext')
 #
 
+		# plots results from results tree
 		resultfile = ROOT.TFile.Open(self.path + 'SSDLResults.root', 'READ')
 		resulttree = resultfile.Get('Results')
-
 		self.plot_predictions(resulttree, finalsel)
-
 		return
 
+
+		# produce results tree
 		nosyst_path = self.path + 'SSDLYields_Normal.root'
 		if not os.path.exists(nosyst_path) :
 			copytree.copytree(self.path + 'SSDLYields.root', nosyst_path, 'SigEvents', 'SystFlag == 0 && (SType < 3 || TLCat == 0) && (SType < 3 || Flavor < 3) && (SType < 3 || SType == 15)')
@@ -207,7 +208,6 @@ class plotter :
 		for ch_str in results['Normal'] :
 			for chan in results['Normal'][ch_str] :
 				self.make_datacard(results, chan, ch_str)
-		return
 
 #
 #		raw_input('ok? ')
@@ -1143,6 +1143,7 @@ class plotter :
 		min = 0.
 		max = 600.
 		var = 'HT'
+		var = 'Mll'
 
 		histos = {}
 
