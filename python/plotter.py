@@ -1182,7 +1182,7 @@ class plotter :
 
 		pl = ttwplot.ttwplot(self.path + 'test/')
 #		pl = ttwplot.ttwplot()
-		pl.save_plot(histos, self.path+'test/', 'H_{T}')
+		pl.save_plot(histos, self.path+'test/', var)
 		raw_input('ok? ')
 
 

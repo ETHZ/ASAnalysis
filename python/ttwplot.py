@@ -5,9 +5,10 @@ import helper
 
 class ttwplot :
 
-	def __init__(self, path) :
+	def __init__(self, path, lumi = 19500.) :
 		self.path = path
 		helper.mkdir(self.path)
+		self.lumi = lumi
 
 		# colors
 		self.colors = {}
@@ -29,15 +30,24 @@ class ttwplot :
 		self.process_names['ttz'  ] = 't#bar{t} + Z'
 		self.process_names['ttw'  ] = 't#bar{t} + W'
 
+		# variable names
+		self.var_names = {}
+		self.var_names['HT'] = 'H_{T} [GeV]'
+
 
 	def get_fillColor(self, process) :
 		if process in self.colors.keys() :
 			return self.colors[process]
-		else :
-			return 0
+		return 0
 
 
-	def save_plot(self, histos, path, var_name) :
+	def get_varName(self, var) :
+		if var in self.var_names.keys() :
+			return self.var_names[var]
+		return ''
+
+
+	def save_plot(self, histos, path, var) :
 		'''save plot with observation and predictions'''
 
 		gr_obs  = helper.getGraphPoissonErrors(histos['obs'])
@@ -107,13 +117,55 @@ class ttwplot :
 		canvas.SetRightMargin(0.04)
 		canvas.cd()
 
+#		ROOT.gStyle.SetOptStat(0)
+		ROOT.gStyle.SetOptTitle(0)
+
+		# draw and set axis titles
 		hs_pred.Draw()
+		hs_pred.GetXaxis().SetTitle(self.get_varName(var))
+		hs_pred.GetYaxis().SetTitle('Events')
+		##		hs_pred[var]->Draw("goff");
+		##		hs_pred[var]->GetXaxis()->SetTitle(xAxisTitle[var].Data());
+		##		hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
+		##		hs_pred[var]->GetYaxis()->SetTitle(yAxisTitle[var].Data());
+		##		hs_pred[var]->GetYaxis()->SetTitleSize(0.045);
+		##		hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
+		##		hs_pred[var]->GetYaxis()->SetLabelSize(0.045);
+		##		hs_pred[var]->GetXaxis()->SetLabelSize(0.045);
+		##		hs_pred[var]->GetYaxis()->SetTitleOffset(1.25);
+		##		hs_pred[var]->GetXaxis()->SetTitleOffset(1.065);
+		##		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
+		##			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", (int)bins[var][i-1]));
+		##			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
+		##			hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
+		##			hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
+		##		}
+		##		if (diffVarName[var] == "Int") {
+		##			for(size_t i = 1; i <= nbins[var]; ++i) {
+		##				TString binlabel = "?";
+		##				if (i == 1) binlabel = "e"  + chargeSignString + "e"  + chargeSignString;
+		##				if (i == 2) binlabel = "#mu"+ chargeSignString + "#mu"+ chargeSignString;
+		##				if (i == 3) binlabel = "e"  + chargeSignString + "#mu"+ chargeSignString;
+		##				hs_pred[var]->GetXaxis()->SetBinLabel(i, binlabel);
+		##			}
+		##		}
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
 		histos['bgtot'].Draw('same')
 #		gr_obs.Draw('P same')
 		histos['obs'  ].Draw('PE X0 same')
-#		histos['fake'].Draw('same')
+		self.drawTopLine(0.56, 0.8)
 		raw_input('ok? ')
 
 		canvas.Print(path + 'HT' + '.pdf')
+
+
+	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :
+		latex = ROOT.TLatex()
+		latex.SetNDC()
+		latex.SetTextFont(62)
+		latex.SetTextSize(scale * 0.05)
+		latex.DrawLatex(leftedge, 0.92, 'CMS Preliminary')
+		latex.SetTextFont(42)
+		latex.SetTextSize(scale * 0.04)
+		latex.DrawLatex(rightedge, 0.92, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))
