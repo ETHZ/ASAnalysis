@@ -1188,10 +1188,6 @@ class plotter :
 		gr_obs  = helper.getGraphPoissonErrors(histos['obs'])
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
 
-		gr_obs.SetMarkerStyle(20)
-		gr_obs.SetMarkerSize(2.)
-		gr_obs.SetLineWidth(2)
-
 		# adding predictions to stack
 		hs_pred.Add(histos['fake' ])
 		hs_pred.Add(histos['chmid'])
@@ -1202,19 +1198,12 @@ class plotter :
 
 		# set minimum and maximum
 		maximum = 1.2 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
-		print histos['pred'].GetMaximum()
-		histos['obs'  ].SetMaximum(maximum)
-		histos['fake' ].SetMaximum(maximum)
-		histos['chmid'].SetMaximum(maximum)
-		histos['rare' ].SetMaximum(maximum)
-		histos['wz'   ].SetMaximum(maximum)
-		histos['ttz'  ].SetMaximum(maximum)
-		histos['ttw'  ].SetMaximum(maximum)
-		histos['bgtot'].SetMaximum(maximum)
-		histos['pred' ].SetMaximum(maximum)
 		hs_pred        .SetMaximum(maximum)
-#
-#		hs_pred.Draw('goff')
+
+		for process, histo in histos.iteritems() :
+			histo.SetMaximum(maximum)
+			histo.SetLineColor(1)
+			histo.SetLineWidth(1)
 
 		# set colors
 		histos['fake' ].SetFillColor(46)
@@ -1223,21 +1212,16 @@ class plotter :
 		histos['wz'   ].SetFillColor(39)
 		histos['ttz'  ].SetFillColor(42)
 		histos['ttw'  ].SetFillColor(44)
-		
-		histos['fake' ].SetLineColor(1)
-		histos['chmid'].SetLineColor(1)
-		histos['rare' ].SetLineColor(1)
-		histos['wz'   ].SetLineColor(1)
-		histos['ttz'  ].SetLineColor(1)
-		histos['ttw'  ].SetLineColor(1)
-		
-		histos['fake' ].SetLineWidth(1)
-		histos['chmid'].SetLineWidth(1)
-		histos['rare' ].SetLineWidth(1)
-		histos['wz'   ].SetLineWidth(1)
-		histos['ttz'  ].SetLineWidth(1)
-		histos['ttw'  ].SetLineWidth(1)
 
+		# data histogram settings
+		histos['obs'  ].SetMarkerStyle(20)
+		histos['obs'  ].SetMarkerSize(1.1)
+		histos['obs'  ].SetLineWidth(2)
+		gr_obs.SetMarkerStyle(20)
+		gr_obs.SetMarkerSize(1.1)
+		gr_obs.SetLineWidth(2)
+		
+		# special settings for total BG line and uncertainty
 		histos['bgtot'].SetLineWidth(3)
 		histos['bgtot'].SetLineColor(1)
 #		histos['bgtot'].SetFillColor(12)
@@ -1247,16 +1231,31 @@ class plotter :
 		histos['pred' ].SetFillColor(12)
 		histos['pred' ].SetFillStyle(3005)
 
-		leg = ROOT.TLegend(0.55, 0.42, 0.90, 0.88)
-		leg.AddEntry(gr_obs         , 'Observed'         , 'p')
+		#leg = ROOT.TLegend(0.55, 0.42, 0.90, 0.88)
+		#leg = ROOT.TLegend(0.68, 0.53, 0.88, 0.88) # this works to make the boxes squares
+		nEntries = 7
+		scale = 0.85
+#		leg = ROOT.TLegend(0.68, 0.88-nEntries*0.25*0.2*scale, 0.68+0.2*scale, 0.88)
+		leg = ROOT.TLegend()
+		leg.SetTextAlign(12)
+		print leg.GetTextFont()
+		print leg.GetTextSize()
+		leg.AddEntry(histos['obs'  ], 'Observed'         , 'p')
 		leg.AddEntry(histos['fake' ], 'Non-prompt lepton', 'f')
 		leg.AddEntry(histos['chmid'], 'Charge MisID'     , 'f')
 		leg.AddEntry(histos['rare' ], 'Rare SM'          , 'f')
 		leg.AddEntry(histos['wz'   ], 'WZ'               , 'f')
 		leg.AddEntry(histos['ttz'  ], 't#bar{t} + Z'     , 'f')
 		leg.AddEntry(histos['ttw'  ], 't#bar{t} + W'     , 'f')
+		print leg.GetNRows()
+		width = 0.2
+		leg.SetX1NDC(0.68)
+		leg.SetX2NDC(0.68+width)
+		leg.SetY1NDC(0.88-leg.GetNRows()*0.25*width)
+		leg.SetY2NDC(0.88)
 		leg.SetFillStyle(0)
 		leg.SetTextFont(42)
+		leg.SetTextSize(0.03)
 		leg.SetBorderSize(0)
 
 		canvas = ROOT.TCanvas('C_ObsPred', 'Observed vs Predicted', 0, 0, 600, 600)
@@ -1268,7 +1267,8 @@ class plotter :
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
 		histos['bgtot'].Draw('same')
-		gr_obs.Draw('P same')
+#		gr_obs.Draw('P same')
+		histos['obs'  ].Draw('PE X0 same')
 #		histos['fake'].Draw('same')
 		raw_input('ok? ')
 
