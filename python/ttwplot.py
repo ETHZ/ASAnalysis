@@ -1,13 +1,15 @@
 #! /usr/bin/python
 import ROOT
 import helper
+import sys
 
 
 class ttwplot :
 
-	def __init__(self, path, lumi = 19500.) :
+	def __init__(self, path, chan, lumi = 19500.) :
 		self.path = path
 		helper.mkdir(self.path)
+		self.chan = chan
 		self.lumi = lumi
 
 		# colors
@@ -19,6 +21,8 @@ class ttwplot :
 		self.colors['wz'   ] = 39
 		self.colors['ttz'  ] = 42
 		self.colors['ttw'  ] = 44
+		self.colors['btag' ] = 31
+		self.colors['zz'   ] = 30
 
 		# process names
 		self.process_names = {}
@@ -30,11 +34,14 @@ class ttwplot :
 		self.process_names['ttz'  ] = 't#bar{t} + Z'
 		self.process_names['ttw'  ] = 't#bar{t} + W'
 		self.process_names['bgtot'] = 'Backgrounds'
+		self.process_names['btag' ] = 'b-tags from radiation'
+		self.process_names['zz'   ] = 'ZZ'
 
 		# variable names
 		self.var_names = {}
 		self.var_names['HT']  = 'H_{T} [GeV]'
 		self.var_names['Mll'] = 'm_{ll} [GeV]'
+		# TODO: add here all the variable names
 
 
 	def get_fillColor(self, process) :
@@ -56,12 +63,23 @@ class ttwplot :
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
 
 		# adding predictions to stack
-		hs_pred.Add(histos['fake' ])
-		hs_pred.Add(histos['chmid'])
-		hs_pred.Add(histos['rare' ])
-		hs_pred.Add(histos['wz'   ])
-		hs_pred.Add(histos['ttz'  ])
-		hs_pred.Add(histos['ttw'  ])
+		if self.chan == '2L' :
+			hs_pred.Add(histos['fake' ])
+			hs_pred.Add(histos['chmid'])
+			hs_pred.Add(histos['rare' ])
+			hs_pred.Add(histos['wz'   ])
+			hs_pred.Add(histos['ttz'  ])
+			hs_pred.Add(histos['ttw'  ])
+		elif self.chan == '3L' :
+			hs_pred.Add(histos['fake' ])
+			hs_pred.Add(histos['btag' ])
+			hs_pred.Add(histos['rare' ])
+			hs_pred.Add(histos['ttz'  ])
+		elif self.chan == '4L' :
+			hs_pred.Add(histos['fake' ])
+			hs_pred.Add(histos['zz'   ])
+			hs_pred.Add(histos['rare' ])
+			hs_pred.Add(histos['ttz'  ])
 
 		# set minimum and maximum
 		maximum = 1.8 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
@@ -95,11 +113,13 @@ class ttwplot :
 		leg = ROOT.TLegend()
 		leg.AddEntry(histos['obs'  ], self.process_names['obs'  ], 'lp')
 		leg.AddEntry(histos['fake' ], self.process_names['fake' ], 'f')
-		leg.AddEntry(histos['chmid'], self.process_names['chmid'], 'f')
+		if self.chan == '2L' : leg.AddEntry(histos['chmid'], self.process_names['chmid'], 'f')
+		if self.chan == '3L' : leg.AddEntry(histos['btag' ], self.process_names['btag' ], 'f')
+		if self.chan == '4L' : leg.AddEntry(histos['zz'   ], self.process_names['zz'   ], 'f')
 		leg.AddEntry(histos['rare' ], self.process_names['rare' ], 'f')
-		leg.AddEntry(histos['wz'   ], self.process_names['wz'   ], 'f')
+		if self.chan == '2L' : leg.AddEntry(histos['wz'   ], self.process_names['wz'   ], 'f')
 		leg.AddEntry(histos['ttz'  ], self.process_names['ttz'  ], 'f')
-		leg.AddEntry(histos['ttw'  ], self.process_names['ttw'  ], 'f')
+		if self.chan == '2L' : leg.AddEntry(histos['ttw'  ], self.process_names['ttw'  ], 'f')
 		leg.AddEntry(histos['bgtot'], self.process_names['bgtot'], 'l')
 		leg.AddEntry(histos['pred' ], 'BG uncertainty', 'fl')
 		# set position
@@ -178,7 +198,9 @@ class ttwplot :
 		self.draw_cmsLine()
 		raw_input('ok? ')
 
-		canvas.Print(path + 'HT' + '.pdf')
+		canvas.Print(path + self.chan + '_' + var + '.pdf')
+		canvas.Print(path + self.chan + '_' + var + '.png')
+		raw_input('ok? ')
 
 
 	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :
@@ -202,3 +224,63 @@ class ttwplot :
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
 		latex.DrawLatex(0.15, 0.88, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))
+
+
+	def read_histos(self, path, var) :
+		file = ROOT.TFile.Open(path, 'READ')
+		file.ls()
+		histos = {}
+
+		if self.chan == '2L' :
+			histos['obs'  ] = file.Get('h_obs'  +'_'+var).Clone()
+			histos['fake' ] = file.Get('h_fake' +'_'+var).Clone()
+			histos['chmid'] = file.Get('h_chmid'+'_'+var).Clone()
+			histos['rare' ] = file.Get('h_rare' +'_'+var).Clone()
+			histos['wz'   ] = file.Get('h_wz'   +'_'+var).Clone()
+			histos['ttz'  ] = file.Get('h_ttz'  +'_'+var).Clone()
+			histos['ttw'  ] = file.Get('h_ttw'  +'_'+var).Clone()
+			histos['bgtot'] = file.Get('h_bgtot'+'_'+var).Clone()
+			histos['pred' ] = file.Get('h_pred' +'_'+var).Clone()
+
+		if self.chan == '3L' :
+			histos['obs'  ] = file.Get('h_obs'  +'_'+var).Clone()
+			histos['fake' ] = file.Get('h_fake' +'_'+var).Clone()
+			histos['btag' ] = file.Get('h_btag' +'_'+var).Clone()
+			histos['rare' ] = file.Get('h_rare' +'_'+var).Clone()
+			histos['ttz'  ] = file.Get('h_ttz'  +'_'+var).Clone()
+			histos['bgtot'] = file.Get('h_bgtot'+'_'+var).Clone()
+			histos['pred' ] = file.Get('h_pred' +'_'+var).Clone()
+
+		if self.chan == '4L' :
+			histos['obs'  ] = file.Get('h_obs'  +'_'+var).Clone()
+			histos['fake' ] = file.Get('h_fake' +'_'+var).Clone()
+			histos['zz'   ] = file.Get('h_zz'   +'_'+var).Clone()
+			histos['rare' ] = file.Get('h_rare' +'_'+var).Clone()
+			histos['ttz'  ] = file.Get('h_ttz'  +'_'+var).Clone()
+			histos['bgtot'] = file.Get('h_bgtot'+'_'+var).Clone()
+			histos['pred' ] = file.Get('h_pred' +'_'+var).Clone()
+
+		return histos
+
+
+if __name__ == '__main__' :
+	args = sys.argv
+
+	if ('--help' in args) or ('-h' in args) or ('-i' not in args) or ('-o' not in args) or ('--2L' not in args and '--3L' not in args and '--4L' not in args) :
+		print 'usage: python -i <INPUT ROOTFILE> -o <OUTPUTDIR> --2L/--3L/--4L'
+		sys.exit(1)
+
+	if ('-i' in args) and (args[args.index('-i')+1] != '') :
+		inputfile = args[args.index('-i')+1]
+
+	if ('-o' in args) and (args[args.index('-o')+1] != '') :
+		outputpath = args[args.index('-o')+1]
+
+	if   '--2L' in args : chan = '2L'
+	elif '--3L' in args : chan = '3L'
+	elif '--4L' in args : chan = '4L'
+
+	pl = ttwplot(outputpath, chan)
+	histos = pl.read_histos(inputfile, 'Mll')
+	pl.save_plot(histos, outputpath, 'Mll')
+	# TODO: loop over all variables in the root file
