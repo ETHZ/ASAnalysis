@@ -1139,6 +1139,9 @@ class plotter :
 
 		print sel
 
+		# remove this again
+		dummy_histos = False
+
 		nbins = 6
 		min = 0.
 		max = 600.
@@ -1149,6 +1152,72 @@ class plotter :
 		var = 'Mll'
 
 		histos = {}
+
+		if dummy_histos :
+
+			h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
+			h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
+			h_btag_name   = 'h_btag_'   + var; histos['btag'  ] = ROOT.TH1D(h_btag_name  , h_btag_name  , nbins, min, max)
+			h_rare_name  = 'h_rare_'  + var; histos['rare' ] = ROOT.TH1D(h_rare_name , h_rare_name , nbins, min, max)
+			h_ttz_name   = 'h_ttz_'   + var; histos['ttz'  ] = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
+			h_bgtot_name = 'h_bgtot_' + var; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
+			h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
+
+			# getting histograms from results tree
+			tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_btag_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+
+			# adding background predictions
+			histos['bgtot'].Add(histos['fake' ])
+			histos['bgtot'].Add(histos['btag'])
+			histos['bgtot'].Add(histos['rare' ])
+
+			# adding predictions
+			histos['pred'].Add(histos['fake' ])
+			histos['pred'].Add(histos['btag'])
+			histos['pred'].Add(histos['rare' ])
+			histos['pred'].Add(histos['ttz'  ])
+
+			histofile = ROOT.TFile.Open(self.path + 'SSDLHistos_3L.root', 'RECREATE')
+			histofile.cd()
+			for process, histo in histos.iteritems() :
+				histo.Write()
+			histofile.Close()
+
+			h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
+			h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
+			h_zz_name   = 'h_zz_'   + var; histos['zz'  ] = ROOT.TH1D(h_zz_name  , h_zz_name  , nbins, min, max)
+			h_rare_name  = 'h_rare_'  + var; histos['rare' ] = ROOT.TH1D(h_rare_name , h_rare_name , nbins, min, max)
+			h_ttz_name   = 'h_ttz_'   + var; histos['ttz'  ] = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
+			h_bgtot_name = 'h_bgtot_' + var; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
+			h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
+
+			# getting histograms from results tree
+			tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_zz_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+
+			# adding background predictions
+			histos['bgtot'].Add(histos['fake' ])
+			histos['bgtot'].Add(histos['zz'])
+			histos['bgtot'].Add(histos['rare' ])
+
+			# adding predictions
+			histos['pred'].Add(histos['fake' ])
+			histos['pred'].Add(histos['zz'])
+			histos['pred'].Add(histos['rare' ])
+			histos['pred'].Add(histos['ttz'  ])
+
+			histofile = ROOT.TFile.Open(self.path + 'SSDLHistos_4L.root', 'RECREATE')
+			histofile.cd()
+			for process, histo in histos.iteritems() :
+				histo.Write()
+			histofile.Close()
 
 		h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
 		h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
