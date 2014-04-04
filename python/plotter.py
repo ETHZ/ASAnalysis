@@ -310,7 +310,7 @@ class plotter :
 		self.ResTree_Weight    = np.zeros(1, dtype=float); self.results_tree.Branch('Weight',      self.ResTree_Weight     , 'Weight/D'   );
 		self.ResTree_ObsPred   = np.zeros(1, dtype=int  ); self.results_tree.Branch('ObsPred',     self.ResTree_ObsPred    , 'ObsPred/I'  );
 		self.ResTree_SystFlag  = np.zeros(1, dtype=int  ); self.results_tree.Branch('SystFlag',    self.ResTree_SystFlag   , 'SystFlag/I' );
-#		self.ResTree_SName     = np.zeros(1, dtype=float); self.results_tree.Branch('SName',       self.ResTree_SName);
+		self.ResTree_SName     = ROOT.std.string(       ); self.results_tree.Branch('SName',       self.ResTree_SName);
 		self.ResTree_SType     = np.zeros(1, dtype=int  ); self.results_tree.Branch('SType',       self.ResTree_SType      , 'SType/I'    );
 		self.ResTree_Run       = np.zeros(1, dtype=int  ); self.results_tree.Branch('Run',         self.ResTree_Run        , 'Run/I'      );
 		self.ResTree_LS        = np.zeros(1, dtype=int  ); self.results_tree.Branch('LS',          self.ResTree_LS         , 'LS/I'       );
@@ -571,7 +571,7 @@ class plotter :
 			# SET VARIABLES FOR RESULTS TREE
 			if write_ResTree :
 				self.ResTree_SystFlag [0] = event.SystFlag
-#				self.ResTree_SName    [0] = event.SName
+				self.ResTree_SName.assign(event.SName)
 				self.ResTree_SType    [0] = event.SType
 				self.ResTree_Run      [0] = event.Run
 				self.ResTree_LS       [0] = event.LS
@@ -1264,6 +1264,7 @@ class plotter :
 
 if __name__ == '__main__' :
 	args = sys.argv
+
 	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) :
 		print 'usage: ..'
 		sys.exit(1)
