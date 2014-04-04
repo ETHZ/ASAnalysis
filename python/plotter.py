@@ -1226,6 +1226,12 @@ class plotter :
 
 			histos['pred'].SetBinError(bin, math.sqrt(err2))
 
+		histofile = ROOT.TFile.Open(self.path + 'SSDLHistos.root', 'RECREATE')
+		histofile.cd()
+		for process, histo in histos.iteritems() :
+			histo.Write()
+		histofile.Close()
+
 		pl = ttwplot.ttwplot(self.path + 'test/')
 #		pl = ttwplot.ttwplot()
 		pl.save_plot(histos, self.path+'test/', var)
