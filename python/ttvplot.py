@@ -3,7 +3,7 @@ import ROOT
 import os, sys
 
 
-class ttwplot :
+class ttvplot :
 
 	def __init__(self, path, chan, lumi = 19500.) :
 		self.path = path
@@ -257,7 +257,7 @@ if __name__ == '__main__' :
 	elif '--3L' in args : chan = '3L'
 	elif '--4L' in args : chan = '4L'
 
-	pl = ttwplot(outputpath, chan)
+	pl = ttvplot(outputpath, chan)
 	histos = pl.read_histos(inputfile, 'Mll')
 	pl.save_plot(histos, outputpath, 'Mll')
 	# TODO: loop over all variables in the root file
