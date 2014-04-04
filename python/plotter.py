@@ -317,7 +317,7 @@ class plotter :
 		self.ResTree_Event     = np.zeros(1, dtype=int  ); self.results_tree.Branch('Event',       self.ResTree_Event      , 'Event/I'    );
 		self.ResTree_Flavor    = np.zeros(1, dtype=int  ); self.results_tree.Branch('Flavor',      self.ResTree_Flavor     , 'Flavor/I'   );
 		self.ResTree_Charge    = np.zeros(1, dtype=int  ); self.results_tree.Branch('Charge',      self.ResTree_Charge     , 'Charge/I'   );
-#		self.ResTree_TLCat     = np.zeros(1, dtype=int  ); self.results_tree.Branch('TLCat',       self.ResTree_TLCat      , 'TLCat/I'    );
+		self.ResTree_TLCat     = np.zeros(1, dtype=int  ); self.results_tree.Branch('TLCat',       self.ResTree_TLCat      , 'TLCat/I'    );
 #		self.ResTree_ZVeto     = np.zeros(1, dtype=int  ); self.results_tree.Branch('PassZVeto',   self.ResTree_ZVeto      , 'PassZVeto/I');
 		self.ResTree_HT        = np.zeros(1, dtype=float); self.results_tree.Branch('HT',          self.ResTree_HT         , 'HT/D'       );
 		self.ResTree_MET       = np.zeros(1, dtype=float); self.results_tree.Branch('MET',         self.ResTree_MET        , 'MET/D'      );
@@ -581,7 +581,7 @@ class plotter :
 				else :
 					self.ResTree_Flavor   [0] = event.Flavor - 3
 				self.ResTree_Charge   [0] = event.Charge
-#				self.ResTree_TLCat    [0] = event.TLCat
+				self.ResTree_TLCat    [0] = event.TLCat
 #				self.ResTree_ZVeto    [0] = event.PassZVeto
 				self.ResTree_HT       [0] = event.HT
 				self.ResTree_MET      [0] = event.MET
@@ -673,10 +673,9 @@ class plotter :
 
 					if write_ResTree :
 						# store oberservations in results tree
-						if event.TLCat is 0 :
-							self.ResTree_ObsPred[0] = 0
-							self.ResTree_Weight [0] = 1.
-							self.results_tree.Fill()
+						self.ResTree_ObsPred[0] = 0
+						self.ResTree_Weight [0] = 1.
+						self.results_tree.Fill()
 
 						# store fake predictions in results tree
 						self.ResTree_ObsPred[0] = 1
@@ -768,7 +767,7 @@ class plotter :
 		print '[status] calculating fake predictions..'
 
 		FR.setNToyMCs(100)
-		FR.setAddESyst(0.5)
+		FR.setAddESyst(self.FakeESyst)
 
 		# numbers from SSDLPlotter.cc just to check
 #		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
@@ -1248,15 +1247,39 @@ class plotter :
 		h_ttw_name   = 'h_ttw_'   + var; histos['ttw'  ] = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
 		h_bgtot_name = 'h_bgtot_' + var; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
+		h_mm_nt2_name  = 'h_mm_nt2_'  + var; h_mm_nt2_npass  = ROOT.TH1D(h_mm_nt2_name , h_mm_nt2_name , nbins, min, max)
+		h_mm_nt10_name = 'h_mm_nt10_' + var; h_mm_nt10_npass = ROOT.TH1D(h_mm_nt10_name, h_mm_nt10_name, nbins, min, max)
+		h_mm_nt01_name = 'h_mm_nt01_' + var; h_mm_nt01_npass = ROOT.TH1D(h_mm_nt01_name, h_mm_nt01_name, nbins, min, max)
+		h_mm_nt0_name  = 'h_mm_nt0_'  + var; h_mm_nt0_npass  = ROOT.TH1D(h_mm_nt0_name , h_mm_nt0_name , nbins, min, max)
+		h_em_nt2_name  = 'h_em_nt2_'  + var; h_em_nt2_npass  = ROOT.TH1D(h_em_nt2_name , h_em_nt2_name , nbins, min, max)
+		h_em_nt10_name = 'h_em_nt10_' + var; h_em_nt10_npass = ROOT.TH1D(h_em_nt10_name, h_em_nt10_name, nbins, min, max)
+		h_em_nt01_name = 'h_em_nt01_' + var; h_em_nt01_npass = ROOT.TH1D(h_em_nt01_name, h_em_nt01_name, nbins, min, max)
+		h_em_nt0_name  = 'h_em_nt0_'  + var; h_em_nt0_npass  = ROOT.TH1D(h_em_nt0_name , h_em_nt0_name , nbins, min, max)
+		h_ee_nt2_name  = 'h_ee_nt2_'  + var; h_ee_nt2_npass  = ROOT.TH1D(h_ee_nt2_name , h_ee_nt2_name , nbins, min, max)
+		h_ee_nt10_name = 'h_ee_nt10_' + var; h_ee_nt10_npass = ROOT.TH1D(h_ee_nt10_name, h_ee_nt10_name, nbins, min, max)
+		h_ee_nt01_name = 'h_ee_nt01_' + var; h_ee_nt01_npass = ROOT.TH1D(h_ee_nt01_name, h_ee_nt01_name, nbins, min, max)
+		h_ee_nt0_name  = 'h_ee_nt0_'  + var; h_ee_nt0_npass  = ROOT.TH1D(h_ee_nt0_name , h_ee_nt0_name , nbins, min, max)
 
 		# getting histograms from results tree
-		tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_chmid_name, 'Weight*(ObsPred == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_wz_name   , 'Weight*(ObsPred == 3 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ttw_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_chmid_name, 'Weight*(ObsPred == 2 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_wz_name   , 'Weight*(ObsPred == 3 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttw_name  , 'Weight*(ObsPred == 4 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt2_name ,      '(ObsPred == 0 && TLCat == 0 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt10_name,      '(ObsPred == 0 && TLCat == 1 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt01_name,      '(ObsPred == 0 && TLCat == 2 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt0_name ,      '(ObsPred == 0 && TLCat == 3 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt2_name ,      '(ObsPred == 0 && TLCat == 0 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt10_name,      '(ObsPred == 0 && TLCat == 1 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt01_name,      '(ObsPred == 0 && TLCat == 2 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt0_name ,      '(ObsPred == 0 && TLCat == 3 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt2_name ,      '(ObsPred == 0 && TLCat == 0 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt10_name,      '(ObsPred == 0 && TLCat == 1 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt01_name,      '(ObsPred == 0 && TLCat == 2 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt0_name ,      '(ObsPred == 0 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 
 		# adding background predictions
 		histos['bgtot'].Add(histos['fake' ])
@@ -1277,13 +1300,37 @@ class plotter :
 		# ERRORS #
 		##########
 
+		FR = ROOT.FakeRatios()
+		FR.setNToyMCs(100)
+		FR.setAddESyst(self.FakeESyst)
+
+		# numbers from SSDLPlotter.cc just to check
+#		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
+#		mupratio_data = 0.804292; mupratio_data_e = 0.001193;
+#		elfratio_data = 0.069959; elfratio_data_e = 0.001419;
+#		elpratio_data = 0.750609; elpratio_data_e = 0.001473;
+#		FR.setMFRatio(mufratio_data, mufratio_data_e) # set error to pure statistical of ratio
+#		FR.setEFRatio(elfratio_data, elfratio_data_e)
+#		FR.setMPRatio(mupratio_data, mupratio_data_e)
+#		FR.setEPRatio(elpratio_data, elpratio_data_e)
+
+		# TODO: use these (ratios with ewk subtraction)
+		FR.setMFRatio(self.fpr.MufRatio, self.fpr.MufRatioE) # set error to pure statistical of ratio
+		FR.setEFRatio(self.fpr.ElfRatio, self.fpr.ElfRatioE)
+		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
+		FR.setEPRatio(self.fpr.ElpRatio, self.fpr.ElpRatioE)
+
 		for bin in range(1, histos['bgtot'].GetNbinsX()+1) :
 			err2 = 0.
 
 			# fakes
+			FR.setMMNtl(h_mm_nt2_npass.GetBinContent(bin), h_mm_nt10_npass.GetBinContent(bin), h_mm_nt01_npass.GetBinContent(bin), h_mm_nt0_npass.GetBinContent(bin))
+			FR.setEMNtl(h_em_nt2_npass.GetBinContent(bin), h_em_nt10_npass.GetBinContent(bin), h_em_nt01_npass.GetBinContent(bin), h_em_nt0_npass.GetBinContent(bin))
+			FR.setEENtl(h_ee_nt2_npass.GetBinContent(bin), h_ee_nt10_npass.GetBinContent(bin), h_ee_nt01_npass.GetBinContent(bin), h_ee_nt0_npass.GetBinContent(bin))
+
 			fake_nPass = histos['fake'].GetBinContent(bin)
 			fake_syst2 = self.FakeESyst2 * fake_nPass*fake_nPass
-			fake_stat2 = 0.
+			fake_stat2 = FR.getTotEStat() * FR.getTotEStat()
 			err2 += fake_syst2 + fake_stat2
 
 			# charge mis ID
