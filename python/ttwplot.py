@@ -1,14 +1,14 @@
 #! /usr/bin/python
 import ROOT
-import helper
-import sys
+import os, sys
 
 
 class ttwplot :
 
 	def __init__(self, path, chan, lumi = 19500.) :
 		self.path = path
-		helper.mkdir(self.path)
+		if not os.path.exists(self.path) :
+			os.makedirs(self.path)
 		self.chan = chan
 		self.lumi = lumi
 
@@ -29,12 +29,12 @@ class ttwplot :
 		self.process_names['obs'  ] = 'Observed'
 		self.process_names['fake' ] = 'Non-prompt lepton'
 		self.process_names['chmid'] = 'Charge MisID'
-		self.process_names['rare' ] = 'Rare SM'
+		self.process_names['rare' ] = 'Irreducible BG'
 		self.process_names['wz'   ] = 'WZ'
-		self.process_names['ttz'  ] = 't#bar{t} + Z'
-		self.process_names['ttw'  ] = 't#bar{t} + W'
+		self.process_names['ttz'  ] = 't#bar{t}Z'
+		self.process_names['ttw'  ] = 't#bar{t}W'
 		self.process_names['bgtot'] = 'Backgrounds'
-		self.process_names['btag' ] = 'b-tags from radiation'
+		self.process_names['btag' ] = 'Inclusive b-jet'
 		self.process_names['zz'   ] = 'ZZ'
 
 		# variable names
@@ -59,7 +59,6 @@ class ttwplot :
 	def save_plot(self, histos, path, var) :
 		'''save plot with observation and predictions'''
 
-		gr_obs  = helper.getGraphPoissonErrors(histos['obs'])
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
 
 		# adding predictions to stack
@@ -95,9 +94,6 @@ class ttwplot :
 		histos['obs'  ].SetMarkerStyle(20)
 		histos['obs'  ].SetMarkerSize(1.1)
 		histos['obs'  ].SetLineWidth(2)
-		gr_obs.SetMarkerStyle(20)
-		gr_obs.SetMarkerSize(1.1)
-		gr_obs.SetLineWidth(2)
 		
 		# special settings for total BG line and uncertainty
 		histos['bgtot'].SetLineWidth(3)
@@ -137,12 +133,6 @@ class ttwplot :
 		leg.SetTextAlign(12)
 
 		canvas = ROOT.TCanvas('C_ObsPred', 'Observed vs Predicted', 0, 0, 600, 600)
-#		canvas.SetLeftMargin(0.12)
-#		canvas.SetRightMargin(0.04)
-		print 'left'  , canvas.GetLeftMargin()
-		print 'right' , canvas.GetRightMargin()
-		print 'top'   , canvas.GetTopMargin()
-		print 'bottom', canvas.GetBottomMargin()
 		canvas.SetLeftMargin(0.12)
 		canvas.SetRightMargin(0.04)
 		canvas.SetTopMargin(0.04)
@@ -163,17 +153,6 @@ class ttwplot :
 		hs_pred.GetYaxis().SetTitleSize(0.04)
 		hs_pred.GetXaxis().SetLabelSize(0.04)
 		hs_pred.GetYaxis().SetLabelSize(0.04)
-		print hs_pred.GetXaxis().GetTitleSize()
-		##		hs_pred[var]->Draw("goff");
-		##		hs_pred[var]->GetXaxis()->SetTitle(xAxisTitle[var].Data());
-		##		hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
-		##		hs_pred[var]->GetYaxis()->SetTitle(yAxisTitle[var].Data());
-		##		hs_pred[var]->GetYaxis()->SetTitleSize(0.045);
-		##		hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
-		##		hs_pred[var]->GetYaxis()->SetLabelSize(0.045);
-		##		hs_pred[var]->GetXaxis()->SetLabelSize(0.045);
-		##		hs_pred[var]->GetYaxis()->SetTitleOffset(1.25);
-		##		hs_pred[var]->GetXaxis()->SetTitleOffset(1.065);
 		##		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
 		##			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", (int)bins[var][i-1]));
 		##			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
@@ -192,7 +171,6 @@ class ttwplot :
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
 		histos['bgtot'].Draw('hist same')
-#		gr_obs.Draw('P same')
 		histos['obs'  ].Draw('PE X0 same')
 #		self.drawTopLine(0.56, 0.8)
 		self.draw_cmsLine()
@@ -228,7 +206,6 @@ class ttwplot :
 
 	def read_histos(self, path, var) :
 		file = ROOT.TFile.Open(path, 'READ')
-		file.ls()
 		histos = {}
 
 		if self.chan == '2L' :
