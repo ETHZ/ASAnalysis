@@ -52,6 +52,124 @@ enum MatchingStatus {
   kElectron = 2
 };
 
+typedef enum {
+  k2Dstandard_selection=0,
+  k1Drandomcone_template=1,
+  k1Dsideband_template=2,
+  k2DZee_pixelvetoreversed_selection=3,
+  k1Dpreselection=4,
+  k1Dselection=5,
+  k2Drandomcone_template=6,
+  k2Drandomconesideband_template=7,
+  k2Dsideband_template=8,
+  k2Dstandard_preselection=9,
+  k2DZmumu_selection=10,
+  k1Dsignal_template=11,
+  k1Dbackground_template=12,
+  k2Dtruesigsig_template=13,
+  k2Dtruesigbkg_template=14,
+  k2Dtruebkgbkg_template=15,
+  k2Drconeplusgenfake_template=16,
+  k2Dgenpromptplussideband_template=17,
+  kLightDefault=100,
+  kLightJECup=101,
+  kLightJECdown=102,
+  kLightJERup=103,
+  kLightJERdown=104,
+  kLightESCALEup=105,
+  kLightESCALEdown=106,
+  kLightESMEARup=107,
+  kLightESMEARdown=108
+} EnumSel;
+
+typedef enum {
+  kTurnOff=-1,
+  kData=0,
+  kMC=1,
+  kBoth=2
+} DataOrMCSwitch;
+
+typedef enum {
+  kUncorrected = -999,
+  kCorrectedNoShift = 0,
+  kShiftUp = 1,
+  kShiftDown = -1
+} StatusScaleUpScaleDown;
+
+class Selection {
+
+public:
+
+  Selection(EnumSel id_, TString name_, DataOrMCSwitch dataormc_, int islight_, TFile *OutputFile, TFile *OutputExtraFile=NULL): id(id_), name(name_){
+    switch (dataormc_){
+    case kTurnOff:
+      runondata=false;
+      runonmc=false;
+      break;
+    case kData:
+      runondata=true;
+      runonmc=false;
+      break;
+    case kMC:
+      runondata=false;
+      runonmc=true;
+      break;
+    case kBoth:
+      runondata=true;
+      runonmc=true;
+      break;
+    default:
+      runondata=false;
+      runonmc=false;
+      break;
+    }
+    isfullsel=!islight_;
+    islightsel=islight_;
+    tree_full=NULL;
+    tree_extra=NULL;
+    tree_light=NULL;
+
+    if (isfullsel){
+      if (OutputFile){
+	OutputFile->cd();
+	TString tname = Form("Tree_%s",name.Data());
+	tree_full = new TTree(tname.Data(),tname.Data());
+      }
+      if (OutputExtraFile){
+	OutputExtraFile->cd();
+	TString tname = Form("Tree_%s_EXTRA",name.Data());
+	tree_extra = new TTree(tname.Data(),tname.Data());
+      }
+    }
+    if (islightsel){
+      if (OutputFile){
+        OutputFile->cd();
+	TString tname = Form("LightTreeGenReco_%s",name.Data());
+	tree_light = new TTree(tname.Data(),tname.Data());
+      }
+    }
+
+    is2d = (name.First("2")>-1);
+  };
+  ~Selection(){};
+
+  bool operator==(const EnumSel& rhs){ return (this->id==rhs); }
+  bool operator!=(const EnumSel& rhs){ return !(*this==rhs); }
+
+  EnumSel id;
+  TString name;
+  bool runondata;
+  bool runonmc;
+  bool isfullsel;
+  bool islightsel;
+  TTree *tree_full;
+  TTree *tree_extra;
+  TTree *tree_light;
+  bool is2d;
+
+};
+
+
 const int global_maxN_photonpfcandidates = 2000;
 const int global_maxN_vetoobjects = 200;
 const int global_maxN_jets = 200;
@@ -142,6 +260,8 @@ public:
 
 private:
 
+  int debug;
+
   float global_linkbyrechit_enlargement;
   float global_minthrpfphotoncandEB;
   float global_minthrpfphotoncandEE;
@@ -156,6 +276,10 @@ private:
   Float_t* kfactors;
 
   float getEtaCorrectionBarrel(float eta);
+  void CorrPhoton(TreeReader *fTR, int i, std::vector<float> const &unscaled_r9, std::vector<float> const &unscaled_energy, StatusScaleUpScaleDown status_escale, StatusScaleUpScaleDown status_esmear);
+  void CorrectPhotonEnergy(StatusScaleUpScaleDown status_escale, StatusScaleUpScaleDown status_esmear, std::vector<std::pair<int,float> > &neworder, std::vector<float> const &unscaled_r9, std::vector<float> const &unscaled_energy);
+  StatusScaleUpScaleDown CorrectPhotonR9(StatusScaleUpScaleDown status, std::vector<float> &unscaled_r9);
+  StatusScaleUpScaleDown CorrectPhotonSieie(StatusScaleUpScaleDown status, std::vector<float> &unscaled_sieie);
   void CorrPhoton(TreeReader *fTR, int i, std::vector<float> *unscaled_r9);
 	
   std::vector<int> ApplyPixelVeto(TreeReader *fTR, vector<int> passing, bool forelectron=0);
@@ -208,8 +332,8 @@ private:
 
   std::vector<struct_escale_item> energyScaleDatabase;
   std::vector<struct_escale_item> energySmearingDatabase;
-  float EnergyScaleOffset(float eta, float r9, int run);
-  float EnergySmearingCorrection(float eta, float r9, int run);
+  float EnergyScaleOffset(float eta, float r9, int run, float sigmas);
+  float EnergySmearingCorrection(float eta, float r9, int run, float sigmas);
   void InitEnergyScalesAndSmearingsDatabase();
   void InsertEnergyScaleItem(float meta, float Meta, float mr9, float Mr9, int mrun, int Mrun, float val, float err);
   void InsertEnergySmearingItem(float meta, float Meta, float mr9, float Mr9, int mrun, int Mrun, float val, float err);
@@ -251,7 +375,7 @@ private:
   jetmatching_struct PFMatchPhotonToJet(int phoqi);
 
   OnTheFlyCorrections *MyJetCorrector;
-  void JECJERCorrection(int jetindex, float &jecunc, float &jer, float &jerup, float &jerdown);
+  void JECJERCorrection(StatusScaleUpScaleDown e_scale, StatusScaleUpScaleDown e_smear, vector<pair<int,float> > &ordering_jets);
 
   TRandom3 *randomgen;
   TRandom3 *randomgen_forEsmearing;
@@ -286,12 +410,8 @@ private:
 
   Float_t AddWeight;
 
-  TString treename[18];
-  bool is2d[18];
+  map<EnumSel,Selection> sels;
   TFile* fOutputExtraFile;
-  TTree* OutputTree[18];
-  TTree* OutputExtraTree[18];
-  TTree* LightTreeGenReco;
 
   Float_t event_luminormfactor;
   Float_t event_Kfactor;

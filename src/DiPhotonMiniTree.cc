@@ -30,6 +30,8 @@ DiPhotonMiniTree::DiPhotonMiniTree(TreeReader *tr, std::string dataType, Float_t
   if (isdata) assert(dataset_id==0);
   else assert(dataset_id!=0);
 
+  debug = 0;
+
 }
 
 DiPhotonMiniTree::~DiPhotonMiniTree(){
@@ -41,297 +43,305 @@ void DiPhotonMiniTree::Begin(){
 
   cout << "Begin" << endl;
 
-  treename[0] = TString("Tree_2Dstandard_selection");
-  treename[1] = TString("Tree_1Drandomcone_template");
-  treename[2] = TString("Tree_1Dsideband_template");
-  treename[3] = TString("Tree_2DZee_pixelvetoreversed_selection");
-  treename[4] = TString("Tree_1Dpreselection");
-  treename[5] = TString("Tree_1Dselection");
-  treename[6] = TString("Tree_2Drandomcone_template");
-  treename[7] = TString("Tree_2Drandomconesideband_template");
-  treename[8] = TString("Tree_2Dsideband_template");
-  treename[9] = TString("Tree_2Dstandard_preselection");
-  treename[10] = TString("Tree_2DZmumu_selection");
-  treename[11] = TString("Tree_1Dsignal_template");
-  treename[12] = TString("Tree_1Dbackground_template");
-  treename[13] = TString("Tree_2Dtruesigsig_template");
-  treename[14] = TString("Tree_2Dtruesigbkg_template");
-  treename[15] = TString("Tree_2Dtruebkgbkg_template");
-  treename[16] = TString("Tree_2Drconeplusgenfake_template");
-  treename[17] = TString("Tree_2Dgenpromptplussideband_template");
-
-
-  // fOutputExtraFile = new TFile(TString(fOutputFile->GetName()).ReplaceAll("output","extra").Data(),"recreate");
   fOutputExtraFile = (isdata && !isstep2) ? new TFile(Form("extrainfo_%u.root",uuid),"recreate") : NULL;
 
-  for (int i=0; i<18; i++){
-    fOutputFile->cd();
-    OutputTree[i] = new TTree(treename[i].Data(),treename[i].Data());
-    if (isdata && !isstep2){
-      fOutputExtraFile->cd();
-      TString temp = treename[i];
-      temp.Append("_EXTRA");
-      OutputExtraTree[i] = new TTree(temp.Data(),temp.Data());
-    }
-    is2d[i] = (treename[i].First("2")>-1);
-  }
+  sels.insert(pair<EnumSel,Selection>(k2Dstandard_selection,Selection(k2Dstandard_selection,"2Dstandard_selection",kBoth,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k1Drandomcone_template,Selection(k1Drandomcone_template,"1Drandomcone_template",kBoth,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k1Dsideband_template,Selection(k1Dsideband_template,"1Dsideband_template",kBoth,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2DZee_pixelvetoreversed_selection,Selection(k2DZee_pixelvetoreversed_selection,"2DZee_pixelvetoreversed_selection",kBoth,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k1Dpreselection,Selection(k1Dpreselection,"1Dpreselection",kTurnOff,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k1Dselection,Selection(k1Dselection,"1Dselection",kTurnOff,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Drandomcone_template,Selection(k2Drandomcone_template,"2Drandomcone_template",kBoth,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Drandomconesideband_template,Selection(k2Drandomconesideband_template,"2Drandomconesideband_template",kBoth,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Dsideband_template,Selection(k2Dsideband_template,"2Dsideband_template",kBoth,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Dstandard_preselection,Selection(k2Dstandard_preselection,"2Dstandard_preselection",kTurnOff,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2DZmumu_selection,Selection(k2DZmumu_selection,"2DZmumu_selection",kTurnOff,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k1Dsignal_template,Selection(k1Dsignal_template,"1Dsignal_template",kMC,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k1Dbackground_template,Selection(k1Dbackground_template,"1Dbackground_template",kMC,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Dtruesigsig_template,Selection(k2Dtruesigsig_template,"2Dtruesigsig_template",kMC,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Dtruesigbkg_template,Selection(k2Dtruesigbkg_template,"2Dtruesigbkg_template",kMC,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Dtruebkgbkg_template,Selection(k2Dtruebkgbkg_template,"2Dtruebkgbkg_template",kMC,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Drconeplusgenfake_template,Selection(k2Drconeplusgenfake_template,"2Drconeplusgenfake_template",kMC,false,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(k2Dgenpromptplussideband_template,Selection(k2Dgenpromptplussideband_template,"2Dgenpromptplussideband_template",kMC,false,fOutputFile,fOutputExtraFile)));
 
-  for (int i=0; i<18; i++){
+  sels.insert(pair<EnumSel,Selection>(kLightDefault,Selection(kLightDefault,"Default",kBoth,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightJECup,Selection(kLightJECup,"JECup",kBoth,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightJECdown,Selection(kLightJECdown,"JECdown",kBoth,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightJERup,Selection(kLightJERup,"JERup",kMC,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightJERdown,Selection(kLightJERdown,"JERdown",kMC,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightESCALEup,Selection(kLightESCALEup,"ESCALEup",kData,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightESCALEdown,Selection(kLightESCALEdown,"ESCALEdown",kData,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightESMEARup,Selection(kLightESMEARup,"ESMEARup",kMC,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightESMEARdown,Selection(kLightESMEARdown,"ESMEARdown",kMC,true,fOutputFile,fOutputExtraFile)));
 
-  OutputTree[i]->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
-  OutputTree[i]->Branch("event_run",&event_run,"event_run/I");
-  OutputTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
-  OutputTree[i]->Branch("event_number",&event_number,"event_number/i");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_run",&event_run,"event_run/I");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_lumi",&event_lumi,"event_lumi/I");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_number",&event_number,"event_number/i");
-  OutputTree[i]->Branch("dataset_id",&mydataset_id,"dataset_id/I");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("dataset_id",&mydataset_id,"dataset_id/I");
 
-  OutputTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
-  OutputTree[i]->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
+  for (map<EnumSel,Selection>::iterator it = sels.begin(); it!=sels.end(); it++){
 
-  OutputTree[i]->Branch("event_weight",&event_weight,"event_weight/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_weight",&event_weight,"event_weight/F");
-  OutputTree[i]->Branch("event_rho",&event_rho,"event_rho/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_rho",&event_rho,"event_rho/F");
-  OutputTree[i]->Branch("event_sigma",&event_sigma,"event_sigma/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_sigma",&event_sigma,"event_sigma/F");
-  OutputTree[i]->Branch("event_nPU",&event_nPU,"event_nPU/I");
-  OutputTree[i]->Branch("event_nRecVtx",&event_nRecVtx,"event_nRecVtx/I");
-  OutputTree[i]->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
+    if (!it->second.isfullsel) continue;
 
-  OutputTree[i]->Branch("dipho_mgg_photon",&dipho_mgg_photon,"dipho_mgg_photon/F");
+    TTree *thistree = it->second.tree_full;
+    TTree *thisextratree = it->second.tree_extra;
 
-  OutputTree[i]->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
-  OutputTree[i]->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
-  OutputTree[i]->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
-  OutputTree[i]->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
-  OutputTree[i]->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
-  OutputTree[i]->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
-  OutputTree[i]->Branch("pholead_energy",&pholead_energy,"pholead_energy/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("pholead_energy",&pholead_energy,"pholead_energy/F");
-  OutputTree[i]->Branch("photrail_energy",&photrail_energy,"photrail_energy/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("photrail_energy",&photrail_energy,"photrail_energy/F");
-  OutputTree[i]->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
-  OutputTree[i]->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
-  OutputTree[i]->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
-  OutputTree[i]->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
+    thistree->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
+    thistree->Branch("event_run",&event_run,"event_run/I");
+    thistree->Branch("event_lumi",&event_lumi,"event_lumi/I");
+    thistree->Branch("event_number",&event_number,"event_number/i");
+    if (thisextratree) thisextratree->Branch("event_fileuuid",&event_fileuuid,"event_fileuuid/i");
+    if (thisextratree) thisextratree->Branch("event_run",&event_run,"event_run/I");
+    if (thisextratree) thisextratree->Branch("event_lumi",&event_lumi,"event_lumi/I");
+    if (thisextratree) thisextratree->Branch("event_number",&event_number,"event_number/i");
+    thistree->Branch("dataset_id",&mydataset_id,"dataset_id/I");
+    if (thisextratree) thisextratree->Branch("dataset_id",&mydataset_id,"dataset_id/I");
+
+    thistree->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
+    if (thisextratree) thisextratree->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
+    thistree->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
+    if (thisextratree) thisextratree->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
+
+    thistree->Branch("event_weight",&event_weight,"event_weight/F");
+    if (thisextratree) thisextratree->Branch("event_weight",&event_weight,"event_weight/F");
+    thistree->Branch("event_rho",&event_rho,"event_rho/F");
+    if (thisextratree) thisextratree->Branch("event_rho",&event_rho,"event_rho/F");
+    thistree->Branch("event_sigma",&event_sigma,"event_sigma/F");
+    if (thisextratree) thisextratree->Branch("event_sigma",&event_sigma,"event_sigma/F");
+    thistree->Branch("event_nPU",&event_nPU,"event_nPU/I");
+    thistree->Branch("event_nRecVtx",&event_nRecVtx,"event_nRecVtx/I");
+    thistree->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
+    if (thisextratree) thisextratree->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
+
+    thistree->Branch("dipho_mgg_photon",&dipho_mgg_photon,"dipho_mgg_photon/F");
+
+    thistree->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
+    if (thisextratree) thisextratree->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
+    thistree->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
+    if (thisextratree) thisextratree->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
+    thistree->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
+    if (thisextratree) thisextratree->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
+    thistree->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
+    if (thisextratree) thisextratree->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
+    thistree->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
+    if (thisextratree) thisextratree->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
+    thistree->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
+    if (thisextratree) thisextratree->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
+    thistree->Branch("pholead_energy",&pholead_energy,"pholead_energy/F");
+    if (thisextratree) thisextratree->Branch("pholead_energy",&pholead_energy,"pholead_energy/F");
+    thistree->Branch("photrail_energy",&photrail_energy,"photrail_energy/F");
+    if (thisextratree) thisextratree->Branch("photrail_energy",&photrail_energy,"photrail_energy/F");
+    thistree->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
+    if (thisextratree) thisextratree->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
+    thistree->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
+    if (thisextratree) thisextratree->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
+    thistree->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
+    if (thisextratree) thisextratree->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
+    thistree->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
+    if (thisextratree) thisextratree->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
   
-  OutputTree[i]->Branch("pholead_PhoHasPixSeed",&pholead_PhoHasPixSeed,"pholead_PhoHasPixSeed/I");
-  OutputTree[i]->Branch("photrail_PhoHasPixSeed",&photrail_PhoHasPixSeed,"photrail_PhoHasPixSeed/I");
+    thistree->Branch("pholead_PhoHasPixSeed",&pholead_PhoHasPixSeed,"pholead_PhoHasPixSeed/I");
+    thistree->Branch("photrail_PhoHasPixSeed",&photrail_PhoHasPixSeed,"photrail_PhoHasPixSeed/I");
 
-  OutputTree[i]->Branch("pholead_r9",&pholead_r9,"pholead_r9/F");
-  OutputTree[i]->Branch("photrail_r9",&photrail_r9,"photrail_r9/F");
-  OutputTree[i]->Branch("pholead_sieie",&pholead_sieie,"pholead_sieie/F");
-  OutputTree[i]->Branch("photrail_sieie",&photrail_sieie,"photrail_sieie/F");
-  OutputTree[i]->Branch("pholead_hoe",&pholead_hoe,"pholead_hoe/F");
-  OutputTree[i]->Branch("photrail_hoe",&photrail_hoe,"photrail_hoe/F");
+    thistree->Branch("pholead_r9",&pholead_r9,"pholead_r9/F");
+    thistree->Branch("photrail_r9",&photrail_r9,"photrail_r9/F");
+    thistree->Branch("pholead_sieie",&pholead_sieie,"pholead_sieie/F");
+    thistree->Branch("photrail_sieie",&photrail_sieie,"photrail_sieie/F");
+    thistree->Branch("pholead_hoe",&pholead_hoe,"pholead_hoe/F");
+    thistree->Branch("photrail_hoe",&photrail_hoe,"photrail_hoe/F");
 
-  OutputTree[i]->Branch("pholead_PhoSCRemovalPFIsoCharged",&pholead_PhoSCRemovalPFIsoCharged,"pholead_PhoSCRemovalPFIsoCharged/F");
-  OutputTree[i]->Branch("photrail_PhoSCRemovalPFIsoCharged",&photrail_PhoSCRemovalPFIsoCharged,"photrail_PhoSCRemovalPFIsoCharged/F");
-  OutputTree[i]->Branch("pholead_PhoSCRemovalPFIsoNeutral",&pholead_PhoSCRemovalPFIsoNeutral,"pholead_PhoSCRemovalPFIsoNeutral/F");
-  OutputTree[i]->Branch("photrail_PhoSCRemovalPFIsoNeutral",&photrail_PhoSCRemovalPFIsoNeutral,"photrail_PhoSCRemovalPFIsoNeutral/F");
-  OutputTree[i]->Branch("pholead_PhoSCRemovalPFIsoPhoton",&pholead_PhoSCRemovalPFIsoPhoton,"pholead_PhoSCRemovalPFIsoPhoton/F");
-  OutputTree[i]->Branch("photrail_PhoSCRemovalPFIsoPhoton",&photrail_PhoSCRemovalPFIsoPhoton,"photrail_PhoSCRemovalPFIsoPhoton/F");
-  OutputTree[i]->Branch("pholead_PhoSCRemovalPFIsoCombined",&pholead_PhoSCRemovalPFIsoCombined,"pholead_PhoSCRemovalPFIsoCombined/F");
-  OutputTree[i]->Branch("photrail_PhoSCRemovalPFIsoCombined",&photrail_PhoSCRemovalPFIsoCombined,"photrail_PhoSCRemovalPFIsoCombined/F");
+    thistree->Branch("pholead_PhoSCRemovalPFIsoCharged",&pholead_PhoSCRemovalPFIsoCharged,"pholead_PhoSCRemovalPFIsoCharged/F");
+    thistree->Branch("photrail_PhoSCRemovalPFIsoCharged",&photrail_PhoSCRemovalPFIsoCharged,"photrail_PhoSCRemovalPFIsoCharged/F");
+    thistree->Branch("pholead_PhoSCRemovalPFIsoNeutral",&pholead_PhoSCRemovalPFIsoNeutral,"pholead_PhoSCRemovalPFIsoNeutral/F");
+    thistree->Branch("photrail_PhoSCRemovalPFIsoNeutral",&photrail_PhoSCRemovalPFIsoNeutral,"photrail_PhoSCRemovalPFIsoNeutral/F");
+    thistree->Branch("pholead_PhoSCRemovalPFIsoPhoton",&pholead_PhoSCRemovalPFIsoPhoton,"pholead_PhoSCRemovalPFIsoPhoton/F");
+    thistree->Branch("photrail_PhoSCRemovalPFIsoPhoton",&photrail_PhoSCRemovalPFIsoPhoton,"photrail_PhoSCRemovalPFIsoPhoton/F");
+    thistree->Branch("pholead_PhoSCRemovalPFIsoCombined",&pholead_PhoSCRemovalPFIsoCombined,"pholead_PhoSCRemovalPFIsoCombined/F");
+    thistree->Branch("photrail_PhoSCRemovalPFIsoCombined",&photrail_PhoSCRemovalPFIsoCombined,"photrail_PhoSCRemovalPFIsoCombined/F");
 
-  OutputTree[i]->Branch("pholead_PhoIso03Ecal",&pholead_PhoIso03Ecal,"pholead_PhoIso03Ecal/F");
-  OutputTree[i]->Branch("pholead_PhoIso03Hcal",&pholead_PhoIso03Hcal,"pholead_PhoIso03Hcal/F");
-  OutputTree[i]->Branch("pholead_PhoIso03TrkHollow",&pholead_PhoIso03TrkHollow,"pholead_PhoIso03TrkHollow/F");
-  OutputTree[i]->Branch("photrail_PhoIso03Ecal",&photrail_PhoIso03Ecal,"photrail_PhoIso03Ecal/F");
-  OutputTree[i]->Branch("photrail_PhoIso03Hcal",&photrail_PhoIso03Hcal,"photrail_PhoIso03Hcal/F");
-  OutputTree[i]->Branch("photrail_PhoIso03TrkHollow",&photrail_PhoIso03TrkHollow,"photrail_PhoIso03TrkHollow/F");
+    thistree->Branch("pholead_PhoIso03Ecal",&pholead_PhoIso03Ecal,"pholead_PhoIso03Ecal/F");
+    thistree->Branch("pholead_PhoIso03Hcal",&pholead_PhoIso03Hcal,"pholead_PhoIso03Hcal/F");
+    thistree->Branch("pholead_PhoIso03TrkHollow",&pholead_PhoIso03TrkHollow,"pholead_PhoIso03TrkHollow/F");
+    thistree->Branch("photrail_PhoIso03Ecal",&photrail_PhoIso03Ecal,"photrail_PhoIso03Ecal/F");
+    thistree->Branch("photrail_PhoIso03Hcal",&photrail_PhoIso03Hcal,"photrail_PhoIso03Hcal/F");
+    thistree->Branch("photrail_PhoIso03TrkHollow",&photrail_PhoIso03TrkHollow,"photrail_PhoIso03TrkHollow/F");
 
-  OutputTree[i]->Branch("pholead_PhoPassConversionVeto",&pholead_PhoPassConversionVeto,"pholead_PhoPassConversionVeto/I");
-  OutputTree[i]->Branch("photrail_PhoPassConversionVeto",&photrail_PhoPassConversionVeto,"photrail_PhoPassConversionVeto/I");
+    thistree->Branch("pholead_PhoPassConversionVeto",&pholead_PhoPassConversionVeto,"pholead_PhoPassConversionVeto/I");
+    thistree->Branch("photrail_PhoPassConversionVeto",&photrail_PhoPassConversionVeto,"photrail_PhoPassConversionVeto/I");
 
-  OutputTree[i]->Branch("pholead_GenPhotonIsoDR04",&pholead_GenPhotonIsoDR04,"pholead_GenPhotonIsoDR04/F");
-  OutputTree[i]->Branch("photrail_GenPhotonIsoDR04",&photrail_GenPhotonIsoDR04,"photrail_GenPhotonIsoDR04/F");
+    thistree->Branch("pholead_GenPhotonIsoDR04",&pholead_GenPhotonIsoDR04,"pholead_GenPhotonIsoDR04/F");
+    thistree->Branch("photrail_GenPhotonIsoDR04",&photrail_GenPhotonIsoDR04,"photrail_GenPhotonIsoDR04/F");
 
-  OutputTree[i]->Branch("pholead_PhoMCmatchexitcode",&pholead_PhoMCmatchexitcode,"pholead_PhoMCmatchexitcode/I");
-  OutputTree[i]->Branch("photrail_PhoMCmatchexitcode",&photrail_PhoMCmatchexitcode,"photrail_PhoMCmatchexitcode/I");
+    thistree->Branch("pholead_PhoMCmatchexitcode",&pholead_PhoMCmatchexitcode,"pholead_PhoMCmatchexitcode/I");
+    thistree->Branch("photrail_PhoMCmatchexitcode",&photrail_PhoMCmatchexitcode,"photrail_PhoMCmatchexitcode/I");
 
-//  OutputTree[i]->Branch("pholead_scarea",&pholead_scarea,"pholead_scarea/F");
-//  OutputTree[i]->Branch("pholead_scareaSF",&pholead_scareaSF,"pholead_scareaSF/F");
-//  OutputTree[i]->Branch("photrail_scarea",&photrail_scarea,"photrail_scarea/F");
-//  OutputTree[i]->Branch("photrail_scareaSF",&photrail_scareaSF,"photrail_scareaSF/F");
+    //  thistree->Branch("pholead_scarea",&pholead_scarea,"pholead_scarea/F");
+    //  thistree->Branch("pholead_scareaSF",&pholead_scareaSF,"pholead_scareaSF/F");
+    //  thistree->Branch("photrail_scarea",&photrail_scarea,"photrail_scarea/F");
+    //  thistree->Branch("photrail_scareaSF",&photrail_scareaSF,"photrail_scareaSF/F");
 
-  OutputTree[i]->Branch("pholead_m_jet_ptcorr",&pholead_m_jet_ptcorr,"pholead_m_jet_ptcorr/F");
-  OutputTree[i]->Branch("pholead_m_jet_dR",&pholead_m_jet_dR,"pholead_m_jet_dR/F");
-  OutputTree[i]->Branch("pholead_phopt_footprint_total",&pholead_phopt_footprint_total,"pholead_phopt_footprint_total/F");
-  OutputTree[i]->Branch("pholead_phopt_footprint_m_frac",&pholead_phopt_footprint_m_frac,"pholead_phopt_footprint_m_frac/F");
-  OutputTree[i]->Branch("pholead_jetpt_pf",&pholead_jetpt_pf,"pholead_jetpt_pf/F");
-  OutputTree[i]->Branch("pholead_jetpt_m_frac",&pholead_jetpt_m_frac,"pholead_jetpt_m_frac/F");
-  OutputTree[i]->Branch("pholead_jetpt_m_frac_PhoComp",&pholead_jetpt_m_frac_PhoComp,"pholead_jetpt_m_frac_PhoComp/F");
-  OutputTree[i]->Branch("photrail_m_jet_ptcorr",&photrail_m_jet_ptcorr,"photrail_m_jet_ptcorr/F");
-  OutputTree[i]->Branch("photrail_m_jet_dR",&photrail_m_jet_dR,"photrail_m_jet_dR/F");
-  OutputTree[i]->Branch("photrail_phopt_footprint_total",&photrail_phopt_footprint_total,"photrail_phopt_footprint_total/F");
-  OutputTree[i]->Branch("photrail_phopt_footprint_m_frac",&photrail_phopt_footprint_m_frac,"photrail_phopt_footprint_m_frac/F");
-  OutputTree[i]->Branch("photrail_jetpt_pf",&photrail_jetpt_pf,"photrail_jetpt_pf/F");
-  OutputTree[i]->Branch("photrail_jetpt_m_frac",&photrail_jetpt_m_frac,"photrail_jetpt_m_frac/F");
-  OutputTree[i]->Branch("photrail_jetpt_m_frac_PhoComp",&photrail_jetpt_m_frac_PhoComp,"photrail_jetpt_m_frac_PhoComp/F");
+    thistree->Branch("pholead_m_jet_ptcorr",&pholead_m_jet_ptcorr,"pholead_m_jet_ptcorr/F");
+    thistree->Branch("pholead_m_jet_dR",&pholead_m_jet_dR,"pholead_m_jet_dR/F");
+    thistree->Branch("pholead_phopt_footprint_total",&pholead_phopt_footprint_total,"pholead_phopt_footprint_total/F");
+    thistree->Branch("pholead_phopt_footprint_m_frac",&pholead_phopt_footprint_m_frac,"pholead_phopt_footprint_m_frac/F");
+    thistree->Branch("pholead_jetpt_pf",&pholead_jetpt_pf,"pholead_jetpt_pf/F");
+    thistree->Branch("pholead_jetpt_m_frac",&pholead_jetpt_m_frac,"pholead_jetpt_m_frac/F");
+    thistree->Branch("pholead_jetpt_m_frac_PhoComp",&pholead_jetpt_m_frac_PhoComp,"pholead_jetpt_m_frac_PhoComp/F");
+    thistree->Branch("photrail_m_jet_ptcorr",&photrail_m_jet_ptcorr,"photrail_m_jet_ptcorr/F");
+    thistree->Branch("photrail_m_jet_dR",&photrail_m_jet_dR,"photrail_m_jet_dR/F");
+    thistree->Branch("photrail_phopt_footprint_total",&photrail_phopt_footprint_total,"photrail_phopt_footprint_total/F");
+    thistree->Branch("photrail_phopt_footprint_m_frac",&photrail_phopt_footprint_m_frac,"photrail_phopt_footprint_m_frac/F");
+    thistree->Branch("photrail_jetpt_pf",&photrail_jetpt_pf,"photrail_jetpt_pf/F");
+    thistree->Branch("photrail_jetpt_m_frac",&photrail_jetpt_m_frac,"photrail_jetpt_m_frac/F");
+    thistree->Branch("photrail_jetpt_m_frac_PhoComp",&photrail_jetpt_m_frac_PhoComp,"photrail_jetpt_m_frac_PhoComp/F");
 
-  OutputTree[i]->Branch("pholead_pt_closestjet",&pholead_pt_closestjet,"pholead_pt_closestjet/F");
-  OutputTree[i]->Branch("pholead_dR_closestjet",&pholead_dR_closestjet,"pholead_dR_closestjet/F");
-  OutputTree[i]->Branch("photrail_pt_closestjet",&photrail_pt_closestjet,"photrail_pt_closestjet/F");
-  OutputTree[i]->Branch("photrail_dR_closestjet",&photrail_dR_closestjet,"photrail_dR_closestjet/F");
+    thistree->Branch("pholead_pt_closestjet",&pholead_pt_closestjet,"pholead_pt_closestjet/F");
+    thistree->Branch("pholead_dR_closestjet",&pholead_dR_closestjet,"pholead_dR_closestjet/F");
+    thistree->Branch("photrail_pt_closestjet",&photrail_pt_closestjet,"photrail_pt_closestjet/F");
+    thistree->Branch("photrail_dR_closestjet",&photrail_dR_closestjet,"photrail_dR_closestjet/F");
 
-  if (do_recalc_isolation){
-  OutputTree[i]->Branch("pholead_Npfcandphotonincone",&pholead_Npfcandphotonincone,"pholead_Npfcandphotonincone/I");
-  OutputTree[i]->Branch("pholead_Npfcandchargedincone",&pholead_Npfcandchargedincone,"pholead_Npfcandchargedincone/I");
-  OutputTree[i]->Branch("pholead_Npfcandneutralincone",&pholead_Npfcandneutralincone,"pholead_Npfcandneutralincone/I");
-  OutputTree[i]->Branch("photrail_Npfcandphotonincone",&photrail_Npfcandphotonincone,"photrail_Npfcandphotonincone/I");
-  OutputTree[i]->Branch("photrail_Npfcandchargedincone",&photrail_Npfcandchargedincone,"photrail_Npfcandchargedincone/I");
-  OutputTree[i]->Branch("photrail_Npfcandneutralincone",&photrail_Npfcandneutralincone,"photrail_Npfcandneutralincone/I");
-  OutputTree[i]->Branch("pholead_photonpfcandenergies",&pholead_photonpfcandenergies,"pholead_photonpfcandenergies[pholead_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("pholead_chargedpfcandenergies",&pholead_chargedpfcandenergies,"pholead_chargedpfcandenergies[pholead_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("pholead_neutralpfcandenergies",&pholead_neutralpfcandenergies,"pholead_neutralpfcandenergies[pholead_Npfcandneutralincone]/F");
-  OutputTree[i]->Branch("pholead_photonpfcandets",&pholead_photonpfcandets,"pholead_photonpfcandets[pholead_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("pholead_chargedpfcandets",&pholead_chargedpfcandets,"pholead_chargedpfcandets[pholead_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("pholead_neutralpfcandets",&pholead_neutralpfcandets,"pholead_neutralpfcandets[pholead_Npfcandneutralincone]/F");
-  OutputTree[i]->Branch("pholead_photonpfcanddetas",&pholead_photonpfcanddetas,"pholead_photonpfcanddetas[pholead_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("pholead_chargedpfcanddetas",&pholead_chargedpfcanddetas,"pholead_chargedpfcanddetas[pholead_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("pholead_neutralpfcanddetas",&pholead_neutralpfcanddetas,"pholead_neutralpfcanddetas[pholead_Npfcandneutralincone]/F");
-  OutputTree[i]->Branch("pholead_photonpfcanddphis",&pholead_photonpfcanddphis,"pholead_photonpfcanddphis[pholead_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("pholead_chargedpfcanddphis",&pholead_chargedpfcanddphis,"pholead_chargedpfcanddphis[pholead_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("pholead_neutralpfcanddphis",&pholead_neutralpfcanddphis,"pholead_neutralpfcanddphis[pholead_Npfcandneutralincone]/F");
-  OutputTree[i]->Branch("photrail_photonpfcandenergies",&photrail_photonpfcandenergies,"photrail_photonpfcandenergies[photrail_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("photrail_chargedpfcandenergies",&photrail_chargedpfcandenergies,"photrail_chargedpfcandenergies[photrail_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("photrail_neutralpfcandenergies",&photrail_neutralpfcandenergies,"photrail_neutralpfcandenergies[photrail_Npfcandneutralincone]/F");
-  OutputTree[i]->Branch("photrail_photonpfcandets",&photrail_photonpfcandets,"photrail_photonpfcandets[photrail_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("photrail_chargedpfcandets",&photrail_chargedpfcandets,"photrail_chargedpfcandets[photrail_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("photrail_neutralpfcandets",&photrail_neutralpfcandets,"photrail_neutralpfcandets[photrail_Npfcandneutralincone]/F");
-  OutputTree[i]->Branch("photrail_photonpfcanddetas",&photrail_photonpfcanddetas,"photrail_photonpfcanddetas[photrail_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("photrail_chargedpfcanddetas",&photrail_chargedpfcanddetas,"photrail_chargedpfcanddetas[photrail_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("photrail_neutralpfcanddetas",&photrail_neutralpfcanddetas,"photrail_neutralpfcanddetas[photrail_Npfcandneutralincone]/F");
-  OutputTree[i]->Branch("photrail_photonpfcanddphis",&photrail_photonpfcanddphis,"photrail_photonpfcanddphis[photrail_Npfcandphotonincone]/F");
-  OutputTree[i]->Branch("photrail_chargedpfcanddphis",&photrail_chargedpfcanddphis,"photrail_chargedpfcanddphis[photrail_Npfcandchargedincone]/F");
-  OutputTree[i]->Branch("photrail_neutralpfcanddphis",&photrail_neutralpfcanddphis,"photrail_neutralpfcanddphis[photrail_Npfcandneutralincone]/F");
-  }
+    if (do_recalc_isolation){
+      thistree->Branch("pholead_Npfcandphotonincone",&pholead_Npfcandphotonincone,"pholead_Npfcandphotonincone/I");
+      thistree->Branch("pholead_Npfcandchargedincone",&pholead_Npfcandchargedincone,"pholead_Npfcandchargedincone/I");
+      thistree->Branch("pholead_Npfcandneutralincone",&pholead_Npfcandneutralincone,"pholead_Npfcandneutralincone/I");
+      thistree->Branch("photrail_Npfcandphotonincone",&photrail_Npfcandphotonincone,"photrail_Npfcandphotonincone/I");
+      thistree->Branch("photrail_Npfcandchargedincone",&photrail_Npfcandchargedincone,"photrail_Npfcandchargedincone/I");
+      thistree->Branch("photrail_Npfcandneutralincone",&photrail_Npfcandneutralincone,"photrail_Npfcandneutralincone/I");
+      thistree->Branch("pholead_photonpfcandenergies",&pholead_photonpfcandenergies,"pholead_photonpfcandenergies[pholead_Npfcandphotonincone]/F");
+      thistree->Branch("pholead_chargedpfcandenergies",&pholead_chargedpfcandenergies,"pholead_chargedpfcandenergies[pholead_Npfcandchargedincone]/F");
+      thistree->Branch("pholead_neutralpfcandenergies",&pholead_neutralpfcandenergies,"pholead_neutralpfcandenergies[pholead_Npfcandneutralincone]/F");
+      thistree->Branch("pholead_photonpfcandets",&pholead_photonpfcandets,"pholead_photonpfcandets[pholead_Npfcandphotonincone]/F");
+      thistree->Branch("pholead_chargedpfcandets",&pholead_chargedpfcandets,"pholead_chargedpfcandets[pholead_Npfcandchargedincone]/F");
+      thistree->Branch("pholead_neutralpfcandets",&pholead_neutralpfcandets,"pholead_neutralpfcandets[pholead_Npfcandneutralincone]/F");
+      thistree->Branch("pholead_photonpfcanddetas",&pholead_photonpfcanddetas,"pholead_photonpfcanddetas[pholead_Npfcandphotonincone]/F");
+      thistree->Branch("pholead_chargedpfcanddetas",&pholead_chargedpfcanddetas,"pholead_chargedpfcanddetas[pholead_Npfcandchargedincone]/F");
+      thistree->Branch("pholead_neutralpfcanddetas",&pholead_neutralpfcanddetas,"pholead_neutralpfcanddetas[pholead_Npfcandneutralincone]/F");
+      thistree->Branch("pholead_photonpfcanddphis",&pholead_photonpfcanddphis,"pholead_photonpfcanddphis[pholead_Npfcandphotonincone]/F");
+      thistree->Branch("pholead_chargedpfcanddphis",&pholead_chargedpfcanddphis,"pholead_chargedpfcanddphis[pholead_Npfcandchargedincone]/F");
+      thistree->Branch("pholead_neutralpfcanddphis",&pholead_neutralpfcanddphis,"pholead_neutralpfcanddphis[pholead_Npfcandneutralincone]/F");
+      thistree->Branch("photrail_photonpfcandenergies",&photrail_photonpfcandenergies,"photrail_photonpfcandenergies[photrail_Npfcandphotonincone]/F");
+      thistree->Branch("photrail_chargedpfcandenergies",&photrail_chargedpfcandenergies,"photrail_chargedpfcandenergies[photrail_Npfcandchargedincone]/F");
+      thistree->Branch("photrail_neutralpfcandenergies",&photrail_neutralpfcandenergies,"photrail_neutralpfcandenergies[photrail_Npfcandneutralincone]/F");
+      thistree->Branch("photrail_photonpfcandets",&photrail_photonpfcandets,"photrail_photonpfcandets[photrail_Npfcandphotonincone]/F");
+      thistree->Branch("photrail_chargedpfcandets",&photrail_chargedpfcandets,"photrail_chargedpfcandets[photrail_Npfcandchargedincone]/F");
+      thistree->Branch("photrail_neutralpfcandets",&photrail_neutralpfcandets,"photrail_neutralpfcandets[photrail_Npfcandneutralincone]/F");
+      thistree->Branch("photrail_photonpfcanddetas",&photrail_photonpfcanddetas,"photrail_photonpfcanddetas[photrail_Npfcandphotonincone]/F");
+      thistree->Branch("photrail_chargedpfcanddetas",&photrail_chargedpfcanddetas,"photrail_chargedpfcanddetas[photrail_Npfcandchargedincone]/F");
+      thistree->Branch("photrail_neutralpfcanddetas",&photrail_neutralpfcanddetas,"photrail_neutralpfcanddetas[photrail_Npfcandneutralincone]/F");
+      thistree->Branch("photrail_photonpfcanddphis",&photrail_photonpfcanddphis,"photrail_photonpfcanddphis[photrail_Npfcandphotonincone]/F");
+      thistree->Branch("photrail_chargedpfcanddphis",&photrail_chargedpfcanddphis,"photrail_chargedpfcanddphis[photrail_Npfcandchargedincone]/F");
+      thistree->Branch("photrail_neutralpfcanddphis",&photrail_neutralpfcanddphis,"photrail_neutralpfcanddphis[photrail_Npfcandneutralincone]/F");
+    }
 
-//  // IF SCAN ROTATED CONES
-//  OutputTree[i]->Branch("pholead_test_rotatedphotoniso",&pholead_test_rotatedphotoniso,"pholead_test_rotatedphotoniso[50]/F");
-//  OutputTree[i]->Branch("pholead_test_rotatedwithcheckphotoniso",&pholead_test_rotatedwithcheckphotoniso,"pholead_test_rotatedwithcheckphotoniso[50]/F");
+    //  // IF SCAN ROTATED CONES
+    //  thistree->Branch("pholead_test_rotatedphotoniso",&pholead_test_rotatedphotoniso,"pholead_test_rotatedphotoniso[50]/F");
+    //  thistree->Branch("pholead_test_rotatedwithcheckphotoniso",&pholead_test_rotatedwithcheckphotoniso,"pholead_test_rotatedwithcheckphotoniso[50]/F");
 
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("allphotonpfcand_count",&allphotonpfcand_count,"allphotonpfcand_count/I");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("allphotonpfcand_pt",&allphotonpfcand_pt,"allphotonpfcand_pt[allphotonpfcand_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("allphotonpfcand_eta",&allphotonpfcand_eta,"allphotonpfcand_eta[allphotonpfcand_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("allphotonpfcand_phi",&allphotonpfcand_phi,"allphotonpfcand_phi[allphotonpfcand_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("allphotonpfcand_vx",&allphotonpfcand_vx,"allphotonpfcand_vx[allphotonpfcand_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("allphotonpfcand_vy",&allphotonpfcand_vy,"allphotonpfcand_vy[allphotonpfcand_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("allphotonpfcand_vz",&allphotonpfcand_vz,"allphotonpfcand_vz[allphotonpfcand_count]/F");
+    if (thisextratree) thisextratree->Branch("allphotonpfcand_count",&allphotonpfcand_count,"allphotonpfcand_count/I");
+    if (thisextratree) thisextratree->Branch("allphotonpfcand_pt",&allphotonpfcand_pt,"allphotonpfcand_pt[allphotonpfcand_count]/F");
+    if (thisextratree) thisextratree->Branch("allphotonpfcand_eta",&allphotonpfcand_eta,"allphotonpfcand_eta[allphotonpfcand_count]/F");
+    if (thisextratree) thisextratree->Branch("allphotonpfcand_phi",&allphotonpfcand_phi,"allphotonpfcand_phi[allphotonpfcand_count]/F");
+    if (thisextratree) thisextratree->Branch("allphotonpfcand_vx",&allphotonpfcand_vx,"allphotonpfcand_vx[allphotonpfcand_count]/F");
+    if (thisextratree) thisextratree->Branch("allphotonpfcand_vy",&allphotonpfcand_vy,"allphotonpfcand_vy[allphotonpfcand_count]/F");
+    if (thisextratree) thisextratree->Branch("allphotonpfcand_vz",&allphotonpfcand_vz,"allphotonpfcand_vz[allphotonpfcand_count]/F");
 
-  OutputTree[i]->Branch("phoiso_template_1event_sigsig_1",&phoiso_template_1event_sigsig_1,Form("phoiso_template_1event_sigsig_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_1event_sigsig_2",&phoiso_template_1event_sigsig_2,Form("phoiso_template_1event_sigsig_2[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_1event_sigbkg_1",&phoiso_template_1event_sigbkg_1,Form("phoiso_template_1event_sigbkg_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_1event_sigbkg_2",&phoiso_template_1event_sigbkg_2,Form("phoiso_template_1event_sigbkg_2[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_1event_bkgsig_1",&phoiso_template_1event_bkgsig_1,Form("phoiso_template_1event_bkgsig_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_1event_bkgsig_2",&phoiso_template_1event_bkgsig_2,Form("phoiso_template_1event_bkgsig_2[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_1event_bkgbkg_1",&phoiso_template_1event_bkgbkg_1,Form("phoiso_template_1event_bkgbkg_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_1event_bkgbkg_2",&phoiso_template_1event_bkgbkg_2,Form("phoiso_template_1event_bkgbkg_2[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_sigsig_1",&phoiso_template_2events_sigsig_1,Form("phoiso_template_2events_sigsig_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_sigsig_2",&phoiso_template_2events_sigsig_2,Form("phoiso_template_2events_sigsig_2[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_sigbkg_1",&phoiso_template_2events_sigbkg_1,Form("phoiso_template_2events_sigbkg_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_sigbkg_2",&phoiso_template_2events_sigbkg_2,Form("phoiso_template_2events_sigbkg_2[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_bkgsig_1",&phoiso_template_2events_bkgsig_1,Form("phoiso_template_2events_bkgsig_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_bkgsig_2",&phoiso_template_2events_bkgsig_2,Form("phoiso_template_2events_bkgsig_2[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_bkgbkg_1",&phoiso_template_2events_bkgbkg_1,Form("phoiso_template_2events_bkgbkg_1[%d]/F",nclosest));
-  OutputTree[i]->Branch("phoiso_template_2events_bkgbkg_2",&phoiso_template_2events_bkgbkg_2,Form("phoiso_template_2events_bkgbkg_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_sigsig_1",&phoiso_template_1event_sigsig_1,Form("phoiso_template_1event_sigsig_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_sigsig_2",&phoiso_template_1event_sigsig_2,Form("phoiso_template_1event_sigsig_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_sigbkg_1",&phoiso_template_1event_sigbkg_1,Form("phoiso_template_1event_sigbkg_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_sigbkg_2",&phoiso_template_1event_sigbkg_2,Form("phoiso_template_1event_sigbkg_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_bkgsig_1",&phoiso_template_1event_bkgsig_1,Form("phoiso_template_1event_bkgsig_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_bkgsig_2",&phoiso_template_1event_bkgsig_2,Form("phoiso_template_1event_bkgsig_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_bkgbkg_1",&phoiso_template_1event_bkgbkg_1,Form("phoiso_template_1event_bkgbkg_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_1event_bkgbkg_2",&phoiso_template_1event_bkgbkg_2,Form("phoiso_template_1event_bkgbkg_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_sigsig_1",&phoiso_template_2events_sigsig_1,Form("phoiso_template_2events_sigsig_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_sigsig_2",&phoiso_template_2events_sigsig_2,Form("phoiso_template_2events_sigsig_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_sigbkg_1",&phoiso_template_2events_sigbkg_1,Form("phoiso_template_2events_sigbkg_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_sigbkg_2",&phoiso_template_2events_sigbkg_2,Form("phoiso_template_2events_sigbkg_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_bkgsig_1",&phoiso_template_2events_bkgsig_1,Form("phoiso_template_2events_bkgsig_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_bkgsig_2",&phoiso_template_2events_bkgsig_2,Form("phoiso_template_2events_bkgsig_2[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_bkgbkg_1",&phoiso_template_2events_bkgbkg_1,Form("phoiso_template_2events_bkgbkg_1[%d]/F",nclosest));
+    thistree->Branch("phoiso_template_2events_bkgbkg_2",&phoiso_template_2events_bkgbkg_2,Form("phoiso_template_2events_bkgbkg_2[%d]/F",nclosest));
 
-  // rewinfo = {eta1, eta2, pt1, pt2, rho, sigma}
-  OutputTree[i]->Branch("rewinfo_template_1event_sigsig_1",&rewinfo_template_1event_sigsig_1,Form("rewinfo_template_1event_sigsig_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_1event_sigsig_2",&rewinfo_template_1event_sigsig_2,Form("rewinfo_template_1event_sigsig_2[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_1event_sigbkg_1",&rewinfo_template_1event_sigbkg_1,Form("rewinfo_template_1event_sigbkg_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_1event_sigbkg_2",&rewinfo_template_1event_sigbkg_2,Form("rewinfo_template_1event_sigbkg_2[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_1event_bkgsig_1",&rewinfo_template_1event_bkgsig_1,Form("rewinfo_template_1event_bkgsig_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_1event_bkgsig_2",&rewinfo_template_1event_bkgsig_2,Form("rewinfo_template_1event_bkgsig_2[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_1event_bkgbkg_1",&rewinfo_template_1event_bkgbkg_1,Form("rewinfo_template_1event_bkgbkg_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_1event_bkgbkg_2",&rewinfo_template_1event_bkgbkg_2,Form("rewinfo_template_1event_bkgbkg_2[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_sigsig_1",&rewinfo_template_2events_sigsig_1,Form("rewinfo_template_2events_sigsig_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_sigsig_2",&rewinfo_template_2events_sigsig_2,Form("rewinfo_template_2events_sigsig_2[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_sigbkg_1",&rewinfo_template_2events_sigbkg_1,Form("rewinfo_template_2events_sigbkg_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_sigbkg_2",&rewinfo_template_2events_sigbkg_2,Form("rewinfo_template_2events_sigbkg_2[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_bkgsig_1",&rewinfo_template_2events_bkgsig_1,Form("rewinfo_template_2events_bkgsig_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_bkgsig_2",&rewinfo_template_2events_bkgsig_2,Form("rewinfo_template_2events_bkgsig_2[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_bkgbkg_1",&rewinfo_template_2events_bkgbkg_1,Form("rewinfo_template_2events_bkgbkg_1[%d]/F",nclosest*6));
-  OutputTree[i]->Branch("rewinfo_template_2events_bkgbkg_2",&rewinfo_template_2events_bkgbkg_2,Form("rewinfo_template_2events_bkgbkg_2[%d]/F",nclosest*6));
+    // rewinfo = {eta1, eta2, pt1, pt2, rho, sigma}
+    thistree->Branch("rewinfo_template_1event_sigsig_1",&rewinfo_template_1event_sigsig_1,Form("rewinfo_template_1event_sigsig_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_1event_sigsig_2",&rewinfo_template_1event_sigsig_2,Form("rewinfo_template_1event_sigsig_2[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_1event_sigbkg_1",&rewinfo_template_1event_sigbkg_1,Form("rewinfo_template_1event_sigbkg_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_1event_sigbkg_2",&rewinfo_template_1event_sigbkg_2,Form("rewinfo_template_1event_sigbkg_2[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_1event_bkgsig_1",&rewinfo_template_1event_bkgsig_1,Form("rewinfo_template_1event_bkgsig_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_1event_bkgsig_2",&rewinfo_template_1event_bkgsig_2,Form("rewinfo_template_1event_bkgsig_2[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_1event_bkgbkg_1",&rewinfo_template_1event_bkgbkg_1,Form("rewinfo_template_1event_bkgbkg_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_1event_bkgbkg_2",&rewinfo_template_1event_bkgbkg_2,Form("rewinfo_template_1event_bkgbkg_2[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_sigsig_1",&rewinfo_template_2events_sigsig_1,Form("rewinfo_template_2events_sigsig_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_sigsig_2",&rewinfo_template_2events_sigsig_2,Form("rewinfo_template_2events_sigsig_2[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_sigbkg_1",&rewinfo_template_2events_sigbkg_1,Form("rewinfo_template_2events_sigbkg_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_sigbkg_2",&rewinfo_template_2events_sigbkg_2,Form("rewinfo_template_2events_sigbkg_2[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_bkgsig_1",&rewinfo_template_2events_bkgsig_1,Form("rewinfo_template_2events_bkgsig_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_bkgsig_2",&rewinfo_template_2events_bkgsig_2,Form("rewinfo_template_2events_bkgsig_2[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_bkgbkg_1",&rewinfo_template_2events_bkgbkg_1,Form("rewinfo_template_2events_bkgbkg_1[%d]/F",nclosest*6));
+    thistree->Branch("rewinfo_template_2events_bkgbkg_2",&rewinfo_template_2events_bkgbkg_2,Form("rewinfo_template_2events_bkgbkg_2[%d]/F",nclosest*6));
 
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("vetoobjects_count",&vetoobjects_count,"vetoobjects_count/I");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("vetoobjects_pt",&vetoobjects_pt,"vetoobjects_pt[vetoobjects_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("vetoobjects_eta",&vetoobjects_eta,"vetoobjects_eta[vetoobjects_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
-  if (isdata && !isstep2) OutputExtraTree[i]->Branch("vetoobjects_type",&vetoobjects_type,"vetoobjects_type[vetoobjects_count]/I");
+    if (thisextratree) thisextratree->Branch("vetoobjects_count",&vetoobjects_count,"vetoobjects_count/I");
+    if (thisextratree) thisextratree->Branch("vetoobjects_pt",&vetoobjects_pt,"vetoobjects_pt[vetoobjects_count]/F");
+    if (thisextratree) thisextratree->Branch("vetoobjects_eta",&vetoobjects_eta,"vetoobjects_eta[vetoobjects_count]/F");
+    if (thisextratree) thisextratree->Branch("vetoobjects_phi",&vetoobjects_phi,"vetoobjects_phi[vetoobjects_count]/F");
+    if (thisextratree) thisextratree->Branch("vetoobjects_type",&vetoobjects_type,"vetoobjects_type[vetoobjects_count]/I");
 
-  OutputTree[i]->Branch("n_jets",&n_jets,"n_jets/I");
-  OutputTree[i]->Branch("jet_pt",&jet_pt,"jet_pt[n_jets]/F");
-  OutputTree[i]->Branch("jet_eta",&jet_eta,"jet_eta[n_jets]/F");
-  OutputTree[i]->Branch("jet_phi",&jet_phi,"jet_phi[n_jets]/F");
-  OutputTree[i]->Branch("jet_energy",&jet_energy,"jet_energy[n_jets]/F");
+    thistree->Branch("n_jets",&n_jets,"n_jets/I");
+    thistree->Branch("jet_pt",&jet_pt,"jet_pt[n_jets]/F");
+    thistree->Branch("jet_eta",&jet_eta,"jet_eta[n_jets]/F");
+    thistree->Branch("jet_phi",&jet_phi,"jet_phi[n_jets]/F");
+    thistree->Branch("jet_energy",&jet_energy,"jet_energy[n_jets]/F");
 
   }
 
   inputtree_isinitialized = false;
 
-  LightTreeGenReco = new TTree("LightTreeGenReco","LightTreeGenReco");
+  for (map<EnumSel,Selection>::iterator it = sels.begin(); it!=sels.end(); it++){
 
-  LightTreeGenReco->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
-  LightTreeGenReco->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
-  LightTreeGenReco->Branch("event_weight",&event_weight,"event_weight/F");
-  LightTreeGenReco->Branch("dataset_id",&mydataset_id,"dataset_id/I");
+    if (!it->second.islightsel) continue;
 
-  LightTreeGenReco->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
-  LightTreeGenReco->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
-  LightTreeGenReco->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
-  LightTreeGenReco->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
-  LightTreeGenReco->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
-  LightTreeGenReco->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
-  LightTreeGenReco->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
-  LightTreeGenReco->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
-  LightTreeGenReco->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
-  LightTreeGenReco->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
+    TTree *thislighttree = it->second.tree_light;
 
-  LightTreeGenReco->Branch("pholead_r9",&pholead_r9,"pholead_r9/F");
-  LightTreeGenReco->Branch("photrail_r9",&photrail_r9,"photrail_r9/F");
-  LightTreeGenReco->Branch("dipho_mgg_photon",&dipho_mgg_photon,"dipho_mgg_photon/F");
+    thislighttree->Branch("event_luminormfactor",&event_luminormfactor,"event_luminormfactor/F");
+    thislighttree->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
+    thislighttree->Branch("event_weight",&event_weight,"event_weight/F");
+    thislighttree->Branch("dataset_id",&mydataset_id,"dataset_id/I");
 
-  LightTreeGenReco->Branch("pholead_GEN_pt",&pholead_GEN_pt,"pholead_GEN_pt/F");
-  LightTreeGenReco->Branch("photrail_GEN_pt",&photrail_GEN_pt,"photrail_GEN_pt/F");
-  LightTreeGenReco->Branch("pholead_GEN_eta",&pholead_GEN_eta,"pholead_GEN_eta/F");
-  LightTreeGenReco->Branch("photrail_GEN_eta",&photrail_GEN_eta,"photrail_GEN_eta/F");
-  LightTreeGenReco->Branch("pholead_GEN_phi",&pholead_GEN_phi,"pholead_GEN_phi/F");
-  LightTreeGenReco->Branch("photrail_GEN_phi",&photrail_GEN_phi,"photrail_GEN_phi/F");
+    thislighttree->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
+    thislighttree->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
+    thislighttree->Branch("pholead_eta",&pholead_eta,"pholead_eta/F");
+    thislighttree->Branch("photrail_eta",&photrail_eta,"photrail_eta/F");
+    thislighttree->Branch("pholead_phi",&pholead_phi,"pholead_phi/F");
+    thislighttree->Branch("photrail_phi",&photrail_phi,"photrail_phi/F");
+    thislighttree->Branch("pholead_SCeta",&pholead_SCeta,"pholead_SCeta/F");
+    thislighttree->Branch("photrail_SCeta",&photrail_SCeta,"photrail_SCeta/F");
+    thislighttree->Branch("pholead_SCphi",&pholead_SCphi,"pholead_SCphi/F");
+    thislighttree->Branch("photrail_SCphi",&photrail_SCphi,"photrail_SCphi/F");
 
-  LightTreeGenReco->Branch("n_jets",&n_jets,"n_jets/I");
-  LightTreeGenReco->Branch("jet_pt",&jet_pt,"jet_pt[n_jets]/F");
-  LightTreeGenReco->Branch("jet_eta",&jet_eta,"jet_eta[n_jets]/F");
-  LightTreeGenReco->Branch("jet_phi",&jet_phi,"jet_phi[n_jets]/F");
-  LightTreeGenReco->Branch("jet_energy",&jet_energy,"jet_energy[n_jets]/F");
+    thislighttree->Branch("pholead_r9",&pholead_r9,"pholead_r9/F");
+    thislighttree->Branch("photrail_r9",&photrail_r9,"photrail_r9/F");
+    thislighttree->Branch("dipho_mgg_photon",&dipho_mgg_photon,"dipho_mgg_photon/F");
 
-  LightTreeGenReco->Branch("n_GEN_jets",&n_GEN_jets,"n_GEN_jets/I");
-  LightTreeGenReco->Branch("jet_GEN_pt",&jet_GEN_pt,"jet_GEN_pt[n_GEN_jets]/F");
-  LightTreeGenReco->Branch("jet_GEN_eta",&jet_GEN_eta,"jet_GEN_eta[n_GEN_jets]/F");
-  LightTreeGenReco->Branch("jet_GEN_phi",&jet_GEN_phi,"jet_GEN_phi[n_GEN_jets]/F");
-  LightTreeGenReco->Branch("jet_GEN_energy",&jet_GEN_energy,"jet_GEN_energy[n_GEN_jets]/F");
+    thislighttree->Branch("pholead_GEN_pt",&pholead_GEN_pt,"pholead_GEN_pt/F");
+    thislighttree->Branch("photrail_GEN_pt",&photrail_GEN_pt,"photrail_GEN_pt/F");
+    thislighttree->Branch("pholead_GEN_eta",&pholead_GEN_eta,"pholead_GEN_eta/F");
+    thislighttree->Branch("photrail_GEN_eta",&photrail_GEN_eta,"photrail_GEN_eta/F");
+    thislighttree->Branch("pholead_GEN_phi",&pholead_GEN_phi,"pholead_GEN_phi/F");
+    thislighttree->Branch("photrail_GEN_phi",&photrail_GEN_phi,"photrail_GEN_phi/F");
 
-  LightTreeGenReco->Branch("gen_in_acc",&tree_gen_in_acc,"gen_in_acc/O");
-  LightTreeGenReco->Branch("reco_in_acc",&tree_reco_in_acc,"reco_in_acc/O");
-  LightTreeGenReco->Branch("matched",&tree_matched,"matched/O");
+    thislighttree->Branch("n_jets",&n_jets,"n_jets/I");
+    thislighttree->Branch("jet_pt",&jet_pt,"jet_pt[n_jets]/F");
+    thislighttree->Branch("jet_eta",&jet_eta,"jet_eta[n_jets]/F");
+    thislighttree->Branch("jet_phi",&jet_phi,"jet_phi[n_jets]/F");
+    thislighttree->Branch("jet_energy",&jet_energy,"jet_energy[n_jets]/F");
+
+    thislighttree->Branch("n_GEN_jets",&n_GEN_jets,"n_GEN_jets/I");
+    thislighttree->Branch("jet_GEN_pt",&jet_GEN_pt,"jet_GEN_pt[n_GEN_jets]/F");
+    thislighttree->Branch("jet_GEN_eta",&jet_GEN_eta,"jet_GEN_eta[n_GEN_jets]/F");
+    thislighttree->Branch("jet_GEN_phi",&jet_GEN_phi,"jet_GEN_phi[n_GEN_jets]/F");
+    thislighttree->Branch("jet_GEN_energy",&jet_GEN_energy,"jet_GEN_energy[n_GEN_jets]/F");
+
+    thislighttree->Branch("gen_in_acc",&tree_gen_in_acc,"gen_in_acc/O");
+    thislighttree->Branch("reco_in_acc",&tree_reco_in_acc,"reco_in_acc/O");
+    thislighttree->Branch("matched",&tree_matched,"matched/O");
+
+  }
 
 
   fHNumPU = new TH1F("NumPU_rew","NumPU_rew",50,0,50);
@@ -339,9 +349,7 @@ void DiPhotonMiniTree::Begin(){
   fHNumPUTrue = new TH1F("NumPUTrue_rew","NumPUTrue_rew",50,0,50);
   fHNumPUTrue_noweight = new TH1F("NumPUTrue_noweight","NumPUTrue_noweight",50,0,50);
   fHNumVtx = new TH1F("NumVtx_rew","NumVtx_rew",50,0,50);
-	
 
-	
   cout << "Trees and histos created" << endl;
 
   InitEnergyScalesAndSmearingsDatabase();
@@ -389,8 +397,6 @@ void DiPhotonMiniTree::Analyze(){
   if (!PassPrimaryVertexFilter()) return;
   if (!fTR->HBHENoiseFilterResult) return;
   if (!fTR->CSCTightHaloID) return;
-  //  if (!fTR->EcalDeadTPFilterFlag) return;
-  //  if (!fTR->RA2TrackingFailureFilterFlag) return;
 
   event_weight = weight;
   event_rho = fTR->Rho;
@@ -428,70 +434,71 @@ void DiPhotonMiniTree::Analyze(){
 
   std::vector<std::pair<int,float> > ordering;
   std::vector<std::pair<int,float> > ordering_jets;
+  std::vector<float> unscaled_energy;
   std::vector<float> unscaled_r9;
   std::vector<float> unscaled_sieie;
 
-  std::vector<float> jet_jecunc;
-  std::vector<float> jet_jer;
-  std::vector<float> jet_jerup;
-  std::vector<float> jet_jerdown;
+  StatusScaleUpScaleDown StatusScaleUpScaleDown_Photons_R9=kUncorrected;
+  StatusScaleUpScaleDown StatusScaleUpScaleDown_Photons_Sieie=kUncorrected;
+  StatusScaleUpScaleDown StatusScaleUpScaleDown_Photons_EnergyScale=kUncorrected;
+  StatusScaleUpScaleDown StatusScaleUpScaleDown_Photons_EnergySmear=kUncorrected;
+  StatusScaleUpScaleDown StatusScaleUpScaleDown_Jets_JEC=kUncorrected;
+  StatusScaleUpScaleDown StatusScaleUpScaleDown_Jets_JER=kUncorrected;
+
 
   // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
     if (!isdata) FixMatchingStatusElectrons(i); // correct match exit code for photons matched to gen electrons
-    unscaled_r9.push_back(fTR->PhoR9[i]);
-    unscaled_sieie.push_back(fTR->PhoSigmaIetaIeta[i]);
-    fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
-    fTR->PhoSigmaIetaIeta[i] = SieieRescale(fTR->PhoSigmaIetaIeta[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
-    CorrPhoton(fTR,i,&unscaled_r9);
-    ordering.push_back(std::pair<int,float>(i,fTR->PhoPt[i]));
+    unscaled_energy.push_back(fTR->PhoEnergy[i]);
   }
-  std::sort(ordering.begin(),ordering.end(),indexComparator);
 
-  // on-the-fly JEC/JER corrections
-  for (int i=0; i<fTR->NJets; i++){
-    float jecunc,jer,jerup,jerdown;
-    JECJERCorrection(i,jecunc,jer,jerup,jerdown);
-    jet_jecunc.push_back(jecunc);
-    jet_jer.push_back(jer);
-    jet_jerup.push_back(jerup);
-    jet_jerdown.push_back(jerdown);
-    ordering_jets.push_back(std::pair<int,float>(i,fTR->JPt[i]));
-  }
-  std::sort(ordering_jets.begin(),ordering_jets.end(),indexComparator);
+  if (debug) {for (int i=0; i<fTR->NPhotons; i++) cout << fTR->PhoPt[i] << " "; cout<<endl;}
+
+  StatusScaleUpScaleDown_Photons_R9 = CorrectPhotonR9(kCorrectedNoShift,unscaled_r9);
+  StatusScaleUpScaleDown_Photons_Sieie = CorrectPhotonSieie(kCorrectedNoShift,unscaled_sieie);
+  CorrectPhotonEnergy(kCorrectedNoShift,kCorrectedNoShift,ordering,unscaled_r9,unscaled_energy);
+  StatusScaleUpScaleDown_Photons_EnergyScale==kCorrectedNoShift;
+  StatusScaleUpScaleDown_Photons_EnergySmear==kCorrectedNoShift;
+
+  if (debug) {for (int i=0; i<fTR->NPhotons; i++) cout << fTR->PhoPt[i] << " "; cout<<endl;}
+
+  JECJERCorrection(kCorrectedNoShift,kCorrectedNoShift,ordering_jets);
+  StatusScaleUpScaleDown_Jets_JEC=kCorrectedNoShift;
+  StatusScaleUpScaleDown_Jets_JER=kCorrectedNoShift;
+
   
   photon_jet_matching.clear();
   for (int i=0; i<fTR->NPhotons; i++) photon_jet_matching.push_back(PFMatchPhotonToJet(i));
 
-  std::vector<int> passing_selection[18];
-  std::vector<int> passing_selection_jets[18];
-  bool pass[18];
-  int pass12_whoissiglike[18];
 
-  for (int sel_cat=0; sel_cat<18; sel_cat++){
+  map<EnumSel,vector<int> > passing_selection;
+  map<EnumSel,vector<int> > passing_selection_jets;
+  map<EnumSel,bool> pass;
+  map<EnumSel,int> pass12_whoissiglike;
+  map<EnumSel,bool> donethisfullsel;
 
+  if (debug) cout << "start selection loop" << endl;
+
+  for (map<EnumSel,Selection>::const_iterator sel=sels.begin(); sel!=sels.end(); sel++){
+
+    const EnumSel sel_cat = sel->second.id;
+    donethisfullsel[sel_cat]=false;
+
+    if (!(sel->second.isfullsel)) continue;
     if (do_only_light_tree) continue;
-
     if (isstep2 && sel_cat!=0) continue;
+    if (isdata && !(sel->second.runondata)) continue;
+    if (!isdata && !(sel->second.runonmc)) continue;
 
-    if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
-
-    if (isdata){
-      if (sel_cat>=11) continue;
-      if (sel_cat>=9) continue;
-      if (sel_cat==4 || sel_cat==5) continue;
-    }
-    else {
-      if (sel_cat==9 || sel_cat==10) continue;
-      if (sel_cat==4 || sel_cat==5) continue;
-    }
+    if (sel_cat!=k2DZmumu_selection && !passtrigger) continue; // no trigger for Zmumu selection
 
     pass[sel_cat]=false;
+    donethisfullsel[sel_cat]=true;
 
     std::vector<int> passing;
     std::vector<int> passing_jets;
 
-    if (sel_cat==10){
+    if (sel_cat==k2DZmumu_selection){
       for (int i=0; i<fTR->NMus; i++){
         passing.push_back(i);
       }
@@ -516,15 +523,15 @@ void DiPhotonMiniTree::Analyze(){
     }
 
 
-    if (sel_cat==0){
+    if (sel_cat==k2Dstandard_selection){
       passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==1){
+    else if (sel_cat==k1Drandomcone_template){
       passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
-    else if (sel_cat==2){
+    else if (sel_cat==k1Dsideband_template){
       //      std::vector<int> passing_sel = PhotonSelection(fTR,passing);
       //      std::vector<int> passing_presel = passing;
       passing = PhotonSelection(fTR,passing,"invert_sieie_cut");
@@ -532,21 +539,21 @@ void DiPhotonMiniTree::Analyze(){
       //      pass[sel_cat] = (passing_presel.size()>=2) && SinglePhotonEventSelection(fTR,passing);
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
-    else if (sel_cat==3){
+    else if (sel_cat==k2DZee_pixelvetoreversed_selection){
       passing = PhotonSelection(fTR,passing,"revert_pixel_veto"); // revert pixel veto already done
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==4){
+    else if (sel_cat==k1Dpreselection){
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
-    else if (sel_cat==5){
+    else if (sel_cat==k1Dselection){
       passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
-    else if (sel_cat==6){
+    else if (sel_cat==k2Drandomcone_template){
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==7){
+    else if (sel_cat==k2Drandomconesideband_template){
       std::vector<int> passing_bkg = PhotonSelection(fTR,passing,"invert_sieie_cut");
       std::vector<int> passing_sel = PhotonSelection(fTR,passing);
       std::vector<int> newpassing;
@@ -559,32 +566,32 @@ void DiPhotonMiniTree::Analyze(){
       passing=newpassing;
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==8){
+    else if (sel_cat==k2Dsideband_template){
       passing = PhotonSelection(fTR,passing,"invert_sieie_cut");
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==9){
+    else if (sel_cat==k2Dstandard_preselection){
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==10){
+    else if (sel_cat==k2DZmumu_selection){
       pass[sel_cat] = DiMuonFromZSelection(fTR,passing);
     }
-    else if (sel_cat==11){
+    else if (sel_cat==k1Dsignal_template){
       passing = SignalSelection(fTR,passing);
       passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
-    else if (sel_cat==12){
+    else if (sel_cat==k1Dbackground_template){
       passing = BackgroundSelection(fTR,passing);
       passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = SinglePhotonEventSelection(fTR,passing);
     }
-    else if (sel_cat==13){
+    else if (sel_cat==k2Dtruesigsig_template){
       passing = SignalSelection(fTR,passing);
       passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==14){
+    else if (sel_cat==k2Dtruesigbkg_template){
       passing = PhotonSelection(fTR,passing);
       std::vector<int> passing_sig = SignalSelection(fTR,passing);
       std::vector<int> passing_bkg = BackgroundSelection(fTR,passing);
@@ -598,12 +605,12 @@ void DiPhotonMiniTree::Analyze(){
       passing=newpassing;
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==15){
+    else if (sel_cat==k2Dtruebkgbkg_template){
       passing = BackgroundSelection(fTR,passing);
       passing = PhotonSelection(fTR,passing);
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==16){
+    else if (sel_cat==k2Drconeplusgenfake_template){
       std::vector<int> passing_bkg = BackgroundSelection(fTR,passing);
       passing_bkg = PhotonSelection(fTR,passing_bkg);
       std::vector<int> passing_sig = SignalSelection(fTR,passing);
@@ -618,7 +625,7 @@ void DiPhotonMiniTree::Analyze(){
       passing=newpassing;
       pass[sel_cat] = StandardEventSelection(fTR,passing,passing_jets);
     }
-    else if (sel_cat==17){
+    else if (sel_cat==k2Dgenpromptplussideband_template){
       std::vector<int> passing_sig = SignalSelection(fTR,passing);
       passing_sig = PhotonSelection(fTR,passing_sig);
       std::vector<int> passing_bkg = PhotonSelection(fTR,passing,"invert_sieie_cut");
@@ -638,54 +645,42 @@ void DiPhotonMiniTree::Analyze(){
 
   }
 
-  //  cout << "D" << endl;
+  if (debug) cout << "start filling loop" << endl;
 
-  for (int sel_cat=0; sel_cat<18; sel_cat++){
+  for (map<EnumSel,Selection>::const_iterator sel=sels.begin(); sel!=sels.end(); sel++){
 
-    if (do_only_light_tree) continue;
-
-    if (isstep2 && sel_cat!=0) continue;
-
-    if (sel_cat!=10 && !passtrigger) continue; // no trigger for Zmumu selection
-
-    if (isdata){
-      if (sel_cat>=11) continue;
-      if (sel_cat>=9) continue;
-      if (sel_cat==4 || sel_cat==5) continue;
-    }
-    else {
-      if (sel_cat==9 || sel_cat==10) continue;
-      if (sel_cat==4 || sel_cat==5) continue;
-    }
-
+    const EnumSel sel_cat = sel->second.id;
+    if (!donethisfullsel[sel_cat]) continue;
     if (!pass[sel_cat]) continue;
+
+    if (debug) cout << sel_cat << endl;
 
     std::vector<int> passing = passing_selection[sel_cat];
     std::vector<int> passing_jets = passing_selection_jets[sel_cat];
-    int minsize = (is2d[sel_cat]) ? 2 : 1;
+    int minsize = (sel->second.is2d) ? 2 : 1;
 
     if (passing_selection[sel_cat].size()<minsize){
       std::cout << "Error!!!" << std::endl;
       continue;
     }
 
-    if (sel_cat==10){
+    if (sel_cat==k2DZmumu_selection){
       for (int i=0; i<passing.size(); i++){
 	ResetVars();
 	FillMuonInfo(passing.at(i));
-	OutputTree[sel_cat]->Fill();
+	sel->second.tree_full->Fill();
       }
     }
-    else if (is2d[sel_cat]){
+    else if (sel->second.is2d){
       ResetVars();
       FillLead(passing.at(0),passing_jets);
       FillTrail(passing.at(1),passing_jets);
       FillJetsInfo(passing,passing_jets);
       bool dofill=true;
 
-      if (sel_cat==7 || sel_cat==14 || sel_cat==16 || sel_cat==17) event_pass12whoissiglike=pass12_whoissiglike[sel_cat];
+      if (sel_cat==k2Drandomconesideband_template || sel_cat==k2Dtruesigbkg_template || sel_cat==k2Drconeplusgenfake_template || sel_cat==k2Dgenpromptplussideband_template) event_pass12whoissiglike=pass12_whoissiglike[sel_cat];
 
-      if (sel_cat==6 || ((sel_cat==7 || sel_cat==16) && pass12_whoissiglike[sel_cat]==0)) {
+      if (sel_cat==k2Drandomcone_template || ((sel_cat==k2Drandomconesideband_template || sel_cat==k2Drconeplusgenfake_template) && pass12_whoissiglike[sel_cat]==0)) {
 
 	  if (do_recalc_isolation){
 	    isolations_struct rcone_isos;
@@ -723,7 +718,7 @@ void DiPhotonMiniTree::Analyze(){
 	    if (pholead_PhoSCRemovalPFIsoCharged==999 || pholead_PhoSCRemovalPFIsoNeutral==999 || pholead_PhoSCRemovalPFIsoPhoton==999) dofill=false;
 	  }
       }
-      if (sel_cat==6 || ((sel_cat==7 || sel_cat==16) && pass12_whoissiglike[sel_cat]==1)) {
+      if (sel_cat==k2Drandomcone_template || ((sel_cat==k2Drandomconesideband_template || sel_cat==k2Drconeplusgenfake_template) && pass12_whoissiglike[sel_cat]==1)) {
 
 	if (do_recalc_isolation){
 	  isolations_struct rcone_isos;
@@ -764,7 +759,7 @@ void DiPhotonMiniTree::Analyze(){
 	}
 
 
-      if (sel_cat==0 && isstep2){ // new templates from event mixing
+      if (sel_cat==k2Dstandard_selection && isstep2){ // new templates from event mixing
 
 	if (!inputtree_isinitialized) InitInputTree();
 
@@ -799,8 +794,8 @@ void DiPhotonMiniTree::Analyze(){
 
       }
 
-      if (sel_cat==7) {
-	std::set<int> removals = GetPFCandInsideFootprint(fTR,passing.at(!pass12_whoissiglike[sel_cat]),0,"photon");
+      if (sel_cat==k2Drandomconesideband_template) {
+	std::set<int> removals = (do_recalc_isolation) ? GetPFCandInsideFootprint(fTR,passing.at(!pass12_whoissiglike[sel_cat]),0,"photon") : GetPrecalculatedFootprintPhoEl(passing.at(!pass12_whoissiglike[sel_cat]));
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
 	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
@@ -831,19 +826,19 @@ void DiPhotonMiniTree::Analyze(){
       TLorentzVector pho2(fTR->PhoPx[passing.at(1)],fTR->PhoPy[passing.at(1)],fTR->PhoPz[passing.at(1)],fTR->PhoEnergy[passing.at(1)]);
       float invmass = (pho1+pho2).M();
       dipho_mgg_photon = invmass;
-      if (dofill) OutputTree[sel_cat]->Fill();
-      if (dofill && sel_cat==7) if (isdata && !isstep2) OutputExtraTree[sel_cat]->Fill();
+      if (dofill) sel->second.tree_full->Fill();
+      if (dofill && sel_cat==k2Drandomconesideband_template) if (isdata && !isstep2) sel->second.tree_extra->Fill();
     }
 
-    else if (!is2d[sel_cat]){
+    else if (!(sel->second.is2d)){
 
       for (int i=0; i<passing.size(); i++){
+	if (debug) cout << "pho" << endl;
       ResetVars();
       FillLead(passing.at(i),passing_jets);
       bool dofill = true;
 
-      if (sel_cat==1) {
-
+      if (sel_cat==k1Drandomcone_template) {
 
 	if (do_recalc_isolation){
 	isolations_struct rcone_isos;
@@ -881,21 +876,22 @@ void DiPhotonMiniTree::Analyze(){
 	if (pholead_PhoSCRemovalPFIsoCharged==999 || pholead_PhoSCRemovalPFIsoNeutral==999 || pholead_PhoSCRemovalPFIsoPhoton==999) dofill=false;
 	}
 
+	if (debug) cout << "here" << endl;
       }
-
-//      if (sel_cat==11 || sel_cat==12) for (int k=0; k<50; k++) {
+      
+//      if (sel_cat==k1Dsignal_template || sel_cat==k1Dbackground_template) for (int k=0; k<50; k++) {
 //	pholead_test_rotatedphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
 //	if (!FindCloseJetsAndPhotons(fTR,0.025*k,passing.at(i),"")) pholead_test_rotatedwithcheckphotoniso[k]=PFIsolation(passing.at(i),0.025*k,"photon",NULL,NULL,NULL,NULL,NULL,NULL);
 //      }
 
 
-      if (sel_cat==1 || sel_cat==2) {
-	std::set<int> removals = GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon");
+      if (sel_cat==k1Drandomcone_template || sel_cat==k1Dsideband_template) {
+	std::set<int> removals = (do_recalc_isolation) ? GetPFCandInsideFootprint(fTR,passing.at(i),0,"photon") : GetPrecalculatedFootprintPhoEl(passing.at(i));
 	int index=0;
 	for (int k=0; k<fTR->NPfCand; k++){
 	  //	  if (index==global_maxN_photonpfcandidates) {std::cout << "Too many pfcandidates" << std::endl; dofill=false; break;}
 	  if (fTR->PfCandPdgId[k]!=22) continue;
-	  //	  cout << fTR->PfCandPt[k] << " " << fTR->PfCandEta[k] << " " << fTR->PfCandPhi[k] << endl;
+	  //	  if (debug) cout << fTR->PfCandPt[k] << " " << fTR->PfCandEta[k] << " " << fTR->PfCandPhi[k] << endl;
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
@@ -912,29 +908,90 @@ void DiPhotonMiniTree::Analyze(){
 	  //	  cout << "taken" << endl;
 	  index++;
 	}
+	if (debug) cout << "done loop" << endl;
 	allphotonpfcand_count = index;
 
-	FillVetoObjects(fTR,passing.at(i),(sel_cat==1) ? TString("") : TString("exclude_object_itself"));
+	FillVetoObjects(fTR,passing.at(i),(sel_cat==k1Drandomcone_template) ? TString("") : TString("exclude_object_itself"));
 
       }
 
-      if (dofill) OutputTree[sel_cat]->Fill();
-      if (dofill && (sel_cat==1 || sel_cat==2)) if (isdata && !isstep2) OutputExtraTree[sel_cat]->Fill();
+      if (dofill) sel->second.tree_full->Fill();
+      if (dofill && (sel_cat==k1Drandomcone_template || sel_cat==k1Dsideband_template)) if (isdata && !isstep2) sel->second.tree_extra->Fill();
       }
 
     }
 
-    
   }
-  
 
-  if (!isdata) { // lightweight tree for efficiency and unfolding studies
+  if (debug) cout << "start light tree loop" << endl;
+  
+  for (map<EnumSel,Selection>::const_iterator sel=sels.begin(); sel!=sels.end(); sel++){ // lightweight tree for efficiency and unfolding studies
+
+    if (!(sel->second.islightsel)) continue;
+    if (isdata && !(sel->second.runondata)) continue;
+    if (!isdata && !(sel->second.runonmc)) continue;
+
+    EnumSel thissel = sel->second.id;
+    if (debug) cout << thissel << endl;
+
+    // revert in any case to default corrections
+    CorrectPhotonEnergy(kCorrectedNoShift,kCorrectedNoShift,ordering,unscaled_r9,unscaled_energy);
+    JECJERCorrection(kCorrectedNoShift,kCorrectedNoShift,ordering_jets);
+    StatusScaleUpScaleDown_Photons_EnergyScale==kCorrectedNoShift;
+    StatusScaleUpScaleDown_Photons_EnergySmear==kCorrectedNoShift;
+    StatusScaleUpScaleDown_Jets_JEC=kCorrectedNoShift;
+    StatusScaleUpScaleDown_Jets_JER=kCorrectedNoShift;
+
+    if (thissel==kLightDefault) ;
+    else if (thissel==kLightJECup){
+      JECJERCorrection(kShiftUp,kCorrectedNoShift,ordering_jets);
+      StatusScaleUpScaleDown_Jets_JEC=kShiftUp;
+      StatusScaleUpScaleDown_Jets_JER=kCorrectedNoShift;
+    }
+    else if (thissel==kLightJECdown){
+      JECJERCorrection(kShiftDown,kCorrectedNoShift,ordering_jets);
+      StatusScaleUpScaleDown_Jets_JEC=kShiftDown;
+      StatusScaleUpScaleDown_Jets_JER=kCorrectedNoShift;
+      }
+    else if (thissel==kLightJERup){
+      JECJERCorrection(kCorrectedNoShift,kShiftUp,ordering_jets);
+      StatusScaleUpScaleDown_Jets_JEC=kCorrectedNoShift;
+      StatusScaleUpScaleDown_Jets_JER=kShiftUp;
+      }
+    else if (thissel==kLightJERdown){
+      JECJERCorrection(kCorrectedNoShift,kShiftDown,ordering_jets);
+      StatusScaleUpScaleDown_Jets_JEC=kCorrectedNoShift;
+      StatusScaleUpScaleDown_Jets_JER=kShiftDown;
+      }
+    else if (thissel==kLightESCALEup){
+      CorrectPhotonEnergy(kShiftUp,kCorrectedNoShift,ordering,unscaled_r9,unscaled_energy);
+      StatusScaleUpScaleDown_Photons_EnergyScale==kShiftUp;
+      StatusScaleUpScaleDown_Photons_EnergySmear==kCorrectedNoShift;
+      }
+    else if (thissel==kLightESCALEdown){
+      CorrectPhotonEnergy(kShiftDown,kCorrectedNoShift,ordering,unscaled_r9,unscaled_energy);
+      StatusScaleUpScaleDown_Photons_EnergyScale==kShiftDown;
+      StatusScaleUpScaleDown_Photons_EnergySmear==kCorrectedNoShift;
+      }
+    else if (thissel==kLightESMEARup){
+      CorrectPhotonEnergy(kCorrectedNoShift,kShiftUp,ordering,unscaled_r9,unscaled_energy);
+      StatusScaleUpScaleDown_Photons_EnergyScale==kCorrectedNoShift;
+      StatusScaleUpScaleDown_Photons_EnergySmear==kShiftUp;
+      }
+    else if (thissel==kLightESMEARdown){
+      CorrectPhotonEnergy(kCorrectedNoShift,kShiftDown,ordering,unscaled_r9,unscaled_energy);
+      StatusScaleUpScaleDown_Photons_EnergyScale==kCorrectedNoShift;
+      StatusScaleUpScaleDown_Photons_EnergySmear==kShiftDown;
+      }
+    else assert(false);
+
 
     ResetVars(); 
 
     std::vector<int> passing;
     for (int i=0; i<fTR->NPhotons; i++){
       passing.push_back(ordering.at(i).first);
+      if (debug) cout << sel->second.name.Data() << " pho " << ordering.at(i).second << " " << fTR->PhoPt[ordering.at(i).first] << endl;
     }
     for (int i=0; i<(int)(passing.size())-1; i++){
       assert(fTR->PhoPt[passing.at(i)]>=fTR->PhoPt[passing.at(i+1)]);
@@ -943,7 +1000,10 @@ void DiPhotonMiniTree::Analyze(){
     passing = PhotonSelection(fTR,passing);
     
     std::vector<int> passing_jets;
-    for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(ordering_jets.at(i).first);
+    for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) {
+      passing_jets.push_back(ordering_jets.at(i).first);
+      if (debug) cout << sel->second.name.Data() << " jet " << ordering_jets.at(i).second << " " << fTR->JPt[ordering_jets.at(i).first] << endl;
+    }
     for (int i=0; i<(int)(passing_jets.size())-1; i++){
       assert(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)]);
     }
@@ -1091,7 +1151,7 @@ void DiPhotonMiniTree::Analyze(){
       FillGenJetsInfo(passing_gen,passing_gen_jets);
     }
 
-    if (tree_reco_in_acc || tree_gen_in_acc) LightTreeGenReco->Fill();
+    if (tree_reco_in_acc || tree_gen_in_acc) sel->second.tree_light->Fill();
 
     }
 
@@ -1105,11 +1165,11 @@ void DiPhotonMiniTree::Analyze(){
 void DiPhotonMiniTree::End(){
   if (isdata && !isstep2){
     fOutputExtraFile->cd();
-    for (int i=0; i<18; i++) OutputExtraTree[i]->Write();	
+    for (map<EnumSel,Selection>::const_iterator sel=sels.begin(); sel!=sels.end(); sel++) if (sel->second.tree_extra) sel->second.tree_extra->Write();
   }
   fOutputFile->cd();
-  for (int i=0; i<18; i++) OutputTree[i]->Write();	
-  LightTreeGenReco->Write();
+  for (map<EnumSel,Selection>::const_iterator sel=sels.begin(); sel!=sels.end(); sel++) if (sel->second.tree_full) sel->second.tree_full->Write();
+  for (map<EnumSel,Selection>::const_iterator sel=sels.begin(); sel!=sels.end(); sel++) if (sel->second.tree_light) sel->second.tree_light->Write();
   fHNumPU->Write();
   fHNumPU_noweight->Write();
   fHNumPUTrue->Write();
@@ -1319,25 +1379,74 @@ void DiPhotonMiniTree::FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, I
 };
 
 
-void DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i, std::vector<float> *unscaled_r9){
+void DiPhotonMiniTree::CorrectPhotonEnergy(StatusScaleUpScaleDown status_escale, StatusScaleUpScaleDown status_esmear, std::vector<pair<int,float> > &neworder, std::vector<float> const &unscaled_r9, std::vector<float> const &unscaled_energy){
+  neworder.clear();
+  for (int i=0; i<fTR->NPhotons; i++){
+    if (debug) cout << "phoenergy " << fTR->PhoPt[i] << " -> ";
+    CorrPhoton(fTR,i,unscaled_r9,unscaled_energy,status_escale,status_esmear);
+    if (debug) cout << fTR->PhoPt[i] << endl;
+    neworder.push_back(std::pair<int,float>(i,fTR->PhoPt[i]));
+  }
+  sort(neworder.begin(),neworder.end(),indexComparator);
+};
+StatusScaleUpScaleDown DiPhotonMiniTree::CorrectPhotonR9(StatusScaleUpScaleDown status, std::vector<float> &unscaled_r9){
+  assert (unscaled_r9.size()==0 && status==kCorrectedNoShift);
+  for (int i=0; i<fTR->NPhotons; i++){
+    unscaled_r9.push_back(fTR->PhoR9[i]);
+    if (status==kCorrectedNoShift) fTR->PhoR9[i] = R9Rescale(fTR->PhoR9[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
+  }
+  return status;
+};
+StatusScaleUpScaleDown DiPhotonMiniTree::CorrectPhotonSieie(StatusScaleUpScaleDown status, std::vector<float> &unscaled_sieie){
+  assert (unscaled_sieie.size()==0 && status==kCorrectedNoShift);
+  for (int i=0; i<fTR->NPhotons; i++){
+    unscaled_sieie.push_back(fTR->PhoSigmaIetaIeta[i]);
+    if (status==kCorrectedNoShift) fTR->PhoSigmaIetaIeta[i] = SieieRescale(fTR->PhoSigmaIetaIeta[i],(bool)(fabs(fTR->PhoEta[i])<1.5));
+  }
+  return status;
+};
+
+void DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i, std::vector<float> const &unscaled_r9, std::vector<float> const &unscaled_energy, StatusScaleUpScaleDown status_escale, StatusScaleUpScaleDown status_esmear){
+
+  float invpresentcorr = unscaled_energy[i]/fTR->PhoEnergy[i];
+  fTR->PhoPt[i]*=invpresentcorr;
+  fTR->PhoPx[i]*=invpresentcorr;
+  fTR->PhoPy[i]*=invpresentcorr;
+  fTR->PhoPz[i]*=invpresentcorr;
+  fTR->PhoEnergy[i]*=invpresentcorr;
+
   float corr = fTR->PhoRegrEnergy[i]/fTR->PhoEnergy[i];
-  if (isdata) corr*=EnergyScaleOffset(fTR->PhoSCEta[i],fTR->PhoR9[i],fTR->Run);
-  if (!isdata) {
-    float r9forsmearing = (year==2012) ? unscaled_r9->at(i) : fTR->PhoR9[i];
-    float width = EnergySmearingCorrection(fTR->PhoSCEta[i],r9forsmearing,fTR->Run)/100;
+  
+  if (isdata && status_escale!=kUncorrected) {
+    float sigmas=0;
+    if (status_escale==kShiftUp) sigmas=1;
+    if (status_escale==kShiftDown) sigmas=-1;
+    corr*=EnergyScaleOffset(fTR->PhoSCEta[i],fTR->PhoR9[i],fTR->Run,sigmas);
+  }
+  if (!isdata && status_esmear!=kUncorrected) {
+    float r9forsmearing = (year==2012) ? unscaled_r9.at(i) : fTR->PhoR9[i];
+    float sigmas=0;
+    if (status_esmear==kShiftUp) sigmas=1;
+    if (status_esmear==kShiftDown) sigmas=-1;
+    float width = EnergySmearingCorrection(fTR->PhoSCEta[i],r9forsmearing,fTR->Run,sigmas)/100;
     // implements deterministic smearing
     UInt_t seedBase = (UInt_t) fTR->Event + (UInt_t) fTR->Run + (UInt_t) fTR->LumiSection;
     UInt_t seed1    = seedBase + 100000*(UInt_t) (TMath::Abs(100.*fTR->PhoPhi[i])) + 1000*(UInt_t) (TMath::Abs(100.*fTR->PhoEta[i]));
     float mycorr = 1;
     randomgen_forEsmearing->SetSeed(seed1);
-    if (width>0) randomgen_forEsmearing->Gaus(1.,width);
+    if (width>0) mycorr=randomgen_forEsmearing->Gaus(1.,width);
     corr*=mycorr;
+    if (debug) cout << "esmear " << mycorr << " width " << width << endl;
   }
+
+  if (debug) cout << corr << " " << status_escale << " " << status_esmear << " -> ";
+
   fTR->PhoPt[i]*=corr;
   fTR->PhoPx[i]*=corr;
   fTR->PhoPy[i]*=corr;
   fTR->PhoPz[i]*=corr;
   fTR->PhoEnergy[i]*=corr;
+
 };
 
 std::vector<int> DiPhotonMiniTree::ApplyPixelVeto(TreeReader *fTR, vector<int> passing, bool forelectron){
@@ -1724,8 +1833,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
   double eta = photon_position.Eta();
   double phi = photon_position.Phi();
   
-  const bool debug=false;
-  if (debug) std::cout << "calling FindCloseJetsAndPhotons eta=" << eta << " phi=" << phi << std::endl;
+  //  if (debug) std::cout << "calling FindCloseJetsAndPhotons eta=" << eta << " phi=" << phi << std::endl;
 
   const float mindR = 0.8;
   bool found=false;
@@ -1738,7 +1846,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
     if (dR<mindR) found=true;
-    if (debug) if (dR<mindR) std::cout << "Found jet eta=" << fTR->JEta[i] << " phi=" << fTR->JPhi[i] << std::endl;
+    //    if (debug) if (dR<mindR) std::cout << "Found jet eta=" << fTR->JEta[i] << " phi=" << fTR->JPhi[i] << std::endl;
   }
 
   for (int i=0; i<fTR->NPhotons; i++){
@@ -1747,10 +1855,10 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
     float dR = Util::GetDeltaR(eta,fTR->PhoEta[i],phi,fTR->PhoPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
     if (dR<mindR) found=true;
-    if (debug) if (dR<mindR) std::cout << "Found phot eta=" << fTR->PhoEta[i] << " phi=" << fTR->PhoPhi[i] << std::endl;
+    //    if (debug) if (dR<mindR) std::cout << "Found phot eta=" << fTR->PhoEta[i] << " phi=" << fTR->PhoPhi[i] << std::endl;
   }
 
-  if (debug) std::cout << "returning " << found << std::endl;
+  //  if (debug) std::cout << "returning " << found << std::endl;
   return found;
 
 };
@@ -1776,6 +1884,8 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(std::vector<std::pair<float,float
 
 void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
+  //  if (debug) cout << "start FillVetoObjects" << endl;
+
   std::vector<std::pair<TVector3,int>> obj;
 
   if (mod!="" && mod!="exclude_object_itself") {std::cout << "error" << std::endl;}
@@ -1795,6 +1905,8 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
     obj.push_back(std::pair<TVector3,int>(a,0));
   }
 
+  //  if (debug) cout << "bla1" <<endl;
+
   for (int i=0; i<fTR->NPhotons; i++){
     if (fTR->PhoPt[i]<10) continue;
     float dR = Util::GetDeltaR(eta,fTR->PhoEta[i],phi,fTR->PhoPhi[i]);
@@ -1804,6 +1916,8 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
     obj.push_back(std::pair<TVector3,int>(a,1));
   }
 
+  //  if (debug) cout << "bla2" <<endl;
+
   if (obj.size()>global_maxN_vetoobjects) {std::cout << "MaxN vetoobjects reached" << std::endl; obj.resize(global_maxN_vetoobjects);}
   for (int i=0; i<obj.size(); i++){
     vetoobjects_pt[i]=obj.at(i).first.Pt();
@@ -1812,6 +1926,8 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
     vetoobjects_type[i]=obj.at(i).second;
   }
   vetoobjects_count = obj.size();
+
+  //  if (debug) cout << "end FillVetoObjects" << endl;
 
 };
 
@@ -3379,7 +3495,7 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
 
 };
 
-float DiPhotonMiniTree::EnergyScaleOffset(float eta, float r9, int run){
+float DiPhotonMiniTree::EnergyScaleOffset(float eta, float r9, int run, float sigmas){
   assert(isdata);
   assert(energyScaleDatabase.size()>0);
   std::vector<struct_escale_item>::const_iterator it;
@@ -3393,10 +3509,10 @@ float DiPhotonMiniTree::EnergyScaleOffset(float eta, float r9, int run){
     break;
   }
   if (it==energyScaleDatabase.end()) {cout << "WRONG: energy scale item not found " << run << " " << fabs(eta) << " " << r9 << endl; return 1;}
-  return it->val;
+  return it->val+sigmas*it->err;
 };
 
-float DiPhotonMiniTree::EnergySmearingCorrection(float eta, float r9, int run){
+float DiPhotonMiniTree::EnergySmearingCorrection(float eta, float r9, int run, float sigmas){
   assert(!isdata);
   assert(energySmearingDatabase.size()>0);
   std::vector<struct_escale_item>::const_iterator it;
@@ -3410,7 +3526,7 @@ float DiPhotonMiniTree::EnergySmearingCorrection(float eta, float r9, int run){
     break;
   }
   if (it==energySmearingDatabase.end()) {cout << "WRONG: energy smearing item not found " << run << " " << fabs(eta) << " " << r9 << endl; return 1;}
-  return it->val;
+  return it->val+sigmas*it->err;
 };
 
 void DiPhotonMiniTree::InitEnergyScalesAndSmearingsDatabase(){
@@ -3953,7 +4069,9 @@ void DiPhotonMiniTree::InsertEnergySmearingItem(float meta, float Meta, float mr
 
 };
 
-void DiPhotonMiniTree::JECJERCorrection(int jetindex, float &jecunc, float &jer, float &jerup, float &jerdown){
+void DiPhotonMiniTree::JECJERCorrection(StatusScaleUpScaleDown status_escale, StatusScaleUpScaleDown status_esmear, vector<pair<int,float> > &ordering_jets){
+
+  // ADD PROTECTIONS FOR ZERO, HIGH RHO ETC.
 
   // JEC
 
@@ -3962,50 +4080,100 @@ void DiPhotonMiniTree::JECJERCorrection(int jetindex, float &jecunc, float &jer,
     return;
   }
 
-  const int i = jetindex;
-  std::vector<float> corr = MyJetCorrector->getCorrPtECorr(fTR->JPt[i],fTR->JEta[i],fTR->JE[i],fTR->JEcorr[i],fTR->JArea[i],fTR->Rho);
-  fTR->JPt[i] = corr.at(0);
-  fTR->JE[i] = corr.at(1);
-  fTR->JEcorr[i] = corr.at(2);
-  // WARNING: the other jet quantities are not recorrected, do not use them!!!
+  ordering_jets.clear();
+  
+  for (int i=0; i<fTR->NJets; i++){
 
-  jecunc = MyJetCorrector->getJECUncertainty(fTR->JPt[i],fTR->JEta[i]);
+    float invcorr = 1./fTR->JEcorr[i];
+    fTR->JPt[i] *= invcorr;
+    fTR->JE[i] *= invcorr;
+    fTR->JEcorr[i] *= invcorr;
+    
+    if (status_escale!=kUncorrected){
 
-  // JER, good for both 2011 and 2012
+      std::vector<float> corr = MyJetCorrector->getCorrPtECorr(fTR->JPt[i],fTR->JEta[i],fTR->JE[i],fTR->JEcorr[i],fTR->JArea[i],fTR->Rho);
+      fTR->JPt[i] = corr.at(0);
+      fTR->JE[i] = corr.at(1);
+      fTR->JEcorr[i] = corr.at(2);
+      // WARNING: the other jet quantities are not recorrected, do not use them!!!
+      
+      {
+	float eta = fTR->JEta[i];
+	if      (eta> 5.0) eta = 5.0;
+	else if (eta<-5.0) eta =-5.0;
+	MyJetCorrector->fJetUncertainty->setJetPt(fTR->JPt[i]);
+	MyJetCorrector->fJetUncertainty->setJetEta(eta);
+	float jecuncup = MyJetCorrector->fJetUncertainty->getUncertainty(true);
+	MyJetCorrector->fJetUncertainty->setJetPt(fTR->JPt[i]);
+	MyJetCorrector->fJetUncertainty->setJetEta(eta);
+	float jecuncdown = MyJetCorrector->fJetUncertainty->getUncertainty(false);
+	float addcorr = 1;
+	//	if (debug) cout << jecuncup << " " << jecuncdown << endl;
+	if (status_escale==kShiftUp) addcorr=1+jecuncup;
+	if (status_escale==kShiftDown) addcorr=1-jecuncdown;
+	fTR->JPt[i] *= addcorr;
+	fTR->JE[i] *= addcorr;
+	fTR->JEcorr[i] *= addcorr;
+      }
 
-  {
+      
+    }
 
-    float thiseta = fabs(fTR->JEta[i]);
-    float smear,smearup,smeardown;
+    // JER, good for both 2011 and 2012
 
-    if (thiseta<0.5) smear=1.052;
-    else if (thiseta<1.1) smear=1.057;
-    else if (thiseta<1.7) smear=1.096;
-    else if (thiseta<2.3) smear=1.134;
-    else smear=1.288;
+    {
 
-    if (thiseta<0.5) smearup=1.115;
-    else if (thiseta<1.1) smearup=1.114;
-    else if (thiseta<1.7) smearup=1.161;
-    else if (thiseta<2.3) smearup=1.228;
-    else smearup=1.488;
+      float thiseta = fabs(fTR->JEta[i]);
+      float smear,smearup,smeardown;
 
-    if (thiseta<0.5) smeardown=0.990;
-    else if (thiseta<1.1) smeardown=1.001;
-    else if (thiseta<1.7) smeardown=1.032;
-    else if (thiseta<2.3) smeardown=1.142;
-    else smeardown=1.089;
+      if (thiseta<0.5) smear=1.052;
+      else if (thiseta<1.1) smear=1.057;
+      else if (thiseta<1.7) smear=1.096;
+      else if (thiseta<2.3) smear=1.134;
+      else smear=1.288;
 
-    float pt = fTR->JPt[i];
-    float ptgen = pt;
-    if (!isdata && fTR->NGenJets>0 && fTR->JGenJetIndex[i]>=0) ptgen = fTR->GenJetPt[fTR->JGenJetIndex[i]]; // no smearing for jets not matched to genjets
-    jer = TMath::Max(float(0),float((ptgen+smear*(pt-ptgen))))/pt;
-    jerup = TMath::Max(float(0),float((ptgen+smearup*(pt-ptgen))))/pt;
-    jerdown = TMath::Max(float(0),float((ptgen+smeardown*(pt-ptgen))))/pt;
-    fTR->JPt[i] *= jer;
-    fTR->JE[i] *= jer;
+      if (thiseta<0.5) smearup=1.115;
+      else if (thiseta<1.1) smearup=1.114;
+      else if (thiseta<1.7) smearup=1.161;
+      else if (thiseta<2.3) smearup=1.228;
+      else smearup=1.488;
+
+      if (thiseta<0.5) smeardown=0.990;
+      else if (thiseta<1.1) smeardown=1.001;
+      else if (thiseta<1.7) smeardown=1.032;
+      else if (thiseta<2.3) smeardown=1.142;
+      else smeardown=1.089;
+
+      float pt = fTR->JPt[i];
+      float ptgen = pt;
+      if (!isdata && fTR->NGenJets>0 && fTR->JGenJetIndex[i]>=0) ptgen = fTR->GenJetPt[fTR->JGenJetIndex[i]]; // no smearing for jets not matched to genjets
+      else if (!isdata && debug) {
+	cout << "no match to genjet " << isdata << " " << fTR->NGenJets << " " << fTR->JGenJetIndex[i] << endl;
+	for (int k=0; k<fTR->NGenJets; k++) cout << "genjet" << k << " " << fTR->GenJetPt[k] << " " << fTR->GenJetEta[k] << " " << fTR->GenJetPhi[k] << endl;
+      }
+      float jer = TMath::Max(float(0),float((ptgen+smear*(pt-ptgen))))/pt;
+      float jerup = TMath::Max(float(0),float((ptgen+smearup*(pt-ptgen))))/pt;
+      float jerdown = TMath::Max(float(0),float((ptgen+smeardown*(pt-ptgen))))/pt;
+      float myjer = 1;
+
+      if (status_esmear==kUncorrected) ;
+      else if (status_esmear==kCorrectedNoShift) myjer=jer;
+      else if (status_esmear==kShiftUp) myjer=jerup;
+      else if (status_esmear==kShiftDown) myjer=jerdown;
+      else assert(false);
+    
+      fTR->JPt[i] *= myjer;
+      fTR->JE[i] *= myjer;
+      fTR->JEcorr[i] *= myjer;
+
+    }
+
+    ordering_jets.push_back(std::pair<int,float>(i,fTR->JPt[i]));
 
   }
+
+  sort(ordering_jets.begin(),ordering_jets.end(),indexComparator);
+
 
 //  float OnTheFlyCorrections::getJECUncertainty(float pt, float eta){
 //    if      (eta> 5.0) eta = 5.0;
