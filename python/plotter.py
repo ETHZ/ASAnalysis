@@ -1219,6 +1219,26 @@ class plotter :
 				histo.Write()
 			histofile.Close()
 
+		# loop over results tree to get names of rare samples
+		rares = []
+		for event in tree :
+			if event.ObsPred == 6 and str(event.SName) not in rares :
+				rares.append(str(event.SName))
+
+		print rares
+
+		# get histograms with nPass for rares, wz, ttz and ttw
+		h_rares_npass = {}
+		for rare in rares :
+			h_rare_name = 'h_'+rare+'_npass_'+var; h_rares_npass[rare] = ROOT.TH1D(h_rare_name, h_rare_name, nbins, min, max)
+			tree.Draw(var+'>>'+h_rare_name, '(ObsPred == 6 && SName == \"%s\" && %s)' % (rare, sel.get_selectionString(ResTree = True)), 'goff')
+		h_wz_name    = 'h_wz_npass'    + var; h_wz_npass  = ROOT.TH1D(h_wz_name   , h_wz_name   , nbins, min, max)
+		h_ttz_name   = 'h_ttz_npass'   + var; h_ttz_npass = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
+		h_ttw_name   = 'h_ttw_npass'   + var; h_ttw_npass = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
+		tree.Draw(var+'>>'+h_wz_name   , '(ObsPred == 3 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttz_name  , '(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttw_name  , '(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+
 		h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
 		h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
 		h_chmid_name = 'h_chmid_' + var; histos['chmid'] = ROOT.TH1D(h_chmid_name, h_chmid_name, nbins, min, max)
@@ -1253,7 +1273,10 @@ class plotter :
 		histos['pred'].Add(histos['ttz'  ])
 		histos['pred'].Add(histos['ttw'  ])
 
-		# errors
+		##########
+		# ERRORS #
+		##########
+
 		for bin in range(1, histos['bgtot'].GetNbinsX()+1) :
 			err2 = 0.
 
@@ -1270,27 +1293,38 @@ class plotter :
 			#err2 += fake_syst2 + fake_stat2
 
 			# wz
-			#scale
-			#wz_nPass = 
+			scale = self.lumi / self.samples['WZTo3LNu'].getLumi()
+			wz_nPass = h_wz_npass.GetBinContent(bin)
+			wz_stat2 = scale*scale * self.samples['WZTo3LNu'].getError2(wz_nPass)
 			wz_yield = histos['wz'].GetBinContent(bin)
 			wz_syst2 = self.WZESyst2 * wz_yield*wz_yield
-			wz_stat2 = 0.
 			err2 += wz_syst2 + wz_stat2
 
 			# ttz
-			#scale
-			#ttz_nPass = 
+			scale = self.lumi / self.samples['TTbarZ'].getLumi()
+			ttz_nPass = h_ttz_npass.GetBinContent(bin)
+			ttz_stat2 = scale*scale * self.samples['TTbarZ'].getError2(ttz_nPass)
 			ttz_yield = histos['ttz'].GetBinContent(bin)
 			ttz_syst2 = self.TTZESyst2 * ttz_yield*ttz_yield
-			ttz_stat2 = 0.
 			err2 += ttz_syst2 + ttz_stat2
 
+#			# ttz
+#			scale = self.lumi / self.samples['TTbarW'].getLumi()
+#			ttw_nPass = h_ttw_npass.GetBinContent(bin)
+#			ttw_stat2 = scale*scale * self.samples['TTbarW'].getError2(ttw_nPass)
+#			ttw_yield = histos['ttw'].GetBinContent(bin)
+#			ttw_syst2 = self.ttwESyst2 * ttw_yield*ttw_yield
+#			err2 += ttw_syst2 + ttw_stat2
+
 			# rare
-			#scale
-			#rare_nPass = 
 			rare_yield = histos['rare'].GetBinContent(bin)
 			rare_syst2 = self.RareESyst2 * rare_yield*rare_yield
 			rare_stat2 = 0.
+			for rare, h_rare_npass in h_rares_npass.iteritems() :
+				scale = self.lumi / self.samples[rare].getLumi()
+				rare_nPass = h_rare_npass.GetBinContent(bin)
+				rare_stat2 += scale*scale * self.samples[rare].getError2(rare_nPass)
+			print bin, rare_stat2
 			err2 += rare_syst2 + rare_stat2
 
 			histos['pred'].SetBinError(bin, math.sqrt(err2))
@@ -1301,7 +1335,7 @@ class plotter :
 			histo.Write()
 		histofile.Close()
 
-		pl = ttvplot.ttvplot(self.path + 'test/')
+		pl = ttvplot.ttvplot(self.path + 'test/', '2L')
 #		pl = ttvplot.ttvplot()
 		pl.save_plot(histos, self.path+'test/', var)
 		raw_input('ok? ')
