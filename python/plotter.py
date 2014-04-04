@@ -117,7 +117,7 @@ class plotter :
 
 		# selections
 		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
-		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155.)
+		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
 		#print presel.get_selectionString()
 		self.selections[presel.name] = presel
 
@@ -1149,8 +1149,15 @@ class plotter :
 		min = 0.
 		max = 300.
 		var = 'Mll'
+#		nbins = 3
+#		min = 0.
+#		max = 3.
+#		var = 'Flavor'
 
 		histos = {}
+
+		chargeFactor = 1.
+		if sel.charge != 0 : chargeFactor = 0.5
 
 		if dummy_histos :
 
@@ -1263,27 +1270,37 @@ class plotter :
 		h_ee_nt10_name = 'h_ee_nt10_' + var; h_ee_nt10_npass = ROOT.TH1D(h_ee_nt10_name, h_ee_nt10_name, nbins, min, max)
 		h_ee_nt01_name = 'h_ee_nt01_' + var; h_ee_nt01_npass = ROOT.TH1D(h_ee_nt01_name, h_ee_nt01_name, nbins, min, max)
 		h_ee_nt0_name  = 'h_ee_nt0_'  + var; h_ee_nt0_npass  = ROOT.TH1D(h_ee_nt0_name , h_ee_nt0_name , nbins, min, max)
+		h_nt2_em_BB_os_name = 'h_nt2_em_BB_os_' + var; h_nt2_em_BB_os = ROOT.TH1D(h_nt2_em_BB_os_name, h_nt2_em_BB_os_name, nbins, min, max)
+		h_nt2_em_EE_os_name = 'h_nt2_em_EE_os_' + var; h_nt2_em_EE_os = ROOT.TH1D(h_nt2_em_EE_os_name, h_nt2_em_EE_os_name, nbins, min, max)
+		h_nt2_ee_BB_os_name = 'h_nt2_ee_BB_os_' + var; h_nt2_ee_BB_os = ROOT.TH1D(h_nt2_ee_BB_os_name, h_nt2_ee_BB_os_name, nbins, min, max)
+		h_nt2_ee_EB_os_name = 'h_nt2_ee_EB_os_' + var; h_nt2_ee_EB_os = ROOT.TH1D(h_nt2_ee_EB_os_name, h_nt2_ee_EB_os_name, nbins, min, max)
+		h_nt2_ee_EE_os_name = 'h_nt2_ee_EE_os_' + var; h_nt2_ee_EE_os = ROOT.TH1D(h_nt2_ee_EE_os_name, h_nt2_ee_EE_os_name, nbins, min, max)
 
 		# getting histograms from results tree
-		tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_chmid_name, 'Weight*(ObsPred == 2 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_wz_name   , 'Weight*(ObsPred == 3 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ttw_name  , 'Weight*(ObsPred == 4 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_mm_nt2_name ,      '(ObsPred == 0 && TLCat == 0 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_mm_nt10_name,      '(ObsPred == 0 && TLCat == 1 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_mm_nt01_name,      '(ObsPred == 0 && TLCat == 2 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_mm_nt0_name ,      '(ObsPred == 0 && TLCat == 3 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_em_nt2_name ,      '(ObsPred == 0 && TLCat == 0 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_em_nt10_name,      '(ObsPred == 0 && TLCat == 1 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_em_nt01_name,      '(ObsPred == 0 && TLCat == 2 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_em_nt0_name ,      '(ObsPred == 0 && TLCat == 3 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ee_nt2_name ,      '(ObsPred == 0 && TLCat == 0 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ee_nt10_name,      '(ObsPred == 0 && TLCat == 1 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ee_nt01_name,      '(ObsPred == 0 && TLCat == 2 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var+'>>'+h_ee_nt0_name ,      '(ObsPred == 0 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_obs_name  ,    'Weight*(ObsPred == 0 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_fake_name ,    'Weight*(ObsPred == 1 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_chmid_name, '%f*Weight*(ObsPred == 2 && %s)' %(chargeFactor, sel.get_selectionString(ResTree = True, OS_data = (0,-1))), 'goff')
+		tree.Draw(var+'>>'+h_rare_name ,    'Weight*(ObsPred == 6 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_wz_name   ,    'Weight*(ObsPred == 3 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttz_name  ,    'Weight*(ObsPred == 5 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ttw_name  ,    'Weight*(ObsPred == 4 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt2_name ,         '(ObsPred == 0 && TLCat == 0 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt10_name,         '(ObsPred == 0 && TLCat == 1 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt01_name,         '(ObsPred == 0 && TLCat == 2 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_mm_nt0_name ,         '(ObsPred == 0 && TLCat == 3 && Flavor == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt2_name ,         '(ObsPred == 0 && TLCat == 0 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt10_name,         '(ObsPred == 0 && TLCat == 1 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt01_name,         '(ObsPred == 0 && TLCat == 2 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_em_nt0_name ,         '(ObsPred == 0 && TLCat == 3 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt2_name ,         '(ObsPred == 0 && TLCat == 0 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt10_name,         '(ObsPred == 0 && TLCat == 1 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt01_name,         '(ObsPred == 0 && TLCat == 2 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_ee_nt0_name ,         '(ObsPred == 0 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var+'>>'+h_nt2_em_BB_os_name,    '(ObsPred == 2 && TLCat == 0 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
+		tree.Draw(var+'>>'+h_nt2_em_EE_os_name,    '(ObsPred == 2 && TLCat == 1 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
+		tree.Draw(var+'>>'+h_nt2_ee_BB_os_name,    '(ObsPred == 2 && TLCat == 0 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
+		tree.Draw(var+'>>'+h_nt2_ee_EB_os_name,    '(ObsPred == 2 && (TLCat == 1 || TLCat == 2) && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
+		tree.Draw(var+'>>'+h_nt2_ee_EE_os_name,    '(ObsPred == 2 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
 
 		# adding background predictions
 		histos['bgtot'].Add(histos['fake' ])
@@ -1324,6 +1341,10 @@ class plotter :
 		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
 		FR.setEPRatio(self.fpr.ElpRatio, self.fpr.ElpRatioE)
 
+		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
+		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
+		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
+
 		for bin in range(1, histos['bgtot'].GetNbinsX()+1) :
 			err2 = 0.
 
@@ -1338,10 +1359,28 @@ class plotter :
 			err2 += fake_syst2 + fake_stat2
 
 			# charge mis ID
-			#fake_nPass = histos['chmid'].GetBinContent(bin)
-			#fake_syst2 = self.FakeESyst2 * fake_nPass*fake_nPass
-			#fake_stat2 = 0.
-			#err2 += fake_syst2 + fake_stat2
+			nt2_em_BB_os = h_nt2_em_BB_os.GetBinContent(bin)
+			nt2_em_EE_os = h_nt2_em_EE_os.GetBinContent(bin)
+			nt2_ee_BB_os = h_nt2_ee_BB_os.GetBinContent(bin)
+			nt2_ee_EB_os = h_nt2_ee_EB_os.GetBinContent(bin)
+			nt2_ee_EE_os = h_nt2_ee_EE_os.GetBinContent(bin)
+				# Simple error propagation assuming error on number of events is sqrt(N)
+			nt2_ee_chmid    = chargeFactor * (2*fbb* nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os)
+			nt2_ee_chmid_e1 = chargeFactor * math.sqrt( 4*fbb*fbb * FR.getEStat2(nt2_ee_BB_os)  + 4*fee*fee * FR.getEStat2(nt2_ee_EE_os)    + 4*feb*feb * FR.getEStat2(nt2_ee_EB_os) )  # stat only
+			nt2_ee_chmid_e2 = chargeFactor * math.sqrt( 4*fbbE*fbbE * nt2_ee_BB_os*nt2_ee_BB_os + 4*feeE*feeE * nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE * nt2_ee_EB_os*nt2_ee_EB_os + self.ChMisESyst2 * nt2_ee_chmid*nt2_ee_chmid/(chargeFactor*chargeFactor) )  # syst only
+
+			nt2_em_chmid    = chargeFactor * (fbb * nt2_em_BB_os + fee * nt2_em_EE_os)
+			nt2_em_chmid_e1 = chargeFactor * math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
+			nt2_em_chmid_e2 = chargeFactor * math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + 0.25*self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid/(chargeFactor*chargeFactor) )
+
+			print bin, histos['chmid'].GetBinContent(bin), nt2_em_chmid + nt2_ee_chmid
+
+			#	res[ch_str]['al'].cmid     = nt2_ee_chmid + nt2_em_chmid
+			#	res[ch_str]['em'].cmid     = nt2_em_chmid
+			#	res[ch_str]['ee'].cmid     = nt2_ee_chmid
+			err2 += nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2
+			#	res[ch_str]['em'].cmid_err = math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
+			#	res[ch_str]['ee'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
 
 			# wz
 			scale = self.lumi / self.samples[wz_str].getLumi()
@@ -1375,7 +1414,6 @@ class plotter :
 				scale = self.lumi / self.samples[rare].getLumi()
 				rare_nPass = h_rare_npass.GetBinContent(bin)
 				rare_stat2 += scale*scale * self.samples[rare].getError2(rare_nPass)
-			print bin, rare_stat2
 			err2 += rare_syst2 + rare_stat2
 
 			histos['pred'].SetBinError(bin, math.sqrt(err2))

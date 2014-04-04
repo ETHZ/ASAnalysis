@@ -100,5 +100,8 @@ class selection :
 				else :
 					selectionString += ' && TLCat == %d'  % (OS_data[1])
 				if self.flavor > -1 : selectionString += ' && Flavor == %d' % (self.flavor+3)
+		else :
+			if self.flavor > -1                        : selectionString += ' && Flavor == %d' % (self.flavor)
+			if OS_data[0] < 0 and self.charge is not 0 : selectionString += ' && Charge == %d' % (self.charge)
 
 		return selectionString
