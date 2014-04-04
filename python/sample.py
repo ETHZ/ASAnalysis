@@ -85,13 +85,13 @@ class sample :
 		## on number of events passing?
 		if self.ngen <= 0 : return -1.
 		eff = ROOT.TEfficiency()
-		upper = eff.ClopperPearson(self.ngen, n, 0.68, True)
+		upper = eff.ClopperPearson(self.ngen, int(n), 0.68, True)
 		delta = upper - float(n)/float(self.ngen)
 		return delta * float(self.ngen)
 
 
 	def getError2(self, n) :
-		err = getError(n)
+		err = self.getError(n)
 		return err*err
 
 
