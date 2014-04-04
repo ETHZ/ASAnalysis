@@ -1220,11 +1220,15 @@ class plotter :
 
 		# loop over results tree to get names of rare samples
 		rares = []
+		wz_str  = ''
+		ttw_str = ''
+		ttz_str = ''
 		for event in tree :
 			if event.ObsPred == 6 and str(event.SName) not in rares :
 				rares.append(str(event.SName))
-
-		print rares
+			if event.ObsPred == 3 and wz_str  == '' : wz_str  = str(event.SName)
+			if event.ObsPred == 4 and ttw_str == '' : ttw_str = str(event.SName)
+			if event.ObsPred == 5 and ttz_str == '' : ttz_str = str(event.SName)
 
 		# get histograms with nPass for rares, wz, ttz and ttw
 		h_rares_npass = {}
@@ -1340,25 +1344,25 @@ class plotter :
 			#err2 += fake_syst2 + fake_stat2
 
 			# wz
-			scale = self.lumi / self.samples['WZTo3LNu'].getLumi()
+			scale = self.lumi / self.samples[wz_str].getLumi()
 			wz_nPass = h_wz_npass.GetBinContent(bin)
-			wz_stat2 = scale*scale * self.samples['WZTo3LNu'].getError2(wz_nPass)
+			wz_stat2 = scale*scale * self.samples[wz_str].getError2(wz_nPass)
 			wz_yield = histos['wz'].GetBinContent(bin)
 			wz_syst2 = self.WZESyst2 * wz_yield*wz_yield
 			err2 += wz_syst2 + wz_stat2
 
 			# ttz
-			scale = self.lumi / self.samples['TTbarZ'].getLumi()
+			scale = self.lumi / self.samples[ttz_str].getLumi()
 			ttz_nPass = h_ttz_npass.GetBinContent(bin)
-			ttz_stat2 = scale*scale * self.samples['TTbarZ'].getError2(ttz_nPass)
+			ttz_stat2 = scale*scale * self.samples[ttz_str].getError2(ttz_nPass)
 			ttz_yield = histos['ttz'].GetBinContent(bin)
 			ttz_syst2 = self.TTZESyst2 * ttz_yield*ttz_yield
 			err2 += ttz_syst2 + ttz_stat2
 
 #			# ttz
-#			scale = self.lumi / self.samples['TTbarW'].getLumi()
+#			scale = self.lumi / self.samples[ttw_str].getLumi()
 #			ttw_nPass = h_ttw_npass.GetBinContent(bin)
-#			ttw_stat2 = scale*scale * self.samples['TTbarW'].getError2(ttw_nPass)
+#			ttw_stat2 = scale*scale * self.samples[ttw_str].getError2(ttw_nPass)
 #			ttw_yield = histos['ttw'].GetBinContent(bin)
 #			ttw_syst2 = self.ttwESyst2 * ttw_yield*ttw_yield
 #			err2 += ttw_syst2 + ttw_stat2
