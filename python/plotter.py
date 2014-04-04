@@ -12,7 +12,7 @@ import time
 import copytree
 import os
 import numpy as np
-import ttwplot
+import ttvplot
 
 
 class plotter :
@@ -1301,8 +1301,8 @@ class plotter :
 			histo.Write()
 		histofile.Close()
 
-		pl = ttwplot.ttwplot(self.path + 'test/')
-#		pl = ttwplot.ttwplot()
+		pl = ttvplot.ttvplot(self.path + 'test/')
+#		pl = ttvplot.ttvplot()
 		pl.save_plot(histos, self.path+'test/', var)
 		raw_input('ok? ')
 
