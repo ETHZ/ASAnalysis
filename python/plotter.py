@@ -1489,7 +1489,7 @@ class plotter :
 
 		pl = ttvplot.ttvplot(self.path + 'test/%s/'%sel.name, '2L')
 #		pl = ttvplot.ttvplot()
-		pl.save_plot(histos, var)
+		pl.save_plot(histos, var, sel.name)
 #		raw_input('ok? ')
 
 

@@ -65,8 +65,10 @@ class ttvplot :
 		return ''
 
 
-	def save_plot(self, histos, var) :
+	def save_plot(self, histos, var, selname = '') :
 		'''save plot with observation and predictions'''
+
+		if selname != '' : selname += '_'
 
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
 
@@ -143,7 +145,7 @@ class ttvplot :
 		leg.SetBorderSize(0)
 		leg.SetTextAlign(12)
 
-		canvas = ROOT.TCanvas('C_ObsPred_'+var, 'Observed vs Predicted', 0, 0, 600, 600)
+		canvas = ROOT.TCanvas('C_ObsPred_'+selname+var, 'Observed vs Predicted', 0, 0, 600, 600)
 		canvas.SetLeftMargin(0.12)
 		canvas.SetRightMargin(0.04)
 		canvas.SetTopMargin(0.04)
