@@ -18225,9 +18225,9 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 		int EM_yiel_npass = rareMapEM_npass[it->first];
 		int EE_yiel_npass = rareMapEE_npass[it->first];
 
-		float MM_stat = weight*HLTSF*(S->getError(rareMapMM_npass[it->first]));
-		float EM_stat = weight*HLTSF*(S->getError(rareMapEM_npass[it->first]));
-		float EE_stat = weight*HLTSF*(S->getError(rareMapEE_npass[it->first]));
+		float MM_stat = weight*(S->getError(rareMapMM_npass[it->first]));
+		float EM_stat = weight*(S->getError(rareMapEM_npass[it->first]));
+		float EE_stat = weight*(S->getError(rareMapEE_npass[it->first]));
 		// float MM_yiel = rareMapMM.find(it->first) != rareMapMM.end()? rareMapMM[it->first]:0.;
 		// float EM_yiel = rareMapEM.find(it->first) != rareMapEM.end()? rareMapEM[it->first]:0.;
 		// float EE_yiel = rareMapEE.find(it->first) != rareMapEE.end()? rareMapEE[it->first]:0.;
