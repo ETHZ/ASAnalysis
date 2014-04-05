@@ -334,7 +334,7 @@ class plotter :
 #		self.ResTree_D02       = np.zeros(1, dtype=float); self.results_tree.Branch('D02',         self.ResTree_D02        , 'D02/D'      );
 #		self.ResTree_Rho       = np.zeros(1, dtype=float); self.results_tree.Branch('Rho',         self.ResTree_Rho        , 'Rho/D'      );
 		self.ResTree_MTLep1    = np.zeros(1, dtype=float); self.results_tree.Branch('MTLep1',      self.ResTree_MTLep1     , 'MTLep1/D'   );
-#		self.ResTree_MTLep2    = np.zeros(1, dtype=float); self.results_tree.Branch('MTLep2',      self.ResTree_MTLep2     , 'MTLep2/D'   );
+		self.ResTree_MTLep2    = np.zeros(1, dtype=float); self.results_tree.Branch('MTLep2',      self.ResTree_MTLep2     , 'MTLep2/D'   );
 #		self.ResTree_dRbJl1    = np.zeros(1, dtype=float); self.results_tree.Branch('dRbJl1',      self.ResTree_dRbJl1     , 'dRbJl1/D'   );
 #		self.ResTree_dRbJl2    = np.zeros(1, dtype=float); self.results_tree.Branch('dRbJl2',      self.ResTree_dRbJl2     , 'dRbJl2/D'   );
 #		self.ResTree_BetaStar1 = np.zeros(1, dtype=float); self.results_tree.Branch('BetaStar1',   self.ResTree_BetaStar1  , 'BetaStar1/D');
@@ -602,7 +602,7 @@ class plotter :
 #				self.ResTree_D02      [0] = event.D02
 #				self.ResTree_Rho      [0] = event.Rho
 				self.ResTree_MTLep1   [0] = event.MTLep1
-#				self.ResTree_MTLep2   [0] = event.MTLep2
+				self.ResTree_MTLep2   [0] = event.MTLep2
 #				self.ResTree_dRbJl1   [0] = event.dRbJl1
 #				self.ResTree_dRbJl2   [0] = event.dRbJl2
 #				self.ResTree_BetaStar1[0] = event.BetaStar1
@@ -611,7 +611,7 @@ class plotter :
 #				self.ResTree_BetaStar4[0] = event.BetaStar4
 #				self.ResTree_BetaStar5[0] = event.BetaStar5
 				self.ResTree_NVrtx    [0] = event.NVrtx
-				self.ResTree_M3       [0] = event.M3
+				self.ResTree_M3       [0] = event.M3v2
 
 			# GET ALL DATA EVENTS
 			if event.SType < 3 :
@@ -1143,8 +1143,23 @@ class plotter :
 
 		print sel
 
-		# remove this again
-		dummy_histos = False
+		histo_settings = {}
+
+		var = 'HT'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  5; histo_settings[var]['min'] = 100.; histo_settings[var]['max'] = 600.;
+		var = 'MET'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  6; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 120.;
+		var = 'NJ'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  3; histo_settings[var]['min'] =   3.; histo_settings[var]['max'] =   6.;
+		var = 'NbJmed'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  3; histo_settings[var]['min'] =   1.; histo_settings[var]['max'] =   4.;
+		var = 'pT1'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  9; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 200.;
+		var = 'pT2'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  8; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 100.;
+		var = 'Mll'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 14; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 300.;
+		var = 'NVrtx' ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 40; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =  40.;
+		var = 'minMT' ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 20; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 400.;
+		var = 'M3'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 12; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 600.;
+
+		for var, settings in histo_settings.iteritems() :
+			self.plot_ObsPred(tree, sel, var, settings)
+
+		return
 
 		nbins = 6
 		min = 0.
@@ -1166,6 +1181,22 @@ class plotter :
 #		min = 1.
 #		max = 4.
 #		var = 'NbJmed'
+		var = 'pT1'
+		nbins = 29
+		min = 20.
+		max = 600.
+
+		self.plot_ObsPred(tree, sel, var, nbins, min, max)
+
+
+	def plot_ObsPred(self, tree, sel, var, settings) :
+
+		nbins = settings['nbins']
+		min   = settings['min'  ]
+		max   = settings['max'  ]
+
+		# remove this again
+		dummy_histos = False
 
 		histos = {}
 
@@ -1173,6 +1204,10 @@ class plotter :
 		if sel.charge != 0 : chargeFactor = 0.5
 
 		if dummy_histos :
+			if   var == 'pT1'   : var_str = 'TMath::Max(pT1,pT2)'
+			elif var == 'pT2'   : var_str = 'TMath::Min(pT1,pT2)'
+			elif var == 'minMT' : var_str = 'TMath::Min(MTLep1,MTLep2)'
+			else                : var_str = var
 
 			h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
 			h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
@@ -1183,11 +1218,11 @@ class plotter :
 			h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
 
 			# getting histograms from results tree
-			tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_btag_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_btag_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 
 			# adding background predictions
 			histos['bgtot'].Add(histos['fake' ])
@@ -1215,11 +1250,11 @@ class plotter :
 			h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
 
 			# getting histograms from results tree
-			tree.Draw(var+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_zz_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_zz_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
+			tree.Draw(var_str+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 
 			# adding background predictions
 			histos['bgtot'].Add(histos['fake' ])
@@ -1254,15 +1289,16 @@ class plotter :
 		# SETUP AND GET HISTOGRAMS #
 		############################
 
-		if   var == 'pT1' : var_str = 'TMath::Max(pT1,pT2)'
-		elif var == 'pT2' : var_str = 'TMath::Min(pT1,pT2)'
-		else              : var_str = var
+		if   var == 'pT1'   : var_str = 'TMath::Max(pT1,pT2)'
+		elif var == 'pT2'   : var_str = 'TMath::Min(pT1,pT2)'
+		elif var == 'minMT' : var_str = 'TMath::Min(MTLep1,MTLep2)'
+		else                : var_str = var
 
 		# get histograms with nPass for rares, wz, ttz and ttw
 		h_rares_npass = {}
 		for rare in rares :
 			h_rare_name = 'h_'+rare+'_npass_'+var; h_rares_npass[rare] = ROOT.TH1D(h_rare_name, h_rare_name, nbins, min, max)
-			tree.Draw(var+'>>'+h_rare_name, '(ObsPred == 6 && SName == \"%s\" && %s)' % (rare, sel.get_selectionString(ResTree = True)), 'goff')
+			tree.Draw(var_str+'>>'+h_rare_name, '(ObsPred == 6 && SName == \"%s\" && %s)' % (rare, sel.get_selectionString(ResTree = True)), 'goff')
 		h_wz_name    = 'h_wz_npass'    + var; h_wz_npass  = ROOT.TH1D(h_wz_name   , h_wz_name   , nbins, min, max)
 		h_ttz_name   = 'h_ttz_npass'   + var; h_ttz_npass = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
 		h_ttw_name   = 'h_ttw_npass'   + var; h_ttw_npass = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
@@ -1394,7 +1430,7 @@ class plotter :
 			nt2_em_chmid_e1 = chargeFactor * math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
 			nt2_em_chmid_e2 = chargeFactor * math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + 0.25*self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid/(chargeFactor*chargeFactor) )
 
-			print bin, histos['chmid'].GetBinContent(bin), nt2_em_chmid + nt2_ee_chmid
+#			print bin, histos['chmid'].GetBinContent(bin), nt2_em_chmid + nt2_ee_chmid
 
 			#	res[ch_str]['al'].cmid     = nt2_ee_chmid + nt2_em_chmid
 			#	res[ch_str]['em'].cmid     = nt2_em_chmid
@@ -1448,7 +1484,7 @@ class plotter :
 		pl = ttvplot.ttvplot(self.path + 'test/', '2L')
 #		pl = ttvplot.ttvplot()
 		pl.save_plot(histos, self.path+'test/', var)
-		raw_input('ok? ')
+#		raw_input('ok? ')
 
 
 	def make_DiffPredictions(self, selections) :
