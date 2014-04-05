@@ -44,15 +44,12 @@ class ttvplot :
 		self.var_names['MET'   ] = 'Particle Flow E_{T}^{miss} [GeV]'
 		self.var_names['NJ'    ] = 'Jet Multiplicity'
 		self.var_names['NbJmed'] = 'b-Jet Multiplicity (medium)'
-		self.var_names['NJ'    ] = 'Jet Multiplicity'
-		self.var_names['NbJmed'] = 'b-Jet Multiplicity (medium)'
 		self.var_names['pT1'   ] = 'Leading Lepton p_{T} [GeV]'
 		self.var_names['pT2'   ] = 'Subleading Lepton p_{T} [GeV]'
 		self.var_names['Int'   ] = ''
 		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
-		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
 		self.var_names['NVrtx' ] = 'N_{Vertices}'
-		self.var_names['minMT' ] = 'M_{T}'
+		self.var_names['minMT' ] = 'M_{T} [GeV]'
 		self.var_names['M3'    ] = 'm_{jjj} [GeV]'
 
 
@@ -146,7 +143,7 @@ class ttvplot :
 		leg.SetBorderSize(0)
 		leg.SetTextAlign(12)
 
-		canvas = ROOT.TCanvas('C_ObsPred', 'Observed vs Predicted', 0, 0, 600, 600)
+		canvas = ROOT.TCanvas('C_ObsPred_'+var, 'Observed vs Predicted', 0, 0, 600, 600)
 		canvas.SetLeftMargin(0.12)
 		canvas.SetRightMargin(0.04)
 		canvas.SetTopMargin(0.04)
@@ -212,11 +209,11 @@ class ttvplot :
 		histos['obs'  ].Draw('PE X0 same')
 #		self.drawTopLine(0.56, 0.8)
 		self.draw_cmsLine()
-		raw_input('ok? ')
+#		raw_input('ok? ')
 
 		canvas.Print(path + self.chan + '_' + var + '.pdf')
 		canvas.Print(path + self.chan + '_' + var + '.png')
-		raw_input('ok? ')
+#		raw_input('ok? ')
 
 
 	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :
