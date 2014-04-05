@@ -73,6 +73,7 @@ void DiPhotonMiniTree::Begin(){
   sels.insert(pair<EnumSel,Selection>(kLightESCALEdown,Selection(kLightESCALEdown,"ESCALEdown",kData,true,fOutputFile,fOutputExtraFile)));
   sels.insert(pair<EnumSel,Selection>(kLightESMEARup,Selection(kLightESMEARup,"ESMEARup",kMC,true,fOutputFile,fOutputExtraFile)));
   sels.insert(pair<EnumSel,Selection>(kLightESMEARdown,Selection(kLightESMEARdown,"ESMEARdown",kMC,true,fOutputFile,fOutputExtraFile)));
+  sels.insert(pair<EnumSel,Selection>(kLightDiElectron,Selection(kLightDiElectron,"DiElectron",kMC,true,fOutputFile,fOutputExtraFile)));
 
 
   for (map<EnumSel,Selection>::iterator it = sels.begin(); it!=sels.end(); it++){
@@ -942,7 +943,7 @@ void DiPhotonMiniTree::Analyze(){
     StatusScaleUpScaleDown_Jets_JEC=kCorrectedNoShift;
     StatusScaleUpScaleDown_Jets_JER=kCorrectedNoShift;
 
-    if (thissel==kLightDefault) ;
+    if (thissel==kLightDefault || thissel==kLightDiElectron) ;
     else if (thissel==kLightJECup){
       JECJERCorrection(kShiftUp,kCorrectedNoShift,ordering_jets);
       StatusScaleUpScaleDown_Jets_JEC=kShiftUp;
@@ -1012,20 +1013,30 @@ void DiPhotonMiniTree::Analyze(){
     tree_reco_in_acc = passtrigger && StandardEventSelection(fTR,passing,passing_jets);
     if (!tree_reco_in_acc) {passing.clear(); passing_jets.clear();}
 
-    bool isdy = (dataset_id==dy_dataset_id);
-
-    if (!isdy || tree_reco_in_acc){
-
+    std::vector<int> passing_gen;
+    std::vector<int> passing_gen_jets;
     int NGenObjects = 0;
     std::vector<float> GenObjectPt;
     std::vector<float> GenObjectEta;
     std::vector<float> GenObjectPhi;
-    if (!isdy){
-      for (int i=0; i<fTR->NGenPhotons; i++){
-	GenObjectPt.push_back(fTR->GenPhotonPt[i]);
-	GenObjectEta.push_back(fTR->GenPhotonEta[i]);
-	GenObjectPhi.push_back(fTR->GenPhotonPhi[i]);
-	NGenObjects++;
+
+    if (isdata){
+      tree_matched=false;
+      tree_gen_in_acc=false;
+    }
+    else if (thissel!=kLightDiElectron || dataset_id==dy_dataset_id){
+
+    bool isdy = (dataset_id==dy_dataset_id && thissel==kLightDiElectron);
+    
+    if (!isdy || tree_reco_in_acc){
+      
+      if (!isdy){
+	for (int i=0; i<fTR->NGenPhotons; i++){
+	  GenObjectPt.push_back(fTR->GenPhotonPt[i]);
+	  GenObjectEta.push_back(fTR->GenPhotonEta[i]);
+	  GenObjectPhi.push_back(fTR->GenPhotonPhi[i]);
+	  NGenObjects++;
+	}
       }
     }
     if (isdy){
@@ -1037,8 +1048,8 @@ void DiPhotonMiniTree::Analyze(){
 	NGenObjects++;
       }
     }
+    
 
-    std::vector<int> passing_gen;
     {
       std::vector<std::pair<int,float> > ordering_gen;
       for (int i=0; i<NGenObjects; i++){
@@ -1049,7 +1060,6 @@ void DiPhotonMiniTree::Analyze(){
 	passing_gen.push_back(ordering_gen.at(i).first);
       }
     }
-    std::vector<int> passing_gen_jets;
     for (int i=0; i<fTR->NGenJets; i++){
       if (i<fTR->NGenJets-1) assert(fTR->GenJetPt[i]>=fTR->GenJetPt[i+1]);
       passing_gen_jets.push_back(i);
@@ -1124,6 +1134,7 @@ void DiPhotonMiniTree::Analyze(){
     tree_gen_in_acc = (passing_gen.size()>=2);
     if (!tree_gen_in_acc) {passing_gen.clear(); passing_gen_jets.clear();}
 
+    }
 
     if (tree_reco_in_acc) {
       FillLead(passing.at(0),passing_jets);
@@ -1153,12 +1164,7 @@ void DiPhotonMiniTree::Analyze(){
 
     if (tree_reco_in_acc || tree_gen_in_acc) sel->second.tree_light->Fill();
 
-    }
-
   }
-
-
-
 
 };
 
@@ -4209,6 +4215,8 @@ void DiPhotonMiniTree::JECJERCorrection(StatusScaleUpScaleDown status_escale, St
 };
 
 MatchingStatus DiPhotonMiniTree::check_matching_status(int phoindex){
+
+  assert (!isdata);
 
   int status = fTR->PhoMCmatchexitcode[phoindex];
   float geniso = (status==1 || status==2) ? fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[phoindex]] : 999;

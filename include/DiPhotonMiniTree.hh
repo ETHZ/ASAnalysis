@@ -79,7 +79,8 @@ typedef enum {
   kLightESCALEup=105,
   kLightESCALEdown=106,
   kLightESMEARup=107,
-  kLightESMEARdown=108
+  kLightESMEARdown=108,
+  kLightDiElectron=200
 } EnumSel;
 
 typedef enum {
