@@ -83,9 +83,11 @@ class ttvplot :
 		# set minimum and maximum
 		maximum = 1.8 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
 		hs_pred.SetMaximum(maximum)
+		hs_pred.SetMinimum(0.)
 
 		for process, histo in histos.iteritems() :
 			histo.SetMaximum(maximum)
+			histo.SetMinimum(0.)
 			histo.SetLineColor(1)
 			histo.SetLineWidth(1)
 			histo.SetFillColor(self.get_fillColor(process))
@@ -153,6 +155,18 @@ class ttvplot :
 		hs_pred.GetYaxis().SetTitleSize(0.04)
 		hs_pred.GetXaxis().SetLabelSize(0.04)
 		hs_pred.GetYaxis().SetLabelSize(0.04)
+		if var == 'Flavor' :
+			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
+				if bin == 1 : binlabel = '#mu#mu'
+				if bin == 2 : binlabel = 'e#mu'
+				if bin == 3 : binlabel = 'ee'
+				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
+				hs_pred.GetXaxis().SetLabelSize(0.062)
+		if 'NJ' in var or 'NbJ' in var :
+			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
+				binlabel = '%d' % (hs_pred.GetXaxis().GetBinLowEdge(bin))
+				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
+				hs_pred.GetXaxis().SetLabelSize(0.062)
 		##		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
 		##			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", (int)bins[var][i-1]));
 		##			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
