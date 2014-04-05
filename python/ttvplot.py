@@ -5,12 +5,13 @@ import os, sys
 
 class ttvplot :
 
-	def __init__(self, path, chan, lumi = 19500.) :
+	def __init__(self, path, chan, lumi = 19500., cms_label = 0) :
 		self.path = path
 		if not os.path.exists(self.path) :
 			os.makedirs(self.path)
 		self.chan = chan
 		self.lumi = lumi
+		self.cms_label = cms_label
 
 		# colors
 		self.colors = {}
@@ -235,7 +236,10 @@ class ttvplot :
 		latex.SetTextFont(62)
 		latex.SetTextSize(0.04)
 		latex.SetTextAlign(13)
-		latex.DrawLatex(0.15, 0.93, 'CMS')
+		if self.cms_label == 0 : cms_str = 'CMS'
+		if self.cms_label == 1 : cms_str = 'CMS Preliminary'
+		if self.cms_label == 2 : cms_str = 'CMS Simulation'
+		latex.DrawLatex(0.15, 0.93, cms_str)
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
 		latex.DrawLatex(0.15, 0.88, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))
