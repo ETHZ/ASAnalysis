@@ -39,9 +39,20 @@ class ttvplot :
 
 		# variable names
 		self.var_names = {}
-		self.var_names['HT']  = 'H_{T} [GeV]'
-		self.var_names['Mll'] = 'm_{ll} [GeV]'
-		# TODO: add here all the variable names
+		self.var_names['HT'    ] = 'H_{T} [GeV]'
+		self.var_names['MET'   ] = 'Particle Flow E_{T}^{miss} [GeV]'
+		self.var_names['NJ'    ] = 'Jet Multiplicity'
+		self.var_names['NbJmed'] = 'b-Jet Multiplicity (medium)'
+		self.var_names['NJ'    ] = 'Jet Multiplicity'
+		self.var_names['NbJmed'] = 'b-Jet Multiplicity (medium)'
+		self.var_names['pT1'   ] = 'Leading Lepton p_{T} [GeV]'
+		self.var_names['pT2'   ] = 'Subleading Lepton p_{T} [GeV]'
+		self.var_names['Int'   ] = ''
+		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
+		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
+		self.var_names['NVrtx' ] = 'N_{Vertices}'
+		self.var_names['minMT' ] = 'M_{T}'
+		self.var_names['M3'    ] = 'm_{jjj} [GeV]'
 
 
 	def get_fillColor(self, process) :
@@ -162,11 +173,23 @@ class ttvplot :
 				if bin == 3 : binlabel = 'ee'
 				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
 				hs_pred.GetXaxis().SetLabelSize(0.062)
-		if 'NJ' in var or 'NbJ' in var :
+		elif 'NJ' in var or 'NbJ' in var :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
 				binlabel = '%d' % (hs_pred.GetXaxis().GetBinLowEdge(bin))
 				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
 				hs_pred.GetXaxis().SetLabelSize(0.062)
+		elif var == 'CFChan' :
+			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
+				if bin < 4 : charge_str = '^{+}'
+				else       : charge_str = '^{-}'
+				if bin == 1 or bin == 4 : binlabel = '#mu'+charge_str+'#mu'+charge_str
+				if bin == 2 or bin == 5 : binlabel = 'e'+charge_str+'#mu'+charge_str
+				if bin == 3 or bin == 6 : binlabel = 'e'+charge_str+'e'+charge_str
+				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
+				hs_pred.GetXaxis().SetLabelSize(0.062)
+		elif not hs_pred.GetXaxis().IsVariableBinSize() :
+			bin_width = hs_pred.GetXaxis().GetBinWidth(1)
+			hs_pred.GetYaxis().SetTitle('Events / %.0f GeV' % bin_width)
 		##		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
 		##			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", (int)bins[var][i-1]));
 		##			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
