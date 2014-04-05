@@ -65,7 +65,7 @@ class ttvplot :
 		return ''
 
 
-	def save_plot(self, histos, path, var) :
+	def save_plot(self, histos, var) :
 		'''save plot with observation and predictions'''
 
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
@@ -164,7 +164,7 @@ class ttvplot :
 		hs_pred.GetYaxis().SetTitleSize(0.04)
 		hs_pred.GetXaxis().SetLabelSize(0.04)
 		hs_pred.GetYaxis().SetLabelSize(0.04)
-		if var == 'Flavor' :
+		if var == 'Int' :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
 				if bin == 1 : binlabel = '#mu#mu'
 				if bin == 2 : binlabel = 'e#mu'
@@ -183,6 +183,12 @@ class ttvplot :
 				if bin == 1 or bin == 4 : binlabel = '#mu'+charge_str+'#mu'+charge_str
 				if bin == 2 or bin == 5 : binlabel = 'e'+charge_str+'#mu'+charge_str
 				if bin == 3 or bin == 6 : binlabel = 'e'+charge_str+'e'+charge_str
+				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
+				hs_pred.GetXaxis().SetLabelSize(0.062)
+		elif var == 'Charge' :
+			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
+				if bin == 1 : binlabel = '--'
+				if bin == 2 : binlabel = '++'
 				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
 				hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif not hs_pred.GetXaxis().IsVariableBinSize() :
@@ -211,8 +217,8 @@ class ttvplot :
 		self.draw_cmsLine()
 #		raw_input('ok? ')
 
-		canvas.Print(path + self.chan + '_' + var + '.pdf')
-		canvas.Print(path + self.chan + '_' + var + '.png')
+		canvas.Print(self.path + self.chan + '_' + var + '.pdf')
+		canvas.Print(self.path + self.chan + '_' + var + '.png')
 #		raw_input('ok? ')
 
 
