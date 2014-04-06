@@ -35,7 +35,7 @@ class ttvplot :
 		self.process_names['ttz'  ] = 't#bar{t}Z'
 		self.process_names['ttw'  ] = 't#bar{t}W'
 		self.process_names['bgtot'] = 'Backgrounds'
-		self.process_names['btag' ] = 'Inclusive b-jet'
+		self.process_names['btag' ] = 'Non-top'
 		self.process_names['zz'   ] = 'ZZ'
 
 		# variable names
