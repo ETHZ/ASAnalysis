@@ -514,16 +514,16 @@ void SSDLPlotter::doAnalysis(){
   cout << "...done ====" << endl;
 
 
-  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
-  makeTTWDiffPredictionsSigEvent();
-  cout << "...done ===" << endl;
+//  cout << "=== Going to call makeTTWDiffPredictionsSigEvent..." << endl;
+//  makeTTWDiffPredictionsSigEvent();
+//  cout << "...done ===" << endl;
 
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;  
-//  makeTTWIntPredictionsSigEvent();
-//  cout << "...done ===" << endl;
+  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;
+  makeTTWIntPredictionsSigEvent();
+  cout << "...done ===" << endl;
 
 
 	// final selection w/o charge selection
@@ -17792,6 +17792,7 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	float elfratio_data(0.),  elfratio_data_e(0.);
 	float elpratio_data(0.),  elpratio_data_e(0.);
 
+	// ATTENTION: these flat ratios are without EWK subtraction
 	calculateRatio(fMuData, Muon, SigSup, mufratio_data, mufratio_data_e);
 	calculateRatio(fMuData, Muon, ZDecay, mupratio_data, mupratio_data_e);
 
@@ -18077,10 +18078,17 @@ TTWZPrediction SSDLPlotter::makePredictionSignalEvents(float minHT, float maxHT,
 	FR->setNToyMCs(100);
 	FR->setAddESyst(0.5);
 
+	// ATTENTION: these flat ratios are without EWK subtraction
 	FR->setMFRatio(mufratio_data, mufratio_data_e); // set error to pure statistical of ratio
 	FR->setEFRatio(elfratio_data, elfratio_data_e);
 	FR->setMPRatio(mupratio_data, mupratio_data_e);
 	FR->setEPRatio(elpratio_data, elpratio_data_e);
+
+//	// using this numbers from pyplotter with EWK subtraction
+//	FR->setMFRatio(0.041012, 0.001161);
+//	FR->setEFRatio(0.053332, 0.001266);
+//	FR->setMPRatio(0.803717, 0.001196);
+//	FR->setEPRatio(0.750020, 0.001478);
 
 	FR->setMMNtl(nt2_mm, nt10_mm, nt01_mm, nt0_mm);
 	FR->setEENtl(nt2_ee, nt10_ee, nt01_ee, nt0_ee);
