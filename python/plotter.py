@@ -116,6 +116,7 @@ class plotter :
 		self.read_ngen()
 
 		# selections
+		loosesel = sel.selection(name = 'loosesel', minNjets = 2)
 		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
 		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
 		#print presel.get_selectionString()
@@ -159,6 +160,7 @@ class plotter :
 		resulttree = resultfile.Get('Results')
 		self.plot_predictions(resulttree, finalsel)
 		self.plot_predictions(resulttree, presel)
+#		self.plot_predictions(resulttree, loosesel)
 		return
 
 
@@ -170,7 +172,7 @@ class plotter :
 		nosystfile = ROOT.TFile.Open(nosyst_path, 'READ')
 		nosysttree = nosystfile.Get('SigEvents')
 
-		self.make_IntPredictions(presel, nosysttree, True)
+		self.make_IntPredictions(loosesel, nosysttree, True)
 
 		return
 
@@ -368,7 +370,7 @@ class plotter :
 		n_data = h_ntight_data.Integral(bin_min, bin_max)
 		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
 
-		print '%s SF = data / (WJets + DYJets) = %f / %f = %f' % (chan_str, n_data, n_mc, n_data/n_mc)
+		print '         %s SF = data / (WJets + DYJets) = %f / %f = %f' % (chan_str, n_data, n_mc, n_data/n_mc)
 
 		return n_data / n_mc
 
@@ -1133,8 +1135,8 @@ class plotter :
 
 		var = 'HT'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  5; histo_settings[var]['min'] = 100.; histo_settings[var]['max'] = 600.;
 		var = 'MET'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  6; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 120.;
-		var = 'NJ'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  3; histo_settings[var]['min'] =   3.; histo_settings[var]['max'] =   6.;
-		var = 'NbJmed'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  3; histo_settings[var]['min'] =   1.; histo_settings[var]['max'] =   4.;
+		var = 'NJ'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  4; histo_settings[var]['min'] =   2.; histo_settings[var]['max'] =   6.;
+		var = 'NbJmed'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  4; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =   4.;
 		var = 'pT1'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  9; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 200.;
 		var = 'pT2'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  8; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 100.;
 		var = 'Mll'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 14; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 300.;
@@ -1354,7 +1356,7 @@ class plotter :
 		histofile.Close()
 
 		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, 1)
-		pl.save_plot(histos, var, sel.name)
+		pl.save_plot(histos, var, sel.name, '_ALL')
 #		raw_input('ok? ')
 
 
