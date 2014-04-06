@@ -446,21 +446,6 @@ class plotter :
 		foo = 0
 
 
-	def storeWeightedPred(self) :
-		foo = 0
-		# only nsst, nssl, nzt, nzl for each sample and channel is needed in calculateRatio -> just read those from file and don't loop over tree
-
-		## if(chan != ElMu){
-		##         int muelswitch = -1;
-		##         if      (chan == Muon) muelswitch = 0;
-		## 	else if (chan == Elec) muelswitch = 1;
-		## 	S->numbers[reg][chan].nsst = S->tlratios[muelswitch].fntight->GetEntries();
-		## 	S->numbers[reg][chan].nssl = S->tlratios[muelswitch].fnloose->GetEntries();
-		## 	S->numbers[reg][chan].nzt  = S->tlratios[muelswitch].pntight->GetEntries();
-		## 	S->numbers[reg][chan].nzl  = S->tlratios[muelswitch].pnloose->GetEntries();
-		## }
-
-
 	def make_IntPredictions(self, sel, tree, write_ResTree = False) :
 		'''oberservation and prediction for different selections'''
 
@@ -1157,40 +1142,11 @@ class plotter :
 		var = 'minMT' ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 20; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 400.;
 		var = 'M3'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 12; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 600.;
 		var = 'Int'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  3; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =   3.;
-		var = 'CFChan'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  6; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =   6.;
-		var = 'Charge'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  2; histo_settings[var]['min'] =  -2.; histo_settings[var]['max'] =   2.;
+		var = 'CFChan'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  6; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =   6.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
+		var = 'Charge'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  2; histo_settings[var]['min'] =  -2.; histo_settings[var]['max'] =   2.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 
 		for var, settings in histo_settings.iteritems() :
 			self.plot_ObsPred(tree, sel, var, settings)
-
-		return
-
-		nbins = 6
-		min = 0.
-		max = 600.
-		var = 'HT'
-		nbins = 15
-		min = 0.
-		max = 300.
-		var = 'Mll'
-		nbins = 3
-		min = 0.
-		max = 3.
-		var = 'Flavor'
-		nbins = 6
-		min = 0.
-		max = 6.
-		var = 'CFChan'
-#		nbins = 3
-#		min = 1.
-#		max = 4.
-#		var = 'NbJmed'
-		var = 'pT1'
-		nbins = 29
-		min = 20.
-		max = 600.
-
-		self.plot_ObsPred(tree, sel, var, nbins, min, max)
 
 
 	def plot_ObsPred(self, tree, sel, var, settings) :
@@ -1199,84 +1155,10 @@ class plotter :
 		min   = settings['min'  ]
 		max   = settings['max'  ]
 
-		# remove this again
-		dummy_histos = False
-
 		histos = {}
 
 		chargeFactor = 1.
 		if sel.charge != 0 : chargeFactor = 0.5
-
-		if dummy_histos :
-			if   var == 'pT1'   : var_str = 'TMath::Max(pT1,pT2)'
-			elif var == 'pT2'   : var_str = 'TMath::Min(pT1,pT2)'
-			elif var == 'minMT' : var_str = 'TMath::Min(MTLep1,MTLep2)'
-			elif var == 'Int'   : var_str = 'Flavor'
-			else                : var_str = var
-
-			h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
-			h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
-			h_btag_name   = 'h_btag_'   + var; histos['btag'  ] = ROOT.TH1D(h_btag_name  , h_btag_name  , nbins, min, max)
-			h_rare_name  = 'h_rare_'  + var; histos['rare' ] = ROOT.TH1D(h_rare_name , h_rare_name , nbins, min, max)
-			h_ttz_name   = 'h_ttz_'   + var; histos['ttz'  ] = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
-			h_bgtot_name = 'h_bgtot_' + var; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
-			h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
-
-			# getting histograms from results tree
-			tree.Draw(var_str+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_btag_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-
-			# adding background predictions
-			histos['bgtot'].Add(histos['fake' ])
-			histos['bgtot'].Add(histos['btag'])
-			histos['bgtot'].Add(histos['rare' ])
-
-			# adding predictions
-			histos['pred'].Add(histos['fake' ])
-			histos['pred'].Add(histos['btag'])
-			histos['pred'].Add(histos['rare' ])
-			histos['pred'].Add(histos['ttz'  ])
-
-			histofile = ROOT.TFile.Open(self.path + 'SSDLHistos_3L.root', 'RECREATE')
-			histofile.cd()
-			for process, histo in histos.iteritems() :
-				histo.Write()
-			histofile.Close()
-
-			h_obs_name   = 'h_obs_'   + var; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
-			h_fake_name  = 'h_fake_'  + var; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
-			h_zz_name   = 'h_zz_'   + var; histos['zz'  ] = ROOT.TH1D(h_zz_name  , h_zz_name  , nbins, min, max)
-			h_rare_name  = 'h_rare_'  + var; histos['rare' ] = ROOT.TH1D(h_rare_name , h_rare_name , nbins, min, max)
-			h_ttz_name   = 'h_ttz_'   + var; histos['ttz'  ] = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
-			h_bgtot_name = 'h_bgtot_' + var; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
-			h_pred_name  = 'h_pred_'  + var; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
-
-			# getting histograms from results tree
-			tree.Draw(var_str+'>>'+h_obs_name  , 'Weight*(ObsPred == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_fake_name , 'Weight*(ObsPred == 1 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_zz_name  , 'Weight*(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_rare_name , 'Weight*(ObsPred == 6 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-			tree.Draw(var_str+'>>'+h_ttz_name  , 'Weight*(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-
-			# adding background predictions
-			histos['bgtot'].Add(histos['fake' ])
-			histos['bgtot'].Add(histos['zz'])
-			histos['bgtot'].Add(histos['rare' ])
-
-			# adding predictions
-			histos['pred'].Add(histos['fake' ])
-			histos['pred'].Add(histos['zz'])
-			histos['pred'].Add(histos['rare' ])
-			histos['pred'].Add(histos['ttz'  ])
-
-			histofile = ROOT.TFile.Open(self.path + 'SSDLHistos_4L.root', 'RECREATE')
-			histofile.cd()
-			for process, histo in histos.iteritems() :
-				histo.Write()
-			histofile.Close()
 
 		# loop over results tree to get names of rare samples
 		rares = []
@@ -1312,6 +1194,7 @@ class plotter :
 		tree.Draw(var_str+'>>'+h_ttz_name  , '(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ttw_name  , '(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 
+		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
 		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
 		h_fake_name  = 'h_fake_'  + var + sel.name; histos['fake' ] = ROOT.TH1D(h_fake_name , h_fake_name , nbins, min, max)
 		h_chmid_name = 'h_chmid_' + var + sel.name; histos['chmid'] = ROOT.TH1D(h_chmid_name, h_chmid_name, nbins, min, max)
@@ -1388,17 +1271,6 @@ class plotter :
 		FR.setNToyMCs(100)
 		FR.setAddESyst(self.FakeESyst)
 
-		# numbers from SSDLPlotter.cc just to check
-#		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
-#		mupratio_data = 0.804292; mupratio_data_e = 0.001193;
-#		elfratio_data = 0.069959; elfratio_data_e = 0.001419;
-#		elpratio_data = 0.750609; elpratio_data_e = 0.001473;
-#		FR.setMFRatio(mufratio_data, mufratio_data_e) # set error to pure statistical of ratio
-#		FR.setEFRatio(elfratio_data, elfratio_data_e)
-#		FR.setMPRatio(mupratio_data, mupratio_data_e)
-#		FR.setEPRatio(elpratio_data, elpratio_data_e)
-
-		# TODO: use these (ratios with ewk subtraction)
 		FR.setMFRatio(self.fpr.MufRatio, self.fpr.MufRatioE) # set error to pure statistical of ratio
 		FR.setEFRatio(self.fpr.ElfRatio, self.fpr.ElfRatioE)
 		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
@@ -1420,6 +1292,7 @@ class plotter :
 			fake_syst2 = self.FakeESyst2 * fake_nPass*fake_nPass
 			fake_stat2 = FR.getTotEStat() * FR.getTotEStat()
 			err2 += fake_syst2 + fake_stat2
+#			print 'bin %d: %f +/- %f (syst) +/- %f (stat)' % (bin, fake_nPass, math.sqrt(fake_syst2), math.sqrt(fake_stat2))
 
 			# charge mis ID
 			nt2_em_BB_os = h_nt2_em_BB_os.GetBinContent(bin)
@@ -1435,15 +1308,8 @@ class plotter :
 			nt2_em_chmid    = chargeFactor * (fbb * nt2_em_BB_os + fee * nt2_em_EE_os)
 			nt2_em_chmid_e1 = chargeFactor * math.sqrt( fbb*fbb * FR.getEStat2(nt2_em_BB_os)  + fee*fee*FR.getEStat2(nt2_em_EE_os) )
 			nt2_em_chmid_e2 = chargeFactor * math.sqrt( fbbE*fbbE * nt2_em_BB_os*nt2_em_BB_os + feeE*feeE * nt2_em_EE_os*nt2_em_EE_os + 0.25*self.ChMisESyst2*nt2_em_chmid*nt2_em_chmid/(chargeFactor*chargeFactor) )
-
-#			print bin, histos['chmid'].GetBinContent(bin), nt2_em_chmid + nt2_ee_chmid
-
-			#	res[ch_str]['al'].cmid     = nt2_ee_chmid + nt2_em_chmid
-			#	res[ch_str]['em'].cmid     = nt2_em_chmid
-			#	res[ch_str]['ee'].cmid     = nt2_ee_chmid
 			err2 += nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2
-			#	res[ch_str]['em'].cmid_err = math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
-			#	res[ch_str]['ee'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
+#			print bin, histos['chmid'].GetBinContent(bin), nt2_em_chmid + nt2_ee_chmid
 
 			# wz
 			scale = self.lumi / self.samples[wz_str].getLumi()
@@ -1487,36 +1353,9 @@ class plotter :
 			histo.Write()
 		histofile.Close()
 
-		pl = ttvplot.ttvplot(self.path + 'test/%s/'%sel.name, '2L')
-#		pl = ttvplot.ttvplot()
+		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, 1)
 		pl.save_plot(histos, var, sel.name)
 #		raw_input('ok? ')
-
-
-	def make_DiffPredictions(self, selections) :
-		'''plot observed and predicted distributions of various variables'''
-
-		# create subdirectories for selections
-
-		# init histograms
-		histos = {}
-		for selection in selections :
-			histos[selection.name] = []
-			histos[selection.name].append(('pt1', ROOT.TH1D(selection.name + '_pt1', 'Leading Lepton p_{T} (GeV)', 28, 20., 300.)))
-
-		##########
-		# RATIOS #
-		##########
-
-		# fake ratios
-
-		# charge mis ID probability
-
-		# loop over sigtree
-		for event in self.sigtree :
-			print '[status] looping over sigtree..'
-
-			
 
 
 	def make_KinPlots(self) :
