@@ -571,9 +571,9 @@ class plotter :
 					self.ResTree_Flavor   [0] = event.Flavor - 3
 				self.ResTree_Charge   [0] = event.Charge
 				if event.Charge > 0 :
-					self.ResTree_CFChan   [0] = event.Flavor
+					self.ResTree_CFChan   [0] = self.ResTree_Flavor[0]
 				else :
-					self.ResTree_CFChan   [0] = event.Flavor + 3
+					self.ResTree_CFChan   [0] = self.ResTree_Flavor[0] + 3
 				self.ResTree_TLCat    [0] = event.TLCat
 #				self.ResTree_ZVeto    [0] = event.PassZVeto
 				self.ResTree_HT       [0] = event.HT
