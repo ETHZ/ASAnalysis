@@ -155,14 +155,6 @@ class plotter :
 #		self.h2_ElpRatio.Draw('colztext')
 #
 
-		# plots results from results tree
-		resultfile = ROOT.TFile.Open(self.path + 'SSDLResults.root', 'READ')
-		resulttree = resultfile.Get('Results')
-		self.plot_predictions(resulttree, finalsel)
-		self.plot_predictions(resulttree, presel)
-#		self.plot_predictions(resulttree, loosesel)
-		return
-
 
 		# produce results tree
 		nosyst_path = self.path + 'SSDLYields_Normal.root'
@@ -174,6 +166,14 @@ class plotter :
 
 		self.make_IntPredictions(loosesel, nosysttree, True)
 
+		#return
+
+		# plots results from results tree
+		resultfile = ROOT.TFile.Open(self.path + 'SSDLResults.root', 'READ')
+		resulttree = resultfile.Get('Results')
+		self.plot_predictions(resulttree, finalsel)
+		self.plot_predictions(resulttree, presel)
+		self.plot_predictions(resulttree, loosesel)
 		return
 
 
