@@ -65,7 +65,7 @@ class ttvplot :
 		return ''
 
 
-	def save_plot(self, histos, var, selname = '') :
+	def save_plot(self, histos, var, selname = '', prefix = '') :
 		'''save plot with observation and predictions'''
 
 		if selname != '' : selname += '_'
@@ -219,8 +219,8 @@ class ttvplot :
 		self.draw_cmsLine()
 #		raw_input('ok? ')
 
-		canvas.Print(self.path + self.chan + '_' + var + '.pdf')
-		canvas.Print(self.path + self.chan + '_' + var + '.png')
+		canvas.Print('%sObsPred%s_%s.pdf' % (self.path, prefix, var))
+		canvas.Print('%sObsPred%s_%s.png' % (self.path, prefix, var))
 #		raw_input('ok? ')
 
 
