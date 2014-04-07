@@ -69,6 +69,7 @@ class ttvplot :
 		'''save plot with observation and predictions'''
 
 		if selname != '' : selname += '_'
+		if prefix  != '' : prefix = '_' + prefix
 
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
 
@@ -166,6 +167,7 @@ class ttvplot :
 		hs_pred.GetYaxis().SetTitleSize(0.04)
 		hs_pred.GetXaxis().SetLabelSize(0.04)
 		hs_pred.GetYaxis().SetLabelSize(0.04)
+		#hs_pred.GetXaxis().SetNdivisions(206)
 		if var == 'Int' :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
 				if bin == 1 : binlabel = '#mu#mu'
@@ -242,8 +244,9 @@ class ttvplot :
 		latex.SetTextSize(0.04)
 		latex.SetTextAlign(13)
 		if self.cms_label == 0 : cms_str = 'CMS'
-		if self.cms_label == 1 : cms_str = 'CMS Preliminary'
-		if self.cms_label == 2 : cms_str = 'CMS Simulation'
+		if self.cms_label == 1 : cms_str = 'CMS Simulation'
+		if self.cms_label == 2 : cms_str = 'CMS Preliminary'
+		if self.cms_label == 3 : cms_str = 'CMS Simulation Preliminary'
 		latex.DrawLatex(0.15, 0.93, cms_str)
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
