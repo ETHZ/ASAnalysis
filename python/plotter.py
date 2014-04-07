@@ -13,6 +13,7 @@ import copytree
 import os
 import numpy as np
 import ttvplot
+import config
 
 
 class plotter :
@@ -116,13 +117,17 @@ class plotter :
 		self.read_ngen()
 
 		# selections
+		sels = {}
 		loosesel = sel.selection(name = 'loosesel', minNjets = 2)
+		sels['2JnobJ'] = sel.selection(name = '2JnobJ', minNjets = 2, maxNbjetsM = 0, flavor = 2)
 		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
+		presel_ee = sel.selection(name = 'presel_ee', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, flavor = 2)
 		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
 		#print presel.get_selectionString()
 		self.selections[presel.name] = presel
 
 		self.chmid_sf = 1.62
+#		self.chmid_sf = 1.
 
 		EWK_SF = {}
 		EWK_SF['el']   = self.get_EWK_SF('el')
@@ -171,9 +176,11 @@ class plotter :
 		# plots results from results tree
 		resultfile = ROOT.TFile.Open(self.path + 'SSDLResults.root', 'READ')
 		resulttree = resultfile.Get('Results')
-		self.plot_predictions(resulttree, finalsel)
-		self.plot_predictions(resulttree, presel)
-		self.plot_predictions(resulttree, loosesel)
+#		self.plot_predictions(resulttree, finalsel)
+#		self.plot_predictions(resulttree, presel)
+#		self.plot_predictions(resulttree, loosesel)
+		self.plot_predictions(resulttree, presel_ee)
+		self.plot_predictions(resulttree, sels['2JnobJ'])
 		return
 
 
@@ -1128,27 +1135,26 @@ class plotter :
 
 
 	def plot_predictions(self, tree, sel) :
+		vars = []
+		vars.append('HT'    )
+		vars.append('MET'   )
+		vars.append('NJ'    )
+		vars.append('NbJmed')
+		vars.append('pT1'   )
+		vars.append('pT2'   )
+		vars.append('Mll'   )
+		vars.append('NVrtx' )
+		vars.append('minMT' )
+		vars.append('M3'    )
+		vars.append('Int'   )
+		vars.append('CFChan')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
+		vars.append('Charge')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 
-		print sel
+		print '[status] getting plots from tree %s for' % (tree.GetName()), vars
 
-		histo_settings = {}
-
-		var = 'HT'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  5; histo_settings[var]['min'] = 100.; histo_settings[var]['max'] = 600.;
-		var = 'MET'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  6; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 120.;
-		var = 'NJ'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  4; histo_settings[var]['min'] =   2.; histo_settings[var]['max'] =   6.;
-		var = 'NbJmed'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  4; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =   4.;
-		var = 'pT1'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  9; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 200.;
-		var = 'pT2'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  8; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 100.;
-		var = 'Mll'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 14; histo_settings[var]['min'] =  20.; histo_settings[var]['max'] = 300.;
-		var = 'NVrtx' ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 40; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =  40.;
-		var = 'minMT' ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 20; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 400.;
-		var = 'M3'    ; histo_settings[var] = {}; histo_settings[var]['nbins'] = 12; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] = 600.;
-		var = 'Int'   ; histo_settings[var] = {}; histo_settings[var]['nbins'] =  3; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =   3.;
-		var = 'CFChan'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  6; histo_settings[var]['min'] =   0.; histo_settings[var]['max'] =   6.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
-		var = 'Charge'; histo_settings[var] = {}; histo_settings[var]['nbins'] =  2; histo_settings[var]['min'] =  -2.; histo_settings[var]['max'] =   2.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
-
-		for var, settings in histo_settings.iteritems() :
-			self.plot_ObsPred(tree, sel, var, settings)
+		for var in vars :
+			histo_bins = config.get_histoBins(var, sel)
+			self.plot_ObsPred(tree, sel, var, histo_bins)
 
 
 	def plot_ObsPred(self, tree, sel, var, settings) :
@@ -1355,8 +1361,16 @@ class plotter :
 			histo.Write()
 		histofile.Close()
 
-		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, 1)
-		pl.save_plot(histos, var, sel.name, '_ALL')
+		cms_label = 2
+		if sel.flavor == -2 : prefix = 'OS'
+		if sel.flavor == -1 : prefix = 'ALL'
+		if sel.flavor ==  0 : prefix = 'MM'
+		if sel.flavor ==  1 : prefix = 'EM'
+		if sel.flavor ==  2 : prefix = 'EE'
+#		if sel.name == 'final' : cms_label = 0
+		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label)
+		pl.save_plot(histos, var, sel.name, prefix)
+#		raw_input('ok? ')
 #		raw_input('ok? ')
 
 
