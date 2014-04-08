@@ -883,6 +883,14 @@ class plotter :
 				# store ttW/Z mc yields
 				res[ch_str][chan].set_ttwzPredictions()
 
+		#####################
+		# Total backgrounds #
+		#####################
+
+		for ch_str in res :
+			for chan in res[ch_str] :
+				res[ch_str][chan].set_totBackground()
+
 		##########################################
 		# print all observations and predictions #
 		##########################################

@@ -91,7 +91,8 @@ class result :
 		self.ttwz_err     = math.sqrt(self.ttw_err*self.ttw_err + self.ttz_err*self.ttz_err)
 		self.ttwz_staterr = math.sqrt(self.ttw_staterr*self.ttw_staterr + self.ttz_staterr*self.ttz_staterr)
 		self.ttwz_Nmc     = self.ttw_Nmc + self.ttz_Nmc
-#
-#
-#	def __str__(self) :
-#		observation = 'mm: %3d | em: %3d | ee: %3d' % (self.obs_mm, self.obs_em, self.obs_ee)
+
+
+	def set_totBackground(self) :
+		self.tot = self.fake + self.cmid + self.rare + self.wz + self.ttz
+		self.tot_err = math.sqrt(self.fake_err*self.fake_err + self.cmid_err*self.cmid_err + self.rare_err*self.rare_err + self.wz_err*self.wz_err + self.ttz_err*self.ttz_err)
