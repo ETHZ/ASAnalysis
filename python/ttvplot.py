@@ -30,7 +30,7 @@ class ttvplot :
 		self.process_names['obs'  ] = 'Observed'
 		self.process_names['fake' ] = 'Non-prompt lepton'
 		self.process_names['chmid'] = 'Charge MisID'
-		self.process_names['rare' ] = 'Irreducible BG'
+		self.process_names['rare' ] = 'Irreducible'
 		self.process_names['wz'   ] = 'WZ'
 		self.process_names['ttz'  ] = 't#bar{t}Z'
 		self.process_names['ttw'  ] = 't#bar{t}W'
@@ -43,9 +43,9 @@ class ttvplot :
 		self.var_names['HT'    ] = 'H_{T} [GeV]'
 		self.var_names['MET'   ] = 'Particle Flow E_{T}^{miss} [GeV]'
 		self.var_names['NJ'    ] = 'Jet Multiplicity'
-		self.var_names['NbJmed'] = 'b-Jet Multiplicity (medium)'
+		self.var_names['NbJmed'] = 'b-Jet Multiplicity (CSVM)'
 		self.var_names['pT1'   ] = 'Leading Lepton p_{T} [GeV]'
-		self.var_names['pT2'   ] = 'Subleading Lepton p_{T} [GeV]'
+		self.var_names['pT2'   ] = 'Sub-Leading Lepton p_{T} [GeV]'
 		self.var_names['Int'   ] = ''
 		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
 		self.var_names['NVrtx' ] = 'N_{Vertices}'
@@ -65,7 +65,7 @@ class ttvplot :
 		return ''
 
 
-	def save_plot(self, histos, var, selname = '', prefix = '') :
+	def save_plot(self, histos, var, selname = '', prefix = '', charge_str = '') :
 		'''save plot with observation and predictions'''
 
 		if selname != '' : selname += '_'
@@ -170,9 +170,9 @@ class ttvplot :
 		#hs_pred.GetXaxis().SetNdivisions(206)
 		if var == 'Int' :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
-				if bin == 1 : binlabel = '#mu#mu'
-				if bin == 2 : binlabel = 'e#mu'
-				if bin == 3 : binlabel = 'ee'
+				if bin == 1 : binlabel = '#mu'+charge_str+'#mu'+charge_str
+				if bin == 2 : binlabel = 'e'+charge_str+'#mu'+charge_str
+				if bin == 3 : binlabel = 'e'+charge_str+'e'+charge_str
 				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
 				hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif 'NJ' in var or 'NbJ' in var :

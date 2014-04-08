@@ -123,6 +123,8 @@ class plotter :
 		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
 		presel_ee = sel.selection(name = 'presel_ee', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, flavor = 2)
 		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
+		sels['final++'] = sel.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
+		sels['final--'] = sel.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
 		#print presel.get_selectionString()
 		self.selections[presel.name] = presel
 
@@ -161,26 +163,28 @@ class plotter :
 #
 
 
-		# produce results tree
-		nosyst_path = self.path + 'SSDLYields_Normal.root'
-		if not os.path.exists(nosyst_path) :
-			copytree.copytree(self.path + 'SSDLYields.root', nosyst_path, 'SigEvents', 'SystFlag == 0 && (SType < 3 || TLCat == 0) && (SType < 3 || Flavor < 3) && (SType < 3 || SType == 15)')
-
-		nosystfile = ROOT.TFile.Open(nosyst_path, 'READ')
-		nosysttree = nosystfile.Get('SigEvents')
-
-		self.make_IntPredictions(loosesel, nosysttree, True)
+#		# produce results tree
+#		nosyst_path = self.path + 'SSDLYields_Normal.root'
+#		if not os.path.exists(nosyst_path) :
+#			copytree.copytree(self.path + 'SSDLYields.root', nosyst_path, 'SigEvents', 'SystFlag == 0 && (SType < 3 || TLCat == 0) && (SType < 3 || Flavor < 3) && (SType < 3 || SType == 15)')
+#
+#		nosystfile = ROOT.TFile.Open(nosyst_path, 'READ')
+#		nosysttree = nosystfile.Get('SigEvents')
+#
+#		self.make_IntPredictions(loosesel, nosysttree, True)
 
 		#return
 
 		# plots results from results tree
 		resultfile = ROOT.TFile.Open(self.path + 'SSDLResults.root', 'READ')
 		resulttree = resultfile.Get('Results')
-#		self.plot_predictions(resulttree, finalsel)
+		self.plot_predictions(resulttree, finalsel)
 #		self.plot_predictions(resulttree, presel)
 #		self.plot_predictions(resulttree, loosesel)
-		self.plot_predictions(resulttree, presel_ee)
-		self.plot_predictions(resulttree, sels['2JnobJ'])
+#		self.plot_predictions(resulttree, presel_ee)
+#		self.plot_predictions(resulttree, sels['2JnobJ'])
+#		self.plot_predictions(resulttree, sels['final++'])
+#		self.plot_predictions(resulttree, sels['final--'])
 		return
 
 
@@ -1150,7 +1154,7 @@ class plotter :
 		vars.append('CFChan')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 		vars.append('Charge')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 
-		print '[status] getting plots from tree %s for' % (tree.GetName()), vars
+		print '[status] getting plots from %s tree for' % (tree.GetName()), vars
 
 		for var in vars :
 			histo_bins = config.get_histoBins(var, sel)
@@ -1367,9 +1371,13 @@ class plotter :
 		if sel.flavor ==  0 : prefix = 'MM'
 		if sel.flavor ==  1 : prefix = 'EM'
 		if sel.flavor ==  2 : prefix = 'EE'
-#		if sel.name == 'final' : cms_label = 0
+		charge_str = ''
+		if sel.charge != 0 :
+			if sel.charge > 0 : charge_str = '^{+}'
+			if sel.charge < 0 : charge_str = '^{-}'
+		if sel.name == 'final' : cms_label = 0
 		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label)
-		pl.save_plot(histos, var, sel.name, prefix)
+		pl.save_plot(histos, var, sel.name, prefix, charge_str)
 #		raw_input('ok? ')
 #		raw_input('ok? ')
 
