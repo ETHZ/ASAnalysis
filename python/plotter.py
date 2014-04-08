@@ -191,7 +191,7 @@ class plotter :
 
 
 		results = {}
-		resultspath = self.path + '/IntPredictions/results.pkl'
+		resultspath = self.path + 'IntPredictions/results.pkl'
 
 		sels = {}
 
@@ -544,7 +544,7 @@ class plotter :
 		################
 
 		if write_ResTree :
-			self.results_file = ROOT.TFile(self.path + '/SSDLResults.root', 'RECREATE')
+			self.results_file = ROOT.TFile(self.path + 'SSDLResults.root', 'RECREATE')
 			self.results_tree = ROOT.TTree('Results', 'ResultsTree')
 			self.book_resultsTree()
 
@@ -984,7 +984,7 @@ class plotter :
 	def make_datacard(self, results, chan, charge) :
 
 		datacard_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
-		datacard_path = self.path + '/datacards/'
+		datacard_path = self.path + 'datacards/'
 		helper.mkdir(datacard_path)
 		print '[status] writing %s' % datacard_name
 		with open(datacard_path + datacard_name, 'w') as file :
@@ -1152,7 +1152,7 @@ class plotter :
 	def make_ObsPredTable(self, results) :
 #		table_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
 		table_name = 'ObsPredTable.tex'
-		table_path = self.path + '/test/'
+		table_path = self.path + 'IntPredictions/'
 		helper.mkdir(table_path)
 		pl = ttvplot.ttvplot(table_path, '2L', TeX_switch = True)
 		print '[status] writing %s' % table_name
