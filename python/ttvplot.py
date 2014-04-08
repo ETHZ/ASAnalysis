@@ -5,7 +5,7 @@ import os, sys
 
 class ttvplot :
 
-	def __init__(self, path, chan, lumi = 19500., cms_label = 0) :
+	def __init__(self, path, chan, lumi = 19500., cms_label = 0, TeX_switch = False) :
 		self.path = path
 		if not os.path.exists(self.path) :
 			os.makedirs(self.path)
@@ -28,7 +28,7 @@ class ttvplot :
 		# process names
 		self.process_names = {}
 		self.process_names['obs'  ] = 'Observed'
-		self.process_names['fake' ] = 'Non-prompt lepton'
+		self.process_names['fake' ] = 'Non-prompt Lepton'
 		self.process_names['chmid'] = 'Charge MisID'
 		self.process_names['rare' ] = 'Irreducible'
 		self.process_names['wz'   ] = 'WZ'
@@ -37,6 +37,9 @@ class ttvplot :
 		self.process_names['bgtot'] = 'Backgrounds'
 		self.process_names['btag' ] = 'Non-top'
 		self.process_names['zz'   ] = 'ZZ'
+		if TeX_switch is True :
+			self.process_names['ttz'  ] = '\\ttbar{}Z'
+			self.process_names['ttw'  ] = '\\ttbar{}W'
 
 		# variable names
 		self.var_names = {}
@@ -63,6 +66,12 @@ class ttvplot :
 		if var in self.var_names.keys() :
 			return self.var_names[var]
 		return ''
+
+
+	def get_processName(self, process) :
+		if process in self.process_names.keys() :
+			return self.process_names[process]
+		return '?'
 
 
 	def save_plot(self, histos, var, selname = '', prefix = '', charge_str = '') :
