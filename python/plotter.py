@@ -223,6 +223,8 @@ class plotter :
 
 		tables.make_ObsPredTable(self.path, results['Normal'])
 
+		tables.make_SystTable(self.path, results, 'al', 'al')
+
 #
 #		raw_input('ok? ')
 

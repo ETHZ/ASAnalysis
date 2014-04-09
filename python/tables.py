@@ -140,3 +140,60 @@ def make_ObsPredTable(path, results) :
 		file.write('\\hline \\hline\n')
 		file.write('\\end{tabular}\n')
 		file.write('\n\n')
+
+
+def make_SystTable(path, results, chan, charge) :
+	'''
+	takes a nested dictionary of result objects as input:
+	results[SYSTFLAG][CHARGE][FLAVOR]
+
+	writes systematics table
+	'''
+
+	channel = 'Int'
+	table_name = 'SystTable'+channel+'.tex'
+	table_path = path + 'IntPredictions/'
+	helper.mkdir(table_path)
+	print '[status] writing %s' % table_name
+	with open(table_path + table_name, 'w') as file :
+		timestamp = time.asctime()
+		file.write('%!TEX root = ../AN-12-445.tex\n')
+		file.write('%=========================================================================================\n')
+		file.write('% Systematics table for ttW analysis, same-sign channel, subchannels\n')
+		file.write('% Generated on: ' + str(timestamp) + '\n')
+		file.write('%-----------------------------------------------------------------------------------------\n')
+		file.write('\n\n')
+		file.write('\\begin{tabular}{l|r@{$\\,/\\,$}l}\n')
+		file.write('\\hline\\hline\n')
+		file.write('Systematic & \\multicolumn{2}{c}{$\\Delta\\epsilon$ [\\%]} \\\\\n')
+		file.write('\\hline\n')
+		file.write('JES up/down            & %6.1f & %6.1f \\\\\n' % (
+			100. * (results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+			100. * (results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+			))
+		file.write('JER up/down            & %6.1f & %6.1f \\\\\n' % (
+			100. * (results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+			100. * (results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+			))
+		file.write('b-tag up/down          & %6.1f & %6.1f \\\\\n' % (
+			100. * (results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+			100. * (results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+			))
+		file.write('Lepton scale up/down   & %6.1f & %6.1f \\\\\n' % (
+			100. * (results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+			100. * (results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+			))
+		file.write('Muon scale up/down     & %6.1f & %6.1f \\\\\n' % (
+			100. * (results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+			100. * (results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+			))
+		file.write('Electron scale up/down & %6.1f & %6.1f \\\\\n' % (
+			100. * (results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+			100. * (results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+			))
+		file.write('Pileup up/down         & %6.1f & %6.1f \\\\\n' % (
+			100. * (results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+			100. * (results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+			))
+		file.write('\\hline\\hline')
+		file.write('\\end{tabular}')
