@@ -102,7 +102,9 @@ class ttvplot :
 			hs_pred.Add(histos['ttz'  ])
 
 		# set minimum and maximum
-		maximum = 1.8 * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
+		scale = 1.8
+		if var == 'Int' : scale = 2.4
+		maximum = scale * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
 		hs_pred.SetMaximum(maximum)
 		hs_pred.SetMinimum(0.)
 
