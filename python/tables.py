@@ -167,33 +167,62 @@ def make_SystTable(path, results, chan, charge) :
 		file.write('\\hline\\hline\n')
 		file.write('Systematic & \\multicolumn{2}{c}{$\\Delta\\epsilon$ [\\%]} \\\\\n')
 		file.write('\\hline\n')
-		file.write('JES up/down            & %6.1f & %6.1f \\\\\n' % (
-			100. * (results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-			100. * (results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
-			))
-		file.write('JER up/down            & %6.1f & %6.1f \\\\\n' % (
-			100. * (results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-			100. * (results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
-			))
-		file.write('b-tag up/down          & %6.1f & %6.1f \\\\\n' % (
-			100. * (results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-			100. * (results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
-			))
-		file.write('Lepton scale up/down   & %6.1f & %6.1f \\\\\n' % (
-			100. * (results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-			100. * (results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
-			))
-		file.write('Muon scale up/down     & %6.1f & %6.1f \\\\\n' % (
-			100. * (results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-			100. * (results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
-			))
-		file.write('Electron scale up/down & %6.1f & %6.1f \\\\\n' % (
-			100. * (results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-			100. * (results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
-			))
-		file.write('Pileup up/down         & %6.1f & %6.1f \\\\\n' % (
-			100. * (results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-			100. * (results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
-			))
+
+		if 'JetUp' in results and 'JetDown' in results :
+			file.write('JES up/down            & %6.1f & %6.1f \\\\\n' % (
+				100. * (results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				))
+		else :
+			print '[WARNING] JetUp/Down systematic not found!'
+
+		if 'JetSmearUp' in results and 'JetSmearDown' in results :
+			file.write('JER up/down            & %6.1f & %6.1f \\\\\n' % (
+				100. * (results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				))
+		else :
+			print '[WARNING] JetSmearUp/Down systematic not found!'
+
+		if 'BUp' in results and 'BDown' in results :
+			file.write('b-tag up/down          & %6.1f & %6.1f \\\\\n' % (
+				100. * (results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				))
+		else :
+			print '[WARNING] BUp/Down systematic not found!'
+
+		if 'LepUp' in results and 'LepDown' in results :
+			file.write('Lepton scale up/down   & %6.1f & %6.1f \\\\\n' % (
+				100. * (results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				))
+		else :
+			print '[WARNING] LepUp/Down systematic not found!'
+
+		if 'MuUp' in results and 'MuDown' in results :
+			file.write('Muon scale up/down     & %6.1f & %6.1f \\\\\n' % (
+				100. * (results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				))
+		else :
+			print '[WARNING] MuUp/Down systematic not found!'
+
+		if 'ElUp' in results and 'ElDown' in results :
+			file.write('Electron scale up/down & %6.1f & %6.1f \\\\\n' % (
+				100. * (results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				))
+		else :
+			print '[WARNING] ElUp/Down systematic not found!'
+
+		if 'PileupUp' in results and 'PileupDown' in results :
+			file.write('Pileup up/down         & %6.1f & %6.1f \\\\\n' % (
+				100. * (results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				))
+		else :
+			print '[WARNING] PileupUp/Down systematic not found!'
+
 		file.write('\\hline\\hline')
 		file.write('\\end{tabular}')
