@@ -29,17 +29,6 @@ class plotter :
 		self.sigtree = self.ssdlfile.Get('SigEvents')
 		print '[status] loaded SigEventsTree with %d events' % (self.sigtree.GetEntries())
 
-#		self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'READ')
-#		if self.skimfile == None :
-#			print '[status] creating skimmed tree file..'
-#			self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'RECREATE')
-#			self.skimfile.cd()
-#			self.skimtree = self.sigtree.CopyTree('Flavor < 3 && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0)') # Only same-sign, if MC only tight-tight. Only MC for syst studies.
-#			self.skimtree.AutoSave()
-#			self.skimfile.Write()
-#		else :
-#			self.skimtree = self.skimfile.Get('SigEvents')
-
 		ROOT.gSystem.Load('./FakeRatios.so')
 
 		# samples
@@ -198,35 +187,24 @@ class plotter :
 
 		else :
 			for syst in self.systematics :
-
 #				if syst != 'Normal' : continue
-
-				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
-
-				self.skim_tree(syst)
-
-#				if not os.path.exists(systpath) :
-#					print '[status] creating skimmed tree file for %s systematic..' % (syst)
-#					copytree.copytree(self.path + 'SSDLYields_skim.root', systpath, 'SigEvents', 'SystFlag == %d' % (self.systematics[syst]))
-
-#				systfile = ROOT.TFile.Open(systpath, 'READ')
-#				systtree = systfile.Get('SigEvents')
-
 				print '[status] making predictions for %s systematic' % (syst)
+				self.skim_tree(syst)  # makes sure the skimmed SigEvents exists
+				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
 				sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
 				results[syst] = self.make_IntPredictions(sels[syst], systpath)
 
-#				systfile.Close()
-
 			helper.save_object(results, resultspath)
 
+		# make datacards for each charge-flavor channel
 		for ch_str in results['Normal'] :
 			for chan in results['Normal'][ch_str] :
 				self.make_datacard(results, chan, ch_str)
-#				results['Normal'][ch_str][chan].set_totBackground()
 
+		# make table of observation and predictions
 		tables.make_ObsPredTable(self.path, results['Normal'])
 
+		# make overview table of systematic studies
 		tables.make_SystTable(self.path, results, 'al', 'al')
 
 		print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['++']['al'].obs, results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw, math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
