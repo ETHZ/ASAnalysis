@@ -9,7 +9,7 @@ class ratios :
 
 	def __init__(self, path, samples) :
 		self.path = path
-		self.ssdlfile = ROOT.TFile.Open(path + '/SSDLYields.root', 'READ')
+		self.ssdlfile = ROOT.TFile.Open(self.path + '/SSDLYields.root', 'READ')
 		self.samples = samples
 
 		# lumi norm
