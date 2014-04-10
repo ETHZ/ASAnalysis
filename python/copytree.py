@@ -12,6 +12,7 @@ def copytree(inputfile, outputfile, tree_name, cut_str):
 	print ''
 	print '         Inputfile:  %s' % (inputfile)
 	print '         Outputfile: %s' % (outputfile)
+	print ''
 		
 	input = ROOT.TFile.Open('%s' % (inputfile),'read')
 	output = ROOT.TFile.Open('%s' % (outputfile),'recreate')
