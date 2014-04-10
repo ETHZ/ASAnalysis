@@ -3,7 +3,7 @@
 import ROOT
 import sys
 import math
-import selection as sel
+import selection
 import sample
 import helper
 import ratios
@@ -108,15 +108,16 @@ class plotter :
 
 		# selections
 		sels = {}
-		loosesel = sel.selection(name = 'loosesel', minNjets = 2)
-		sels['2JnobJ'] = sel.selection(name = '2JnobJ', minNjets = 2, maxNbjetsM = 0, flavor = 2)
-		presel = sel.selection(name = 'presel', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1)
-		presel_ee = sel.selection(name = 'presel_ee', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, flavor = 2)
-		finalsel = sel.selection(name = 'final', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
-		sels['final++'] = sel.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
-		sels['final--'] = sel.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
+#		sels['1J0bJ'    ] = selection.selection(name = '1J0bJ'  , minNjets = 1)
+#		sels['2J0bJ'    ] = selection.selection(name = '2J0bJ'  , minNjets = 2)  # loose selection
+#		sels['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , minNjets = 2, maxNbjetsM = 0, flavor = 2)
+		sels['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
+#		sels['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1, flavor = 2)
+		sels['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
+#		sels['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
+#		sels['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
 		#print presel.get_selectionString()
-		self.selections[presel.name] = presel
+#		self.selections[presel.name] = presel
 
 		self.chmid_sf = 1.62
 #		self.chmid_sf = 1.
@@ -128,7 +129,7 @@ class plotter :
 
 		applyEwkSubtr = True
 #		self.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
-		self.fpr = ratios.ratios(path, self.samples)
+		self.fpr = ratios.ratios(self.path, self.samples)
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
 
 		print 'MufRatio: %f +/- %f' % (self.fpr.MufRatio, self.fpr.MufRatioE)
@@ -150,6 +151,27 @@ class plotter :
 
 
 #		# produce results tree
+		self.skim_tree('Normal')  # makes sure the skimmed SigEvents tree exists
+		restree_path = {}
+		restree_path['1J0bJ'] = self.path + 'SSDLResults.root'
+		restree_path['2J0bJ'] = self.path + 'SSDLResults_2J0bJ.root'
+		restree_path['3J1bJ'] = self.path + 'SSDLResults_3J1bJ.root'
+		if not os.path.exists(restree_path['1J0bJ']) :
+			self.make_IntPredictions(sels['1J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
+		if not os.path.exists(restree_path['2J0bJ']) :
+			copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
+		if not os.path.exists(restree_path['3J1bJ']) :
+			copytree.copytree(restree_path['1J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
+
+		for name, sel in sels.iteritems() :
+			res_path = restree_path['3J1bJ']
+			if sel.name.startswith('2J') : res_path = restree_path['2J0bJ']
+			if sel.name.startswith('1J') : res_path = restree_path['1J0bJ']
+			self.plot_predictions(res_path, sel)
+
+		return
+
+
 #		nosyst_path = self.path + 'SSDLYields_Normal.root'
 #		if not os.path.exists(nosyst_path) :
 #			copytree.copytree(self.path + 'SSDLYields.root', nosyst_path, 'SigEvents', 'SystFlag == 0 && (SType < 3 || TLCat == 0) && (SType < 3 || Flavor < 3) && (SType < 3 || SType == 15)')
@@ -189,9 +211,9 @@ class plotter :
 			for syst in self.systematics :
 #				if syst != 'Normal' : continue
 				print '[status] making predictions for %s systematic' % (syst)
-				self.skim_tree(syst)  # makes sure the skimmed SigEvents exists
+				self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
 				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
-				sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
+				sels[syst] = selection.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
 				results[syst] = self.make_IntPredictions(sels[syst], systpath)
 
 			helper.save_object(results, resultspath)
@@ -1163,7 +1185,7 @@ class plotter :
 			file.write('pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\n' % (self.pdf_syst, self.wz_pdf_syst))
 
 
-	def plot_predictions(self, tree, sel) :
+	def plot_predictions(self, treepath, sel) :
 		vars = []
 		vars.append('HT'    )
 		vars.append('MET'   )
@@ -1179,11 +1201,17 @@ class plotter :
 		vars.append('CFChan')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 		vars.append('Charge')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 
-		print '[status] getting plots from %s tree for' % (tree.GetName()), vars
+		print '[status] open Results tree from %s' % (treepath)
+		resfile = ROOT.TFile.Open(treepath, 'READ')
+		restree = resfile.Get('Results')
+
+		print '[status] getting plots from %s tree for' % (restree.GetName()), vars
 
 		for var in vars :
 			histo_bins = config.get_histoBins(var, sel)
-			self.plot_ObsPred(tree, sel, var, histo_bins)
+			self.plot_ObsPred(restree, sel, var, histo_bins)
+
+		resfile.Close()
 
 
 	def plot_ObsPred(self, tree, sel, var, settings) :
