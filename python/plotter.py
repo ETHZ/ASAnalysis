@@ -29,16 +29,16 @@ class plotter :
 		self.sigtree = self.ssdlfile.Get('SigEvents')
 		print '[status] loaded SigEventsTree with %d events' % (self.sigtree.GetEntries())
 
-		self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'READ')
-		if self.skimfile == None :
-			print '[status] creating skimmed tree file..'
-			self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'RECREATE')
-			self.skimfile.cd()
-			self.skimtree = self.sigtree.CopyTree('Flavor < 3 && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0)') # Only same-sign, if MC only tight-tight. Only MC for syst studies.
-			self.skimtree.AutoSave()
-			self.skimfile.Write()
-		else :
-			self.skimtree = self.skimfile.Get('SigEvents')
+#		self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'READ')
+#		if self.skimfile == None :
+#			print '[status] creating skimmed tree file..'
+#			self.skimfile = ROOT.TFile.Open(path + '/SSDLYields_skim.root', 'RECREATE')
+#			self.skimfile.cd()
+#			self.skimtree = self.sigtree.CopyTree('Flavor < 3 && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0)') # Only same-sign, if MC only tight-tight. Only MC for syst studies.
+#			self.skimtree.AutoSave()
+#			self.skimfile.Write()
+#		else :
+#			self.skimtree = self.skimfile.Get('SigEvents')
 
 		ROOT.gSystem.Load('./FakeRatios.so')
 
@@ -199,34 +199,59 @@ class plotter :
 		else :
 			for syst in self.systematics :
 
+#				if syst != 'Normal' : continue
+
 				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
 
-				if not os.path.exists(systpath) :
-					print '[status] creating skimmed tree file for %s systematic..' % (syst)
-					copytree.copytree(self.path + 'SSDLYields_skim.root', systpath, 'SigEvents', 'SystFlag == %d' % (self.systematics[syst]))
+				self.skim_tree(syst)
 
-				systfile = ROOT.TFile.Open(systpath, 'READ')
-				systtree = systfile.Get('SigEvents')
+#				if not os.path.exists(systpath) :
+#					print '[status] creating skimmed tree file for %s systematic..' % (syst)
+#					copytree.copytree(self.path + 'SSDLYields_skim.root', systpath, 'SigEvents', 'SystFlag == %d' % (self.systematics[syst]))
+
+#				systfile = ROOT.TFile.Open(systpath, 'READ')
+#				systtree = systfile.Get('SigEvents')
 
 				print '[status] making predictions for %s systematic' % (syst)
 				sels[syst] = sel.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
-				results[syst] = self.make_IntPredictions(sels[syst], systtree)
+				results[syst] = self.make_IntPredictions(sels[syst], systpath)
 
-				systfile.Close()
+#				systfile.Close()
 
 			helper.save_object(results, resultspath)
 
 		for ch_str in results['Normal'] :
 			for chan in results['Normal'][ch_str] :
 				self.make_datacard(results, chan, ch_str)
-				results['Normal'][ch_str][chan].set_totBackground()
+#				results['Normal'][ch_str][chan].set_totBackground()
 
 		tables.make_ObsPredTable(self.path, results['Normal'])
 
 		tables.make_SystTable(self.path, results, 'al', 'al')
 
+		print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['++']['al'].obs, results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw, math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
+		print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['--']['al'].obs, results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw, math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
+
 #
 #		raw_input('ok? ')
+
+
+	def skim_tree(self, syst = '') :
+		'''skim SigEvents tree'''
+
+		skimtree_path = self.path + 'SSDLYields_skim.root'
+		if not os.path.exists(skimtree_path) :
+			print '[status] creating skimmed tree for di-boson, rare MC (SType 15) and data..'
+			print '         Data: same-sign, opposite-sign, tight-tight, tight-loose, loose-tight, loose-loose events (only nominal, no systematics)'
+			print '         MC:   only same-sign, tight-tight events for all systematics'
+			copytree.copytree(self.path + 'SSDLYields.root', skimtree_path, 'SigEvents', '(SType < 3 || SType == 15) && (SType < 3 || Flavor < 3) && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0)')
+
+		if syst != '' :
+			systtree_path = self.path + 'SSDLYields_skim_' + syst + '.root'
+
+			if not os.path.exists(systtree_path) :
+				print '[status] creating skimmed tree file for %s systematic..' % (syst)
+				copytree.copytree(skimtree_path, systtree_path, 'SigEvents', 'SystFlag == %d' % (self.systematics[syst]))
 
 
 	def readDatacard(self, cardfile, verbose = 0) :
@@ -461,12 +486,16 @@ class plotter :
 		foo = 0
 
 
-	def make_IntPredictions(self, sel, tree, write_ResTree = False) :
+	def make_IntPredictions(self, sel, treepath, write_ResTree = False) :
 		'''oberservation and prediction for different selections'''
 
-		if write_ResTree :
-			print '[status] getting observations and predictions for results tree with selection %s:' % (sel.name)
-			print sel
+		print '[status] getting observations and predictions for results tree with selection %s:' % (sel.name)
+		print sel
+
+		print '[status] open SigEvents tree from %s' % (treepath)
+		sigfile = ROOT.TFile.Open(treepath, 'READ')
+		sigtree = sigfile.Get('SigEvents')
+		print '[status] loaded %s tree with %d events' % (sigtree.GetName(), sigtree.GetEntries())
 
 		##################
 		# INIT VARIABLES #
@@ -505,13 +534,13 @@ class plotter :
 			print '[status] getting opposite-sign yields..'
 
 			# EM OS
-			nt2_em_BB_os = self.sigtree.GetEntries(sel.get_selectionString((4,0)))
-			nt2_em_EE_os = self.sigtree.GetEntries(sel.get_selectionString((4,1)))
+			nt2_em_BB_os = sigtree.GetEntries(sel.get_selectionString((4,0)))
+			nt2_em_EE_os = sigtree.GetEntries(sel.get_selectionString((4,1)))
 
 			# EE OS
-			nt2_ee_BB_os = self.sigtree.GetEntries(sel.get_selectionString((5,0)))
-			nt2_ee_EB_os = self.sigtree.GetEntries(sel.get_selectionString((5,4)))
-			nt2_ee_EE_os = self.sigtree.GetEntries(sel.get_selectionString((5,3)))
+			nt2_ee_BB_os = sigtree.GetEntries(sel.get_selectionString((5,0)))
+			nt2_ee_EB_os = sigtree.GetEntries(sel.get_selectionString((5,4)))
+			nt2_ee_EE_os = sigtree.GetEntries(sel.get_selectionString((5,3)))
 
 			for ch_str, charge in self.charges.iteritems() :
 
@@ -560,7 +589,7 @@ class plotter :
 
 		print '[status] looping over skimmed tree..'
 #		for i, event in enumerate(self.skimtree) :
-		for i, event in enumerate(tree) :
+		for i, event in enumerate(sigtree) :
 			HLTSF = event.HLTSF
 			nevents[str(event.SName)] += 1
 			if last_sample != str(event.SName) :
@@ -750,6 +779,8 @@ class plotter :
 		if write_ResTree :
 			self.results_file.Write()
 			self.results_file.Close()
+
+		sigfile.Close()
 
 		# print number of events per sample in skimmed SigEvents tree
 #		for name, n in nevents.iteritems() :
