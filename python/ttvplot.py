@@ -206,7 +206,7 @@ class ttvplot :
 				if bin == 2 : binlabel = '++'
 				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
 				hs_pred.GetXaxis().SetLabelSize(0.062)
-		elif not hs_pred.GetXaxis().IsVariableBinSize() :
+		elif not hs_pred.GetXaxis().IsVariableBinSize() and var != 'NVrtx' :
 			bin_width = hs_pred.GetXaxis().GetBinWidth(1)
 			hs_pred.GetYaxis().SetTitle('Events / %.0f GeV' % bin_width)
 		##		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
