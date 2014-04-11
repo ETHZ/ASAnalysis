@@ -30,7 +30,7 @@ class ttvplot :
 		# process names
 		self.process_names = {}
 		self.process_names['obs'  ] = 'Observed'
-		self.process_names['fake' ] = 'Non-prompt Lepton'
+		self.process_names['fake' ] = 'Misidentified Lepton'
 		self.process_names['chmid'] = 'Charge MisID'
 		self.process_names['rare' ] = 'Irreducible'
 		self.process_names['wz'   ] = 'WZ'
@@ -40,8 +40,8 @@ class ttvplot :
 		self.process_names['btag' ] = 'Non-top'
 		self.process_names['zz'   ] = 'ZZ'
 		if TeX_switch is True :
-			self.process_names['ttz'  ] = '\\ttbar{}Z'
-			self.process_names['ttw'  ] = '\\ttbar{}W'
+			self.process_names['ttz'  ] = '\\ttz'
+			self.process_names['ttw'  ] = '\\ttw'
 
 		# variable names
 		self.var_names = {}

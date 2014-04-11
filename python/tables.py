@@ -19,11 +19,17 @@ def make_ObsPredTable(path, results) :
 		file.write('% Generated on: ' + str(timestamp) + '\n')
 		file.write('%-----------------------------------------------------------------------------------------\n')
 		file.write('\n\n')
-		file.write('\\providecommand{\\ttbar}{$t\\bar{t}$}')
+		file.write('\\providecommand{\\ttbar}{$t\\bar{t}$}\n')
+		file.write('\\providecommand{\\ttw}{\\ttbar{}W}\n')
+		file.write('\\providecommand{\\ttz}{\\ttbar{}Z}\n')
+		file.write('\\providecommand{\\Pep}{e^+}\n')
+		file.write('\\providecommand{\\Pem}{e^-}\n')
+		file.write('\\providecommand{\\Pgmp}{\\mu^+}\n')
+		file.write('\\providecommand{\\Pgmm}{\\mu^-}\n')
 		file.write('\n\n')
 	##	fOUTSTREAM << "%% Format is m+m+, e+m+, e+e+, m-m-, e-m-, e-e-" << endl;
 		file.write('\\begin{tabular}{l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n')
-		file.write('                  &\\multicolumn{2}{c|}{$\\mu^+\\mu^+$}&\\multicolumn{2}{c|}{$e^+\\mu^+$}&\\multicolumn{2}{c|}{$e^+e^+$} &\\multicolumn{2}{c|}{$\\mu^-\\mu^-$}&\\multicolumn{2}{c|}{$e^-\\mu^-$}&\\multicolumn{2}{c}{$e^-e^-$} \\\\\n\\hline\n')
+		file.write('                  &\\multicolumn{2}{c|}{$\\Pgmp\\Pgmp$}&\\multicolumn{2}{c|}{$\\Pep\\Pgmp$}&\\multicolumn{2}{c|}{$\\Pep\\Pep$} &\\multicolumn{2}{c|}{$\\Pgmm\\Pgmm$}&\\multicolumn{2}{c|}{$\\Pem\\Pgmm$}&\\multicolumn{2}{c}{$\\Pem\\Pem$} \\\\\n\\hline\n')
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
 			pl.get_processName('fake'),
 			results['++']['mm'].fake, results['++']['mm'].fake_err,
@@ -87,7 +93,7 @@ def make_ObsPredTable(path, results) :
 	##//							tth_nt2_ee + tth_nt2_mm + tth_nt2_em, sqrt(tth_nt2_mm_e1 + tth_nt2_ee_e1 + tth_nt2_em_e1 + RareESyst2*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)));
 	##//	}
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
-			'Total Bkg',
+			'Total Bkg.',
 			results['++']['mm'].tot, results['++']['mm'].tot_err,
 			results['++']['em'].tot, results['++']['em'].tot_err,
 			results['++']['ee'].tot, results['++']['ee'].tot_err,
@@ -100,7 +106,7 @@ def make_ObsPredTable(path, results) :
 	##						ttwzpreds_mimi["Normal"].fake_mm                                    + ttwzpreds_mimi["Normal"].rare_mm + ttwzpreds_mimi["Normal"].wz_mm + ttwzpreds_mimi["Normal"].ttz_mm, ttwzpreds_mimi["Normal"].tot_err_mm,
 	##						ttwzpreds_mimi["Normal"].fake_em + ttwzpreds_mimi["Normal"].cmid_em + ttwzpreds_mimi["Normal"].rare_em + ttwzpreds_mimi["Normal"].wz_em + ttwzpreds_mimi["Normal"].ttz_em, ttwzpreds_mimi["Normal"].tot_err_em,
 	##						ttwzpreds_mimi["Normal"].fake_ee + ttwzpreds_mimi["Normal"].cmid_ee + ttwzpreds_mimi["Normal"].rare_ee + ttwzpreds_mimi["Normal"].wz_ee + ttwzpreds_mimi["Normal"].ttz_ee, ttwzpreds_mimi["Normal"].tot_err_ee))
-		file.write('{\\bf %12s} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c|}{\\bf{%3d}} & \\multicolumn{2}{c}{\\bf{%3d}}  \\\\\n' % (
+		file.write('{\\bf %12s} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c}{\\bf %3d}  \\\\\n' % (
 			pl.get_processName('obs'),
 			results['++']['mm'].obs,
 			results['++']['em'].obs,
@@ -115,7 +121,7 @@ def make_ObsPredTable(path, results) :
 	##	cout << "ttwzpreds_mimi[\"Normal\"].obs_em: " << ttwzpreds_mimi["Normal"].obs_em << endl;
 	##	cout << "ttwzpreds_mimi[\"Normal\"].obs_ee: " << ttwzpreds_mimi["Normal"].obs_ee << endl;
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
-			'Obs. - Tot. Bkg.',
+			'Obs. $-$ Tot. Bkg.',
 			results['++']['mm'].obs - results['++']['mm'].tot, results['++']['mm'].tot_err,
 			results['++']['em'].obs - results['++']['em'].tot, results['++']['em'].tot_err,
 			results['++']['ee'].obs - results['++']['ee'].tot, results['++']['ee'].tot_err,
@@ -130,7 +136,7 @@ def make_ObsPredTable(path, results) :
 	##						ttwzpreds_mimi["Normal"].obs_em - (ttwzpreds_mimi["Normal"].fake_em + ttwzpreds_mimi["Normal"].cmid_em + ttwzpreds_mimi["Normal"].rare_em + ttwzpreds_mimi["Normal"].wz_em + ttwzpreds_mimi["Normal"].ttz_em), ttwzpreds_mimi["Normal"].tot_err_em,
 	##						ttwzpreds_mimi["Normal"].obs_ee - (ttwzpreds_mimi["Normal"].fake_ee + ttwzpreds_mimi["Normal"].cmid_ee + ttwzpreds_mimi["Normal"].rare_ee + ttwzpreds_mimi["Normal"].wz_ee + ttwzpreds_mimi["Normal"].ttz_ee), ttwzpreds_mimi["Normal"].tot_err_ee))
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
-			pl.get_processName('ttw'),
+			pl.get_processName('ttw') + ' (exp.)',
 			results['++']['mm'].ttw, results['++']['mm'].ttw_err,
 			results['++']['em'].ttw, results['++']['em'].ttw_err,
 			results['++']['ee'].ttw, results['++']['ee'].ttw_err,
