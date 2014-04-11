@@ -113,9 +113,9 @@ class plotter :
 #		sels['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , minNjets = 2, maxNbjetsM = 0, flavor = 2)
 #		sels['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
 #		sels['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1, flavor = 2)
-		sels['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
-#		sels['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
-#		sels['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
+		sels['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
+		sels['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
+		sels['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
 		#print presel.get_selectionString()
 #		self.selections[presel.name] = presel
 
@@ -150,7 +150,7 @@ class plotter :
 #
 
 
-#		# produce results tree
+		# produce results tree
 		self.skim_tree('Normal')  # makes sure the skimmed SigEvents tree exists
 		restree_path = {}
 		restree_path['1J0bJ'] = self.path + 'SSDLResults.root'
@@ -696,18 +696,38 @@ class plotter :
 				if write_ResTree and event.Flavor > 2 :
 					self.ResTree_ObsPred[0] = 2
 
+					# apply factor 0.5 as weight and fill ChMisID twice: once for charge = +1 and once for charge = -1
+					# in this way it's easier to apply a selection on the charge later
+					chargeFactor = 0.5
+
 					# EM OS
 					if event.Flavor is 4 :
-						if event.TLCat is 0 : self.ResTree_Weight[0] = fbb
-						if event.TLCat is 1 : self.ResTree_Weight[0] = fee
+						if event.TLCat is 0 : self.ResTree_Weight[0] = chargeFactor * fbb
+						if event.TLCat is 1 : self.ResTree_Weight[0] = chargeFactor * fee
 
 					# EE OS
 					if event.Flavor is 5 :
-						if event.TLCat is 0                     : self.ResTree_Weight[0] = 2*fbb
-						if event.TLCat is 1 or event.TLCat is 2 : self.ResTree_Weight[0] = 2*feb
-						if event.TLCat is 3                     : self.ResTree_Weight[0] = 2*fee
+						if event.TLCat is 0                     : self.ResTree_Weight[0] = chargeFactor * 2*fbb
+						if event.TLCat is 1 or event.TLCat is 2 : self.ResTree_Weight[0] = chargeFactor * 2*feb
+						if event.TLCat is 3                     : self.ResTree_Weight[0] = chargeFactor * 2*fee
 
+					self.ResTree_Charge[0] = 1
+					self.ResTree_CFChan[0] = self.ResTree_Flavor[0]
 					self.results_tree.Fill()
+
+					self.ResTree_Charge[0] = -1
+					self.ResTree_CFChan[0] = self.ResTree_Flavor[0] + 3
+					self.results_tree.Fill()
+
+
+#				if event.Charge > 0 :
+#					self.ResTree_CFChan   [0] = self.ResTree_Flavor[0]
+#				else :
+#					self.ResTree_CFChan   [0] = self.ResTree_Flavor[0] + 3
+
+
+
+#					self.results_tree.Fill()
 
 			# GET RARE MC EVENTS
 			if event.SType is 15 and event.TLCat == 0 and event.Flavor < 3 :
@@ -1199,7 +1219,10 @@ class plotter :
 		histos = {}
 
 		chargeFactor = 1.
-		if sel.charge != 0 : chargeFactor = 0.5
+		noChargeSelFactor = 0.5
+		if sel.charge != 0 :
+			chargeFactor = 0.5
+			noChargeSelFactor = 1.
 
 		# loop over results tree to get names of rare samples
 		rares = []
@@ -1266,7 +1289,7 @@ class plotter :
 		# getting histograms from results tree
 		tree.Draw(var_str+'>>'+h_obs_name  ,    'Weight*(ObsPred == 0 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_fake_name ,    'Weight*(ObsPred == 1 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var_str+'>>'+h_chmid_name, '%f*Weight*(ObsPred == 2 && %s)' %(chargeFactor, sel.get_selectionString(ResTree = True, OS_data = (0,-1))), 'goff')
+		tree.Draw(var_str+'>>'+h_chmid_name,    'Weight*(ObsPred == 2 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_rare_name ,    'Weight*(ObsPred == 6 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_wz_name   ,    'Weight*(ObsPred == 3 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ttz_name  ,    'Weight*(ObsPred == 5 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
@@ -1283,11 +1306,11 @@ class plotter :
 		tree.Draw(var_str+'>>'+h_ee_nt10_name,         '(ObsPred == 0 && TLCat == 1 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ee_nt01_name,         '(ObsPred == 0 && TLCat == 2 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ee_nt0_name ,         '(ObsPred == 0 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_em_BB_os_name,    '(ObsPred == 2 && TLCat == 0 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_em_EE_os_name,    '(ObsPred == 2 && TLCat == 1 && Flavor == 1 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_BB_os_name,    '(ObsPred == 2 && TLCat == 0 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_EB_os_name,    '(ObsPred == 2 && (TLCat == 1 || TLCat == 2) && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_EE_os_name,    '(ObsPred == 2 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True, OS_data = (0,-1)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_em_BB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_em_EE_os_name, '%f*(ObsPred == 2 && TLCat == 1 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_BB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_EB_os_name, '%f*(ObsPred == 2 && (TLCat == 1 || TLCat == 2) && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_EE_os_name, '%f*(ObsPred == 2 && TLCat == 3 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
 
 		# adding background predictions
 		histos['bgtot'].Add(histos['fake' ])
@@ -1341,7 +1364,8 @@ class plotter :
 			nt2_ee_BB_os = h_nt2_ee_BB_os.GetBinContent(bin)
 			nt2_ee_EB_os = h_nt2_ee_EB_os.GetBinContent(bin)
 			nt2_ee_EE_os = h_nt2_ee_EE_os.GetBinContent(bin)
-				# Simple error propagation assuming error on number of events is sqrt(N)
+
+			# Simple error propagation assuming error on number of events is sqrt(N)
 			nt2_ee_chmid    = chargeFactor * (2*fbb* nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os)
 			nt2_ee_chmid_e1 = chargeFactor * math.sqrt( 4*fbb*fbb * FR.getEStat2(nt2_ee_BB_os)  + 4*fee*fee * FR.getEStat2(nt2_ee_EE_os)    + 4*feb*feb * FR.getEStat2(nt2_ee_EB_os) )  # stat only
 			nt2_ee_chmid_e2 = chargeFactor * math.sqrt( 4*fbbE*fbbE * nt2_ee_BB_os*nt2_ee_BB_os + 4*feeE*feeE * nt2_ee_EE_os*nt2_ee_EE_os   + 4*febE*febE * nt2_ee_EB_os*nt2_ee_EB_os + self.ChMisESyst2 * nt2_ee_chmid*nt2_ee_chmid/(chargeFactor*chargeFactor) )  # syst only
