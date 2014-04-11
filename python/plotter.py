@@ -1220,7 +1220,7 @@ class plotter :
 
 		chargeFactor = 1.
 		noChargeSelFactor = 0.5
-		if sel.charge != 0 :
+		if sel.charge != 0 or var == 'Charge' or var == 'CFChan' :
 			chargeFactor = 0.5
 			noChargeSelFactor = 1.
 
