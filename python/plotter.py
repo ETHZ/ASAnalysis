@@ -111,7 +111,7 @@ class plotter :
 #		sels['1J0bJ'    ] = selection.selection(name = '1J0bJ'  , minNjets = 1)
 #		sels['2J0bJ'    ] = selection.selection(name = '2J0bJ'  , minNjets = 2)  # loose selection
 #		sels['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , minNjets = 2, maxNbjetsM = 0, flavor = 2)
-		sels['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
+#		sels['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
 #		sels['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1, flavor = 2)
 		sels['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = 0)
 #		sels['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
@@ -170,30 +170,6 @@ class plotter :
 			self.plot_predictions(res_path, sel)
 
 		return
-
-
-#		nosyst_path = self.path + 'SSDLYields_Normal.root'
-#		if not os.path.exists(nosyst_path) :
-#			copytree.copytree(self.path + 'SSDLYields.root', nosyst_path, 'SigEvents', 'SystFlag == 0 && (SType < 3 || TLCat == 0) && (SType < 3 || Flavor < 3) && (SType < 3 || SType == 15)')
-#
-#		nosystfile = ROOT.TFile.Open(nosyst_path, 'READ')
-#		nosysttree = nosystfile.Get('SigEvents')
-#
-#		self.make_IntPredictions(loosesel, nosysttree, True)
-
-		#return
-
-#		# plots results from results tree
-#		resultfile = ROOT.TFile.Open(self.path + 'SSDLResults.root', 'READ')
-#		resulttree = resultfile.Get('Results')
-##		self.plot_predictions(resulttree, finalsel)
-##		self.plot_predictions(resulttree, presel)
-##		self.plot_predictions(resulttree, loosesel)
-##		self.plot_predictions(resulttree, presel_ee)
-##		self.plot_predictions(resulttree, sels['2JnobJ'])
-#		self.plot_predictions(resulttree, sels['final++'])
-#		self.plot_predictions(resulttree, sels['final--'])
-#		return
 
 
 

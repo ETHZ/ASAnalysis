@@ -232,7 +232,8 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep05-JetPt30-Iso5-ChMisID-1J/YieldsFiles/";
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep08-JetPt30-Iso5-ChMisID-1J-allTTJets/YieldsFiles/";
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep22-JetPt30-Iso5-ChMisID-1J-EWKControlPlots-HLT_Mu24_eta2p1/YieldsFiles/";
-		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct15-AwayJet40/YieldsFiles/";
+//		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct15-AwayJet40/YieldsFiles/";
+		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Jan23/YieldsFiles/";
 		TString tree_looseIso_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct17-AwayJet40-ttbar-Iso0.35/YieldsFiles/";
 
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
@@ -321,6 +322,12 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       factory->AddBackgroundTree( background_ttbar_madgraph_v1, backgroundWeight_ttbar_madgraph_v1 );
       factory->AddBackgroundTree( background_ttbar_madgraph_v2, backgroundWeight_ttbar_madgraph_v2 );
 //      factory->AddBackgroundTree( background_wz   , backgroundWeight_wz    );
+
+		// unscaled ttbar samples
+//      factory->AddBackgroundTree( background_ttbar            , backgroundWeight );
+//      factory->AddBackgroundTree( background_ttbar_v1         , backgroundWeight );
+//      factory->AddBackgroundTree( background_ttbar_madgraph_v1, backgroundWeight );
+//      factory->AddBackgroundTree( background_ttbar_madgraph_v2, backgroundWeight );
 
       // To give different trees for training and testing, do as follows:
       //    factory->AddSignalTree( signalTrainingTree, signalTrainWeight, "Training" );

@@ -1,17 +1,19 @@
 #! /usr/bin/python
 import ROOT
 import os, sys
+import helper
 
 
 class ttvplot :
 
-	def __init__(self, path, chan, lumi = 19500., cms_label = 0, TeX_switch = False) :
+	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False) :
 		self.path = path
 		if not os.path.exists(self.path) :
 			os.makedirs(self.path)
 		self.chan = chan
 		self.lumi = lumi
 		self.cms_label = cms_label
+		self.asymmErr = asymmErr
 
 		# colors
 		self.colors = {}
@@ -80,9 +82,11 @@ class ttvplot :
 		if selname != '' : selname += '_'
 		if prefix  != '' : prefix = '_' + prefix
 
-		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
+		# data with asymmetric errors
+		gr_obs = helper.getGraphPoissonErrors(histos['obs'])
 
 		# adding predictions to stack
+		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
 		if self.chan == '2L' :
 			hs_pred.Add(histos['fake' ])
 			hs_pred.Add(histos['chmid'])
@@ -105,7 +109,9 @@ class ttvplot :
 		scale = 1.8
 		if var == 'Int' : scale = 2.4
 		maximum = scale * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
+		gr_obs .SetMaximum(maximum)
 		hs_pred.SetMaximum(maximum)
+		gr_obs .SetMinimum(0.)
 		hs_pred.SetMinimum(0.)
 
 		for process, histo in histos.iteritems() :
@@ -119,6 +125,9 @@ class ttvplot :
 		histos['obs'  ].SetMarkerStyle(20)
 		histos['obs'  ].SetMarkerSize(1.1)
 		histos['obs'  ].SetLineWidth(2)
+		gr_obs         .SetMarkerStyle(20)
+		gr_obs         .SetMarkerSize(1.1)
+		gr_obs         .SetLineWidth(2)
 		
 		# special settings for total BG line and uncertainty
 		histos['bgtot'].SetLineWidth(3)
@@ -166,6 +175,7 @@ class ttvplot :
 
 #		ROOT.gStyle.SetOptStat(0)
 		ROOT.gStyle.SetOptTitle(0)
+		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
 		ROOT.gPad.SetTicks(1,1)
 
 		# draw and set axis titles
@@ -174,8 +184,8 @@ class ttvplot :
 		hs_pred.GetYaxis().SetTitle('Events')
 		hs_pred.GetXaxis().SetTitleOffset(1.25)
 		hs_pred.GetYaxis().SetTitleOffset(1.25)
-		hs_pred.GetXaxis().SetTitleSize(0.04)
-		hs_pred.GetYaxis().SetTitleSize(0.04)
+		hs_pred.GetXaxis().SetTitleSize(0.046)
+		hs_pred.GetYaxis().SetTitleSize(0.046)
 		hs_pred.GetXaxis().SetLabelSize(0.04)
 		hs_pred.GetYaxis().SetLabelSize(0.04)
 		#hs_pred.GetXaxis().SetNdivisions(206)
@@ -227,7 +237,10 @@ class ttvplot :
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
 		histos['bgtot'].Draw('hist same')
-		histos['obs'  ].Draw('PE X0 same')
+		if self.asymmErr :
+			gr_obs         .Draw('PE same')
+		else :
+			histos['obs'  ].Draw('PE X0 same')
 #		self.drawTopLine(0.56, 0.8)
 		self.draw_cmsLine()
 #		raw_input('ok? ')
