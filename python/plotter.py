@@ -40,6 +40,9 @@ class plotter :
 		# ratios
 		self.fpr = ratios.ratios(self.path, self.samples)
 
+		# charge mis-ID
+		self.chmid_sf = 1.
+
 		# lumi norm
 		self.lumi = 19466.
 		self.lumi_HLTMu17       = 24.9
@@ -110,13 +113,13 @@ class plotter :
 #		sels['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
 #		sels['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1, flavor = 2)
 		sels['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
-		sels['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
-		sels['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
+#		sels['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
+#		sels['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
 		#print presel.get_selectionString()
 #		self.selections[presel.name] = presel
 
+		# charge mis-ID scale factor
 		self.chmid_sf = 1.62
-#		self.chmid_sf = 1.
 
 		# get fake and prompt ratios
 		EWK_SF = {}
@@ -456,6 +459,7 @@ class plotter :
 
 		print '[status] getting observations and predictions for results tree with selection %s..' % (sel.name)
 		print sel
+		if sel.charge != 0 : print '[WARNING] Avoid running make_IntPredictions with a charge selection. Please apply charge selection later.'
 
 		print '[status] open SigEvents tree from %s' % (treepath)
 		sigfile = ROOT.TFile.Open(treepath, 'READ')
@@ -511,7 +515,7 @@ class plotter :
 
 				# charge factor: only takes half of the ChMisID prediction if a charge selection is applied
 				chargeFactor = 1.
-				if charge != 0: chargeFactor = 0.5
+				if charge != 0 or sel.charge != 0 : chargeFactor = 0.5
 
 				# Simple error propagation assuming error on number of events is sqrt(N)
 				nt2_ee_chmid    = chargeFactor * (2*fbb* nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os)
@@ -910,9 +914,8 @@ class plotter :
 		# print all observations and predictions #
 		##########################################
 
-#		yields.printout()
-		self.print_results(res['al'])
-		self.print_results(res['++'])
+#		self.print_results(res['al'])
+#		self.print_results(res['++'])
 
 		return res
 
@@ -996,7 +999,7 @@ class plotter :
 		print "----------------------------------------------------------------------------------------------"
 
 
-	def make_datacard(self, results, chan, charge, outputdir = '') :
+	def make_datacard(self, results, chan, charge, output_subdir = '', suffix = '') :
 		'''
 		takes a nested dictionary of result objects as input:
 		results[SYSTFLAG][CHARGE][FLAVOR]
@@ -1004,9 +1007,10 @@ class plotter :
 		writes datacard in the combine tool format
 		'''
 
-		datacard_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
-		if outputdir == '' : datacard_path = self.path + 'datacards/'
-		else               : datacard_path = self.path + '%s/' % (outputdir)
+		if suffix != '' : suffix = '_' + suffix
+		datacard_name = 'datacard_ssdl_ttW_%s%s.txt' % (results['Normal'][charge][chan].chan_str, suffix)
+		if output_subdir == '' : datacard_path = self.path + 'datacards/'
+		else                   : datacard_path = self.path + '%s/' % (output_subdir)
 		helper.mkdir(datacard_path)
 		print '[status] writing %s' % datacard_name
 		with open(datacard_path + datacard_name, 'w') as file :
@@ -1169,6 +1173,8 @@ class plotter :
 			file.write('gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\n' % (self.gen_syst))
 
 			file.write('pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\n' % (self.pdf_syst, self.wz_pdf_syst))
+
+		return datacard_path + datacard_name
 
 
 	def plot_predictions(self, treepath, sel) :
