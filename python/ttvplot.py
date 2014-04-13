@@ -55,7 +55,7 @@ class ttvplot :
 		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
 		self.var_names['NVrtx' ] = 'N_{Vertices}'
 		self.var_names['minMT' ] = 'M_{T} [GeV]'
-		self.var_names['M3'    ] = 'm_{jjj} [GeV]'
+		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
 
 
 	def get_fillColor(self, process) :
