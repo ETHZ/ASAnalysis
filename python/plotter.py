@@ -20,7 +20,7 @@ import tables
 class plotter :
 	'''the plotter reads sigtree and produces plots'''
 
-	def __init__(self, path) :
+	def __init__(self, path, cardfile) :
 		print '[status] initialize plotter..'
 		self.path = path + '/'
 		self.ssdlfile = ROOT.TFile.Open(path + '/SSDLYields.root', 'READ')
@@ -32,13 +32,13 @@ class plotter :
 		ROOT.gSystem.Load('./FakeRatios.so')
 
 		# samples
-		self.samples = {}
+		self.samples = self.readDatacard(cardfile)
 
 		# selections
 		self.selections = {}
 
 		# ratios
-#		self.fpr = ratios.ratios(path)
+		self.fpr = ratios.ratios(self.path, self.samples)
 
 		# lumi norm
 		self.lumi = 19466.
@@ -99,12 +99,8 @@ class plotter :
 			self.charges[self.get_chargeString(charge)] = charge
 
 
-	def do_analysis(self, cardfile) :
+	def do_analysis(self) :
 		print '[status] starting analysis..'
-
-		# samples
-		self.samples = self.readDatacard(cardfile)
-		self.read_ngen()
 
 		# selections
 		sels = {}
@@ -122,20 +118,12 @@ class plotter :
 		self.chmid_sf = 1.62
 #		self.chmid_sf = 1.
 
+		# get fake and prompt ratios
 		EWK_SF = {}
 		EWK_SF['el']   = self.get_EWK_SF('el')
 		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
 		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
-
-		applyEwkSubtr = True
-#		self.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
-		self.fpr = ratios.ratios(self.path, self.samples)
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
-
-		print 'MufRatio: %f +/- %f' % (self.fpr.MufRatio, self.fpr.MufRatioE)
-		print 'ElfRatio: %f +/- %f' % (self.fpr.ElfRatio, self.fpr.ElfRatioE)
-		print 'MupRatio: %f +/- %f' % (self.fpr.MupRatio, self.fpr.MupRatioE)
-		print 'ElpRatio: %f +/- %f' % (self.fpr.ElpRatio, self.fpr.ElpRatioE)
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
@@ -263,11 +251,12 @@ class plotter :
 					xsec = float(splitline[4])
 				samples[name] = sample.sample(name = name, datamc = datamc, channel = channel, xsec = xsec, ngen = -1)
 				if verbose > 0 : print samples[name]
+		self.read_ngen(samples)
 		return samples
 
 
-	def read_ngen(self) :
-		for name, s in self.samples.iteritems() :
+	def read_ngen(self, samples) :
+		for name, s in samples.iteritems() :
 			if s.datamc is 0 : continue
 			s.ngen = int(self.ssdlfile.Get(s.name+'/'+s.name+'_EventCount').GetEntries())
 
@@ -364,7 +353,7 @@ class plotter :
 
 
 	def get_EWK_SF(self, chan_str) :
-		print '[status] calculating EWK scale factor for %s trigger' % (chan_str)
+		print '[status] calculating EWK scale factor for %s trigger..' % (chan_str)
 		samples_wjets = []
 		samples_zjets = []
 		samples_qcd = [] # TODO
@@ -384,7 +373,7 @@ class plotter :
 		n_data = h_ntight_data.Integral(bin_min, bin_max)
 		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
 
-		print '         %s SF = data / (WJets + DYJets) = %f / %f = %f' % (chan_str, n_data, n_mc, n_data/n_mc)
+		print '         SF = data / (WJets + DYJets) = %8.1f / %8.1f = %4.2f' % (n_data, n_mc, n_data/n_mc)
 
 		return n_data / n_mc
 
@@ -465,7 +454,7 @@ class plotter :
 	def make_IntPredictions(self, sel, treepath, write_ResTree = False) :
 		'''oberservation and prediction for different selections'''
 
-		print '[status] getting observations and predictions for results tree with selection %s:' % (sel.name)
+		print '[status] getting observations and predictions for results tree with selection %s..' % (sel.name)
 		print sel
 
 		print '[status] open SigEvents tree from %s' % (treepath)
@@ -1007,7 +996,7 @@ class plotter :
 		print "----------------------------------------------------------------------------------------------"
 
 
-	def make_datacard(self, results, chan, charge) :
+	def make_datacard(self, results, chan, charge, outputdir = '') :
 		'''
 		takes a nested dictionary of result objects as input:
 		results[SYSTFLAG][CHARGE][FLAVOR]
@@ -1016,7 +1005,8 @@ class plotter :
 		'''
 
 		datacard_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
-		datacard_path = self.path + 'datacards/'
+		if outputdir == '' : datacard_path = self.path + 'datacards/'
+		else               : datacard_path = self.path + '%s/' % (outputdir)
 		helper.mkdir(datacard_path)
 		print '[status] writing %s' % datacard_name
 		with open(datacard_path + datacard_name, 'w') as file :
@@ -1455,5 +1445,5 @@ if __name__ == '__main__' :
 		cardfile = str(args[args.index('-c')+1])
 		print cardfile
 
-	plotter = plotter(path)
-	plotter.do_analysis(cardfile)
+	pl = plotter(path, cardfile)
+	pl.do_analysis()
