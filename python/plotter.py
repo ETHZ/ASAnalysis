@@ -218,7 +218,9 @@ class plotter :
 
 			if not os.path.exists(systtree_path) :
 				print '[status] creating skimmed tree file for %s systematic..' % (syst)
-				copytree.copytree(skimtree_path, systtree_path, 'SigEvents', 'SystFlag == %d' % (self.systematics[syst]))
+				if syst != 'Normal' : minNJ = 3
+				else                : minNJ = 0
+				copytree.copytree(skimtree_path, systtree_path, 'SigEvents', 'SystFlag == %d && NJ >= %d' % (self.systematics[syst], minNJ))
 
 
 	def readDatacard(self, cardfile, verbose = 0) :
