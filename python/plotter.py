@@ -224,23 +224,27 @@ class plotter :
 
 
 	def readDatacard(self, cardfile, verbose = 0) :
-		'''reads datacard file'''
+		'''
+		reads datacard file
+
+		line format:
+
+		data:
+		 0: sample name
+		 1: input file
+		 2: data mc type
+		 3: channel (0: DoubleMu, 1: DoubleEle, 2: MuEG, 5: SingleMu)
+
+		mc:
+		 0: sample name
+		 1: input file
+		 2: data mc type
+		 3: channel (-1)
+		 4: cross section
+		'''
+
 		print '[status] reading datacard %s' % (cardfile)
 		samples = {}
-		## line format:
-		##
-		## data:
-		##  0: sample name
-		##  1: input file
-		##  2: data mc type
-		##  3: channel (0: DoubleMu, 1: DoubleEle, 2: MuEG, 5: SingleMu)
-		##
-		## mc:
-		##  0: sample name
-		##  1: input file
-		##  2: data mc type
-		##  3: channel (-1)
-		##  4: cross section
 		with open(cardfile, 'r') as file :
 			for i, line in enumerate(file.readlines()) :
 				if line[0] is '#' : continue
