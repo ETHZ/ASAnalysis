@@ -13,11 +13,11 @@ def make_ObsPredTable(path, results) :
 	print '[status] writing %s' % table_name
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
-		file.write('%!TEX root = ../AN-12-445.tex\n')
-		file.write('%=========================================================================================\n')
-		file.write('% Observation and predictions table for ttW analysis, same-sign channel, subchannels\n')
-		file.write('% Generated on: ' + str(timestamp) + '\n')
-		file.write('%-----------------------------------------------------------------------------------------\n')
+		file.write('%%!TEX root = ../AN-12-445.tex\n')
+		file.write('%%=========================================================================================\n')
+		file.write('%% Observation and predictions table for ttW analysis, same-sign channel, subchannels\n')
+		file.write('%% Generated on: %s\n' % str(timestamp))
+		file.write('%%-----------------------------------------------------------------------------------------\n')
 		file.write('\n\n')
 		file.write('\\providecommand{\\ttbar}{$t\\bar{t}$}\n')
 		file.write('\\providecommand{\\ttw}{\\ttbar{}W}\n')
@@ -163,11 +163,11 @@ def make_SystTable(path, results, chan, charge) :
 	print '[status] writing %s' % table_name
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
-		file.write('%!TEX root = ../AN-12-445.tex\n')
-		file.write('%=========================================================================================\n')
-		file.write('% Systematics table for ttW analysis, same-sign channel, subchannels\n')
-		file.write('% Generated on: ' + str(timestamp) + '\n')
-		file.write('%-----------------------------------------------------------------------------------------\n')
+		file.write('%%!TEX root = ../AN-12-445.tex\n')
+		file.write('%%=========================================================================================\n')
+		file.write('%% Systematics table for ttW analysis, same-sign channel, subchannels\n')
+		file.write('%% Generated on: %s\n' % str(timestamp))
+		file.write('%%-----------------------------------------------------------------------------------------\n')
 		file.write('\n\n')
 		file.write('\\begin{tabular}{l|r@{$\\,/\\,$}l}\n')
 		file.write('\\hline\\hline\n')
