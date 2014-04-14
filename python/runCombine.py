@@ -84,8 +84,7 @@ def main(args):
 		printLaTeX(obsSignif, obsPValue, expSignif, expPValue, sigStrength, loStat, hiStat, loSyst, hiSyst, channel)
 
 
-print '[status] starting...'
-main(sys.argv)
-print '[status] ...done'
-
-
+if __name__ == '__main__' :
+	print '[status] starting..'
+	main(sys.argv)
+	print '[status] done'
