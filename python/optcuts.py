@@ -4,6 +4,7 @@ import plotter
 import ratios
 import selection
 import helper
+import runCombine
 
 
 class optcuts :
@@ -15,8 +16,18 @@ class optcuts :
 
 
 	def optimize(self, channel) :
-		for eff in range(35, 75, 5) :
-			self.do_analysis(eff)
+#		for eff in range(25, 105, 5) :
+#			self.do_analysis(eff)
+#		return
+
+		signif = []
+		for eff in range(25, 105, 5) :
+			datacard = self.path + 'optcuts/' + 'datacard_ssdl_ttW_int++_eff%d.txt' % eff
+			signif.append([eff, runCombine.expected_significance(datacard, '')])
+#			runCombine.signal_strength(datacard)
+
+		print '\n\n'
+		print signif
 
 
 	def do_analysis(self, eff) :
@@ -26,7 +37,6 @@ class optcuts :
 
 		# selections
 		sels = {}
-		sels['Normal'] = self.set_selection('eff%d' % eff, cuts, pl.systematics['Normal'])
 
 		# charge mis-ID scale factor
 		pl.chmid_sf = 1.62
@@ -46,7 +56,14 @@ class optcuts :
 			results = helper.load_object(resultspath)
 
 		else :
-			results['Normal'] = pl.make_IntPredictions(sels['Normal'], self.path + 'SSDLYields_skim_Normal.root')
+			for syst in pl.systematics :
+#				if syst != 'Normal' : continue
+				print '[status] making predictions for %s systematic' % (syst)
+				pl.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
+				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
+				sels[syst] = self.set_selection('eff%d' % eff, cuts, pl.systematics[syst])
+				results[syst] = pl.make_IntPredictions(sels[syst], systpath)
+
 			helper.save_object(results, resultspath)
 
 		# make datacards for each charge-flavor channel
