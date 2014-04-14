@@ -63,12 +63,15 @@ class result :
 
 		self.wz              = 0.
 		self.wz_err          = 0.
+		self.wz_staterr      = 0.
 
 		self.rare            = 0.
 		self.rare_err        = 0.
+		self.rare_staterr    = 0.
 
 		self.tot             = 0.
 		self.tot_err         = 0.
+		self.tot_staterr     = 0.
 
 
 #	def init_dict(self, dict, value) :

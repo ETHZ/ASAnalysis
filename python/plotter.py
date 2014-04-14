@@ -886,20 +886,24 @@ class plotter :
 						res[ch_str][chan].rares_staterr[s] = staterr
 
 				# store WZ yields
-				res[ch_str][chan].wz      = wz
-				res[ch_str][chan].wz_err  = math.sqrt(wz_staterr2 + self.WZESyst2 * wz * wz)
+				res[ch_str][chan].wz           = wz
+				res[ch_str][chan].wz_err       = math.sqrt(wz_staterr2 + self.WZESyst2 * wz * wz)
+				res[ch_str][chan].wz_starerr   = math.sqrt(wz_staterr2)
 
 				# store ttW mc yields
-				res[ch_str][chan].ttw     = ttw
-				res[ch_str][chan].ttw_err = math.sqrt(ttw_staterr2 + self.TTWESyst2 * ttw * ttw)
+				res[ch_str][chan].ttw          = ttw
+				res[ch_str][chan].ttw_err      = math.sqrt(ttw_staterr2 + self.TTWESyst2 * ttw * ttw)
+				res[ch_str][chan].ttw_staterr  = math.sqrt(ttw_staterr2)
 
 				# store ttZ mc yields
-				res[ch_str][chan].ttz     = ttz
-				res[ch_str][chan].ttz_err = math.sqrt(ttz_staterr2 + self.TTZESyst2 * ttz * ttz)
+				res[ch_str][chan].ttz          = ttz
+				res[ch_str][chan].ttz_err      = math.sqrt(ttz_staterr2 + self.TTZESyst2 * ttz * ttz)
+				res[ch_str][chan].ttz_staterr  = math.sqrt(ttz_staterr2)
 
 				# store rare mc yields
-				res[ch_str][chan].rare     = rare
-				res[ch_str][chan].rare_err = math.sqrt(rare_staterr2 + self.RareESyst2 * rare * rare)
+				res[ch_str][chan].rare         = rare
+				res[ch_str][chan].rare_err     = math.sqrt(rare_staterr2 + self.RareESyst2 * rare * rare)
+				res[ch_str][chan].rare_staterr = math.sqrt(rare_staterr2)
 
 				# store ttW/Z mc yields
 				res[ch_str][chan].set_ttwzPredictions()
