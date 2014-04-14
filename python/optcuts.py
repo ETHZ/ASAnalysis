@@ -5,6 +5,7 @@ import ratios
 import selection
 import helper
 import runCombine
+import ROOT
 
 
 class optcuts :
@@ -20,12 +21,21 @@ class optcuts :
 #			self.do_analysis(eff)
 #		return
 
-		signif = []
-		for eff in range(25, 105, 5) :
-			datacard = self.path + 'optcuts/' + 'datacard_ssdl_ttW_int++_eff%d.txt' % eff
-			signif.append([eff, runCombine.expected_significance(datacard, '')])
-#			runCombine.signal_strength(datacard)
+		signif_path = self.cutspath + 'signif.pkl'
 
+		if os.path.exists(signif_path) :
+			print '[status] loading optimization results..'
+			signif = helper.load_object(signif_path)
+
+		else :
+			signif = []
+			for eff in range(25, 105, 5) :
+				datacard = self.path + 'optcuts/' + 'datacard_ssdl_ttW_int++_eff%d.txt' % eff
+				signif.append([eff, runCombine.expected_significance(datacard, '')])
+	#			runCombine.signal_strength(datacard)
+			helper.save_object(signif, signif_path)
+
+		self.plot_results(signif)
 		print '\n\n'
 		print signif
 
@@ -145,8 +155,23 @@ class optcuts :
 
 		return sel
 
-#NbJmed 1 100000.
-#Charge 1 10
+
+	def plot_results(self, results) :
+		gr_res = ROOT.TGraphErrors(0)
+		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
+
+		for i, [eff, result] in enumerate(results) :
+			print eff, result
+			gr_res.SetPoint(i, eff, result)
+
+		gr_res.SetMarkerSize(2.)
+		gr_res.SetMarkerStyle(21)
+		gr_res.SetMarkerColor(29)
+		h2_axes_gr.Draw()
+		gr_res.Draw('P same')
+		raw_input('ok? ')
+		raw_input('ok? ')
+
 
 if __name__ == '__main__' :
 	args = sys.argv
