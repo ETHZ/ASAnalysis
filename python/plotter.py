@@ -102,7 +102,7 @@ class plotter :
 			self.charges[self.get_chargeString(charge)] = charge
 
 
-	def do_analysis(self) :
+	def do_analysis(self, IntPred = True, DiffPred = False) :
 		print '[status] starting analysis..'
 
 		# selections
@@ -140,67 +140,60 @@ class plotter :
 #		self.h2_ElpRatio.Draw('colztext')
 #
 
+		if DiffPred :
+			# produce results tree
+			self.skim_tree('Normal')  # makes sure the skimmed SigEvents tree exists
+			restree_path = {}
+			restree_path['1J0bJ'] = self.path + 'SSDLResults.root'
+			restree_path['2J0bJ'] = self.path + 'SSDLResults_2J0bJ.root'
+			restree_path['3J1bJ'] = self.path + 'SSDLResults_3J1bJ.root'
+			if not os.path.exists(restree_path['1J0bJ']) :
+				self.make_IntPredictions(sels['1J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
+			if not os.path.exists(restree_path['2J0bJ']) :
+				copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
+			if not os.path.exists(restree_path['3J1bJ']) :
+				copytree.copytree(restree_path['1J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
 
-		# produce results tree
-		self.skim_tree('Normal')  # makes sure the skimmed SigEvents tree exists
-		restree_path = {}
-		restree_path['1J0bJ'] = self.path + 'SSDLResults.root'
-		restree_path['2J0bJ'] = self.path + 'SSDLResults_2J0bJ.root'
-		restree_path['3J1bJ'] = self.path + 'SSDLResults_3J1bJ.root'
-		if not os.path.exists(restree_path['1J0bJ']) :
-			self.make_IntPredictions(sels['1J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
-		if not os.path.exists(restree_path['2J0bJ']) :
-			copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
-		if not os.path.exists(restree_path['3J1bJ']) :
-			copytree.copytree(restree_path['1J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
-
-		for name, sel in sels.iteritems() :
-			res_path = restree_path['3J1bJ']
-			if sel.name.startswith('2J') : res_path = restree_path['2J0bJ']
-			if sel.name.startswith('1J') : res_path = restree_path['1J0bJ']
-			self.plot_predictions(res_path, sel)
-
-		return
-
+			# produce differential predictions
+			for name, sel in sels.iteritems() :
+				res_path = restree_path['3J1bJ']
+				if sel.name.startswith('2J') : res_path = restree_path['2J0bJ']
+				if sel.name.startswith('1J') : res_path = restree_path['1J0bJ']
+				self.plot_predictions(res_path, sel)
 
 
+		if IntPred :
+			sels = {}
+			results = {}
+			resultspath = self.path + 'IntPredictions/results.pkl'
 
-		results = {}
-		resultspath = self.path + 'IntPredictions/results.pkl'
+			if os.path.exists(resultspath) :
+				print '[status] loading results of predictions from %s..' % (resultspath)
+				results = helper.load_object(resultspath)
 
-		sels = {}
+			else :
+				for syst in self.systematics :
+	#				if syst != 'Normal' : continue
+					print '[status] making predictions for %s systematic' % (syst)
+					self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
+					systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
+					sels[syst] = selection.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
+					results[syst] = self.make_IntPredictions(sels[syst], systpath)
+				helper.save_object(results, resultspath)
 
-		if os.path.exists(resultspath) :
-			print '[status] loading results of predictions from %s..' % (resultspath)
-			results = helper.load_object(resultspath)
+			# make datacards for each charge-flavor channel
+			for ch_str in results['Normal'] :
+				for chan in results['Normal'][ch_str] :
+					self.make_datacard(results, chan, ch_str)
 
-		else :
-			for syst in self.systematics :
-#				if syst != 'Normal' : continue
-				print '[status] making predictions for %s systematic' % (syst)
-				self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
-				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
-				sels[syst] = selection.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
-				results[syst] = self.make_IntPredictions(sels[syst], systpath)
+			# make table of observation and predictions
+			tables.make_ObsPredTable(self.path, results['Normal'])
 
-			helper.save_object(results, resultspath)
+			# make overview table of systematic studies
+			tables.make_SystTable(self.path, results, 'al', 'al')
 
-		# make datacards for each charge-flavor channel
-		for ch_str in results['Normal'] :
-			for chan in results['Normal'][ch_str] :
-				self.make_datacard(results, chan, ch_str)
-
-		# make table of observation and predictions
-		tables.make_ObsPredTable(self.path, results['Normal'])
-
-		# make overview table of systematic studies
-		tables.make_SystTable(self.path, results, 'al', 'al')
-
-		print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['++']['al'].obs, results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw, math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
-		print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['--']['al'].obs, results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw, math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
-
-#
-#		raw_input('ok? ')
+			print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['++']['al'].obs, results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw, math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
+			print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['--']['al'].obs, results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw, math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
 
 
 	def skim_tree(self, syst = '') :
@@ -463,7 +456,7 @@ class plotter :
 	def make_IntPredictions(self, sel, treepath, write_ResTree = False) :
 		'''oberservation and prediction for different selections'''
 
-		print '[status] getting observations and predictions for results tree with selection %s..' % (sel.name)
+		print '[status] getting observations and predictions with selection %s..' % (sel.name)
 		print sel
 		if sel.charge != 0 : print '[WARNING] Avoid running make_IntPredictions with a charge selection. Please apply charge selection later.'
 
@@ -547,6 +540,7 @@ class plotter :
 		################
 
 		if write_ResTree :
+			print '[status] preparing Results tree to store observations and predictions..'
 			self.results_file = ROOT.TFile(self.path + 'SSDLResults.root', 'RECREATE')
 			self.results_tree = ROOT.TTree('Results', 'ResultsTree')
 			self.book_resultsTree()
@@ -927,7 +921,9 @@ class plotter :
 #		self.print_results(res['al'])
 #		self.print_results(res['++'])
 
-		return res
+		# return results only if they are not written to the Results tree
+		if not write_ResTree :
+			return res
 
 
 	def print_results(self, res) :
@@ -1448,6 +1444,8 @@ class plotter :
 
 if __name__ == '__main__' :
 	args = sys.argv
+	IntPred  = False
+	DiffPred = False
 
 	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) :
 		print 'usage: ..'
@@ -1461,5 +1459,11 @@ if __name__ == '__main__' :
 		cardfile = str(args[args.index('-c')+1])
 		print cardfile
 
+	if ('--IntPred' in args) :
+		IntPred = True
+
+	if ('--DiffPred' in args) :
+		DiffPred = True
+
 	pl = plotter(path, cardfile)
-	pl.do_analysis()
+	pl.do_analysis(IntPred, DiffPred)
