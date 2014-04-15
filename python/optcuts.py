@@ -6,6 +6,7 @@ import selection
 import helper
 import runCombine
 import ROOT
+import ttvplot
 
 
 class optcuts :
@@ -21,23 +22,7 @@ class optcuts :
 #			self.do_analysis(eff)
 #		return
 
-		signif_path = self.cutspath + 'signif.pkl'
-
-		if os.path.exists(signif_path) :
-			print '[status] loading optimization results..'
-			signif = helper.load_object(signif_path)
-
-		else :
-			signif = []
-			for eff in range(25, 105, 5) :
-				datacard = self.path + 'optcuts/' + 'datacard_ssdl_ttW_int++_eff%d.txt' % eff
-				signif.append([eff, runCombine.expected_significance(datacard, '')])
-	#			runCombine.signal_strength(datacard)
-			helper.save_object(signif, signif_path)
-
-		self.plot_results(signif)
-		print '\n\n'
-		print signif
+		self.analize_datacards(+1)
 
 
 	def do_analysis(self, eff) :
@@ -128,7 +113,7 @@ class optcuts :
 		return cuts
 
 
-	def set_selection(self, name, cuts, systflag = 0) :
+	def set_selection(self, name, cuts, systflag = 0, charge_sel = False) :
 		'''sets selcetion'''
 
 		sel = selection.selection(name)
@@ -150,25 +135,53 @@ class optcuts :
 			if var == 'NbJmed' :
 				sel.minNbjetsM = int(cut[0])
 				sel.maxNbjetsM = int(cut[1])
-#			if var == 'Charge' :
-#				sel.charge = int(cut[0])
+			if var == 'Charge' and charge_sel :
+				sel.charge = int(cut[0])
 
 		return sel
 
 
+	def analize_datacards(self, charge) :
+
+		presel = selection.selection(name = 'presel', minNjets = 3, minNbjetsM = 1, charge = charge)
+
+		signif_path = self.cutspath + 'signif.pkl'
+
+		if os.path.exists(signif_path) :
+			print '[status] loading optimization results..'
+			signif = helper.load_object(signif_path)
+
+		else :
+			signif = []
+			for eff in range(25, 105, 5) :
+				datacard = self.path + 'optcuts/' + 'datacard_ssdl_ttW_int++_eff%d.txt' % eff
+				signif.append([eff, runCombine.expected_significance(datacard, '')])
+	#			runCombine.signal_strength(datacard)
+			helper.save_object(signif, signif_path)
+
+		self.plot_results(signif)
+		print '\n\n'
+		print signif
+
+
 	def plot_results(self, results) :
 		gr_res = ROOT.TGraphErrors(0)
-		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
+		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
 
 		for i, [eff, result] in enumerate(results) :
 			print eff, result
 			gr_res.SetPoint(i, eff, result)
+
+		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
+		canvas = pl.get_canvas()
+		canvas.cd()
 
 		gr_res.SetMarkerSize(2.)
 		gr_res.SetMarkerStyle(21)
 		gr_res.SetMarkerColor(29)
 		h2_axes_gr.Draw()
 		gr_res.Draw('P same')
+		pl.draw_cmsLine()
 		raw_input('ok? ')
 		raw_input('ok? ')
 
