@@ -57,6 +57,9 @@ class ttvplot :
 		self.var_names['minMT' ] = 'M_{T} [GeV]'
 		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
 
+		# random variable
+		self.rand = ROOT.TRandom3(0)
+
 
 	def get_fillColor(self, process) :
 		if process in self.colors.keys() :
@@ -76,10 +79,10 @@ class ttvplot :
 		return '?'
 
 
-	def save_plot(self, histos, var, selname = '', prefix = '', charge_str = '') :
+	def save_plot(self, histos, var, prefix = '', charge_str = '') :
 		'''save plot with observation and predictions'''
 
-		if selname != '' : selname += '_'
+#		if selname != '' : selname += '_'
 		if prefix  != '' : prefix = '_' + prefix
 
 		# data with asymmetric errors
@@ -166,11 +169,12 @@ class ttvplot :
 		leg.SetBorderSize(0)
 		leg.SetTextAlign(12)
 
-		canvas = ROOT.TCanvas('C_ObsPred_'+selname+var, 'Observed vs Predicted', 0, 0, 600, 600)
-		canvas.SetLeftMargin(0.12)
-		canvas.SetRightMargin(0.04)
-		canvas.SetTopMargin(0.04)
-		canvas.SetBottomMargin(0.12)
+#		canvas = ROOT.TCanvas('C_ObsPred_'+selname+var, 'Observed vs Predicted', 0, 0, 600, 600)
+#		canvas.SetLeftMargin(0.12)
+#		canvas.SetRightMargin(0.04)
+#		canvas.SetTopMargin(0.04)
+#		canvas.SetBottomMargin(0.12)
+		canvas = self.get_canvas('C_ObsPred')
 		canvas.cd()
 
 #		ROOT.gStyle.SetOptStat(0)
@@ -248,6 +252,22 @@ class ttvplot :
 		canvas.Print('%sObsPred%s_%s.pdf' % (self.path, prefix, var))
 		canvas.Print('%sObsPred%s_%s.png' % (self.path, prefix, var))
 #		raw_input('ok? ')
+
+
+	def get_canvas(self, name = '') :
+		name += '_%s' % self.rand.Integer(10000)  # add random number to avoid same names
+		canvas = ROOT.TCanvas(name, name, 0, 0, 600, 600)
+		canvas.SetLeftMargin(0.12)
+		canvas.SetRightMargin(0.04)
+		canvas.SetTopMargin(0.04)
+		canvas.SetBottomMargin(0.12)
+		canvas.cd()
+
+		ROOT.gStyle.SetOptStat(0)
+		ROOT.gStyle.SetOptTitle(0)
+		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
+		ROOT.gPad.SetTicks(1,1)
+		return canvas
 
 
 	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :

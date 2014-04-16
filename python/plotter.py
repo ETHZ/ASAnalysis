@@ -116,14 +116,14 @@ class plotter :
 
 		# selections
 		sels = {}
-		sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
+#		sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
 		sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
 		sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
 		sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
-		sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
+#		sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
 		sels['final'    ] = self.selections['final'    ]
-		sels['final++'  ] = self.selections['final++'  ]
-		sels['final--'  ] = self.selections['final--'  ]
+#		sels['final++'  ] = self.selections['final++'  ]
+#		sels['final--'  ] = self.selections['final--'  ]
 
 		# charge mis-ID scale factor
 		self.chmid_sf = 1.62
@@ -154,10 +154,10 @@ class plotter :
 #			restree_path['1J0bJ'] = self.path + 'SSDLResults_1J0bJ.root'
 			restree_path['2J0bJ'] = self.path + 'SSDLResults_2J0bJ.root'
 			restree_path['3J1bJ'] = self.path + 'SSDLResults_3J1bJ.root'
-			if not os.path.exists(restree_path['1J0bJ']) :
-				self.make_IntPredictions(self.selections['2J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
 			if not os.path.exists(restree_path['2J0bJ']) :
-				copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
+				self.make_IntPredictions(self.selections['2J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
+#			if not os.path.exists(restree_path['2J0bJ']) :
+#				copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
 			if not os.path.exists(restree_path['3J1bJ']) :
 				copytree.copytree(restree_path['2J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
 
@@ -1441,7 +1441,7 @@ class plotter :
 		if sel.name == 'final' : cms_label = 0
 		cms_label = 2
 		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label)
-		pl.save_plot(histos, var, sel.name, prefix, charge_str)
+		pl.save_plot(histos, var, prefix, charge_str)
 #		raw_input('ok? ')
 #		raw_input('ok? ')
 
