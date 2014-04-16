@@ -2,6 +2,7 @@
 import helper
 import time
 import ttvplot
+import math
 
 
 def make_ObsPredTable(path, results) :
@@ -62,12 +63,6 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].rare, results['--']['mm'].rare_err,
 			results['--']['em'].rare, results['--']['em'].rare_err,
 			results['--']['ee'].rare, results['--']['ee'].rare_err))
-	##						ttwzpreds_plpl["Normal"].rare_mm, ttwzpreds_plpl["Normal"].rare_err_mm,
-	##						ttwzpreds_plpl["Normal"].rare_em, ttwzpreds_plpl["Normal"].rare_err_em,
-	##						ttwzpreds_plpl["Normal"].rare_ee, ttwzpreds_plpl["Normal"].rare_err_ee,
-	##						ttwzpreds_mimi["Normal"].rare_mm, ttwzpreds_mimi["Normal"].rare_err_mm,
-	##						ttwzpreds_mimi["Normal"].rare_em, ttwzpreds_mimi["Normal"].rare_err_em,
-	##						ttwzpreds_mimi["Normal"].rare_ee, ttwzpreds_mimi["Normal"].rare_err_ee))
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
 			pl.get_processName('wz'),
 			results['++']['mm'].wz, results['++']['mm'].wz_err,
@@ -100,12 +95,6 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].tot, results['--']['mm'].tot_err,
 			results['--']['em'].tot, results['--']['em'].tot_err,
 			results['--']['ee'].tot, results['--']['ee'].tot_err))
-	##						ttwzpreds_plpl["Normal"].fake_mm                                    + ttwzpreds_plpl["Normal"].rare_mm + ttwzpreds_plpl["Normal"].wz_mm + ttwzpreds_plpl["Normal"].ttz_mm, ttwzpreds_plpl["Normal"].tot_err_mm,
-	##						ttwzpreds_plpl["Normal"].fake_em + ttwzpreds_plpl["Normal"].cmid_em + ttwzpreds_plpl["Normal"].rare_em + ttwzpreds_plpl["Normal"].wz_em + ttwzpreds_plpl["Normal"].ttz_em, ttwzpreds_plpl["Normal"].tot_err_em,
-	##						ttwzpreds_plpl["Normal"].fake_ee + ttwzpreds_plpl["Normal"].cmid_ee + ttwzpreds_plpl["Normal"].rare_ee + ttwzpreds_plpl["Normal"].wz_ee + ttwzpreds_plpl["Normal"].ttz_ee, ttwzpreds_plpl["Normal"].tot_err_ee,
-	##						ttwzpreds_mimi["Normal"].fake_mm                                    + ttwzpreds_mimi["Normal"].rare_mm + ttwzpreds_mimi["Normal"].wz_mm + ttwzpreds_mimi["Normal"].ttz_mm, ttwzpreds_mimi["Normal"].tot_err_mm,
-	##						ttwzpreds_mimi["Normal"].fake_em + ttwzpreds_mimi["Normal"].cmid_em + ttwzpreds_mimi["Normal"].rare_em + ttwzpreds_mimi["Normal"].wz_em + ttwzpreds_mimi["Normal"].ttz_em, ttwzpreds_mimi["Normal"].tot_err_em,
-	##						ttwzpreds_mimi["Normal"].fake_ee + ttwzpreds_mimi["Normal"].cmid_ee + ttwzpreds_mimi["Normal"].rare_ee + ttwzpreds_mimi["Normal"].wz_ee + ttwzpreds_mimi["Normal"].ttz_ee, ttwzpreds_mimi["Normal"].tot_err_ee))
 		file.write('{\\bf %12s} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c}{\\bf %3d}  \\\\\n' % (
 			pl.get_processName('obs'),
 			results['++']['mm'].obs,
@@ -114,12 +103,6 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].obs,
 			results['--']['em'].obs,
 			results['--']['ee'].obs))
-	##	cout << "ttwzpreds_plpl[\"Normal\"].obs_mm: " << ttwzpreds_plpl["Normal"].obs_mm << endl;
-	##	cout << "ttwzpreds_plpl[\"Normal\"].obs_em: " << ttwzpreds_plpl["Normal"].obs_em << endl;
-	##	cout << "ttwzpreds_plpl[\"Normal\"].obs_ee: " << ttwzpreds_plpl["Normal"].obs_ee << endl;
-	##	cout << "ttwzpreds_mimi[\"Normal\"].obs_mm: " << ttwzpreds_mimi["Normal"].obs_mm << endl;
-	##	cout << "ttwzpreds_mimi[\"Normal\"].obs_em: " << ttwzpreds_mimi["Normal"].obs_em << endl;
-	##	cout << "ttwzpreds_mimi[\"Normal\"].obs_ee: " << ttwzpreds_mimi["Normal"].obs_ee << endl;
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
 			'Obs. $-$ Tot. Bkg.',
 			results['++']['mm'].obs - results['++']['mm'].tot, results['++']['mm'].tot_err,
@@ -129,20 +112,22 @@ def make_ObsPredTable(path, results) :
 			results['--']['em'].obs - results['--']['em'].tot, results['--']['em'].tot_err,
 			results['--']['ee'].obs - results['--']['ee'].tot, results['--']['ee'].tot_err))
 		file.write('\\hline\n')
-	##						ttwzpreds_plpl["Normal"].obs_mm - (ttwzpreds_plpl["Normal"].fake_mm                                    + ttwzpreds_plpl["Normal"].rare_mm + ttwzpreds_plpl["Normal"].wz_mm + ttwzpreds_plpl["Normal"].ttz_mm), ttwzpreds_plpl["Normal"].tot_err_mm,
-	##						ttwzpreds_plpl["Normal"].obs_em - (ttwzpreds_plpl["Normal"].fake_em + ttwzpreds_plpl["Normal"].cmid_em + ttwzpreds_plpl["Normal"].rare_em + ttwzpreds_plpl["Normal"].wz_em + ttwzpreds_plpl["Normal"].ttz_em), ttwzpreds_plpl["Normal"].tot_err_em,
-	##						ttwzpreds_plpl["Normal"].obs_ee - (ttwzpreds_plpl["Normal"].fake_ee + ttwzpreds_plpl["Normal"].cmid_ee + ttwzpreds_plpl["Normal"].rare_ee + ttwzpreds_plpl["Normal"].wz_ee + ttwzpreds_plpl["Normal"].ttz_ee), ttwzpreds_plpl["Normal"].tot_err_ee,
-	##						ttwzpreds_mimi["Normal"].obs_mm - (ttwzpreds_mimi["Normal"].fake_mm                                    + ttwzpreds_mimi["Normal"].rare_mm + ttwzpreds_mimi["Normal"].wz_mm + ttwzpreds_mimi["Normal"].ttz_mm), ttwzpreds_mimi["Normal"].tot_err_mm,
-	##						ttwzpreds_mimi["Normal"].obs_em - (ttwzpreds_mimi["Normal"].fake_em + ttwzpreds_mimi["Normal"].cmid_em + ttwzpreds_mimi["Normal"].rare_em + ttwzpreds_mimi["Normal"].wz_em + ttwzpreds_mimi["Normal"].ttz_em), ttwzpreds_mimi["Normal"].tot_err_em,
-	##						ttwzpreds_mimi["Normal"].obs_ee - (ttwzpreds_mimi["Normal"].fake_ee + ttwzpreds_mimi["Normal"].cmid_ee + ttwzpreds_mimi["Normal"].rare_ee + ttwzpreds_mimi["Normal"].wz_ee + ttwzpreds_mimi["Normal"].ttz_ee), ttwzpreds_mimi["Normal"].tot_err_ee))
+#		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+#			pl.get_processName('ttw') + ' (exp.)',
+#			results['++']['mm'].ttw, results['++']['mm'].ttw_err,
+#			results['++']['em'].ttw, results['++']['em'].ttw_err,
+#			results['++']['ee'].ttw, results['++']['ee'].ttw_err,
+#			results['--']['mm'].ttw, results['--']['mm'].ttw_err,
+#			results['--']['em'].ttw, results['--']['em'].ttw_err,
+#			results['--']['ee'].ttw, results['--']['ee'].ttw_err))
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
 			pl.get_processName('ttw') + ' (exp.)',
-			results['++']['mm'].ttw, results['++']['mm'].ttw_err,
-			results['++']['em'].ttw, results['++']['em'].ttw_err,
-			results['++']['ee'].ttw, results['++']['ee'].ttw_err,
-			results['--']['mm'].ttw, results['--']['mm'].ttw_err,
-			results['--']['em'].ttw, results['--']['em'].ttw_err,
-			results['--']['ee'].ttw, results['--']['ee'].ttw_err))
+			results['++']['mm'].ttw, math.sqrt(results['++']['mm'].ttw_staterr*results['++']['mm'].ttw_staterr + 0.08*0.08*results['++']['mm'].ttw*results['++']['mm'].ttw),
+			results['++']['em'].ttw, math.sqrt(results['++']['em'].ttw_staterr*results['++']['em'].ttw_staterr + 0.08*0.08*results['++']['em'].ttw*results['++']['em'].ttw),
+			results['++']['ee'].ttw, math.sqrt(results['++']['ee'].ttw_staterr*results['++']['ee'].ttw_staterr + 0.08*0.08*results['++']['ee'].ttw*results['++']['ee'].ttw),
+			results['--']['mm'].ttw, math.sqrt(results['--']['mm'].ttw_staterr*results['--']['mm'].ttw_staterr + 0.08*0.08*results['--']['mm'].ttw*results['--']['mm'].ttw),
+			results['--']['em'].ttw, math.sqrt(results['--']['em'].ttw_staterr*results['--']['em'].ttw_staterr + 0.08*0.08*results['--']['em'].ttw*results['--']['em'].ttw),
+			results['--']['ee'].ttw, math.sqrt(results['--']['ee'].ttw_staterr*results['--']['ee'].ttw_staterr + 0.08*0.08*results['--']['ee'].ttw*results['--']['ee'].ttw)))
 		file.write('\\hline \\hline\n')
 		file.write('\\end{tabular}\n')
 		file.write('\n\n')
