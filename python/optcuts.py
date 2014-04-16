@@ -1,6 +1,6 @@
 #! /usr/bin/python
 import os, sys
-from plotter import plotter
+import plotter
 import ratios
 import selection
 import helper
@@ -9,11 +9,11 @@ import ROOT
 import ttvplot
 
 
-class optcuts(plotter) :
+class optcuts(plotter.plotter) :
 #class optcuts :
 
 	def __init__(self, path, cardfile, cutspath) :
-		plotter.__init__(self, path, cardfile)
+		plotter.plotter.__init__(self, path, cardfile)
 #		self.path = path + '/'
 #		self.cardfile = cardfile
 		self.cutspath = cutspath + '/'
