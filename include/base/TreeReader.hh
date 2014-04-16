@@ -31,6 +31,8 @@ public:
     return true; //(Run>0)&&(LumiSection>0)&&(Event>0); 
   }
 
+  TFile* GetFile() { return fEvent->getTFile(); }
+
     
 };
 

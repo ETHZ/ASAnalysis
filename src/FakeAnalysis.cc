@@ -159,6 +159,7 @@ void FakeAnalysis::BookTree(){
 	
 	// event properties
 	fAnalysisTree->Branch("NVrtx"         ,&fTnvrtx         , "NVrtx/I"                );
+	fAnalysisTree->Branch("NTrue"         ,&fTntrue         , "NTrue/I"                );
 	fAnalysisTree->Branch("PUWeight"      ,&fTpuweight      , "PUWeight/F"             );
 	fAnalysisTree->Branch("PUWeightUp"    ,&fTpuweightUp    , "PUWeightUp/F"           );
 	fAnalysisTree->Branch("PUWeightDn"    ,&fTpuweightDn    , "PUWeightDn/F"           );
@@ -183,6 +184,11 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElCharge" , "std::vector<int>"  , &p_fTelcharge      );
 	fAnalysisTree->Branch("ElPFIso"  , "std::vector<float>", &p_fTelpfiso       );
 	fAnalysisTree->Branch("ElD0"     , "std::vector<float>", &p_fTeld0          );
+
+	// // single-photon properties
+	fAnalysisTree->Branch("PhoPt"     , "std::vector<float>", &p_fTphpt          );
+	fAnalysisTree->Branch("PhoEta"    , "std::vector<float>", &p_fTpheta         );
+	fAnalysisTree->Branch("PhoPhi"    , "std::vector<float>", &p_fTphphi         );
 
 	fAnalysisTree->Branch("ElIsVeto"      , "std::vector<bool>", &p_fTelisveto  );
 	fAnalysisTree->Branch("ElIsLoose"     , "std::vector<bool>", &p_fTelisloose );
@@ -230,6 +236,8 @@ void FakeAnalysis::FillAnalysisTree(){
 	fTEventNumber = fTR->Event;
 	fTLumiSection = fTR->LumiSection;
 
+	// cout << gROOT->GetFile()->GetName() << endl; 
+
 	// Dump basic jet and MET properties
 	for(int ind = 0; ind < fTR->NJets; ++ind){
 		if(fabs(fTR->JEta[ind]) > 2.5 || fTR->JPt[ind] <  1.) continue;
@@ -262,6 +270,7 @@ void FakeAnalysis::FillAnalysisTree(){
 	// PU correction
 	fTnvrtx = fTR->NVrtx;
 	if(!fIsData) {
+		fTntrue = fTR->PUnumTrueInteractions;
 		fTpuweight   = GetPUWeight    (fTR->PUnumTrueInteractions); // the factor of 1.38 is derived from 20000 ttW events
 		fTpuweightUp = GetPUWeightUp  (fTR->PUnumTrueInteractions);
 		fTpuweightDn = GetPUWeightDown(fTR->PUnumTrueInteractions);
@@ -269,6 +278,7 @@ void FakeAnalysis::FillAnalysisTree(){
 		fTGenWeight = fTR->GenWeight;
 	}
 	else {
+		fTntrue      = -1;
 		fTpuweight   = 1.;
 		fTpuweightUp = 1.;
 		fTpuweightDn = 1.;
@@ -279,7 +289,7 @@ void FakeAnalysis::FillAnalysisTree(){
 
 	// Dump muon properties
 	for(int ind = 0; ind < fTR->NMus; ++ind){
-		if(fTR->MuPt[ind] <10. || fabs(fTR->MuEta[ind]) > 2.4) continue; //save no muons with pt <5, eta > 2.5 or iso > 1.0
+		if(fTR->MuPt[ind] < 5. || fabs(fTR->MuEta[ind]) > 2.4) continue; //save no muons with pt <5, eta > 2.5 or iso > 1.0
 	//cout << Form("%i\t%i\t%i\t%.2f\t%.2f\t%.2f\t%i\t%i",fTR->Run, fTR->LumiSection, fTR->Event, fTR->MuPt[ind], fTR->MuEta[ind], fTR->MuPhi[ind], IsLooseMuon(ind), IsTightMuon(ind)) << endl;
 		p_fTmupt    ->push_back( fTR->MuPt      [ind] );
 		p_fTmueta   ->push_back( fTR->MuEta     [ind] );
@@ -315,7 +325,18 @@ void FakeAnalysis::FillAnalysisTree(){
 		if(IsLooseElectron(ind)) nLooseLeptons++;
 	}
 
-	// if(nLooseLeptons < 1) return;
+	// Dump Photon properties
+	for(int ind = 0; ind < fTR->NPhotons; ind++){
+
+		if(!IsGoodPhotonEGMLoose(ind)) continue;
+		
+		p_fTphpt     ->push_back( fTR->PhoPt    [ind] );
+		p_fTpheta    ->push_back( fTR->PhoEta   [ind] );
+		p_fTphphi    ->push_back( fTR->PhoPhi   [ind] );
+		
+	}
+
+	if(nLooseLeptons < 1) return;
 
 	fAnalysisTree->Fill();
 }
@@ -333,6 +354,7 @@ void FakeAnalysis::ResetTree(){
 	}
 	
 	fTnvrtx      = -999   ;
+	fTntrue      = -999   ;
 	fTpuweight   = -999.99;
 	fTpuweightUp = -999.99;
 	fTpuweightDn = -999.99;
@@ -357,6 +379,11 @@ void FakeAnalysis::ResetTree(){
 	p_fTelpfiso = &fTelpfiso ; p_fTelpfiso ->reserve(fTR->NEles); p_fTelpfiso ->clear();
 	p_fTelcharge= &fTelcharge; p_fTelcharge->reserve(fTR->NEles); p_fTelcharge->clear();
 	p_fTeld0    = &fTeld0    ; p_fTeld0    ->reserve(fTR->NEles); p_fTeld0    ->clear();
+
+	// // photon properties
+	p_fTphpt    = &fTphpt    ; p_fTphpt    ->reserve(fTR->NPhotons); p_fTphpt    ->clear();
+	p_fTpheta   = &fTpheta   ; p_fTpheta   ->reserve(fTR->NPhotons); p_fTpheta   ->clear();
+	p_fTphphi   = &fTphphi   ; p_fTphphi   ->reserve(fTR->NPhotons); p_fTphphi   ->clear();
 
 	p_fTelisveto   = &fTelisveto  ; p_fTelisveto   ->reserve(fTR->NEles) ; p_fTelisveto  ->clear();
 	p_fTelisloose  = &fTelisloose ; p_fTelisloose  ->reserve(fTR->NEles) ; p_fTelisloose ->clear();
@@ -403,58 +430,98 @@ bool FakeAnalysis::IsVetoElectron(int ind){
 }
 
 bool FakeAnalysis::IsLooseElectron(int ind){
-
-	//from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification under default trigger
-	if( fabs(fTR->ElSCEta[ind]) <  1.479 ){ // Barrel
-		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.007) return false;
-		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.15 ) return false;
-		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.01 ) return false;
-		if(fTR->ElHcalOverEcal                   [ind]  > 0.12 ) return false;
-	}
-	if( fabs(fTR->ElSCEta[ind]) >= 1.479){ // Endcap
-		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.009) return false;
-		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.10 ) return false;
-		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.03 ) return false;
-		if(fTR->ElHcalOverEcal                   [ind]  > 0.10 ) return false;
-	}
-
-	if (!fTR->ElCInfoIsGsfCtfScPixCons[ind] ) return false; // charge consistency
-
-	if ( fabs(fTR->ElSCEta[ind]) > 1.4442 && fabs(fTR->ElSCEta[ind]) < 1.566 )  return false; // EE-EB gap veto
-
-	if(fabs(fTR->ElDzPV[ind]) > 0.20) return false;
-	if(fabs(fTR->ElD0PV[ind]) > 0.04) return false;
-
-	return true;
-}
-
-bool FakeAnalysis::IsTightElectron(int ind){
-
-	if(!IsLooseElectron(ind)) return false;
-
 	float epVariable = fabs(1/fTR->ElCaloEnergy[ind] - fTR->ElESuperClusterOverP[ind]/fTR->ElCaloEnergy[ind]);
-
-	if( fabs(fTR->ElSCEta[ind]) <  1.479 ){ // Barrel
+	if( fabs(fTR->ElSCEta[ind]) <=  1.479 ){ // Barrel
 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.004) return false;
 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.06 ) return false;
 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.01 ) return false;
 		if(fTR->ElHcalOverEcal                   [ind]  > 0.12 ) return false;
 		if(epVariable > 0.05                                   ) return false;
 	}
-	if( fabs(fTR->ElSCEta[ind]) >= 1.479){ // Endcap
+	if( fabs(fTR->ElSCEta[ind]) > 1.479 && fabs(fTR->ElSCEta[ind]) < 2.5 ){ // Endcap
 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.007) return false;
 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.03 ) return false;
 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.03 ) return false;
 		if(fTR->ElHcalOverEcal                   [ind]  > 0.10 ) return false;
-		if(epVariable > 0.15                                   ) return false;
+		if(epVariable > 0.05                                   ) return false;
 	}
-
+	
 	// add the conversion rejection here
-	if (fTR->ElNumberOfMissingInnerHits[ind] > 0 ) return false;
 	if (!fTR->ElPassConversionVeto[ind]          ) return false;
+	if (fTR->ElNumberOfMissingInnerHits[ind] > 1 ) return false;
+	
+	if(fabs(fTR->ElDzPV[ind]) > 0.1) return false;  
+	
+	//==== here is the part of the selection that I loose:
+	//if(fabs(fTR->ElD0PV[ind]) > 0.02) return false; //d0 cut is completely removed
+	// fTR->relPfIso[ind]>0.6 return false;   //FIXME! 
 	
 	return true;
 }
+
+// marc bool FakeAnalysis::IsLooseElectron(int ind){
+// marc 
+// marc 	//from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification under default trigger
+// marc 	if( fabs(fTR->ElSCEta[ind]) <  1.479 ){ // Barrel
+// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.007) return false;
+// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.15 ) return false;
+// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.01 ) return false;
+// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.12 ) return false;
+// marc 	}
+// marc 	if( fabs(fTR->ElSCEta[ind]) >= 1.479){ // Endcap
+// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.009) return false;
+// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.10 ) return false;
+// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.03 ) return false;
+// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.10 ) return false;
+// marc 	}
+// marc 
+// marc 	if (!fTR->ElCInfoIsGsfCtfScPixCons[ind] ) return false; // charge consistency
+// marc 
+// marc 	if ( fabs(fTR->ElSCEta[ind]) > 1.4442 && fabs(fTR->ElSCEta[ind]) < 1.566 )  return false; // EE-EB gap veto
+// marc 
+// marc 	if(fabs(fTR->ElDzPV[ind]) > 0.20) return false;
+// marc 	if(fabs(fTR->ElD0PV[ind]) > 0.04) return false;
+// marc 
+// marc 	return true;
+// marc }
+
+bool FakeAnalysis::IsTightElectron(int ind){
+  
+	if(!IsLooseElectron(ind)) return false;
+	
+	if(fabs(fTR->ElD0PV[ind]) > 0.02) return false;
+	// fTR->relPfIso[ind]>0.15 return false;   //FIXME: 
+	
+	return true;
+}
+
+// marc bool FakeAnalysis::IsTightElectron(int ind){
+// marc 
+// marc 	if(!IsLooseElectron(ind)) return false;
+// marc 
+// marc 	float epVariable = fabs(1/fTR->ElCaloEnergy[ind] - fTR->ElESuperClusterOverP[ind]/fTR->ElCaloEnergy[ind]);
+// marc 
+// marc 	if( fabs(fTR->ElSCEta[ind]) <  1.479 ){ // Barrel
+// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.004) return false;
+// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.06 ) return false;
+// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.01 ) return false;
+// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.12 ) return false;
+// marc 		if(epVariable > 0.05                                   ) return false;
+// marc 	}
+// marc 	if( fabs(fTR->ElSCEta[ind]) >= 1.479){ // Endcap
+// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.007) return false;
+// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.03 ) return false;
+// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.03 ) return false;
+// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.10 ) return false;
+// marc 		if(epVariable > 0.15                                   ) return false;
+// marc 	}
+// marc 
+// marc 	// add the conversion rejection here
+// marc 	if (fTR->ElNumberOfMissingInnerHits[ind] > 0 ) return false;
+// marc 	if (!fTR->ElPassConversionVeto[ind]          ) return false;
+// marc 	
+// marc 	return true;
+// marc }
 
 
 bool FakeAnalysis::IsVetoMuon(int ind){
@@ -511,3 +578,72 @@ int FakeAnalysis::findMotherIndex(int ind){
 	return tmpm;
 }
 
+
+bool FakeAnalysis::IsGoodPhotonEGMLoose(int i){
+	//from https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonID2012 maybe
+	if(!IsGoodPhoton(i)) return false;
+	float pt = fTR->PhoPt[i];
+	float abseta = fabs(fTR->PhoEta[i]);
+	float chhadiso  = TMath::Max(fTR->PhoNewIsoPFCharged[i] - fTR->Rho * EffAreaChargedHad(abseta),(float)0.);
+	float chneuiso  = TMath::Max(fTR->PhoNewIsoPFNeutral[i] - fTR->Rho * EffAreaNeutralHad(abseta),(float)0.);
+	float photoniso = TMath::Max(fTR->PhoNewIsoPFPhoton[i]  - fTR->Rho * EffAreaPhoton(    abseta),(float)0.);
+	if(abseta<1.442){//EB
+		if(fTR->PhoSigmaIetaIeta[i] > 0.012) return false;
+		if(chhadiso  >  2.6                ) return false;
+		if(chneuiso  > (3.5 + 0.04  * pt)  ) return false;
+		if(photoniso > (1.3 + 0.005 * pt)  ) return false;
+	}
+	else if(abseta>1.566){//EE
+		if(fTR->PhoSigmaIetaIeta[i] > 0.034) return false;
+		if(chhadiso  >  2.3                ) return false;
+		if(chneuiso  > (2.9 + 0.04  * pt)  ) return false;
+		//no photoniso here
+	}
+	else return false;
+	return true;
+}
+
+bool FakeAnalysis::IsGoodPhoton(int i){//new
+	if( fTR->PhoPt[i] < 20                                        ) return false; // pt cut
+	if( fabs(fTR->PhoEta[i])> 2.4                                 ) return false;
+	if( fabs(fTR->PhoEta[i])> 1.442 && fabs(fTR->PhoEta[i])<1.566 ) return false; // veto EB-EE gap
+	if( fTR->PhoHoverE2012[i] > 0.05                              ) return false;
+//	float HoverE2012 = SingleTowerHoverE(i);
+//	if( HoverE2012 < -0.5                                         ) return false; // H/E not calculable due missing matched SC
+//	if( HoverE2012 > 0.05                                         ) return false; // H/E cut for 2012
+	if(!(fTR->PhoPassConversionVeto[i])                           ) return false; // Conversion safe electron veto
+	return true;
+}
+
+const float FakeAnalysis::EffAreaChargedHad(float abseta){
+	abseta=fabs(abseta); // making sure we're looking at |eta|
+	if(abseta<1.0)   return 0.012;
+	if(abseta<1.479) return 0.010;
+	if(abseta<2.0)   return 0.014;
+	if(abseta<2.2)   return 0.012;
+	if(abseta<2.3)   return 0.016;
+	if(abseta<2.4)   return 0.020;
+	return 0.012;
+}
+
+const float FakeAnalysis::EffAreaNeutralHad(float abseta){
+	abseta=fabs(abseta); // making sure we're looking at |eta|
+	if(abseta<1.0)   return 0.030;
+	if(abseta<1.479) return 0.057;
+	if(abseta<2.0)   return 0.039;
+	if(abseta<2.2)   return 0.015;
+	if(abseta<2.3)   return 0.024;
+	if(abseta<2.4)   return 0.039;
+	return 0.072;
+}
+
+const float FakeAnalysis::EffAreaPhoton(float abseta){
+	abseta=fabs(abseta); // making sure we're looking at |eta|
+	if(abseta<1.0)   return 0.148;
+	if(abseta<1.479) return 0.130;
+	if(abseta<2.0)   return 0.112;
+	if(abseta<2.2)   return 0.216;
+	if(abseta<2.3)   return 0.262;
+	if(abseta<2.4)   return 0.260;
+	return 0.266;
+}

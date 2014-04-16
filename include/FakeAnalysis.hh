@@ -63,6 +63,14 @@ public:
 	bool IsLooseMuon(int);
 	bool IsTightMuon(int);
 
+	// photon function
+	bool IsGoodPhoton(int);
+	bool IsGoodPhotonEGMLoose(int);
+
+	const float EffAreaChargedHad(float);
+	const float EffAreaNeutralHad(float);
+	const float EffAreaPhoton(float);
+
 private:
 	TH1F *fHEvCount;
 	
@@ -86,6 +94,7 @@ private:
 
 	// PileUP info
 	int   fTnvrtx;
+	int   fTntrue;
 	float fTpuweight;
 	float fTpuweightUp;
 	float fTpuweightDn;
@@ -120,6 +129,11 @@ private:
 	vector<bool>  fTelisveto ; vector<bool> * p_fTelisveto ;
 	vector<bool>  fTelisloose; vector<bool> * p_fTelisloose;
 	vector<bool>  fTelistight; vector<bool> * p_fTelistight;
+
+	// Electron properties
+	vector<float> fTphpt    ; vector<float> * p_fTphpt    ;
+	vector<float> fTpheta   ; vector<float> * p_fTpheta   ;
+	vector<float> fTphphi   ; vector<float> * p_fTphphi   ;
 
 	// Jet and MET properties
 	float fTpfMET;
