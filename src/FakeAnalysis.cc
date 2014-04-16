@@ -236,8 +236,6 @@ void FakeAnalysis::FillAnalysisTree(){
 	fTEventNumber = fTR->Event;
 	fTLumiSection = fTR->LumiSection;
 
-	// cout << gROOT->GetFile()->GetName() << endl; 
-
 	// Dump basic jet and MET properties
 	for(int ind = 0; ind < fTR->NJets; ++ind){
 		if(fabs(fTR->JEta[ind]) > 2.5 || fTR->JPt[ind] <  1.) continue;
