@@ -1,6 +1,6 @@
 #! /usr/bin/python
 import os, sys
-import plotter
+from plotter import plotter
 import ratios
 import selection
 import helper
@@ -9,11 +9,13 @@ import ROOT
 import ttvplot
 
 
-class optcuts :
+class optcuts(plotter) :
+#class optcuts :
 
 	def __init__(self, path, cardfile, cutspath) :
-		self.path = path + '/'
-		self.cardfile = cardfile
+		plotter.__init__(self, path, cardfile)
+#		self.path = path + '/'
+#		self.cardfile = cardfile
 		self.cutspath = cutspath + '/'
 
 
@@ -143,6 +145,8 @@ class optcuts :
 
 	def analize_datacards(self, charge) :
 
+		print self.path
+
 		presel = selection.selection(name = 'presel', minNjets = 3, minNbjetsM = 1, charge = charge)
 
 		signif_path = self.cutspath + 'signif.pkl'
@@ -167,6 +171,7 @@ class optcuts :
 	def plot_results(self, results) :
 		gr_res = ROOT.TGraphErrors(0)
 		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
+#		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
 
 		for i, [eff, result] in enumerate(results) :
 			print eff, result
@@ -174,7 +179,7 @@ class optcuts :
 
 		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
 		canvas = pl.get_canvas()
-		canvas.cd()
+#		canvas.cd()
 
 		gr_res.SetMarkerSize(2.)
 		gr_res.SetMarkerStyle(21)
@@ -184,6 +189,8 @@ class optcuts :
 		pl.draw_cmsLine()
 		raw_input('ok? ')
 		raw_input('ok? ')
+
+		canvas.Print('%stest.pdf' % self.cutspath)
 
 
 if __name__ == '__main__' :
@@ -215,5 +222,3 @@ if __name__ == '__main__' :
 
 	opt = optcuts(path, cardfile, cutspath)
 	opt.optimize(channel)
-#	plotter = plotter(path)
-#	plotter.do_analysis(cardfile)
