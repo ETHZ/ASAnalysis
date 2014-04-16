@@ -15,6 +15,7 @@ import numpy as np
 import ttvplot
 import config
 import tables
+import copy
 
 
 class plotter :
@@ -36,6 +37,14 @@ class plotter :
 
 		# selections
 		self.selections = {}
+		self.selections['1J0bJ'    ] = selection.selection(name = '1J0bJ'  , minNjets = 1)
+		self.selections['2J0bJ'    ] = selection.selection(name = '2J0bJ'  , minNjets = 2)  # loose selection
+		self.selections['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , minNjets = 2, maxNbjetsM = 0, flavor = 2)
+		self.selections['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
+		self.selections['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1, flavor = 2)
+		self.selections['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
+		self.selections['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
+		self.selections['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
 
 		# ratios
 		self.fpr = ratios.ratios(self.path, self.samples)
@@ -107,16 +116,14 @@ class plotter :
 
 		# selections
 		sels = {}
-#		sels['1J0bJ'    ] = selection.selection(name = '1J0bJ'  , minNjets = 1)
-#		sels['2J0bJ'    ] = selection.selection(name = '2J0bJ'  , minNjets = 2)  # loose selection
-#		sels['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , minNjets = 2, maxNbjetsM = 0, flavor = 2)
-#		sels['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
-#		sels['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1, flavor = 2)
-		sels['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
-#		sels['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
-#		sels['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
-		#print presel.get_selectionString()
-#		self.selections[presel.name] = presel
+		sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
+		sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
+		sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
+		sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
+		sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
+		sels['final'    ] = self.selections['final'    ]
+		sels['final++'  ] = self.selections['final++'  ]
+		sels['final--'  ] = self.selections['final--'  ]
 
 		# charge mis-ID scale factor
 		self.chmid_sf = 1.62
@@ -144,15 +151,15 @@ class plotter :
 			# produce results tree
 			self.skim_tree('Normal')  # makes sure the skimmed SigEvents tree exists
 			restree_path = {}
-			restree_path['1J0bJ'] = self.path + 'SSDLResults.root'
+#			restree_path['1J0bJ'] = self.path + 'SSDLResults_1J0bJ.root'
 			restree_path['2J0bJ'] = self.path + 'SSDLResults_2J0bJ.root'
 			restree_path['3J1bJ'] = self.path + 'SSDLResults_3J1bJ.root'
 			if not os.path.exists(restree_path['1J0bJ']) :
-				self.make_IntPredictions(sels['1J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
+				self.make_IntPredictions(self.selections['2J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
 			if not os.path.exists(restree_path['2J0bJ']) :
 				copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
 			if not os.path.exists(restree_path['3J1bJ']) :
-				copytree.copytree(restree_path['1J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
+				copytree.copytree(restree_path['2J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
 
 			# produce differential predictions
 			for name, sel in sels.iteritems() :
@@ -177,8 +184,10 @@ class plotter :
 					print '[status] making predictions for %s systematic' % (syst)
 					self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
 					systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
-					sels[syst] = selection.selection(name = 'final_' + syst, minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., systflag = self.systematics[syst])
-					results[syst] = self.make_IntPredictions(sels[syst], systpath)
+					sel = copy.deepcopy(self.selections['final'])
+					sel.name += '_%s' % syst
+					sel.systflag = self.systematics[syst]
+					results[syst] = self.make_IntPredictions(sel, systpath)
 				helper.save_object(results, resultspath)
 
 			# make datacards for each charge-flavor channel
@@ -196,15 +205,15 @@ class plotter :
 			print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['--']['al'].obs, results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw, math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
 
 
-	def skim_tree(self, syst = '') :
+	def skim_tree(self, syst = '', minNJ = 2) :
 		'''skim SigEvents tree'''
 
 		skimtree_path = self.path + 'SSDLYields_skim.root'
 		if not os.path.exists(skimtree_path) :
 			print '[status] creating skimmed tree for di-boson, rare MC (SType 15) and data..'
-			print '         Data: same-sign, opposite-sign, tight-tight, tight-loose, loose-tight, loose-loose events (only nominal, no systematics)'
-			print '         MC:   only same-sign, tight-tight events for all systematics'
-			copytree.copytree(self.path + 'SSDLYields.root', skimtree_path, 'SigEvents', '(SType < 3 || SType == 15) && (SType < 3 || Flavor < 3) && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0)')
+			print '         Data: same-sign, opposite-sign (em, ee), tight-tight, tight-loose, loose-tight, loose-loose events (only nominal, no systematics), NJ >= 2'
+			print '         MC:   only same-sign, tight-tight events for all systematics, NJ >= %d' % minNJ
+			copytree.copytree(self.path + 'SSDLYields.root', skimtree_path, 'SigEvents', '(SType < 3 || SType == 15) && (SType < 3 || Flavor < 3) && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0) && (Flavor != 3) && (NJ >= %d)' % minNJ)
 
 		if syst != '' :
 			systtree_path = self.path + 'SSDLYields_skim_' + syst + '.root'
@@ -212,7 +221,6 @@ class plotter :
 			if not os.path.exists(systtree_path) :
 				print '[status] creating skimmed tree file for %s systematic..' % (syst)
 				if syst != 'Normal' : minNJ = 3
-				else                : minNJ = 0
 				copytree.copytree(skimtree_path, systtree_path, 'SigEvents', 'SystFlag == %d && NJ >= %d' % (self.systematics[syst], minNJ))
 
 
@@ -541,7 +549,7 @@ class plotter :
 
 		if write_ResTree :
 			print '[status] preparing Results tree to store observations and predictions..'
-			self.results_file = ROOT.TFile(self.path + 'SSDLResults.root', 'RECREATE')
+			self.results_file = ROOT.TFile(self.path + 'SSDLResults_%s.root' % sel.name, 'RECREATE')
 			self.results_tree = ROOT.TTree('Results', 'ResultsTree')
 			self.book_resultsTree()
 
@@ -1431,7 +1439,7 @@ class plotter :
 			if sel.charge > 0 : charge_str = '^{+}'
 			if sel.charge < 0 : charge_str = '^{-}'
 		if sel.name == 'final' : cms_label = 0
-		cms_label = 0
+		cms_label = 2
 		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label)
 		pl.save_plot(histos, var, sel.name, prefix, charge_str)
 #		raw_input('ok? ')
