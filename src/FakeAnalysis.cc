@@ -176,6 +176,7 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("MuIsVeto"      , "std::vector<bool>", &p_fTmuisveto  );
 	fAnalysisTree->Branch("MuIsLoose"     , "std::vector<bool>", &p_fTmuisloose );
 	fAnalysisTree->Branch("MuIsTight"     , "std::vector<bool>", &p_fTmuistight );
+	fAnalysisTree->Branch("MuIsPrompt"    , "std::vector<bool>", &p_fTmuisprompt);
 
 	// // single-electron properties
 	fAnalysisTree->Branch("ElPt"     , "std::vector<float>", &p_fTelpt          );
@@ -193,6 +194,7 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElIsVeto"      , "std::vector<bool>", &p_fTelisveto  );
 	fAnalysisTree->Branch("ElIsLoose"     , "std::vector<bool>", &p_fTelisloose );
 	fAnalysisTree->Branch("ElIsTight"     , "std::vector<bool>", &p_fTelistight );
+	fAnalysisTree->Branch("ElIsPrompt"    , "std::vector<bool>", &p_fTelisprompt);
 
 	// // jet-MET properties
 	fAnalysisTree->Branch("pfMET"         ,&fTpfMET         , "pfMET/F"                );
@@ -300,6 +302,9 @@ void FakeAnalysis::FillAnalysisTree(){
 		p_fTmuisloose ->push_back( IsLooseMuon(ind) );
 		p_fTmuistight ->push_back( IsTightMuon(ind) );
 		
+		int id(-1), mid(-1), gmid(-1);
+		p_fTmuisprompt ->push_back( IsSignalMuon(ind, id, mid, gmid) );
+		
 		if(IsLooseMuon(ind)) nLooseLeptons++;
 
 	}
@@ -319,6 +324,9 @@ void FakeAnalysis::FillAnalysisTree(){
 		p_fTelisveto  ->push_back( IsVetoElectron(ind)  );
 		p_fTelisloose ->push_back( IsLooseElectron(ind) );
 		p_fTelistight ->push_back( IsTightElectron(ind) );
+
+		int id(-1), mid(-1), gmid(-1);
+		p_fTelisprompt ->push_back( IsSignalElectron(ind, id, mid, gmid) );
 		
 		if(IsLooseElectron(ind)) nLooseLeptons++;
 	}
@@ -369,6 +377,7 @@ void FakeAnalysis::ResetTree(){
 	p_fTmuisveto   = &fTmuisveto  ; p_fTmuisveto   ->reserve(fTR->NMus) ; p_fTmuisveto  ->clear();
 	p_fTmuisloose  = &fTmuisloose ; p_fTmuisloose  ->reserve(fTR->NMus) ; p_fTmuisloose ->clear();
 	p_fTmuistight  = &fTmuistight ; p_fTmuistight  ->reserve(fTR->NMus) ; p_fTmuistight ->clear();
+	p_fTmuisprompt  = &fTmuisprompt ; p_fTmuisprompt  ->reserve(fTR->NMus) ; p_fTmuisprompt ->clear();
 
 	// // electron properties
 	p_fTelpt    = &fTelpt    ; p_fTelpt    ->reserve(fTR->NEles); p_fTelpt    ->clear();
@@ -386,6 +395,7 @@ void FakeAnalysis::ResetTree(){
 	p_fTelisveto   = &fTelisveto  ; p_fTelisveto   ->reserve(fTR->NEles) ; p_fTelisveto  ->clear();
 	p_fTelisloose  = &fTelisloose ; p_fTelisloose  ->reserve(fTR->NEles) ; p_fTelisloose ->clear();
 	p_fTelistight  = &fTelistight ; p_fTelistight  ->reserve(fTR->NEles) ; p_fTelistight ->clear();
+	p_fTelisprompt  = &fTelisprompt ; p_fTelisprompt  ->reserve(fTR->NEles) ; p_fTelisprompt ->clear();
 
 	// // jet-MET properties
 	fTpfMET         = -999.99;
@@ -456,33 +466,6 @@ bool FakeAnalysis::IsLooseElectron(int ind){
 	
 	return true;
 }
-
-// marc bool FakeAnalysis::IsLooseElectron(int ind){
-// marc 
-// marc 	//from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification under default trigger
-// marc 	if( fabs(fTR->ElSCEta[ind]) <  1.479 ){ // Barrel
-// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.007) return false;
-// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.15 ) return false;
-// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.01 ) return false;
-// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.12 ) return false;
-// marc 	}
-// marc 	if( fabs(fTR->ElSCEta[ind]) >= 1.479){ // Endcap
-// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.009) return false;
-// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.10 ) return false;
-// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.03 ) return false;
-// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.10 ) return false;
-// marc 	}
-// marc 
-// marc 	if (!fTR->ElCInfoIsGsfCtfScPixCons[ind] ) return false; // charge consistency
-// marc 
-// marc 	if ( fabs(fTR->ElSCEta[ind]) > 1.4442 && fabs(fTR->ElSCEta[ind]) < 1.566 )  return false; // EE-EB gap veto
-// marc 
-// marc 	if(fabs(fTR->ElDzPV[ind]) > 0.20) return false;
-// marc 	if(fabs(fTR->ElD0PV[ind]) > 0.04) return false;
-// marc 
-// marc 	return true;
-// marc }
-
 bool FakeAnalysis::IsTightElectron(int ind){
   
 	if(!IsLooseElectron(ind)) return false;
@@ -492,35 +475,6 @@ bool FakeAnalysis::IsTightElectron(int ind){
 	
 	return true;
 }
-
-// marc bool FakeAnalysis::IsTightElectron(int ind){
-// marc 
-// marc 	if(!IsLooseElectron(ind)) return false;
-// marc 
-// marc 	float epVariable = fabs(1/fTR->ElCaloEnergy[ind] - fTR->ElESuperClusterOverP[ind]/fTR->ElCaloEnergy[ind]);
-// marc 
-// marc 	if( fabs(fTR->ElSCEta[ind]) <  1.479 ){ // Barrel
-// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.004) return false;
-// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.06 ) return false;
-// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.01 ) return false;
-// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.12 ) return false;
-// marc 		if(epVariable > 0.05                                   ) return false;
-// marc 	}
-// marc 	if( fabs(fTR->ElSCEta[ind]) >= 1.479){ // Endcap
-// marc 		if(fabs(fTR->ElDeltaEtaSuperClusterAtVtx [ind]) > 0.007) return false;
-// marc 		if(fabs(fTR->ElDeltaPhiSuperClusterAtVtx [ind]) > 0.03 ) return false;
-// marc 		if(fTR->ElSigmaIetaIeta                  [ind]  > 0.03 ) return false;
-// marc 		if(fTR->ElHcalOverEcal                   [ind]  > 0.10 ) return false;
-// marc 		if(epVariable > 0.15                                   ) return false;
-// marc 	}
-// marc 
-// marc 	// add the conversion rejection here
-// marc 	if (fTR->ElNumberOfMissingInnerHits[ind] > 0 ) return false;
-// marc 	if (!fTR->ElPassConversionVeto[ind]          ) return false;
-// marc 	
-// marc 	return true;
-// marc }
-
 
 bool FakeAnalysis::IsVetoMuon(int ind){
 	if((fTR->MuIsGlobalMuon[ind] == 0 && fTR->MuIsTrackerMuon[ind] == 0 ))  return false;
@@ -644,4 +598,166 @@ const float FakeAnalysis::EffAreaPhoton(float abseta){
 	if(abseta<2.3)   return 0.262;
 	if(abseta<2.4)   return 0.260;
 	return 0.266;
+}
+
+bool FakeAnalysis::IsSignalMuon(int index, int &muid, int &mumoid, int &mugmoid){
+
+	int matched = -1;
+	// Match to a gen muon
+	float mindr(100.);
+	for(size_t i = 0; i < fTR->NGenLeptons; ++i){
+		if(abs(fTR->GenLeptonID[i]) != 13) continue; // muons
+		float eta = fTR->GenLeptonEta[i];
+		float phi = fTR->GenLeptonPhi[i];
+		float DR = Util::GetDeltaR(eta, fTR->MuEta[index], phi, fTR->MuPhi[index]);
+		if(DR > mindr) continue; // minimize DR
+		mindr = DR;
+		matched = i;
+	}
+
+	bool isGenMuon = true;
+	bool isSignalGenMuon = false;	
+	if(mindr > 0.2) isGenMuon = false; // max distance
+	if(matched < 0) isGenMuon = false; // match unsuccessful
+
+	pdgparticle mo, gmo;
+	if (isGenMuon){
+		GetPDGParticle(mo,  abs(fTR->GenLeptonMID [matched]));
+		GetPDGParticle(gmo, abs(fTR->GenLeptonGMID[matched]));
+		if(mo.get_type() > 10  || gmo.get_type() > 10)  isSignalGenMuon = false; // mother is SM hadron
+		if(mo.get_type() == 9  || gmo.get_type() == 9)  isSignalGenMuon = true; // matched to susy
+		if(mo.get_type() == 4 && abs(mo.get_pdgid()) != 21 && abs(mo.get_pdgid()) != 22) isSignalGenMuon = true; // mother is gauge or higgs, but not gamma or gluon
+		if(abs(mo.get_pdgid()) == 15 && (abs(gmo.get_pdgid()) == 6 ||abs(gmo.get_pdgid()) == 23 ||abs(gmo.get_pdgid()) == 24 ) ) isSignalGenMuon = true; // mother is a tau and grandma is a top/W/Z
+		if(abs(mo.get_pdgid()) == 6) isSignalGenMuon = true; // mother is a top
+		// If we've matched to a gen muon, then we'll set the ids now and exit
+		muid   = fTR->GenLeptonID  [matched];
+		mumoid = fTR->GenLeptonMID [matched];
+		mugmoid= fTR->GenLeptonGMID[matched];
+		return isSignalGenMuon;
+	}
+
+	// Otherwise, we'll look for a gen particle in a larger cone and match to whatever is closest
+	int matchedPart = -1;
+	// Match to a gen particle
+	float mindrPart(100.);
+	for(size_t i = 0; i < fTR->nGenParticles; ++i){
+		if(fTR->genInfoStatus[i] != 1  && fTR->genInfoStatus[i] != 3 ) continue; 
+		float eta = fTR->genInfoEta[i];
+		float phi = fTR->genInfoPhi[i];
+		float DR = Util::GetDeltaR(eta, fTR->MuEta[index], phi, fTR->MuPhi[index]);
+		if(DR > mindrPart) continue; // minimize DR
+		mindrPart = DR;
+		matchedPart = i;
+	}
+
+	bool isGenPart = true;
+	bool isSignalGenPart = false;
+	if(mindrPart > 0.3) isGenPart = false; // max distance
+	if(matchedPart < 0) isGenPart = false; // match unsuccessful
+
+	if (isGenPart){
+		//keep going back until we get a mother with a different id
+		int moIndex = fTR->genInfoMo1[matchedPart];
+		while (fTR->genInfoId[matchedPart] == fTR->genInfoId[moIndex]){
+			moIndex  = fTR->genInfoMo1[moIndex];
+		}
+		//keep going back until we get a grandmother with a different id
+		int gmoIndex = fTR->genInfoMo1[moIndex];
+		while (fTR->genInfoId[moIndex] == fTR->genInfoId[gmoIndex]){
+			gmoIndex  = fTR->genInfoMo1[gmoIndex];
+		}
+		GetPDGParticle(mo ,  abs(fTR->genInfoId[moIndex] ));
+		GetPDGParticle(gmo,  abs(fTR->genInfoId[gmoIndex]));
+		muid   = fTR->genInfoId[matchedPart];
+		mumoid = mo.get_pdgid() ;
+		mugmoid= gmo.get_pdgid() ;
+		return false;
+	}
+
+	//If we really didn't find a match to a lepton or any other particle, set everything to zero
+	muid   = 0;
+	mumoid = 0;
+	mugmoid= 0;
+	return false;
+}
+bool FakeAnalysis::IsSignalElectron(int index, int &elid, int &elmoid, int &elgmoid){
+
+	int matched = -1;
+	// Match to a gen electron
+	float mindr(100.);
+	for(size_t i = 0; i < fTR->NGenLeptons; ++i){
+		if(abs(fTR->GenLeptonID[i]) != 11) continue; // electrons
+		float eta = fTR->GenLeptonEta[i];
+		float phi = fTR->GenLeptonPhi[i];
+		float DR = Util::GetDeltaR(eta, fTR->ElEta[index], phi, fTR->ElPhi[index]);
+		if(DR > mindr) continue; // minimize DR
+		mindr = DR;
+		matched = i;
+	}
+
+	bool isGenElectron = true;
+	bool isSignalGenElectron = false;	
+	if(mindr > 0.2) isGenElectron = false; // max distance
+	if(matched < 0) isGenElectron = false; // match unsuccessful
+
+	pdgparticle mo, gmo;
+	if (isGenElectron){
+		GetPDGParticle(mo,  abs(fTR->GenLeptonMID [matched]));
+		GetPDGParticle(gmo, abs(fTR->GenLeptonGMID[matched]));
+		if(mo.get_type() > 10  || gmo.get_type() > 10)  isSignalGenElectron = false; // mother is SM hadron
+		if(mo.get_type() == 9  || gmo.get_type() == 9)  isSignalGenElectron = true; // matched to susy
+		if(mo.get_type() == 4 && abs(mo.get_pdgid()) != 21 && abs(mo.get_pdgid()) != 22) isSignalGenElectron = true; // mother is gauge or higgs, but not gamma or gluon
+		if(abs(mo.get_pdgid()) == 15 && (abs(gmo.get_pdgid()) == 6 ||abs(gmo.get_pdgid()) == 23 ||abs(gmo.get_pdgid()) == 24 ) ) isSignalGenElectron = true; // mother is a tau and grandma is a top/W/Z
+		if(abs(mo.get_pdgid()) == 6) isSignalGenElectron = true; // mother is a top
+		// If we've matched to a gen electron, then we'll set the ids now and exit
+		elid   = fTR->GenLeptonID  [matched];
+		elmoid = fTR->GenLeptonMID [matched];
+		elgmoid= fTR->GenLeptonGMID[matched];
+		return isSignalGenElectron;
+	}
+
+	// Otherwise, we'll look for a gen particle in a larger(?) cone
+	// and match to whatever is closest
+	int matchedPart = -1;
+	// Match to a gen particle
+	float mindrPart(100.);
+	for(size_t i = 0; i < fTR->nGenParticles; ++i){
+		if(fTR->genInfoStatus[i] != 1  && fTR->genInfoStatus[i] != 3 ) continue; 
+		float eta = fTR->genInfoEta[i];
+		float phi = fTR->genInfoPhi[i];
+		float DR = Util::GetDeltaR(eta, fTR->ElEta[index], phi, fTR->ElPhi[index]);
+		if(DR > mindrPart) continue; // minimize DR
+		mindrPart = DR;
+		matchedPart = i;
+	}
+
+	bool isGenPart = true;
+	bool isSignalGenPart = false;
+	if(mindrPart > 0.3) isGenPart = false; // max distance
+	if(matchedPart < 0) isGenPart = false; // match unsuccessful
+
+	if (isGenPart){
+		//keep going back until we get a mother with a different id
+		int moIndex = fTR->genInfoMo1[matchedPart];
+		while (fTR->genInfoId[matchedPart] == fTR->genInfoId[moIndex]){
+			moIndex  = fTR->genInfoMo1[moIndex];
+		}
+		//keep going back until we get a grandmother with a different id
+		int gmoIndex = fTR->genInfoMo1[moIndex];
+		while (fTR->genInfoId[moIndex] == fTR->genInfoId[gmoIndex]){
+			gmoIndex  = fTR->genInfoMo1[gmoIndex];
+		}
+		GetPDGParticle(mo ,  abs(fTR->genInfoId[moIndex] ));
+		GetPDGParticle(gmo,  abs(fTR->genInfoId[gmoIndex]));	
+		elid   = fTR->genInfoId[matchedPart];
+		elmoid = mo.get_pdgid() ;
+		elgmoid= gmo.get_pdgid() ;
+		return false;
+	}
+
+	//If we really didn't find a match to a lepton or any other particle, set everything to zero
+	elid   = 0;
+	elmoid = 0;
+	elgmoid= 0;
+	return false;	
 }

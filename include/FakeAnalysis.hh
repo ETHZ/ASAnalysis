@@ -59,9 +59,13 @@ public:
 	bool IsLooseElectron(int);
 	bool IsTightElectron(int);
 
+	bool IsSignalElectron(int, int&, int&, int&);
+
 	bool IsVetoMuon (int);
 	bool IsLooseMuon(int);
 	bool IsTightMuon(int);
+
+	bool IsSignalMuon(int, int&, int&, int&);
 
 	// photon function
 	bool IsGoodPhoton(int);
@@ -118,6 +122,8 @@ private:
 	vector<bool>  fTmuisloose; vector<bool> * p_fTmuisloose;
 	vector<bool>  fTmuistight; vector<bool> * p_fTmuistight;
 
+	vector<bool>  fTmuisprompt; vector<bool> * p_fTmuisprompt;
+
 	// Electron properties
 	vector<float> fTelpt    ; vector<float> * p_fTelpt    ;
 	vector<float> fTeleta   ; vector<float> * p_fTeleta   ;
@@ -129,6 +135,8 @@ private:
 	vector<bool>  fTelisveto ; vector<bool> * p_fTelisveto ;
 	vector<bool>  fTelisloose; vector<bool> * p_fTelisloose;
 	vector<bool>  fTelistight; vector<bool> * p_fTelistight;
+
+	vector<bool>  fTelisprompt; vector<bool> * p_fTelisprompt;
 
 	// Electron properties
 	vector<float> fTphpt    ; vector<float> * p_fTphpt    ;
