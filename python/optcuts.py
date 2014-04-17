@@ -28,8 +28,6 @@ class optcuts(plotter.plotter) :
 	def do_analysis(self, effs) :
 		print '[status] setup plotter..'
 
-#		pl = plotter.plotter(self.path, self.cardfile)
-
 		# selections
 		sels = {}
 
@@ -70,10 +68,20 @@ class optcuts(plotter.plotter) :
 				helper.save_object(results, resultspath)
 
 			# make datacards for each charge-flavor channel
-			for ch_str in results['Normal'] :
-				for chan in results['Normal'][ch_str] :
-					if ch_str != '++' : continue
-					datacard = self.make_datacard(results, chan, ch_str, 'eff%d' % eff, self.cutspath)
+			datacards_6channels = []
+			for charge_str in results['Normal'] :
+				datacards_3channels = []
+				for chan in results['Normal'][charge_str] :
+					datacard = self.make_datacard(results, chan, charge_str, 'eff%d' % eff, self.cutspath)
+					ch_str   = results['Normal'][charge_str][chan].chan_str
+					if charge_str != 'al' and chan != 'al' :
+						datacards_6channels.append('%s=%s' % (ch_str, datacard))
+					if chan != 'al' :
+						datacards_3channels.append('%s=%s' % (ch_str, datacard))
+				target_path = '%s/datacard_ssdl_ttW_3channels_%s_eff%s.txt' % (self.cutspath, charge_str, eff)
+				self.combine_datacards(datacards_3channels, target_path)
+			target_path = '%s/datacard_ssdl_ttW_6channels_eff%s.txt' % (self.cutspath, eff)
+			self.combine_datacards(datacards_6channels, target_path)
 
 
 	def read_cuts(self, cutfile) :

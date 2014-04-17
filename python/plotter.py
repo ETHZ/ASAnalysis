@@ -1193,9 +1193,9 @@ class plotter :
 
 	def combine_datacards(self, cards, target_path) :
 		'''takes a list of datacards and adds them to a combined datacard'''
-		print '[status] combining datacards %s..' % (', '.join(cards))
+		print '[status] combining datacards:\n           %s' % ('\n           '.join(cards))
+		print '         target:\n           %s' % target_path
 		combineCards = 'combineCards.py %s > %s' % (' '.join(cards), target_path)
-		print combineCards
 		os.system(combineCards)
 
 
