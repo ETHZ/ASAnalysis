@@ -1191,6 +1191,14 @@ class plotter :
 		return datacard_path + datacard_name
 
 
+	def combine_datacards(self, cards, target_path) :
+		'''takes a list of datacards and adds them to a combined datacard'''
+		print '[status] combining datacards %s..' % (', '.join(cards))
+		combineCards = 'combineCards.py %s > %s' % (' '.join(cards), target_path)
+		print combineCards
+		os.system(combineCards)
+
+
 	def plot_predictions(self, treepath, sel) :
 		vars = []
 		vars.append('HT'    )
