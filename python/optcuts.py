@@ -7,89 +7,81 @@ import helper
 import runCombine
 import ROOT
 import ttvplot
+import copy
 
 
 class optcuts(plotter.plotter) :
-#class optcuts :
 
 	def __init__(self, path, cardfile, cutspath) :
 		plotter.plotter.__init__(self, path, cardfile)
-#		self.path = path + '/'
-#		self.cardfile = cardfile
 		self.cutspath = cutspath + '/'
 
 
 	def optimize(self, channel) :
-#		for eff in range(25, 105, 5) :
-#			self.do_analysis(eff)
-#		return
+		effs = range(25, 105, 5)
+		self.do_analysis(effs)
+		return
 
 		self.analize_datacards(+1)
 
 
-	def do_analysis(self, eff) :
-		cuts = opt.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (eff))
+	def do_analysis(self, effs) :
+		print '[status] setup plotter..'
 
-		pl = plotter.plotter(self.path, self.cardfile)
+#		pl = plotter.plotter(self.path, self.cardfile)
 
 		# selections
 		sels = {}
 
 		# charge mis-ID scale factor
-		pl.chmid_sf = 1.62
+		self.chmid_sf = 1.62
+		print 'check: chmid_sf is %f' % self.chmid_sf
 
 		# get fake and prompt ratios
 		EWK_SF = {}
-		EWK_SF['el']   = pl.get_EWK_SF('el')
-		EWK_SF['mu17'] = pl.get_EWK_SF('mu17')
-		EWK_SF['mu24'] = pl.get_EWK_SF('mu24')
-		pl.fpr.fill_ratios(pl.get_samples('SingleDoubleMu'), pl.get_samples('DoubleEle'), 0, True, EWK_SF)
+		EWK_SF['el']   = self.get_EWK_SF('el')
+		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
+		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
+		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
 
-		results = {}
-		resultspath = self.path + 'optcuts/results_eff%d.pkl' % eff
+		for eff in effs :
+			cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (eff))
 
-		if os.path.exists(resultspath) :
-			print '[status] loading results of predictions from %s..' % (resultspath)
-			results = helper.load_object(resultspath)
+			resultspath = self.cutspath + 'results_eff%d.pkl' % eff
 
-		else :
-			for syst in pl.systematics :
-#				if syst != 'Normal' : continue
-				print '[status] making predictions for %s systematic' % (syst)
-				pl.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
-				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
-				sels[syst] = self.set_selection('eff%d' % eff, cuts, pl.systematics[syst])
-				results[syst] = pl.make_IntPredictions(sels[syst], systpath)
+			if os.path.exists(resultspath) :
+				print '[status] loading results of predictions from %s..' % (resultspath)
+				results = helper.load_object(resultspath)
 
-			helper.save_object(results, resultspath)
+			else :
+				print ''
+				print '=========================='
+				print '| %3.0f%% signal efficiency |' % (eff)
+				print '=========================='
+				print ''
+				print '[status] starting analysis for %2.0f%% signal efficiency point..' % (eff)
+				results = {}
+				for syst in self.systematics :
+					print '[status] making predictions for %s systematic' % (syst)
+					self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
+					systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
+					sels[syst] = self.get_selection('eff%d' % eff, cuts, self.systematics[syst])
+					results[syst] = self.make_IntPredictions(sels[syst], systpath)
+				helper.save_object(results, resultspath)
 
-		# make datacards for each charge-flavor channel
-		for ch_str in results['Normal'] :
-			for chan in results['Normal'][ch_str] :
-				if ch_str != '++' : continue
-				datacard = pl.make_datacard(results, chan, ch_str, 'optcuts', 'eff%d' % eff)
-
-#				with open(datacard, 'r+') as file :
-#					if not any(['LepUp' in line for line in file.readlines()]) :
-#						file.write('adding LepUp')  # TODO: add default line here
-
-#		pl.make_datacard(results, 'al', '++', 'optcuts', 'eff%d' % (eff))
-#		pl.make_datacard(results, 'al', 'al', 'optcuts', 'eff%d' % (eff))
+			# make datacards for each charge-flavor channel
+			for ch_str in results['Normal'] :
+				for chan in results['Normal'][ch_str] :
+					if ch_str != '++' : continue
+					datacard = self.make_datacard(results, chan, ch_str, 'eff%d' % eff, self.cutspath)
 
 
 	def read_cuts(self, cutfile) :
-#		'''reads file with cuts'''
-#		if not os.path.exists(cutfile) :
-#			print '[ERROR] %s does not exist!' % (cutfile)
-#			sys.exit(1)
-#		print '[status] reading cuts from %s' % (cutfile)
-#HT 378.54 1e+30
-#pT1 61.7743 1e+30
-#pT2 61.7743 1e+30
-#NJ 3 100000.
-#NbJ 1 100000.
-#NbJmed 1 100000.
-#Charge 1 10
+		'''reads file with cuts'''
+		if not os.path.exists(cutfile) :
+			print '[ERROR] %s does not exist!' % (cutfile)
+			sys.exit(1)
+		print '[status] reading cuts from %s' % (cutfile)
 		cuts = {}
 		with open(cutfile, 'r') as file :
 			for i, line in enumerate(file.readlines()) :
@@ -102,20 +94,10 @@ class optcuts(plotter.plotter) :
 				min = float(min)
 				max = float(max)
 				cuts[var] = [min, max]
-				print splitline
-#				[name, inputfile, datamc, channel] = splitline[:4]
-#				datamc = int(datamc)
-#				channel = int(channel)
-#				xsec = -1.
-#				if len(splitline) == 5 :
-#					xsec = float(splitline[4])
-#				samples[name] = sample.sample(name = name, datamc = datamc, channel = channel, xsec = xsec, ngen = -1)
-#				if verbose > 0 : print samples[name]
-#		return samples
 		return cuts
 
 
-	def set_selection(self, name, cuts, systflag = 0, charge_sel = False) :
+	def get_selection(self, name, cuts, systflag = 0, charge_sel = False) :
 		'''sets selcetion'''
 
 		sel = selection.selection(name)
@@ -145,9 +127,9 @@ class optcuts(plotter.plotter) :
 
 	def analize_datacards(self, charge) :
 
-		print self.path
-
-		presel = selection.selection(name = 'presel', minNjets = 3, minNbjetsM = 1, charge = charge)
+		presel = copy.deepcopy(self.selections['3J1bJ'])
+		presel.charge = charge
+		presel.sname = 'TTbarW'
 
 		signif_path = self.cutspath + 'signif.pkl'
 
@@ -157,15 +139,34 @@ class optcuts(plotter.plotter) :
 
 		else :
 			signif = []
-			for eff in range(25, 105, 5) :
-				datacard = self.path + 'optcuts/' + 'datacard_ssdl_ttW_int++_eff%d.txt' % eff
+			for ieff in range(25, 105, 5) :
+				cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
+				sel = self.get_selection('eff%d' % ieff, cuts, 0, True)
+				sel.sname = 'TTbarW'
+				(eff, eff_err) = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
+				print eff
+				datacard = self.cutspath + 'datacard_ssdl_ttW_int++_eff%d.txt' % ieff
 				signif.append([eff, runCombine.expected_significance(datacard, '')])
-	#			runCombine.signal_strength(datacard)
 			helper.save_object(signif, signif_path)
 
 		self.plot_results(signif)
 		print '\n\n'
 		print signif
+
+
+	def get_efficiency(self, path, sel, base_sel) :
+		'''get efficiency'''
+
+		print '[status] open SigEvents tree from %s' % (path)
+		file = ROOT.TFile.Open(path, 'READ')
+		tree = file.Get('SigEvents')
+		n_after  = tree.GetEntries(sel.get_selectionString())
+		n_before = tree.GetEntries(base_sel.get_selectionString())
+		ratio = helper.ratioWithBinomErrors(n_after, n_before)
+		print '         selection      %10s: %d' % (sel.name, n_after)
+		print '         base selection %10s: %d' % (base_sel.name, n_before)
+		print '         efficiency: %4.2f +/- %4.2f' % ratio
+		return ratio
 
 
 	def plot_results(self, results) :
@@ -175,7 +176,7 @@ class optcuts(plotter.plotter) :
 
 		for i, [eff, result] in enumerate(results) :
 			print eff, result
-			gr_res.SetPoint(i, eff, result)
+			gr_res.SetPoint(i, 100.*eff, result)
 
 		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
 		canvas = pl.get_canvas()
@@ -203,7 +204,7 @@ if __name__ == '__main__' :
 		print ''
 		print '       -c Datacard with list of samples and corresponding cross sections.'
 		print ''
-		print '       -cutsDir Directory in which the output files of TMVA wich selection cuts are.'
+		print '       -cutsDir Directory in which the output files of TMVA with selection cuts are. Output files are written in this directory too.'
 		sys.exit(1)
 
 	if ('-d' in args) and (args[args.index('-d')+1] != '') :
