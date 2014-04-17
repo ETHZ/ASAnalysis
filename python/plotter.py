@@ -1013,7 +1013,7 @@ class plotter :
 		print "----------------------------------------------------------------------------------------------"
 
 
-	def make_datacard(self, results, chan, charge, output_subdir = '', suffix = '') :
+	def make_datacard(self, results, chan, charge, suffix = '', output_dir = '') :
 		'''
 		takes a nested dictionary of result objects as input:
 		results[SYSTFLAG][CHARGE][FLAVOR]
@@ -1023,8 +1023,8 @@ class plotter :
 
 		if suffix != '' : suffix = '_' + suffix
 		datacard_name = 'datacard_ssdl_ttW_%s%s.txt' % (results['Normal'][charge][chan].chan_str, suffix)
-		if output_subdir == '' : datacard_path = self.path + 'datacards/'
-		else                   : datacard_path = self.path + '%s/' % (output_subdir)
+		if output_dir == '' : datacard_path = self.path + 'datacards/'
+		else                : datacard_path = '%s/' % (output_dir)
 		helper.mkdir(datacard_path)
 		print '[status] writing %s' % datacard_name
 		with open(datacard_path + datacard_name, 'w') as file :
