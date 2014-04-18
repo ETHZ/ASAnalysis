@@ -131,7 +131,7 @@ class optcuts(plotter.plotter) :
 					signif[chan].append([eff, runCombine.expected_significance(datacard, '')])
 			helper.save_object(signif, signif_path)
 
-		self.plot_results(signif['3channels'])
+		self.plot_results(signif)
 		print '\n\n'
 		print signif
 
@@ -152,23 +152,27 @@ class optcuts(plotter.plotter) :
 
 
 	def plot_results(self, results) :
-		gr_res = ROOT.TGraphErrors(0)
-		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
-#		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
-
-		for i, [eff, result] in enumerate(results) :
-			print eff, result
-			gr_res.SetPoint(i, 100.*eff, result)
-
 		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
 		canvas = pl.get_canvas()
 #		canvas.cd()
-
-		gr_res.SetMarkerSize(2.)
-		gr_res.SetMarkerStyle(21)
-		gr_res.SetMarkerColor(29)
+		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
 		h2_axes_gr.Draw()
-		gr_res.Draw('P same')
+
+		gr_res = {}
+		for chan, res in results.iteritems() :
+
+			gr_res[chan] = ROOT.TGraphErrors(0)
+
+			for i, [eff, result] in enumerate(res) :
+				print eff, result
+				gr_res[chan].SetPoint(i, 100.*eff, result)
+
+			gr_res[chan].SetMarkerSize(2.)
+			gr_res[chan].SetMarkerStyle(21)
+			if   chan == '3channels' : color = 29
+			elif chan == 'int'       : color = 40
+			gr_res[chan].SetMarkerColor(color)
+			gr_res[chan].Draw('P same')
 		pl.draw_cmsLine()
 		raw_input('ok? ')
 		raw_input('ok? ')
