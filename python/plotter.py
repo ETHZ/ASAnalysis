@@ -155,7 +155,7 @@ class plotter :
 			restree_path['2J0bJ'] = self.path + 'SSDLResults_2J0bJ.root'
 			restree_path['3J1bJ'] = self.path + 'SSDLResults_3J1bJ.root'
 			if not os.path.exists(restree_path['2J0bJ']) :
-				self.make_IntPredictions(self.selections['2J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
+				self.make_predictions(self.selections['2J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
 #			if not os.path.exists(restree_path['2J0bJ']) :
 #				copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
 			if not os.path.exists(restree_path['3J1bJ']) :
@@ -170,30 +170,7 @@ class plotter :
 
 
 		if IntPred :
-			sels = {}
-			results = {}
-			resultspath = self.path + 'IntPredictions/results.pkl'
-
-			if os.path.exists(resultspath) :
-				print '[status] loading results of predictions from %s..' % (resultspath)
-				results = helper.load_object(resultspath)
-
-			else :
-				for syst in self.systematics :
-	#				if syst != 'Normal' : continue
-					print '[status] making predictions for %s systematic' % (syst)
-					self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
-					systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
-					sel = copy.deepcopy(self.selections['final'])
-					sel.name += '_%s' % syst
-					sel.systflag = self.systematics[syst]
-					results[syst] = self.make_IntPredictions(sel, systpath)
-				helper.save_object(results, resultspath)
-
-			# make datacards for each charge-flavor channel
-			for ch_str in results['Normal'] :
-				for chan in results['Normal'][ch_str] :
-					self.make_datacard(results, chan, ch_str)
+			results = self.make_IntPredictions(self.selections['final'], self.path + 'IntPredictions/')
 
 			# make table of observation and predictions
 			tables.make_ObsPredTable(self.path, results['Normal'])
@@ -461,12 +438,52 @@ class plotter :
 		foo = 0
 
 
-	def make_IntPredictions(self, sel, treepath, write_ResTree = False) :
-		'''oberservation and prediction for different selections'''
+	def make_IntPredictions(self, sel, output_path, suffix = '') :
+		'''
+		makes predictions for all systematics with a given selection and returns a nested dictionary of result objects
+		results[SYST][CHARGE][FLAVOR]
+		'''
+
+		if suffix != '' : suffix = '_' + suffix
+		sels = {}
+		results = {}
+		resultspath = '%s/results%s.pkl' % (output_path, suffix)
+
+		if os.path.exists(resultspath) :
+			print '[status] loading results of predictions from %s..' % (resultspath)
+			results = helper.load_object(resultspath)
+
+		else :
+			for syst in self.systematics :
+#				if syst != 'Normal' : continue
+				print '[status] making predictions for %s systematic' % (syst)
+				self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
+				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
+				syst_sel = copy.deepcopy(sel)
+				syst_sel.name += '_%s' % syst
+				syst_sel.systflag = self.systematics[syst]
+				results[syst] = self.make_predictions(syst_sel, systpath, False)
+			helper.save_object(results, resultspath)
+
+		# make datacards for each charge-flavor channel
+		for ch_str in results['Normal'] :
+			for chan in results['Normal'][ch_str] :
+				self.make_datacard(results, chan, ch_str, suffix, '%s/datacards%s' % (output_path, suffix))
+
+		return results
+
+
+	def make_predictions(self, sel, treepath, write_ResTree = False) :
+		'''
+		oberservation and prediction for different selections
+
+		writes Results tree or returns nested dictionary with result objects
+		res[CHARGE][FLAVOR]
+		'''
 
 		print '[status] getting observations and predictions with selection %s..' % (sel.name)
 		print sel
-		if sel.charge != 0 : print '[WARNING] Avoid running make_IntPredictions with a charge selection. Please apply charge selection later.'
+		if sel.charge != 0 : print '[WARNING] Avoid running make_predictions with a charge selection. Please apply charge selection later.'
 
 		print '[status] open SigEvents tree from %s' % (treepath)
 		sigfile = ROOT.TFile.Open(treepath, 'READ')
