@@ -40,6 +40,7 @@ class selection :
 		if self.charge > 0  : printout += '\n   only l+l+ events'
 		if self.charge < 0  : printout += '\n   only l-l- events'
 		if self.flavor > -1 : printout += '\n   flavor = %d' % (self.flavor)
+		printout                       += '\n   systflag = %d' % (self.systflag)
 		printout += '\n'
 		return printout
 
