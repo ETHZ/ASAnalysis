@@ -156,7 +156,16 @@ class optcuts(plotter.plotter) :
 		canvas = pl.get_canvas()
 #		canvas.cd()
 		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
+#		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
 		h2_axes_gr.Draw()
+		h2_axes_gr.GetXaxis().SetTitle('Signal Efficiency [%]')
+		h2_axes_gr.GetYaxis().SetTitle('Expected Significance')
+		h2_axes_gr.GetXaxis().SetTitleOffset(1.25)
+		h2_axes_gr.GetYaxis().SetTitleOffset(1.25)
+		h2_axes_gr.GetXaxis().SetTitleSize(0.046)
+		h2_axes_gr.GetYaxis().SetTitleSize(0.046)
+		h2_axes_gr.GetXaxis().SetLabelSize(0.04)
+		h2_axes_gr.GetYaxis().SetLabelSize(0.04)
 
 		gr_res = {}
 		for chan, res in results.iteritems() :
