@@ -26,14 +26,12 @@ class optcuts(plotter.plotter) :
 
 
 	def do_analysis(self, effs) :
-		print '[status] setup plotter..'
+		'''makes predictions for all selections from TMVA'''
 
-		# selections
-		sels = {}
+		print '[status] setup plotter..'
 
 		# charge mis-ID scale factor
 		self.chmid_sf = 1.62
-		print 'check: chmid_sf is %f' % self.chmid_sf
 
 		# get fake and prompt ratios
 		EWK_SF = {}
@@ -43,45 +41,14 @@ class optcuts(plotter.plotter) :
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
 
 		for eff in effs :
+			print ''
+			print '=========================='
+			print '| %3.0f%% signal efficiency |' % (eff)
+			print '=========================='
+			print ''
 			cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (eff))
-
-			resultspath = self.cutspath + 'results_eff%d.pkl' % eff
-
-			if os.path.exists(resultspath) :
-				print '[status] loading results of predictions from %s..' % (resultspath)
-				results = helper.load_object(resultspath)
-
-			else :
-				print ''
-				print '=========================='
-				print '| %3.0f%% signal efficiency |' % (eff)
-				print '=========================='
-				print ''
-				print '[status] starting analysis for %2.0f%% signal efficiency point..' % (eff)
-				results = {}
-				for syst in self.systematics :
-					print '[status] making predictions for %s systematic' % (syst)
-					self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
-					systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
-					sels[syst] = self.get_selection('eff%d' % eff, cuts, self.systematics[syst])
-					results[syst] = self.make_IntPredictions(sels[syst], systpath)
-				helper.save_object(results, resultspath)
-
-			# make datacards for each charge-flavor channel
-			datacards_6channels = []
-			for charge_str in results['Normal'] :
-				datacards_3channels = []
-				for chan in results['Normal'][charge_str] :
-					datacard = self.make_datacard(results, chan, charge_str, 'eff%d' % eff, self.cutspath)
-					ch_str   = results['Normal'][charge_str][chan].chan_str
-					if charge_str != 'al' and chan != 'al' :
-						datacards_6channels.append('%s=%s' % (ch_str, datacard))
-					if chan != 'al' :
-						datacards_3channels.append('%s=%s' % (ch_str, datacard))
-				target_path = '%s/datacard_ssdl_ttW_3channels_%s_eff%s.txt' % (self.cutspath, charge_str, eff)
-				self.combine_datacards(datacards_3channels, target_path)
-			target_path = '%s/datacard_ssdl_ttW_6channels_eff%s.txt' % (self.cutspath, eff)
-			self.combine_datacards(datacards_6channels, target_path)
+			sel  = self.get_selection('eff%d' % eff, cuts)
+			results = self.make_IntPredictions(sel, self.cutspath, '_eff%d' % eff)
 
 
 	def read_cuts(self, cutfile) :
@@ -106,7 +73,6 @@ class optcuts(plotter.plotter) :
 
 
 	def get_selection(self, name, cuts, systflag = 0, charge_sel = False) :
-		'''sets selcetion'''
 
 		sel = selection.selection(name)
 		sel.systflag = systflag

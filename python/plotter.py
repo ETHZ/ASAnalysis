@@ -444,8 +444,7 @@ class plotter :
 		results[SYST][CHARGE][FLAVOR]
 		'''
 
-		if suffix != '' : suffix = '_' + suffix
-		sels = {}
+#		if suffix != '' : suffix = '_' + suffix
 		results = {}
 		resultspath = '%s/results%s.pkl' % (output_path, suffix)
 
@@ -1047,7 +1046,7 @@ class plotter :
 		writes datacard in the combine tool format
 		'''
 
-		if suffix != '' : suffix = '_' + suffix
+#		if suffix != '' : suffix = '_' + suffix
 		datacard_name = 'datacard_ssdl_ttW_%s%s.txt' % (results['Normal'][charge][chan].chan_str, suffix)
 		if output_dir == '' : datacard_path = self.path + 'datacards/'
 		else                : datacard_path = '%s/' % (output_dir)
