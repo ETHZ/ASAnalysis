@@ -19,10 +19,10 @@ class optcuts(plotter.plotter) :
 
 	def optimize(self, channel) :
 		effs = range(25, 105, 5)
-		self.do_analysis(effs)
-		return
+#		self.do_analysis(effs)
+#		return
 
-		self.analize_datacards(+1)
+		self.analize_datacards(effs, +1)
 
 
 	def do_analysis(self, effs) :
@@ -99,31 +99,39 @@ class optcuts(plotter.plotter) :
 		return sel
 
 
-	def analize_datacards(self, charge) :
+	def analize_datacards(self, effs, charge = 0) :
+		'''analyzes 3channel datacards of ++, -- or without charge selection'''
 
 		presel = copy.deepcopy(self.selections['3J1bJ'])
 		presel.charge = charge
 		presel.sname = 'TTbarW'
 
-		signif_path = self.cutspath + 'signif.pkl'
+		signif_path = '%ssignif_3channels_%s.pkl' % (self.cutspath, self.get_chargeString(charge))
 
 		if os.path.exists(signif_path) :
 			print '[status] loading optimization results..'
 			signif = helper.load_object(signif_path)
 
 		else :
-			signif = []
-			for ieff in range(25, 105, 5) :
+			signif = {}
+			signif['int'      ] = []
+			signif['3channels'] = []
+			for ieff in effs :
+				# calculate efficiency of selection
 				cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
 				sel = self.get_selection('eff%d' % ieff, cuts, 0, True)
 				sel.sname = 'TTbarW'
 				(eff, eff_err) = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
-				print eff
-				datacard = self.cutspath + 'datacard_ssdl_ttW_int++_eff%d.txt' % ieff
-				signif.append([eff, runCombine.expected_significance(datacard, '')])
+
+				# get expected significance
+				for chan in signif :
+					if   chan == '3channels' : charge_suffix = '_' + self.get_chargeString(charge)
+					elif chan == 'int'       : charge_suffix =       self.get_chargeString(charge, 1)
+					datacard = self.cutspath + 'datacards_eff%d/datacard_ssdl_ttW_%s%s_eff%d.txt' % (ieff, chan, charge_suffix, ieff)
+					signif[chan].append([eff, runCombine.expected_significance(datacard, '')])
 			helper.save_object(signif, signif_path)
 
-		self.plot_results(signif)
+		self.plot_results(signif['3channels'])
 		print '\n\n'
 		print signif
 
