@@ -466,9 +466,18 @@ class plotter :
 			helper.save_object(results, resultspath)
 
 		# make datacards for each charge-flavor channel
-		for ch_str in results['Normal'] :
-			for chan in results['Normal'][ch_str] :
-				self.make_datacard(results, chan, ch_str, suffix, '%s/datacards%s' % (output_path, suffix))
+		datacards_6channels = []
+		for charge in results['Normal'] :
+			datacards_3channels = []
+			for chan in results['Normal'][charge] :
+				datacard = self.make_datacard(results, chan, charge, suffix, '%s/datacards%s' % (output_path, suffix))
+				ch_str   = results['Normal'][charge][chan].chan_str
+				if charge != 'al' and chan != 'al' :
+					datacards_6channels.append('%s=%s' % (ch_str, datacard))
+				if chan != 'al' :
+					datacards_3channels.append('%s=%s' % (ch_str, datacard))
+			self.combine_datacards(datacards_3channels, '%s/datacards%s/datacard_ssdl_ttW_3channels_%s%s.txt' % (output_path, suffix, charge, suffix))
+		self.combine_datacards(datacards_6channels, '%s/datacards%s/datacard_ssdl_ttW_6channels%s.txt' % (output_path, suffix, suffix))
 
 		return results
 
