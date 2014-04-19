@@ -270,6 +270,29 @@ class ttvplot :
 		return canvas
 
 
+	def draw_legend(self, entries) :
+		leg = ROOT.TLegend()
+		for entry in entries :
+			leg.AddEntry(entry[0], entry[1], entry[2])
+
+		# set position
+		width = 0.17
+		x = 0.65
+		y = 0.93
+		leg.SetX1NDC(x)
+		leg.SetX2NDC(x+width)
+		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
+		leg.SetY2NDC(y)
+		leg.SetFillStyle(0)
+		leg.SetTextFont(42)
+		leg.SetTextSize(0.03)
+		leg.SetBorderSize(0)
+		leg.SetTextAlign(12)
+
+		leg.Draw()
+		return leg
+
+
 	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :
 		latex = ROOT.TLatex()
 		latex.SetNDC()
