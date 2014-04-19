@@ -19,10 +19,14 @@ class optcuts(plotter.plotter) :
 
 	def optimize(self, channel) :
 		effs = range(25, 105, 5)
-#		self.do_analysis(effs)
+		self.do_analysis(effs)
 #		return
 
-		self.analize_datacards(effs, +1)
+		if   channel == 'all'   : charge =  0
+		elif channel == 'plus'  : charge = +1
+		elif channel == 'minus' : charge = -1
+
+		self.analize_datacards(effs, charge)
 
 
 	def do_analysis(self, effs) :
@@ -131,7 +135,7 @@ class optcuts(plotter.plotter) :
 					signif[chan].append([eff, runCombine.expected_significance(datacard, '')])
 			helper.save_object(signif, signif_path)
 
-		self.plot_results(signif)
+		self.plot_results(signif, self.get_chargeString(charge))
 
 
 	def get_efficiency(self, path, sel, base_sel) :
@@ -149,12 +153,12 @@ class optcuts(plotter.plotter) :
 		return ratio
 
 
-	def plot_results(self, results) :
+	def plot_results(self, results, charge_str) :
 		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
 		canvas = pl.get_canvas()
 		canvas.cd()
-#		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
-		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
+		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
+#		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
 		h2_axes_gr.Draw()
 		h2_axes_gr.GetXaxis().SetTitle('#varepsilon_{Signal} [%]')
 		h2_axes_gr.GetYaxis().SetTitle('#sigma_{expected}')
@@ -183,11 +187,11 @@ class optcuts(plotter.plotter) :
 			leg_entries.append([gr_res[chan], chan, 'p'])
 		leg = pl.draw_legend(leg_entries)
 		pl.draw_cmsLine()
-		raw_input('ok? ')
-		raw_input('ok? ')
+#		raw_input('ok? ')
+#		raw_input('ok? ')
 
-		canvas.Print('%stest.pdf' % self.cutspath)
-		canvas.Print('%stmp/test.png' % self.path)
+		canvas.Print('%sSeff_vs_ExpSign_%s.pdf' % (self.cutspath, charge_str))
+#		canvas.Print('%stmp/test.png' % self.path)
 
 
 if __name__ == '__main__' :
@@ -216,6 +220,9 @@ if __name__ == '__main__' :
 
 	if ('--channel' in args) and (args[args.index('--channel')+1] != '') :
 		channel = str(args[args.index('--channel')+1])
+		if (channel != 'all') and (channel != 'plus') and (channel != 'minus') :
+			print '[ERROR] Invalid channel!'
+			sys.exit(1)
 
 	opt = optcuts(path, cardfile, cutspath)
 	opt.optimize(channel)
