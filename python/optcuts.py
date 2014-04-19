@@ -132,8 +132,6 @@ class optcuts(plotter.plotter) :
 			helper.save_object(signif, signif_path)
 
 		self.plot_results(signif)
-		print '\n\n'
-		print signif
 
 
 	def get_efficiency(self, path, sel, base_sel) :
@@ -154,12 +152,12 @@ class optcuts(plotter.plotter) :
 	def plot_results(self, results) :
 		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
 		canvas = pl.get_canvas()
-#		canvas.cd()
-		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
-#		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
+		canvas.cd()
+#		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
+		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
 		h2_axes_gr.Draw()
-		h2_axes_gr.GetXaxis().SetTitle('Signal Efficiency [%]')
-		h2_axes_gr.GetYaxis().SetTitle('Expected Significance')
+		h2_axes_gr.GetXaxis().SetTitle('#varepsilon_{Signal} [%]')
+		h2_axes_gr.GetYaxis().SetTitle('#sigma_{expected}')
 		h2_axes_gr.GetXaxis().SetTitleOffset(1.25)
 		h2_axes_gr.GetYaxis().SetTitleOffset(1.25)
 		h2_axes_gr.GetXaxis().SetTitleSize(0.046)
@@ -168,25 +166,28 @@ class optcuts(plotter.plotter) :
 		h2_axes_gr.GetYaxis().SetLabelSize(0.04)
 
 		gr_res = {}
+		leg_entries = []
 		for chan, res in results.iteritems() :
 
 			gr_res[chan] = ROOT.TGraphErrors(0)
 
 			for i, [eff, result] in enumerate(res) :
-				print eff, result
 				gr_res[chan].SetPoint(i, 100.*eff, result)
 
-			gr_res[chan].SetMarkerSize(2.)
+			gr_res[chan].SetMarkerSize(1.2)
 			gr_res[chan].SetMarkerStyle(21)
 			if   chan == '3channels' : color = 29
 			elif chan == 'int'       : color = 40
 			gr_res[chan].SetMarkerColor(color)
 			gr_res[chan].Draw('P same')
+			leg_entries.append([gr_res[chan], chan, 'p'])
+		leg = pl.draw_legend(leg_entries)
 		pl.draw_cmsLine()
 		raw_input('ok? ')
 		raw_input('ok? ')
 
 		canvas.Print('%stest.pdf' % self.cutspath)
+		canvas.Print('%stmp/test.png' % self.path)
 
 
 if __name__ == '__main__' :
