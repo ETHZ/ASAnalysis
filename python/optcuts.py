@@ -20,7 +20,6 @@ class optcuts(plotter.plotter) :
 	def optimize(self, channel) :
 		effs = range(25, 105, 5)
 		self.do_analysis(effs)
-#		return
 
 		if   channel == 'all'   : charge =  0
 		elif channel == 'plus'  : charge = +1
@@ -104,22 +103,29 @@ class optcuts(plotter.plotter) :
 
 
 	def analize_datacards(self, effs, charge = 0) :
-		'''analyzes 3channel datacards of ++, -- or without charge selection'''
+		'''analyzes int, 3channels and 6channels datacards of ++, -- or without charge selection'''
 
 		presel = copy.deepcopy(self.selections['3J1bJ'])
 		presel.charge = charge
 		presel.sname = 'TTbarW'
 
-		signif_path = '%ssignif_3channels_%s.pkl' % (self.cutspath, self.get_chargeString(charge))
+		signif_path = '%ssignif_%s.pkl' % (self.cutspath, self.get_chargeString(charge))
 
 		if os.path.exists(signif_path) :
 			print '[status] loading optimization results..'
 			signif = helper.load_object(signif_path)
 
 		else :
+			print ''
+			print '========================='
+			print '| Analyzing datacards.. |'
+			print '========================='
+			print ''
+
 			signif = {}
 			signif['int'      ] = []
 			signif['3channels'] = []
+			if charge == 0 : signif['6channels'] = []
 			for ieff in effs :
 				# calculate efficiency of selection
 				cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
@@ -131,6 +137,7 @@ class optcuts(plotter.plotter) :
 				for chan in signif :
 					if   chan == '3channels' : charge_suffix = '_' + self.get_chargeString(charge)
 					elif chan == 'int'       : charge_suffix =       self.get_chargeString(charge, 1)
+					else                     : charge_suffix = ''
 					datacard = self.cutspath + 'datacards_eff%d/datacard_ssdl_ttW_%s%s_eff%d.txt' % (ieff, chan, charge_suffix, ieff)
 					signif[chan].append([eff, runCombine.expected_significance(datacard, '')])
 			helper.save_object(signif, signif_path)
@@ -180,6 +187,7 @@ class optcuts(plotter.plotter) :
 
 			gr_res[chan].SetMarkerSize(1.2)
 			gr_res[chan].SetMarkerStyle(21)
+			if   chan == '6channels' : color = 35
 			if   chan == '3channels' : color = 29
 			elif chan == 'int'       : color = 40
 			gr_res[chan].SetMarkerColor(color)
@@ -191,6 +199,7 @@ class optcuts(plotter.plotter) :
 #		raw_input('ok? ')
 
 		canvas.Print('%sSeff_vs_ExpSign_%s.pdf' % (self.cutspath, charge_str))
+		canvas.Print('%sSeff_vs_ExpSign_%s.png' % (self.cutspath, charge_str))
 #		canvas.Print('%stmp/test.png' % self.path)
 
 
