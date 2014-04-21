@@ -233,15 +233,17 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep08-JetPt30-Iso5-ChMisID-1J-allTTJets/YieldsFiles/";
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Sep22-JetPt30-Iso5-ChMisID-1J-EWKControlPlots-HLT_Mu24_eta2p1/YieldsFiles/";
 //		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct15-AwayJet40/YieldsFiles/";
-		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Jan23/YieldsFiles/";
-		TString tree_looseIso_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct17-AwayJet40-ttbar-Iso0.35/YieldsFiles/";
+//		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Jan23/YieldsFiles/";
+//		TString tree_looseIso_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Oct17-AwayJet40-ttbar-Iso0.35/YieldsFiles/";
+		TString tree_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Apr20-TTbarW/YieldsFiles/";
+		TString tree_looseIso_dir = "/shome/lbaeni/workspace/ttW/CMSSW_5_3_7_patch5/src/ASAnalysis/plots/Apr20-TTJets-Iso0.35/YieldsFiles/";
 
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul26-OSYields-JetPt30-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul27-OSYields-JetPt20-Iso9-10-newTTbarXsec/TTbarW_Yields.root");      
 //      TFile* signalFile = TFile::Open("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul30-JetPt40-Iso9-10-newTTbarXsec-newTTG-MT-BetaStar-PUID/TTbarW_Yields.root");      
       TFile* signalFile = TFile::Open(tree_dir+"TTbarW_Yields.root");      
-      TFile* backgroundFile_ttbar             = TFile::Open(tree_looseIso_dir+"TTJets_Yields.root");      
+      TFile* backgroundFile_ttbar             = TFile::Open(tree_looseIso_dir+"TTJets_v2_Yields.root");      
       TFile* backgroundFile_ttbar_v1          = TFile::Open(tree_looseIso_dir+"TTJets_v1_Yields.root");
       TFile* backgroundFile_ttbar_madgraph_v1 = TFile::Open(tree_looseIso_dir+"TTJets_madgraph_v1_Yields.root");
       TFile* backgroundFile_ttbar_madgraph_v2 = TFile::Open(tree_looseIso_dir+"TTJets_madgraph_v2_Yields.root");
@@ -253,19 +255,19 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
 	TTree *background_ttbar_v1          = (TTree*)backgroundFile_ttbar_v1         ->Get("SigEvents");
 	TTree *background_ttbar_madgraph_v1 = (TTree*)backgroundFile_ttbar_madgraph_v1->Get("SigEvents");
 	TTree *background_ttbar_madgraph_v2 = (TTree*)backgroundFile_ttbar_madgraph_v2->Get("SigEvents");
-	TTree *background_wz    = (TTree*)backgroundFile_wz   ->Get("SigEvents");
+//	TTree *background_wz    = (TTree*)backgroundFile_wz   ->Get("SigEvents");
 
 	float lumi_ttbar(1.), lumi_wz(1.), lumi_ttbar_v1(1.), lumi_ttbar_madgraph_v1(1.), lumi_ttbar_madgraph_v2(1.);
 	background_ttbar            ->SetBranchAddress("SLumi",    &lumi_ttbar            );
 	background_ttbar_v1         ->SetBranchAddress("SLumi",    &lumi_ttbar_v1         );
 	background_ttbar_madgraph_v1->SetBranchAddress("SLumi",    &lumi_ttbar_madgraph_v1);
 	background_ttbar_madgraph_v2->SetBranchAddress("SLumi",    &lumi_ttbar_madgraph_v2);
-	background_wz   ->SetBranchAddress("SLumi",    &lumi_wz   );
+//	background_wz   ->SetBranchAddress("SLumi",    &lumi_wz   );
 	background_ttbar            ->GetEntry(0);
 	background_ttbar_v1         ->GetEntry(0);
 	background_ttbar_madgraph_v1->GetEntry(0);
 	background_ttbar_madgraph_v2->GetEntry(0);
-	background_wz   ->GetEntry(0);
+//	background_wz   ->GetEntry(0);
 
 //      TChain* background = new TChain("SigEvents");
 //      background->Add("/shome/lbaeni/top/CMSSW_5_3_2_patch4/src/DiLeptonAnalysis/NTupleProducer/macros/plots/Jul23-OSYields-JetPt40-Iso9-10-newTTbarXsec/TTJets_Yields.root");
@@ -317,17 +319,17 @@ void TMVAClassification( std::string selectionName, std::string charge, TString 
       // you can add an arbitrary number of signal or background trees
       factory->AddSignalTree    ( signal,     signalWeight     );
 //      factory->AddBackgroundTree( background, backgroundWeight );
-      factory->AddBackgroundTree( background_ttbar            , backgroundWeight_ttbar             );
-      factory->AddBackgroundTree( background_ttbar_v1         , backgroundWeight_ttbar_v1          );
-      factory->AddBackgroundTree( background_ttbar_madgraph_v1, backgroundWeight_ttbar_madgraph_v1 );
-      factory->AddBackgroundTree( background_ttbar_madgraph_v2, backgroundWeight_ttbar_madgraph_v2 );
+//      factory->AddBackgroundTree( background_ttbar            , backgroundWeight_ttbar             );
+//      factory->AddBackgroundTree( background_ttbar_v1         , backgroundWeight_ttbar_v1          );
+//      factory->AddBackgroundTree( background_ttbar_madgraph_v1, backgroundWeight_ttbar_madgraph_v1 );
+//      factory->AddBackgroundTree( background_ttbar_madgraph_v2, backgroundWeight_ttbar_madgraph_v2 );
 //      factory->AddBackgroundTree( background_wz   , backgroundWeight_wz    );
 
 		// unscaled ttbar samples
-//      factory->AddBackgroundTree( background_ttbar            , backgroundWeight );
-//      factory->AddBackgroundTree( background_ttbar_v1         , backgroundWeight );
-//      factory->AddBackgroundTree( background_ttbar_madgraph_v1, backgroundWeight );
-//      factory->AddBackgroundTree( background_ttbar_madgraph_v2, backgroundWeight );
+      factory->AddBackgroundTree( background_ttbar            , backgroundWeight );
+      factory->AddBackgroundTree( background_ttbar_v1         , backgroundWeight );
+      factory->AddBackgroundTree( background_ttbar_madgraph_v1, backgroundWeight );
+      factory->AddBackgroundTree( background_ttbar_madgraph_v2, backgroundWeight );
 
       // To give different trees for training and testing, do as follows:
       //    factory->AddSignalTree( signalTrainingTree, signalTrainWeight, "Training" );

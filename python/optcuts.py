@@ -98,6 +98,7 @@ class optcuts(plotter.plotter) :
 				sel.maxNbjetsM = int(cut[1])
 			if var == 'Charge' and charge_sel :
 				sel.charge = int(cut[0])
+				if sel.charge < 0 : sel.charge = -1  # fixes a bug in cuts files
 
 		return sel
 
