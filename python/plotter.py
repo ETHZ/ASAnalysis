@@ -107,7 +107,7 @@ class plotter :
 
 		# charge strings
 		self.charges = {}
-		for charge in range(-1, 2) :
+		for charge in range(1, -2, -1) :
 			self.charges[self.get_chargeString(charge)] = charge
 
 
