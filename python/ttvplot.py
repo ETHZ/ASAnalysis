@@ -6,7 +6,7 @@ import helper
 
 class ttvplot :
 
-	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False) :
+	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
 		self.path = path
 		if not os.path.exists(self.path) :
 			os.makedirs(self.path)
@@ -42,6 +42,9 @@ class ttvplot :
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
+			if short_names is True :
+				self.process_names['fake' ] = 'Lept. MisID'
+				self.process_names['chmid'] = 'Ch. MisID'
 
 		# variable names
 		self.var_names = {}
