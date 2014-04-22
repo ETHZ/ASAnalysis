@@ -133,7 +133,7 @@ def make_ObsPredTable(path, results) :
 		file.write('\n\n')
 
 
-def make_SystTable(path, results, chan, charge) :
+def make_SystTable(path, results, chan, charge, systematics) :
 	'''
 	takes a nested dictionary of result objects as input:
 	results[SYSTFLAG][CHARGE][FLAVOR]
@@ -145,6 +145,7 @@ def make_SystTable(path, results, chan, charge) :
 	table_name = 'SystTable'+channel+'.tex'
 	table_path = path + 'IntPredictions/'
 	helper.mkdir(table_path)
+	pl = ttvplot.ttvplot(table_path, '2L', TeX_switch = True, short_names = True)
 	print '[status] writing %s' % table_name
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
@@ -154,66 +155,200 @@ def make_SystTable(path, results, chan, charge) :
 		file.write('%% Generated on: %s\n' % str(timestamp))
 		file.write('%-----------------------------------------------------------------------------------------\n')
 		file.write('\n\n')
-		file.write('\\begin{tabular}{l|r@{$\\,/\\,$}l}\n')
+		file.write('\\providecommand{\\ttbar}{$t\\bar{t}$}\n')
+		file.write('\\providecommand{\\ttw}{\\ttbar{}W}\n')
+		file.write('\\providecommand{\\ttz}{\\ttbar{}Z}\n')
+		file.write('\n\n')
+		file.write('\\begin{tabular}{l|c|ccccc}\n')
 		file.write('\\hline\\hline\n')
-		file.write('Systematic & \\multicolumn{2}{c}{$\\Delta\\epsilon$ [\\%]} \\\\\n')
+		file.write('{\\bf Source} & {\\bf Signal} [\\%] & \\multicolumn{5}{c}{{\\bf Backgrounds} [\\%]} \\\\\n')
+		file.write('& $\\Delta\\varepsilon_s$ & %s & %s & %s & %s & %s \\\\\n' % (
+			pl.get_processName('ttz'  ),
+			pl.get_processName('fake' ),
+			pl.get_processName('chmid'),
+			pl.get_processName('wz'   ),
+			pl.get_processName('rare' )
+			))
 		file.write('\\hline\n')
 
+		file.write('%18s & - & %6.1f & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
+			'Bkg. Pred.',
+			100. * results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz ,
+			100. * results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake,
+			100. * results['Normal'][charge][chan].cmid_err / results['Normal'][charge][chan].cmid,
+			100. * results['Normal'][charge][chan].wz_err   / results['Normal'][charge][chan].wz  ,
+			100. * results['Normal'][charge][chan].rare_err / results['Normal'][charge][chan].rare
+			))
+
+		if 'lumi' in systematics :
+			file.write('%18s & %6.1f & %6.1f & - & - & %6.1f & %6.1f \\\\\n' % (
+				'Luminosity',
+				100. * (systematics['lumi']-1.),
+				100. * (systematics['lumi']-1.),
+				100. * (systematics['lumi']-1.),
+				100. * (systematics['lumi']-1.)
+				))
+		else :
+			print '[WARNING] Luminosity systematic not found!'
+
 		if 'JetUp' in results and 'JetDown' in results :
-			file.write('JES up/down            & %6.1f & %6.1f \\\\\n' % (
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'JES',
 				100. * (results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-				100. * (results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				100. * (results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['JetDown'][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['JetUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare - 1.),
+				100. * (results['JetDown'][charge][chan].rare / results['Normal'][charge][chan].rare - 1.)
 				))
 		else :
 			print '[WARNING] JetUp/Down systematic not found!'
 
 		if 'JetSmearUp' in results and 'JetSmearDown' in results :
-			file.write('JER up/down            & %6.1f & %6.1f \\\\\n' % (
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'JER',
 				100. * (results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-				100. * (results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				100. * (results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['JetSmearUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['JetSmearDown'][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['JetSmearUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare - 1.),
+				100. * (results['JetSmearDown'][charge][chan].rare / results['Normal'][charge][chan].rare - 1.)
 				))
 		else :
 			print '[WARNING] JetSmearUp/Down systematic not found!'
 
 		if 'BUp' in results and 'BDown' in results :
-			file.write('b-tag up/down          & %6.1f & %6.1f \\\\\n' % (
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'b-tagging',
 				100. * (results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-				100. * (results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				100. * (results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['BUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['BDown'][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['BUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare - 1.),
+				100. * (results['BDown'][charge][chan].rare / results['Normal'][charge][chan].rare - 1.)
 				))
 		else :
 			print '[WARNING] BUp/Down systematic not found!'
 
+		if 'ltrig' in systematics :
+			file.write('%18s & %6.1f & %6.1f & - & - & %6.1f & %6.1f \\\\\n' % (
+				'Lept. Trig.',
+				100. * (systematics['ltrig']-1.),
+				100. * (systematics['ltrig']-1.),
+				100. * (systematics['ltrig']-1.),
+				100. * (systematics['ltrig']-1.)
+				))
+		else :
+			print '[WARNING] Trigger systematic not found!'
+
 		if 'LepUp' in results and 'LepDown' in results :
-			file.write('Lepton scale up/down   & %6.1f & %6.1f \\\\\n' % (
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'Lepton SF',
 				100. * (results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-				100. * (results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				100. * (results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['LepUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['LepDown'][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['LepUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare - 1.),
+				100. * (results['LepDown'][charge][chan].rare / results['Normal'][charge][chan].rare - 1.)
 				))
 		else :
 			print '[WARNING] LepUp/Down systematic not found!'
 
 		if 'MuUp' in results and 'MuDown' in results :
-			file.write('Muon scale up/down     & %6.1f & %6.1f \\\\\n' % (
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'Muon SF',
 				100. * (results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-				100. * (results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				100. * (results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['MuUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['MuDown'][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['MuUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare - 1.),
+				100. * (results['MuDown'][charge][chan].rare / results['Normal'][charge][chan].rare - 1.)
 				))
 		else :
 			print '[WARNING] MuUp/Down systematic not found!'
 
 		if 'ElUp' in results and 'ElDown' in results :
-			file.write('Electron scale up/down & %6.1f & %6.1f \\\\\n' % (
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'Electron SF',
 				100. * (results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-				100. * (results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				100. * (results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['ElUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['ElDown'][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['ElUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare - 1.),
+				100. * (results['ElDown'][charge][chan].rare / results['Normal'][charge][chan].rare - 1.)
 				))
 		else :
 			print '[WARNING] ElUp/Down systematic not found!'
 
 		if 'PileupUp' in results and 'PileupDown' in results :
-			file.write('Pileup up/down         & %6.1f & %6.1f \\\\\n' % (
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'Pileup',
 				100. * (results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
-				100. * (results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.)
+				100. * (results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
+				100. * (results['PileupUp'  ][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['PileupDown'][charge][chan].wz   / results['Normal'][charge][chan].wz   - 1.),
+				100. * (results['PileupUp'  ][charge][chan].rare / results['Normal'][charge][chan].rare - 1.),
+				100. * (results['PileupDown'][charge][chan].rare / results['Normal'][charge][chan].rare - 1.)
 				))
 		else :
 			print '[WARNING] PileupUp/Down systematic not found!'
+
+		if 'scale_up' in systematics and 'scale_dn' in systematics :
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+				'$Q^2$',
+				100. * (systematics['scale_up']-1.),
+				100. * (systematics['scale_dn']-1.),
+				100. * (systematics['scale_up']-1.),
+				100. * (systematics['scale_dn']-1.),
+				100. * (systematics['scale_up']-1.),
+				100. * (systematics['scale_dn']-1.),
+				100. * (systematics['scale_up']-1.),
+				100. * (systematics['scale_dn']-1.)
+				))
+		else :
+			print '[WARNING] Scale systematic not found!'
+
+		if 'tmass_up' in systematics and 'tmass_dn' in systematics :
+			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & - & - \\\\\n' % (
+				'$m_{\\text{top}}$',
+				100. * (systematics['tmass_up']-1.),
+				100. * (systematics['tmass_dn']-1.),
+				100. * (systematics['tmass_up']-1.),
+				100. * (systematics['tmass_dn']-1.)
+				))
+		else :
+			print '[WARNING] Top mass systematic not found!'
+
+		if 'gen' in systematics :
+			file.write('%18s & %6.1f & - & - & - & - & - \\\\\n' % (
+				'Generator',
+				100. * (systematics['gen']-1.)
+				))
+		else :
+			print '[WARNING] Generator systematic not found!'
+
+		if 'pdf' in systematics and 'wz_pdf' in systematics :
+			file.write('%18s & %6.1f & - & - & - & %6.1f & - \\\\\n' % (
+				'PDF',
+				100. * (systematics['pdf']-1.),
+				100. * (systematics['wz_pdf']-1.)
+				))
+		else :
+			print '[WARNING] PDF systematic not found!'
 
 		file.write('\\hline\\hline')
 		file.write('\\end{tabular}')

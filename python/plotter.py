@@ -74,36 +74,37 @@ class plotter :
 		self.ChMisESyst2 = self.ChMisESyst * self.ChMisESyst
 
 		# systematics
-		self.systematics = {}
-		self.systematics['Normal']       = 0
-		self.systematics['JetUp']        = 1
-		self.systematics['JetDown']      = 2
-		self.systematics['JetSmear']     = 3
-		self.systematics['BUp']          = 4
-		self.systematics['BDown']        = 5
-		self.systematics['LepUp']        = 6
-		self.systematics['LepDown']      = 7
-#		self.systematics['METUp']        = 8
-#		self.systematics['METDown']      = 9
-		self.systematics['PileupUp']     = 10
-		self.systematics['PileupDown']   = 11
-		self.systematics['JetSmearUp']   = 12
-		self.systematics['JetSmearDown'] = 13
-		self.systematics['MuUp']         = 14
-		self.systematics['MuDown']       = 15
-		self.systematics['ElUp']         = 16
-		self.systematics['ElDown']       = 17
+		self.systflags = {}
+		self.systflags['Normal']       = 0
+		self.systflags['JetUp']        = 1
+		self.systflags['JetDown']      = 2
+		self.systflags['JetSmear']     = 3
+		self.systflags['BUp']          = 4
+		self.systflags['BDown']        = 5
+		self.systflags['LepUp']        = 6
+		self.systflags['LepDown']      = 7
+#		self.systflags['METUp']        = 8
+#		self.systflags['METDown']      = 9
+		self.systflags['PileupUp']     = 10
+		self.systflags['PileupDown']   = 11
+		self.systflags['JetSmearUp']   = 12
+		self.systflags['JetSmearDown'] = 13
+		self.systflags['MuUp']         = 14
+		self.systflags['MuDown']       = 15
+		self.systflags['ElUp']         = 16
+		self.systflags['ElDown']       = 17
 
 		# systematic uncertainties for datacard
-		self.lumi_syst     = 1.026
-		self.scale_syst_up = 1.027
-		self.scale_syst_dn = 0.980
-		self.tmass_syst_up = 1.019
-		self.tmass_syst_dn = 0.983
-		self.ltrig_syst    = 1.030
-		self.pdf_syst      = 1.015
-		self.gen_syst      = 1.050
-		self.wz_pdf_syst   = 1.041
+		self.systematics = {}
+		self.systematics['lumi'    ] = 1.026
+		self.systematics['scale_up'] = 1.027
+		self.systematics['scale_dn'] = 0.980
+		self.systematics['tmass_up'] = 1.019
+		self.systematics['tmass_dn'] = 0.983
+		self.systematics['ltrig'   ] = 1.030
+		self.systematics['pdf'     ] = 1.015
+		self.systematics['gen'     ] = 1.050
+		self.systematics['wz_pdf'  ] = 1.041
 
 		# charge strings
 		self.charges = {}
@@ -176,7 +177,7 @@ class plotter :
 			tables.make_ObsPredTable(self.path, results['Normal'])
 
 			# make overview table of systematic studies
-			tables.make_SystTable(self.path, results, 'al', 'al')
+			tables.make_SystTable(self.path, results, 'al', 'al', self.systematics)
 
 			print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['++']['al'].obs, results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw, math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
 			print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['--']['al'].obs, results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw, math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
@@ -198,7 +199,7 @@ class plotter :
 			if not os.path.exists(systtree_path) :
 				print '[status] creating skimmed tree file for %s systematic..' % (syst)
 				if syst != 'Normal' : minNJ = 3
-				copytree.copytree(skimtree_path, systtree_path, 'SigEvents', 'SystFlag == %d && NJ >= %d' % (self.systematics[syst], minNJ))
+				copytree.copytree(skimtree_path, systtree_path, 'SigEvents', 'SystFlag == %d && NJ >= %d' % (self.systflags[syst], minNJ))
 
 
 	def readDatacard(self, cardfile, verbose = 0) :
@@ -457,14 +458,14 @@ class plotter :
 			results = helper.load_object(resultspath)
 
 		else :
-			for syst in self.systematics :
+			for syst in self.systflags :
 #				if syst != 'Normal' : continue
 				print '[status] making predictions for %s systematic' % (syst)
 				self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
 				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
 				syst_sel = copy.deepcopy(sel)
 				syst_sel.name += '_%s' % syst
-				syst_sel.systflag = self.systematics[syst]
+				syst_sel.systflag = self.systflags[syst]
 				results[syst] = self.make_predictions(syst_sel, systpath, False)
 			helper.save_object(results, resultspath)
 
@@ -1092,10 +1093,10 @@ class plotter :
 			file.write('#syst\n')
 
 			file.write('lumi     lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\n' % (
-				self.lumi_syst,
-				self.lumi_syst,
-				self.lumi_syst,
-				self.lumi_syst))
+				self.systematics['lumi'],
+				self.systematics['lumi'],
+				self.systematics['lumi'],
+				self.systematics['lumi']))
 
 			file.write(    'bgUncttz lnN\t-\t\t%5.3f\t\t-\t\t-\t\t-\t\t-\n' % (1. + results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz ))
 			file.write(    'bgUncfak lnN\t-\t\t-\t\t%5.3f\t\t-\t\t-\t\t-\n' % (1. + results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake))
@@ -1144,10 +1145,10 @@ class plotter :
 				print '[WARNING] ElUp/Down systematic not found!'
 
 			file.write('leptrig  lnN\t%5.3f\t\t%5.3f\t\t-\t\t-\t\t%5.3f\t\t%5.3f\n' % (
-				self.ltrig_syst,
-				self.ltrig_syst,
-				self.ltrig_syst,
-				self.ltrig_syst))
+				self.systematics['ltrig'],
+				self.systematics['ltrig'],
+				self.systematics['ltrig'],
+				self.systematics['ltrig']))
 
 			if 'BUp' in results and 'BDown' in results :
 				file.write('btag     lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
@@ -1207,14 +1208,24 @@ class plotter :
 			##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn,
 			##//					   match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn, match_syst_up, match_syst_dn) << endl;
 			file.write('scale    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t%5.3f/%5.3f\t%5.3f/%5.3f\n' % (
-				self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn, self.scale_syst_up, self.scale_syst_dn))
+				self.systematics['scale_up'],
+				self.systematics['scale_dn'],
+				self.systematics['scale_up'],
+				self.systematics['scale_dn'],
+				self.systematics['scale_up'],
+				self.systematics['scale_dn'],
+				self.systematics['scale_up'],
+				self.systematics['scale_dn']))
 
 			file.write('tmass    lnN\t%5.3f/%5.3f\t%5.3f/%5.3f\t-\t\t-\t\t-\t\t-\n' % (
-				self.tmass_syst_up, self.tmass_syst_dn, self.tmass_syst_up, self.tmass_syst_dn))
+				self.systematics['tmass_up'],
+				self.systematics['tmass_dn'],
+				self.systematics['tmass_up'],
+				self.systematics['tmass_dn']))
 
-			file.write('gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\n' % (self.gen_syst))
+			file.write('gen      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t-\t\t-\n' % (self.systematics['gen']))
 
-			file.write('pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\n' % (self.pdf_syst, self.wz_pdf_syst))
+			file.write('pdf      lnN\t%5.3f\t\t-\t\t-\t\t-\t\t%5.3f\t\t-\n' % (self.systematics['pdf'], self.systematics['wz_pdf']))
 
 		return datacard_path + datacard_name
 
