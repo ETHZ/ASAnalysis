@@ -177,6 +177,9 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("MuIsLoose"     , "std::vector<bool>", &p_fTmuisloose );
 	fAnalysisTree->Branch("MuIsTight"     , "std::vector<bool>", &p_fTmuistight );
 	fAnalysisTree->Branch("MuIsPrompt"    , "std::vector<bool>", &p_fTmuisprompt);
+	fAnalysisTree->Branch("MuID"          , "std::vector<int>", &p_fTmuid);
+	fAnalysisTree->Branch("MuMID"         , "std::vector<int>", &p_fTmumid);
+	fAnalysisTree->Branch("MuGMID"        , "std::vector<int>", &p_fTmugmid);
 
 	// // single-electron properties
 	fAnalysisTree->Branch("ElPt"     , "std::vector<float>", &p_fTelpt          );
@@ -186,15 +189,18 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElPFIso"  , "std::vector<float>", &p_fTelpfiso       );
 	fAnalysisTree->Branch("ElD0"     , "std::vector<float>", &p_fTeld0          );
 
-	// // single-photon properties
-	fAnalysisTree->Branch("PhoPt"     , "std::vector<float>", &p_fTphpt          );
-	fAnalysisTree->Branch("PhoEta"    , "std::vector<float>", &p_fTpheta         );
-	fAnalysisTree->Branch("PhoPhi"    , "std::vector<float>", &p_fTphphi         );
-
 	fAnalysisTree->Branch("ElIsVeto"      , "std::vector<bool>", &p_fTelisveto  );
 	fAnalysisTree->Branch("ElIsLoose"     , "std::vector<bool>", &p_fTelisloose );
 	fAnalysisTree->Branch("ElIsTight"     , "std::vector<bool>", &p_fTelistight );
 	fAnalysisTree->Branch("ElIsPrompt"    , "std::vector<bool>", &p_fTelisprompt);
+	fAnalysisTree->Branch("ElID"          , "std::vector<int>", &p_fTelid);
+	fAnalysisTree->Branch("ElMID"         , "std::vector<int>", &p_fTelmid);
+	fAnalysisTree->Branch("ElGMID"        , "std::vector<int>", &p_fTelgmid);
+
+	//// // single-photon properties
+	//fAnalysisTree->Branch("PhoPt"     , "std::vector<float>", &p_fTphpt          );
+	//fAnalysisTree->Branch("PhoEta"    , "std::vector<float>", &p_fTpheta         );
+	//fAnalysisTree->Branch("PhoPhi"    , "std::vector<float>", &p_fTphphi         );
 
 	// // jet-MET properties
 	fAnalysisTree->Branch("pfMET"         ,&fTpfMET         , "pfMET/F"                );
@@ -304,6 +310,9 @@ void FakeAnalysis::FillAnalysisTree(){
 		
 		int id(-1), mid(-1), gmid(-1);
 		p_fTmuisprompt ->push_back( IsSignalMuon(ind, id, mid, gmid) );
+		p_fTmuid       ->push_back(   id );
+		p_fTmumid      ->push_back(  mid );
+		p_fTmugmid     ->push_back( gmid );
 		
 		if(IsLooseMuon(ind)) nLooseLeptons++;
 
@@ -327,20 +336,23 @@ void FakeAnalysis::FillAnalysisTree(){
 
 		int id(-1), mid(-1), gmid(-1);
 		p_fTelisprompt ->push_back( IsSignalElectron(ind, id, mid, gmid) );
+		p_fTelid       ->push_back(   id );
+		p_fTelmid      ->push_back(  mid );
+		p_fTelgmid     ->push_back( gmid );
 		
 		if(IsLooseElectron(ind)) nLooseLeptons++;
 	}
 
-	// Dump Photon properties
-	for(int ind = 0; ind < fTR->NPhotons; ind++){
+	// // Dump Photon properties
+	// for(int ind = 0; ind < fTR->NPhotons; ind++){
 
-		if(!IsGoodPhotonEGMLoose(ind)) continue;
-		
-		p_fTphpt     ->push_back( fTR->PhoPt    [ind] );
-		p_fTpheta    ->push_back( fTR->PhoEta   [ind] );
-		p_fTphphi    ->push_back( fTR->PhoPhi   [ind] );
-		
-	}
+	// 	if(!IsGoodPhotonEGMLoose(ind)) continue;
+	// 	
+	// 	p_fTphpt     ->push_back( fTR->PhoPt    [ind] );
+	// 	p_fTpheta    ->push_back( fTR->PhoEta   [ind] );
+	// 	p_fTphphi    ->push_back( fTR->PhoPhi   [ind] );
+	// 	
+	// }
 
 	if(nLooseLeptons < 1) return;
 
@@ -378,6 +390,9 @@ void FakeAnalysis::ResetTree(){
 	p_fTmuisloose  = &fTmuisloose ; p_fTmuisloose  ->reserve(fTR->NMus) ; p_fTmuisloose ->clear();
 	p_fTmuistight  = &fTmuistight ; p_fTmuistight  ->reserve(fTR->NMus) ; p_fTmuistight ->clear();
 	p_fTmuisprompt  = &fTmuisprompt ; p_fTmuisprompt  ->reserve(fTR->NMus) ; p_fTmuisprompt ->clear();
+	p_fTmuid   = &fTmuid ; p_fTmuid  ->reserve(fTR->NMus) ; p_fTmuid ->clear();
+	p_fTmumid   = &fTmumid ; p_fTmumid  ->reserve(fTR->NMus) ; p_fTmumid ->clear();
+	p_fTmugmid  = &fTmugmid ; p_fTmugmid  ->reserve(fTR->NMus) ; p_fTmugmid ->clear();
 
 	// // electron properties
 	p_fTelpt    = &fTelpt    ; p_fTelpt    ->reserve(fTR->NEles); p_fTelpt    ->clear();
@@ -387,15 +402,18 @@ void FakeAnalysis::ResetTree(){
 	p_fTelcharge= &fTelcharge; p_fTelcharge->reserve(fTR->NEles); p_fTelcharge->clear();
 	p_fTeld0    = &fTeld0    ; p_fTeld0    ->reserve(fTR->NEles); p_fTeld0    ->clear();
 
-	// // photon properties
-	p_fTphpt    = &fTphpt    ; p_fTphpt    ->reserve(fTR->NPhotons); p_fTphpt    ->clear();
-	p_fTpheta   = &fTpheta   ; p_fTpheta   ->reserve(fTR->NPhotons); p_fTpheta   ->clear();
-	p_fTphphi   = &fTphphi   ; p_fTphphi   ->reserve(fTR->NPhotons); p_fTphphi   ->clear();
+	// // // photon properties
+	// p_fTphpt    = &fTphpt    ; p_fTphpt    ->reserve(fTR->NPhotons); p_fTphpt    ->clear();
+	// p_fTpheta   = &fTpheta   ; p_fTpheta   ->reserve(fTR->NPhotons); p_fTpheta   ->clear();
+	// p_fTphphi   = &fTphphi   ; p_fTphphi   ->reserve(fTR->NPhotons); p_fTphphi   ->clear();
 
 	p_fTelisveto   = &fTelisveto  ; p_fTelisveto   ->reserve(fTR->NEles) ; p_fTelisveto  ->clear();
 	p_fTelisloose  = &fTelisloose ; p_fTelisloose  ->reserve(fTR->NEles) ; p_fTelisloose ->clear();
 	p_fTelistight  = &fTelistight ; p_fTelistight  ->reserve(fTR->NEles) ; p_fTelistight ->clear();
 	p_fTelisprompt  = &fTelisprompt ; p_fTelisprompt  ->reserve(fTR->NEles) ; p_fTelisprompt ->clear();
+	p_fTelid  = &fTelid ; p_fTelid  ->reserve(fTR->NEles) ; p_fTelid ->clear();
+	p_fTelmid  = &fTelmid ; p_fTelmid  ->reserve(fTR->NEles) ; p_fTelmid ->clear();
+	p_fTelgmid  = &fTelgmid ; p_fTelgmid  ->reserve(fTR->NEles) ; p_fTelgmid ->clear();
 
 	// // jet-MET properties
 	fTpfMET         = -999.99;
@@ -490,7 +508,12 @@ bool FakeAnalysis::IsLooseMuon(int ind){
 
 	if(fTR->MuNChi2[ind] > 10)           return false;
 
-	if(fTR->MuNGlMuHits [ind] < 1)       return false; // muon.globalTrack()->hitPattern().numberOfValidMuonHits() 
+	if(fTR->MuNGlMuHits.size() > 0){
+		if(fTR->MuNGlMuHits [ind] < 1)       return false; // muon.globalTrack()->hitPattern().numberOfValidMuonHits() 
+	}
+	else{
+		if(fTR->MuNMuHits [ind] < 1)         return false; // this is on the outer track: muon.outerTrack()->hitPattern().numberOfValidHits()
+	}
 
     if(fTR->MuNMatchedStations[ind] < 2) return false; // muon.numberOfMatchedStations()
 
