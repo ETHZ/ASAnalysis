@@ -51,7 +51,7 @@ class optcuts(plotter.plotter) :
 			print ''
 			cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (eff))
 			sel  = self.get_selection('eff%d' % eff, cuts)
-			results = self.make_IntPredictions(sel, self.cutspath, '_eff%d' % eff)
+			results = self.make_IntPredictions(sel, self.cutspath, '_eff%d' % eff, True)
 
 
 	def read_cuts(self, cutfile) :
@@ -110,40 +110,47 @@ class optcuts(plotter.plotter) :
 		presel.charge = charge
 		presel.sname = 'TTbarW'
 
-		signif_path = '%ssignif_%s.pkl' % (self.cutspath, self.get_chargeString(charge))
+		FoMs = {}
+		FoMs['ExpSign'] = {}
+		FoMs['XSecErr'] = {}
 
-		if os.path.exists(signif_path) :
-			print '[status] loading optimization results..'
-			signif = helper.load_object(signif_path)
+		for FoM in FoMs :
+			signif_path = '%s%s_%s.pkl' % (self.cutspath, FoM, self.get_chargeString(charge))
 
-		else :
-			print ''
-			print '========================='
-			print '| Analyzing datacards.. |'
-			print '========================='
-			print ''
+			if os.path.exists(signif_path) :
+				print '[status] loading optimization results..'
+				FoMs[FoM] = helper.load_object(signif_path)
 
-			signif = {}
-			signif['int'      ] = []
-			signif['3channels'] = []
-			if charge == 0 : signif['6channels'] = []
-			for ieff in effs :
-				# calculate efficiency of selection
-				cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
-				sel = self.get_selection('eff%d' % ieff, cuts, 0, True)
-				sel.sname = 'TTbarW'
-				(eff, eff_err) = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
+			else :
+				print ''
+				print '========================='
+				print '| Analyzing datacards.. |'
+				print '========================='
+				print ''
 
-				# get expected significance
-				for chan in signif :
-					if   chan == '3channels' : charge_suffix = '_' + self.get_chargeString(charge)
-					elif chan == 'int'       : charge_suffix =       self.get_chargeString(charge, 1)
-					else                     : charge_suffix = ''
-					datacard = self.cutspath + 'datacards_eff%d/datacard_ssdl_ttW_%s%s_eff%d.txt' % (ieff, chan, charge_suffix, ieff)
-					signif[chan].append([eff, runCombine.expected_significance(datacard, '')])
-			helper.save_object(signif, signif_path)
+				FoMs[FoM]['int'      ] = []
+				FoMs[FoM]['3channels'] = []
+				if charge == 0 : FoMs[FoM]['6channels'] = []
+				for ieff in effs :
+					# calculate efficiency of selection
+					cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
+					sel = self.get_selection('eff%d' % ieff, cuts, 0, True)
+					sel.sname = 'TTbarW'
+					(eff, eff_err) = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
 
-		self.plot_results(signif, self.get_chargeString(charge))
+					# get expected significance
+					for chan in FoMs[FoM] :
+						if   chan == '3channels' : charge_suffix = '_' + self.get_chargeString(charge)
+						elif chan == 'int'       : charge_suffix =       self.get_chargeString(charge, 1)
+						else                     : charge_suffix = ''
+						datacard = self.cutspath + 'datacards_eff%d/datacard_ssdl_ttW_%s%s_eff%d.txt' % (ieff, chan, charge_suffix, ieff)
+						if FoM == 'ExpSign' : result = runCombine.expected_significance(datacard, '')
+						if FoM == 'XSecErr' : result = max(runCombine.signal_strength(datacard, '')[1:])
+						FoMs[FoM][chan].append([eff, result])
+
+				helper.save_object(FoMs[FoM], signif_path)
+
+			self.plot_results(FoM, FoMs[FoM], self.get_chargeString(charge))
 
 
 	def get_efficiency(self, path, sel, base_sel) :
@@ -161,15 +168,18 @@ class optcuts(plotter.plotter) :
 		return ratio
 
 
-	def plot_results(self, results, charge_str) :
+	def plot_results(self, FoM, results, charge_str) :
 		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
 		canvas = pl.get_canvas()
 		canvas.cd()
-		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 25, 0., 5.)
+		scale = 1.
+		if FoM == 'XSecErr' : scale = 232.
+		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 15, 0., 3.*scale)
 #		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
 		h2_axes_gr.Draw()
 		h2_axes_gr.GetXaxis().SetTitle('#varepsilon_{Signal} [%]')
 		h2_axes_gr.GetYaxis().SetTitle('#sigma_{expected}')
+		if FoM == 'XSecErr' :  h2_axes_gr.GetYaxis().SetTitle('Exp. Cross Section Error [fb]')
 		h2_axes_gr.GetXaxis().SetTitleOffset(1.25)
 		h2_axes_gr.GetYaxis().SetTitleOffset(1.25)
 		h2_axes_gr.GetXaxis().SetTitleSize(0.046)
@@ -184,7 +194,7 @@ class optcuts(plotter.plotter) :
 			gr_res[chan] = ROOT.TGraphErrors(0)
 
 			for i, [eff, result] in enumerate(res) :
-				gr_res[chan].SetPoint(i, 100.*eff, result)
+				gr_res[chan].SetPoint(i, 100.*eff, result*scale)
 
 			gr_res[chan].SetMarkerSize(1.2)
 			gr_res[chan].SetMarkerStyle(21)
@@ -199,8 +209,8 @@ class optcuts(plotter.plotter) :
 #		raw_input('ok? ')
 #		raw_input('ok? ')
 
-		canvas.Print('%sSeff_vs_ExpSign_%s.pdf' % (self.cutspath, charge_str))
-		canvas.Print('%sSeff_vs_ExpSign_%s.png' % (self.cutspath, charge_str))
+		canvas.Print('%sSeff_vs_%s_%s.pdf' % (self.cutspath, FoM, charge_str))
+		canvas.Print('%sSeff_vs_%s_%s.png' % (self.cutspath, FoM, charge_str))
 #		canvas.Print('%stmp/test.png' % self.path)
 
 

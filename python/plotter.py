@@ -444,7 +444,7 @@ class plotter :
 		foo = 0
 
 
-	def make_IntPredictions(self, sel, output_path, suffix = '') :
+	def make_IntPredictions(self, sel, output_path, suffix = '', blind = False) :
 		'''
 		makes predictions for all systematics with a given selection and returns a nested dictionary of result objects
 		results[SYST][CHARGE][FLAVOR]
@@ -474,7 +474,7 @@ class plotter :
 		for charge in results['Normal'] :
 			datacards_3channels = []
 			for chan in results['Normal'][charge] :
-				datacard = self.make_datacard(results, chan, charge, suffix, '%s/datacards%s' % (output_path, suffix))
+				datacard = self.make_datacard(results, chan, charge, suffix, '%s/datacards%s' % (output_path, suffix), blind)
 				ch_str   = results['Normal'][charge][chan].chan_str
 				if charge != 'al' and chan != 'al' :
 					datacards_6channels.append('%s=%s' % (ch_str, datacard))
@@ -1043,7 +1043,7 @@ class plotter :
 		print "----------------------------------------------------------------------------------------------"
 
 
-	def make_datacard(self, results, chan, charge, suffix = '', output_dir = '') :
+	def make_datacard(self, results, chan, charge, suffix = '', output_dir = '', blind = False) :
 		'''
 		takes a nested dictionary of result objects as input:
 		results[SYSTFLAG][CHARGE][FLAVOR]
@@ -1071,7 +1071,9 @@ class plotter :
 			##	if (gFullDataBlind)
 			##		fOUTSTREAM << Form("observation\t%d\t%d\t%d\t%d\t%d\t%d", 999, 999, 999, 999, 999, 999) << endl;
 			##	else
-			file.write('observation\t%d\n' % (results['Normal'][charge][chan].obs))
+			if blind : obs = results['Normal'][charge][chan].ttw + results['Normal'][charge][chan].tot
+			else     : obs = results['Normal'][charge][chan].obs
+			file.write('observation\t%5.3f\n' % obs)
 			file.write('\n')
 			file.write('bin\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\t\t%s\n' % (
 				results['Normal'][charge][chan].chan_str,
