@@ -8,6 +8,7 @@ class ttvplot :
 
 	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
 		self.path = path
+		if not self.path.endswith('/') : self.path += '/'
 		if not os.path.exists(self.path) :
 			os.makedirs(self.path)
 		self.chan = chan
@@ -114,6 +115,7 @@ class ttvplot :
 		# set minimum and maximum
 		scale = 1.8
 		if var == 'Int' : scale = 2.4
+		if var == 'CFChan' and hs_pred.GetXaxis().GetNbins() == 7 : scale = 1.4
 		maximum = scale * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
 		gr_obs .SetMaximum(maximum)
 		hs_pred.SetMaximum(maximum)
@@ -209,14 +211,19 @@ class ttvplot :
 				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
 				hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif var == 'CFChan' :
-			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
+			total_bin = 0
+			if hs_pred.GetXaxis().GetNbins() == 7 :
+				total_bin = 1
+				hs_pred.GetXaxis().SetBinLabel(total_bin, 'Total')
+			for ibin in range(1 + total_bin, hs_pred.GetXaxis().GetNbins()+1) :
+				bin = ibin + total_bin
 				if bin < 4 : charge_str = '^{+}'
 				else       : charge_str = '^{-}'
 				if bin == 1 or bin == 4 : binlabel = '#mu'+charge_str+'#mu'+charge_str
 				if bin == 2 or bin == 5 : binlabel = 'e'+charge_str+'#mu'+charge_str
 				if bin == 3 or bin == 6 : binlabel = 'e'+charge_str+'e'+charge_str
-				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
-				hs_pred.GetXaxis().SetLabelSize(0.062)
+				hs_pred.GetXaxis().SetBinLabel(ibin, binlabel)
+			hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif var == 'Charge' :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
 				if bin == 1 : binlabel = '--'
@@ -226,21 +233,6 @@ class ttvplot :
 		elif not hs_pred.GetXaxis().IsVariableBinSize() and var != 'NVrtx' :
 			bin_width = hs_pred.GetXaxis().GetBinWidth(1)
 			hs_pred.GetYaxis().SetTitle('Events / %.0f GeV' % bin_width)
-		##		if (diffVarName[var] == "NJ" || diffVarName[var] == "NbJmed"){
-		##			for(size_t i = 1; i <= nbins[var]; ++i) hs_pred[var]->GetXaxis()->SetBinLabel(i, Form("%d", (int)bins[var][i-1]));
-		##			hs_pred[var]->GetXaxis()->SetLabelSize(0.07);
-		##			hs_pred[var]->GetXaxis()->SetTitleSize(0.045);
-		##			hs_pred[var]->GetXaxis()->SetTitleOffset(1.07);
-		##		}
-		##		if (diffVarName[var] == "Int") {
-		##			for(size_t i = 1; i <= nbins[var]; ++i) {
-		##				TString binlabel = "?";
-		##				if (i == 1) binlabel = "e"  + chargeSignString + "e"  + chargeSignString;
-		##				if (i == 2) binlabel = "#mu"+ chargeSignString + "#mu"+ chargeSignString;
-		##				if (i == 3) binlabel = "e"  + chargeSignString + "#mu"+ chargeSignString;
-		##				hs_pred[var]->GetXaxis()->SetBinLabel(i, binlabel);
-		##			}
-		##		}
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
 		histos['bgtot'].Draw('hist same')
@@ -255,6 +247,23 @@ class ttvplot :
 		canvas.Print('%sObsPred%s_%s.pdf' % (self.path, prefix, var))
 		canvas.Print('%sObsPred%s_%s.png' % (self.path, prefix, var))
 #		raw_input('ok? ')
+
+
+	def save_plot_1d(self, h_data, h_mc, x_axis_title, y_axis_title) :
+		h_data = h_data.Clone()
+		h_mc   = h_mc  .Clone()
+		self.apply_histoStyle(h_data, 0)
+		canvas = self.get_canvas()
+		canvas.cd()
+		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'f']]
+		leg = self.draw_legend(leg_entries)
+		h_mc.Draw()
+		self.set_axisTitles(h_mc, x_axis_title, y_axis_title)
+		h_data.Draw('same p')
+		self.draw_cmsLine()
+		leg.Draw()
+		canvas.Print('%s%s.pdf' % (self.path, h_mc.GetName()))
+		canvas.Print('%s%s.png' % (self.path, h_mc.GetName()))
 
 
 	def get_canvas(self, name = '') :
@@ -321,6 +330,24 @@ class ttvplot :
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
 		latex.DrawLatex(0.15, 0.88, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))
+
+
+	def apply_histoStyle(self, histo, datamc) :
+		if datamc == 0 :
+			histo.SetMarkerStyle(20)
+			histo.SetMarkerSize(1.1)
+			histo.SetLineWidth(2)
+
+
+	def set_axisTitles(self, histo, x_axis_title, y_axis_title) :
+		histo.GetXaxis().SetTitle(x_axis_title)
+		histo.GetYaxis().SetTitle(y_axis_title)
+		histo.GetXaxis().SetTitleOffset(1.25)
+		histo.GetYaxis().SetTitleOffset(1.25)
+		histo.GetXaxis().SetTitleSize(0.046)
+		histo.GetYaxis().SetTitleSize(0.046)
+		histo.GetXaxis().SetLabelSize(0.04)
+		histo.GetYaxis().SetLabelSize(0.04)
 
 
 	def read_histos(self, path, var) :
