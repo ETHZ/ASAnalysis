@@ -2,7 +2,7 @@
 import selection
 
 
-def get_histoBins(var, sel = '') :
+def get_histoBins(var, sel = '', total_bin = False) :
 		histo_settings = {}
 		if   var is 'HT'     : histo_settings['nbins'] =  5; histo_settings['min'] = 100.; histo_settings['max'] = 600.;
 		elif var is 'MET'    : histo_settings['nbins'] =  6; histo_settings['min'] =   0.; histo_settings['max'] = 120.;
@@ -15,7 +15,8 @@ def get_histoBins(var, sel = '') :
 		elif var is 'minMT'  : histo_settings['nbins'] = 20; histo_settings['min'] =   0.; histo_settings['max'] = 400.;
 		elif var is 'M3'     : histo_settings['nbins'] = 12; histo_settings['min'] =   0.; histo_settings['max'] = 600.;
 		elif var is 'Int'    : histo_settings['nbins'] =  3; histo_settings['min'] =   0.; histo_settings['max'] =   3.;
-		elif var is 'CFChan' : histo_settings['nbins'] =  6; histo_settings['min'] =   0.; histo_settings['max'] =   6.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
+		elif var is 'CFChan' and not total_bin : histo_settings['nbins'] =  6; histo_settings['min'] =   0.; histo_settings['max'] =   6.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
+		elif var is 'CFChan' and     total_bin : histo_settings['nbins'] =  7; histo_settings['min'] =  -1.; histo_settings['max'] =   6.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 		elif var is 'Charge' : histo_settings['nbins'] =  2; histo_settings['min'] =  -2.; histo_settings['max'] =   2.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 
 		if sel != '' :

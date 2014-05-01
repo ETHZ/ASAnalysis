@@ -135,6 +135,9 @@ class plotter :
 		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
 		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
+		self.fpr.fill_ratios(self.get_samples('MCBGMuEnr'), self.get_samples('MCBGEMEnr'), 1)
+#		self.fpr.plot_ratios()
+#		return
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
@@ -266,6 +269,9 @@ class plotter :
 		if channel == 'SingleDoubleMu' :
 			for name, sample in self.samples.iteritems() :
 				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
+		if channel == 'MCBGMuEnr' or 'MCBGEMEnr' :
+			for name, sample in self.samples.iteritems() :
+				if (sample.datamc > 0) : samplelist.append(sample.name)
 		return samplelist
 
 
@@ -1263,19 +1269,21 @@ class plotter :
 		print '[status] getting plots from %s tree for' % (restree.GetName()), vars
 
 		for var in vars :
-			histo_bins = config.get_histoBins(var, sel)
-			self.plot_ObsPred(restree, sel, var, histo_bins)
+			total_bin = True
+			histo_bins = config.get_histoBins(var, sel, total_bin)
+			self.plot_ObsPred(restree, sel, var, histo_bins, total_bin)
 
 		resfile.Close()
 
 
-	def plot_ObsPred(self, tree, sel, var, settings) :
+	def plot_ObsPred(self, tree, sel, var, settings, add_total_bin = False) :
 
 		nbins = settings['nbins']
 		min   = settings['min'  ]
 		max   = settings['max'  ]
 
 		histos = {}
+		h_tmp  = {}
 
 		chargeFactor = 1.
 		noChargeSelFactor = 0.5
@@ -1310,9 +1318,9 @@ class plotter :
 		for rare in rares :
 			h_rare_name = 'h_'+rare+'_npass_'+var; h_rares_npass[rare] = ROOT.TH1D(h_rare_name, h_rare_name, nbins, min, max)
 			tree.Draw(var_str+'>>'+h_rare_name, '(ObsPred == 6 && SName == \"%s\" && %s)' % (rare, sel.get_selectionString(ResTree = True)), 'goff')
-		h_wz_name    = 'h_wz_npass'    + var + sel.name; h_wz_npass  = ROOT.TH1D(h_wz_name   , h_wz_name   , nbins, min, max)
-		h_ttz_name   = 'h_ttz_npass'   + var + sel.name; h_ttz_npass = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
-		h_ttw_name   = 'h_ttw_npass'   + var + sel.name; h_ttw_npass = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
+		h_wz_name    = 'h_wz_npass'    + var + sel.name; h_tmp['wz_npass' ] = ROOT.TH1D(h_wz_name   , h_wz_name   , nbins, min, max)
+		h_ttz_name   = 'h_ttz_npass'   + var + sel.name; h_tmp['ttz_npass'] = ROOT.TH1D(h_ttz_name  , h_ttz_name  , nbins, min, max)
+		h_ttw_name   = 'h_ttw_npass'   + var + sel.name; h_tmp['ttw_npass'] = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
 		tree.Draw(var_str+'>>'+h_wz_name   , '(ObsPred == 3 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ttz_name  , '(ObsPred == 5 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ttw_name  , '(ObsPred == 4 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
@@ -1327,23 +1335,23 @@ class plotter :
 		h_ttw_name   = 'h_ttw_'   + var + sel.name; histos['ttw'  ] = ROOT.TH1D(h_ttw_name  , h_ttw_name  , nbins, min, max)
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
-		h_mm_nt2_name  = 'h_mm_nt2_'  + var + sel.name; h_mm_nt2_npass  = ROOT.TH1D(h_mm_nt2_name , h_mm_nt2_name , nbins, min, max)
-		h_mm_nt10_name = 'h_mm_nt10_' + var + sel.name; h_mm_nt10_npass = ROOT.TH1D(h_mm_nt10_name, h_mm_nt10_name, nbins, min, max)
-		h_mm_nt01_name = 'h_mm_nt01_' + var + sel.name; h_mm_nt01_npass = ROOT.TH1D(h_mm_nt01_name, h_mm_nt01_name, nbins, min, max)
-		h_mm_nt0_name  = 'h_mm_nt0_'  + var + sel.name; h_mm_nt0_npass  = ROOT.TH1D(h_mm_nt0_name , h_mm_nt0_name , nbins, min, max)
-		h_em_nt2_name  = 'h_em_nt2_'  + var + sel.name; h_em_nt2_npass  = ROOT.TH1D(h_em_nt2_name , h_em_nt2_name , nbins, min, max)
-		h_em_nt10_name = 'h_em_nt10_' + var + sel.name; h_em_nt10_npass = ROOT.TH1D(h_em_nt10_name, h_em_nt10_name, nbins, min, max)
-		h_em_nt01_name = 'h_em_nt01_' + var + sel.name; h_em_nt01_npass = ROOT.TH1D(h_em_nt01_name, h_em_nt01_name, nbins, min, max)
-		h_em_nt0_name  = 'h_em_nt0_'  + var + sel.name; h_em_nt0_npass  = ROOT.TH1D(h_em_nt0_name , h_em_nt0_name , nbins, min, max)
-		h_ee_nt2_name  = 'h_ee_nt2_'  + var + sel.name; h_ee_nt2_npass  = ROOT.TH1D(h_ee_nt2_name , h_ee_nt2_name , nbins, min, max)
-		h_ee_nt10_name = 'h_ee_nt10_' + var + sel.name; h_ee_nt10_npass = ROOT.TH1D(h_ee_nt10_name, h_ee_nt10_name, nbins, min, max)
-		h_ee_nt01_name = 'h_ee_nt01_' + var + sel.name; h_ee_nt01_npass = ROOT.TH1D(h_ee_nt01_name, h_ee_nt01_name, nbins, min, max)
-		h_ee_nt0_name  = 'h_ee_nt0_'  + var + sel.name; h_ee_nt0_npass  = ROOT.TH1D(h_ee_nt0_name , h_ee_nt0_name , nbins, min, max)
-		h_nt2_em_BB_os_name = 'h_nt2_em_BB_os_' + var + sel.name; h_nt2_em_BB_os = ROOT.TH1D(h_nt2_em_BB_os_name, h_nt2_em_BB_os_name, nbins, min, max)
-		h_nt2_em_EE_os_name = 'h_nt2_em_EE_os_' + var + sel.name; h_nt2_em_EE_os = ROOT.TH1D(h_nt2_em_EE_os_name, h_nt2_em_EE_os_name, nbins, min, max)
-		h_nt2_ee_BB_os_name = 'h_nt2_ee_BB_os_' + var + sel.name; h_nt2_ee_BB_os = ROOT.TH1D(h_nt2_ee_BB_os_name, h_nt2_ee_BB_os_name, nbins, min, max)
-		h_nt2_ee_EB_os_name = 'h_nt2_ee_EB_os_' + var + sel.name; h_nt2_ee_EB_os = ROOT.TH1D(h_nt2_ee_EB_os_name, h_nt2_ee_EB_os_name, nbins, min, max)
-		h_nt2_ee_EE_os_name = 'h_nt2_ee_EE_os_' + var + sel.name; h_nt2_ee_EE_os = ROOT.TH1D(h_nt2_ee_EE_os_name, h_nt2_ee_EE_os_name, nbins, min, max)
+		h_mm_nt2_name  = 'h_mm_nt2_'  + var + sel.name; h_tmp['mm_nt2_npass' ] = ROOT.TH1D(h_mm_nt2_name , h_mm_nt2_name , nbins, min, max)
+		h_mm_nt10_name = 'h_mm_nt10_' + var + sel.name; h_tmp['mm_nt10_npass'] = ROOT.TH1D(h_mm_nt10_name, h_mm_nt10_name, nbins, min, max)
+		h_mm_nt01_name = 'h_mm_nt01_' + var + sel.name; h_tmp['mm_nt01_npass'] = ROOT.TH1D(h_mm_nt01_name, h_mm_nt01_name, nbins, min, max)
+		h_mm_nt0_name  = 'h_mm_nt0_'  + var + sel.name; h_tmp['mm_nt0_npass' ] = ROOT.TH1D(h_mm_nt0_name , h_mm_nt0_name , nbins, min, max)
+		h_em_nt2_name  = 'h_em_nt2_'  + var + sel.name; h_tmp['em_nt2_npass' ] = ROOT.TH1D(h_em_nt2_name , h_em_nt2_name , nbins, min, max)
+		h_em_nt10_name = 'h_em_nt10_' + var + sel.name; h_tmp['em_nt10_npass'] = ROOT.TH1D(h_em_nt10_name, h_em_nt10_name, nbins, min, max)
+		h_em_nt01_name = 'h_em_nt01_' + var + sel.name; h_tmp['em_nt01_npass'] = ROOT.TH1D(h_em_nt01_name, h_em_nt01_name, nbins, min, max)
+		h_em_nt0_name  = 'h_em_nt0_'  + var + sel.name; h_tmp['em_nt0_npass' ] = ROOT.TH1D(h_em_nt0_name , h_em_nt0_name , nbins, min, max)
+		h_ee_nt2_name  = 'h_ee_nt2_'  + var + sel.name; h_tmp['ee_nt2_npass' ] = ROOT.TH1D(h_ee_nt2_name , h_ee_nt2_name , nbins, min, max)
+		h_ee_nt10_name = 'h_ee_nt10_' + var + sel.name; h_tmp['ee_nt10_npass'] = ROOT.TH1D(h_ee_nt10_name, h_ee_nt10_name, nbins, min, max)
+		h_ee_nt01_name = 'h_ee_nt01_' + var + sel.name; h_tmp['ee_nt01_npass'] = ROOT.TH1D(h_ee_nt01_name, h_ee_nt01_name, nbins, min, max)
+		h_ee_nt0_name  = 'h_ee_nt0_'  + var + sel.name; h_tmp['ee_nt0_npass' ] = ROOT.TH1D(h_ee_nt0_name , h_ee_nt0_name , nbins, min, max)
+		h_nt2_em_BB_os_name = 'h_nt2_em_BB_os_' + var + sel.name; h_tmp['nt2_em_BB_os'] = ROOT.TH1D(h_nt2_em_BB_os_name, h_nt2_em_BB_os_name, nbins, min, max)
+		h_nt2_em_EE_os_name = 'h_nt2_em_EE_os_' + var + sel.name; h_tmp['nt2_em_EE_os'] = ROOT.TH1D(h_nt2_em_EE_os_name, h_nt2_em_EE_os_name, nbins, min, max)
+		h_nt2_ee_BB_os_name = 'h_nt2_ee_BB_os_' + var + sel.name; h_tmp['nt2_ee_BB_os'] = ROOT.TH1D(h_nt2_ee_BB_os_name, h_nt2_ee_BB_os_name, nbins, min, max)
+		h_nt2_ee_EB_os_name = 'h_nt2_ee_EB_os_' + var + sel.name; h_tmp['nt2_ee_EB_os'] = ROOT.TH1D(h_nt2_ee_EB_os_name, h_nt2_ee_EB_os_name, nbins, min, max)
+		h_nt2_ee_EE_os_name = 'h_nt2_ee_EE_os_' + var + sel.name; h_tmp['nt2_ee_EE_os'] = ROOT.TH1D(h_nt2_ee_EE_os_name, h_nt2_ee_EE_os_name, nbins, min, max)
 
 		# getting histograms from results tree
 		tree.Draw(var_str+'>>'+h_obs_name  ,    'Weight*(ObsPred == 0 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
@@ -1370,6 +1378,11 @@ class plotter :
 		tree.Draw(var_str+'>>'+h_nt2_ee_BB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
 		tree.Draw(var_str+'>>'+h_nt2_ee_EB_os_name, '%f*(ObsPred == 2 && (TLCat == 1 || TLCat == 2) && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
 		tree.Draw(var_str+'>>'+h_nt2_ee_EE_os_name, '%f*(ObsPred == 2 && TLCat == 3 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+
+		if add_total_bin :
+			for key, histo in dict(histos.items() + h_tmp.items() + h_rares_npass.items()).iteritems() :
+				sum = histo.Integral()
+				histo.SetBinContent(1, sum)
 
 		# adding background predictions
 		histos['bgtot'].Add(histos['fake' ])
@@ -1407,9 +1420,9 @@ class plotter :
 			err2 = 0.
 
 			# fakes
-			FR.setMMNtl(h_mm_nt2_npass.GetBinContent(bin), h_mm_nt10_npass.GetBinContent(bin), h_mm_nt01_npass.GetBinContent(bin), h_mm_nt0_npass.GetBinContent(bin))
-			FR.setEMNtl(h_em_nt2_npass.GetBinContent(bin), h_em_nt10_npass.GetBinContent(bin), h_em_nt01_npass.GetBinContent(bin), h_em_nt0_npass.GetBinContent(bin))
-			FR.setEENtl(h_ee_nt2_npass.GetBinContent(bin), h_ee_nt10_npass.GetBinContent(bin), h_ee_nt01_npass.GetBinContent(bin), h_ee_nt0_npass.GetBinContent(bin))
+			FR.setMMNtl(h_tmp['mm_nt2_npass'].GetBinContent(bin), h_tmp['mm_nt10_npass'].GetBinContent(bin), h_tmp['mm_nt01_npass'].GetBinContent(bin), h_tmp['mm_nt0_npass'].GetBinContent(bin))
+			FR.setEMNtl(h_tmp['em_nt2_npass'].GetBinContent(bin), h_tmp['em_nt10_npass'].GetBinContent(bin), h_tmp['em_nt01_npass'].GetBinContent(bin), h_tmp['em_nt0_npass'].GetBinContent(bin))
+			FR.setEENtl(h_tmp['ee_nt2_npass'].GetBinContent(bin), h_tmp['ee_nt10_npass'].GetBinContent(bin), h_tmp['ee_nt01_npass'].GetBinContent(bin), h_tmp['ee_nt0_npass'].GetBinContent(bin))
 
 			fake_nPass = histos['fake'].GetBinContent(bin)
 			fake_syst2 = self.FakeESyst2 * fake_nPass*fake_nPass
@@ -1418,11 +1431,11 @@ class plotter :
 #			print 'bin %d: %f +/- %f (syst) +/- %f (stat)' % (bin, fake_nPass, math.sqrt(fake_syst2), math.sqrt(fake_stat2))
 
 			# charge mis ID
-			nt2_em_BB_os = h_nt2_em_BB_os.GetBinContent(bin)
-			nt2_em_EE_os = h_nt2_em_EE_os.GetBinContent(bin)
-			nt2_ee_BB_os = h_nt2_ee_BB_os.GetBinContent(bin)
-			nt2_ee_EB_os = h_nt2_ee_EB_os.GetBinContent(bin)
-			nt2_ee_EE_os = h_nt2_ee_EE_os.GetBinContent(bin)
+			nt2_em_BB_os = h_tmp['nt2_em_BB_os'].GetBinContent(bin)
+			nt2_em_EE_os = h_tmp['nt2_em_EE_os'].GetBinContent(bin)
+			nt2_ee_BB_os = h_tmp['nt2_ee_BB_os'].GetBinContent(bin)
+			nt2_ee_EB_os = h_tmp['nt2_ee_EB_os'].GetBinContent(bin)
+			nt2_ee_EE_os = h_tmp['nt2_ee_EE_os'].GetBinContent(bin)
 
 			# Simple error propagation assuming error on number of events is sqrt(N)
 			nt2_ee_chmid    = chargeFactor * (2*fbb* nt2_ee_BB_os                           + 2*fee*nt2_ee_EE_os                      + 2*feb*nt2_ee_EB_os)
@@ -1437,7 +1450,7 @@ class plotter :
 
 			# wz
 			scale = self.lumi / self.samples[wz_str].getLumi()
-			wz_nPass = h_wz_npass.GetBinContent(bin)
+			wz_nPass = h_tmp['wz_npass'].GetBinContent(bin)
 			wz_stat2 = scale*scale * self.samples[wz_str].getError2(wz_nPass)
 			wz_yield = histos['wz'].GetBinContent(bin)
 			wz_syst2 = self.WZESyst2 * wz_yield*wz_yield
@@ -1445,7 +1458,7 @@ class plotter :
 
 			# ttz
 			scale = self.lumi / self.samples[ttz_str].getLumi()
-			ttz_nPass = h_ttz_npass.GetBinContent(bin)
+			ttz_nPass = h_tmp['ttz_npass'].GetBinContent(bin)
 			ttz_stat2 = scale*scale * self.samples[ttz_str].getError2(ttz_nPass)
 			ttz_yield = histos['ttz'].GetBinContent(bin)
 			ttz_syst2 = self.TTZESyst2 * ttz_yield*ttz_yield
@@ -1453,7 +1466,7 @@ class plotter :
 
 #			# ttz
 #			scale = self.lumi / self.samples[ttw_str].getLumi()
-#			ttw_nPass = h_ttw_npass.GetBinContent(bin)
+#			ttw_nPass = h_tmp['ttw_npass'].GetBinContent(bin)
 #			ttw_stat2 = scale*scale * self.samples[ttw_str].getError2(ttw_nPass)
 #			ttw_yield = histos['ttw'].GetBinContent(bin)
 #			ttw_syst2 = self.ttwESyst2 * ttw_yield*ttw_yield
@@ -1488,7 +1501,7 @@ class plotter :
 			if sel.charge > 0 : charge_str = '^{+}'
 			if sel.charge < 0 : charge_str = '^{-}'
 		if sel.name == 'final' : cms_label = 0
-		cms_label = 2
+#		cms_label = 2
 		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label)
 		pl.save_plot(histos, var, prefix, charge_str)
 #		raw_input('ok? ')
