@@ -136,8 +136,8 @@ class plotter :
 		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
 		self.fpr.fill_ratios(self.get_samples('MCBGMuEnr'), self.get_samples('MCBGEMEnr'), 1)
-#		self.fpr.plot_ratios()
-#		return
+		self.fpr.plot_ratios()
+		return
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
@@ -269,7 +269,7 @@ class plotter :
 		if channel == 'SingleDoubleMu' :
 			for name, sample in self.samples.iteritems() :
 				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
-		if channel == 'MCBGMuEnr' or 'MCBGEMEnr' :
+		if channel == 'MCBGMuEnr' or channel == 'MCBGEMEnr' :
 			for name, sample in self.samples.iteritems() :
 				if (sample.datamc > 0) : samplelist.append(sample.name)
 		return samplelist
@@ -359,6 +359,7 @@ class plotter :
 		if chan_str is 'el'   : samples_data = self.get_samples('DoubleEle')
 		if chan_str is 'mu17' : samples_data = self.get_samples('DoubleMu')
 		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
+		print 'data samples', samples_data
 		samples_wjets.append('WJets')
 		samples_zjets.append('DYJets')
 
