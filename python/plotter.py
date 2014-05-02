@@ -135,7 +135,7 @@ class plotter :
 		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
 		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
-		self.fpr.fill_ratios(self.get_samples('MCBGMuEnr'), self.get_samples('MCBGEMEnr'), 1)
+		self.fpr.fill_ratios(self.get_samples('MC'), self.get_samples('MC'), 1)
 		self.fpr.plot_ratios()
 		return
 
@@ -265,7 +265,7 @@ class plotter :
 				if (sample.datamc == 0) and (sample.channel == 5) : samplelist.append(sample.name)
 			elif channel == 'SingleDoubleMu' :
 				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
-			elif channel == 'MCBGMuEnr' or channel == 'MCBGEMEnr' :
+			elif channel == 'MC' :
 				if (sample.datamc > 0) : samplelist.append(sample.name)
 		return samplelist
 
@@ -354,7 +354,6 @@ class plotter :
 		if chan_str is 'el'   : samples_data = self.get_samples('DoubleEle')
 		if chan_str is 'mu17' : samples_data = self.get_samples('DoubleMu')
 		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
-		print 'data samples', samples_data
 		samples_wjets.append('WJets')
 		samples_zjets.append('DYJets')
 
