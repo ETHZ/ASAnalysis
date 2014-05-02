@@ -254,23 +254,18 @@ class plotter :
 
 	def get_samples(self, channel) :
 		samplelist = []
-		if channel == 'DoubleMu' :
-			for name, sample in self.samples.iteritems() :
+		for name, sample in self.samples.iteritems() :
+			if   channel == 'DoubleMu' :
 				if (sample.datamc == 0) and (sample.channel == 0) : samplelist.append(sample.name)
-		if channel == 'DoubleEle' :
-			for name, sample in self.samples.iteritems() :
+			elif channel == 'DoubleEle' :
 				if (sample.datamc == 0) and (sample.channel == 1) : samplelist.append(sample.name)
-		if channel == 'MuEG' :
-			for name, sample in self.samples.iteritems() :
+			elif channel == 'MuEG' :
 				if (sample.datamc == 0) and (sample.channel == 2) : samplelist.append(sample.name)
-		if channel == 'SingleMu' :
-			for name, sample in self.samples.iteritems() :
+			elif channel == 'SingleMu' :
 				if (sample.datamc == 0) and (sample.channel == 5) : samplelist.append(sample.name)
-		if channel == 'SingleDoubleMu' :
-			for name, sample in self.samples.iteritems() :
+			elif channel == 'SingleDoubleMu' :
 				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
-		if channel == 'MCBGMuEnr' or channel == 'MCBGEMEnr' :
-			for name, sample in self.samples.iteritems() :
+			elif channel == 'MCBGMuEnr' or channel == 'MCBGEMEnr' :
 				if (sample.datamc > 0) : samplelist.append(sample.name)
 		return samplelist
 
