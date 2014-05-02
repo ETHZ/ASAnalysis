@@ -262,8 +262,20 @@ class ttvplot :
 		h_data.Draw('same p')
 		self.draw_cmsLine()
 		leg.Draw()
-		canvas.Print('%s%s.pdf' % (self.path, h_mc.GetName()))
-		canvas.Print('%s%s.png' % (self.path, h_mc.GetName()))
+		name = h_mc.GetName()
+		canvas.Print('%s%s.pdf' % (self.path, name))
+		canvas.Print('%s%s.png' % (self.path, name))
+
+
+	def save_plot_2d(self, histo, x_axis_title, y_axis_title) :
+		canvas = self.get_canvas()
+		canvas.cd()
+		histo.Draw('colztext')
+		self.set_axisTitles(histo, x_axis_title, y_axis_title)
+		self.draw_cmsLine()
+		name = histo.GetName()
+		canvas.Print('%s%s.pdf' % (self.path, name))
+		canvas.Print('%s%s.png' % (self.path, name))
 
 
 	def get_canvas(self, name = '') :
