@@ -27,9 +27,6 @@ class ratios :
 			if datamc is 0 :
 				mu17_samples = filter(lambda sample : sample.startswith('DoubleMu'), mu_samples)
 				mu24_samples = filter(lambda sample : sample.startswith('SingleMu'), mu_samples)
-				print 'mu_samples'  , mu_samples
-				print 'mu17_samples', mu17_samples
-				print 'mu24_samples', mu24_samples
 				EWK_SF['el']   = self.get_EWK_SF(  el_samples, 'el'  )
 				EWK_SF['mu17'] = self.get_EWK_SF(mu17_samples, 'mu17')
 				EWK_SF['mu24'] = self.get_EWK_SF(mu24_samples, 'mu24')
@@ -47,8 +44,14 @@ class ratios :
 			print '         ElpRatio: %f +/- %f' % (self.ElpRatio, self.ElpRatioE)
 
 		else :
-			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC, self.MufRatio_MC, self.MufRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
-			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC, self.ElfRatio_MC, self.ElfRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
+			mu_samples_fRatio = mu_samples
+			el_samples_fRatio = el_samples
+			if applyEwkSubtr :
+				mu_samples_fRatio = filter(lambda sample : sample != 'WJets' and sample != 'DYJets', mu_samples)
+				el_samples_fRatio = filter(lambda sample : sample != 'WJets' and sample != 'DYJets', el_samples)
+
+			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC, self.MufRatio_MC, self.MufRatioE_MC) = self.calculateRatio(mu_samples_fRatio, 'MM', 'SigSup')
+			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC, self.ElfRatio_MC, self.ElfRatioE_MC) = self.calculateRatio(el_samples_fRatio, 'EE', 'SigSup')
 			(self.h2_MupRatio_MC, self.h_MupRatio_pt_MC, self.h_MupRatio_eta_MC, self.h_MupRatio_nv_MC, self.MupRatio_MC, self.MupRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
 			(self.h2_ElpRatio_MC, self.h_ElpRatio_pt_MC, self.h_ElpRatio_eta_MC, self.h_ElpRatio_nv_MC, self.ElpRatio_MC, self.ElpRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
 			print '         MufRatio: %f +/- %f' % (self.MufRatio_MC, self.MufRatioE_MC)
