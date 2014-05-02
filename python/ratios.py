@@ -2,6 +2,7 @@
 import ROOT
 import sample
 import helper
+import ttvplot
 
 
 class ratios :
@@ -9,7 +10,8 @@ class ratios :
 
 	def __init__(self, path, samples) :
 		self.path = path
-		self.ssdlfile = ROOT.TFile.Open(self.path + '/SSDLYields.root', 'READ')
+		if not self.path.endswith('/') : self.path += '/'
+		self.ssdlfile = ROOT.TFile.Open(self.path + 'SSDLYields.root', 'READ')
 		self.samples = samples
 
 		# lumi norm
@@ -211,3 +213,16 @@ class ratios :
 
 		bin = histo.FindBin(pt)
 		return histo.GetBinContent(bin)
+
+
+	def plot_ratios(self) :
+		print '[status] producing fake and prompt ratio plots..'
+#			(self.h2_MufRatio   , self.h_MufRatio_pt   , self.h_MufRatio_eta   , self.h_MufRatio_nv   , self.MufRatio   , self.MufRatioE   ) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
+#			(self.h2_ElfRatio   , self.h_ElfRatio_pt   , self.h_ElfRatio_eta   , self.h_ElfRatio_nv   , self.ElfRatio   , self.ElfRatioE   ) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
+#			(self.h2_MupRatio   , self.h_MupRatio_pt   , self.h_MupRatio_eta   , self.h_MupRatio_nv   , self.MupRatio   , self.MupRatioE   ) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
+#			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   , self.ElpRatio   , self.ElpRatioE   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
+
+
+		pl = ttvplot.ttvplot(self.path + 'Ratios', '2L', cms_label = 2)
+		pl.save_plot_1d(self.h_MufRatio_pt, self.h_MufRatio_pt_MC, 'p_{T} [GeV]', 'Fake Rate')
+		pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
