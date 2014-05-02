@@ -130,11 +130,11 @@ class plotter :
 		self.chmid_sf = 1.62
 
 		# get fake and prompt ratios
-		EWK_SF = {}
-		EWK_SF['el']   = self.get_EWK_SF('el')
-		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
-		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
-		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
+#		EWK_SF = {}
+#		EWK_SF['el']   = self.get_EWK_SF('el')
+#		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
+#		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
+		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 		self.fpr.fill_ratios(self.get_samples('MC'), self.get_samples('MC'), 1)
 		self.fpr.plot_ratios()
 		return
@@ -344,53 +344,6 @@ class plotter :
 #		self.ResTree_BetaStar5 = np.zeros(1, dtype=float); self.results_tree.Branch('BetaStar5',   self.ResTree_BetaStar5  , 'BetaStar5/D');
 		self.ResTree_NVrtx     = np.zeros(1, dtype=int  ); self.results_tree.Branch('NVrtx',       self.ResTree_NVrtx      , 'NVrtx/I'    );
 		self.ResTree_M3        = np.zeros(1, dtype=float); self.results_tree.Branch('M3',          self.ResTree_M3         , 'M3/D'       );
-
-
-	def get_EWK_SF(self, chan_str) :
-		print '[status] calculating EWK scale factor for %s trigger..' % (chan_str)
-		samples_wjets = []
-		samples_zjets = []
-		samples_qcd = [] # TODO
-		if chan_str is 'el'   : samples_data = self.get_samples('DoubleEle')
-		if chan_str is 'mu17' : samples_data = self.get_samples('DoubleMu')
-		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
-		samples_wjets.append('WJets')
-		samples_zjets.append('DYJets')
-
-		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30')
-		(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT_MET30')
-		(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT_MET30')
-
-		bin_min = h_ntight_data.FindBin(60.)
-		bin_max = h_ntight_data.FindBin(90.)-1
-
-		n_data = h_ntight_data.Integral(bin_min, bin_max)
-		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
-
-		print '         SF = data / (WJets + DYJets) = %8.1f / %8.1f = %4.2f' % (n_data, n_mc, n_data/n_mc)
-
-		return n_data / n_mc
-
-
-	def get_fRatioPlots(self, samples, chan_str, ratiovar) :
-		'''gets ntight and loose histograms for various variables'''
-		## chan_str = 'mu', 'el', 'mu17', 'mu24'
-		lumi = self.lumi
-		if chan_str is 'el'   : lumi = self.lumi_HLTEl17Jet30
-		if chan_str is 'mu17' : lumi = self.lumi_HLTMu17
-		if chan_str is 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
-		for i, s in enumerate(samples) :
-			scale = lumi / self.samples[s].getLumi()
-			if self.samples[s].datamc == 0 : scale = 1.
-			if i is 0 :
-				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar).Clone()
-				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Clone()
-				h_ntight.Scale(scale)
-				h_nloose.Scale(scale)
-			else :
-				h_ntight.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar), scale)
-				h_nloose.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar), scale)
-		return (h_ntight, h_nloose)
 
 
 	def get_ChMisID_SF(self) :

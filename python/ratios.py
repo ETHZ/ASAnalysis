@@ -21,7 +21,19 @@ class ratios :
 		self.lumi_HLTEl17Jet30  = 23.845
 
 
-	def fill_ratios(self, mu_samples, el_samples, datamc, applyEwkSubtr = False, EWK_SF = {}) :
+	def fill_ratios(self, mu_samples, el_samples, datamc, applyEwkSubtr = False) :
+		EWK_SF = {}
+		if applyEwkSubtr :
+			if datamc is 0 :
+				mu17_samples = filter(lambda sample : sample.startswith('DoubleMu'), mu_samples)
+				mu24_samples = filter(lambda sample : sample.startswith('SingleMu'), mu_samples)
+				print 'mu_samples'  , mu_samples
+				print 'mu17_samples', mu17_samples
+				print 'mu24_samples', mu24_samples
+				EWK_SF['el']   = self.get_EWK_SF(  el_samples, 'el'  )
+				EWK_SF['mu17'] = self.get_EWK_SF(mu17_samples, 'mu17')
+				EWK_SF['mu24'] = self.get_EWK_SF(mu24_samples, 'mu24')
+
 		print '[status] filling fake and prompt ratio histograms..'
 
 		if datamc is 0 :
@@ -173,6 +185,53 @@ class ratios :
 		## 	}
 		## 	*/	
 		## }
+
+
+	def get_EWK_SF(self, samples_data, chan_str) :
+		print '[status] calculating EWK scale factor for %s trigger..' % (chan_str)
+		samples_wjets = []
+		samples_zjets = []
+		samples_qcd = [] # TODO
+#		if chan_str is 'el'   : samples_data = self.get_samples('DoubleEle')
+#		if chan_str is 'mu17' : samples_data = self.get_samples('DoubleMu')
+#		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
+		samples_wjets.append('WJets')
+		samples_zjets.append('DYJets')
+
+		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30')
+		(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT_MET30')
+		(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT_MET30')
+
+		bin_min = h_ntight_data.FindBin(60.)
+		bin_max = h_ntight_data.FindBin(90.)-1
+
+		n_data = h_ntight_data.Integral(bin_min, bin_max)
+		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
+
+		print '         SF = data / (WJets + DYJets) = %8.1f / %8.1f = %4.2f' % (n_data, n_mc, n_data/n_mc)
+
+		return n_data / n_mc
+
+
+	def get_fRatioPlots(self, samples, chan_str, ratiovar) :
+		'''gets ntight and loose histograms for various variables'''
+		## chan_str = 'mu', 'el', 'mu17', 'mu24'
+		lumi = self.lumi
+		if chan_str is 'el'   : lumi = self.lumi_HLTEl17Jet30
+		if chan_str is 'mu17' : lumi = self.lumi_HLTMu17
+		if chan_str is 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
+		for i, s in enumerate(samples) :
+			scale = lumi / self.samples[s].getLumi()
+			if self.samples[s].datamc == 0 : scale = 1.
+			if i is 0 :
+				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar).Clone()
+				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Clone()
+				h_ntight.Scale(scale)
+				h_nloose.Scale(scale)
+			else :
+				h_ntight.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar), scale)
+				h_nloose.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar), scale)
+		return (h_ntight, h_nloose)
 
 
 	def get_fRatio(self, chan, pt, eta, datamc) :

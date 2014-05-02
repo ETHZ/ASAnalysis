@@ -37,11 +37,7 @@ class optcuts(plotter.plotter) :
 		self.chmid_sf = 1.62
 
 		# get fake and prompt ratios
-		EWK_SF = {}
-		EWK_SF['el']   = self.get_EWK_SF('el')
-		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
-		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
-		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True, EWK_SF)
+		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 
 		for eff in effs :
 			print ''
