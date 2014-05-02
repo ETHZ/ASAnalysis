@@ -249,31 +249,36 @@ class ttvplot :
 #		raw_input('ok? ')
 
 
-	def save_plot_1d(self, h_data, h_mc, x_axis_title, y_axis_title) :
+	def save_plot_1d(self, h_data, h_mc, name = '', x_title = '', y_title = '') :
+		if name == '' : name = h_mc.GetName()
 		h_data = h_data.Clone()
 		h_mc   = h_mc  .Clone()
 		self.apply_histoStyle(h_data, 0)
+		self.apply_histoStyle(h_mc  , 1)
+		scale = 1.4
+		maximum = scale * max(h_data.GetMaximum(), h_mc.GetMaximum())
+		h_data.SetMaximum(maximum)
+		h_mc  .SetMaximum(maximum)
 		canvas = self.get_canvas()
 		canvas.cd()
-		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'f']]
+		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'lp']]
 		leg = self.draw_legend(leg_entries)
 		h_mc.Draw()
-		self.set_axisTitles(h_mc, x_axis_title, y_axis_title)
+		self.set_axisTitles(h_mc, x_title, y_title)
 		h_data.Draw('same p')
 		self.draw_cmsLine()
 		leg.Draw()
-		name = h_mc.GetName()
 		canvas.Print('%s%s.pdf' % (self.path, name))
 		canvas.Print('%s%s.png' % (self.path, name))
 
 
-	def save_plot_2d(self, histo, x_axis_title, y_axis_title) :
+	def save_plot_2d(self, histo, name = '', x_title = '', y_title = '') :
+		if name == '' : name = histo.GetName()
 		canvas = self.get_canvas()
 		canvas.cd()
 		histo.Draw('colztext')
-		self.set_axisTitles(histo, x_axis_title, y_axis_title)
+		self.set_axisTitles(histo, x_title, y_title)
 		self.draw_cmsLine()
-		name = histo.GetName()
 		canvas.Print('%s%s.pdf' % (self.path, name))
 		canvas.Print('%s%s.png' % (self.path, name))
 
@@ -345,10 +350,15 @@ class ttvplot :
 
 
 	def apply_histoStyle(self, histo, datamc) :
-		if datamc == 0 :
+		if   datamc == 0 :
 			histo.SetMarkerStyle(20)
-			histo.SetMarkerSize(1.1)
-			histo.SetLineWidth(2)
+		elif datamc == 1 :
+			histo.SetMarkerStyle(23)
+			histo.SetMarkerColor(ROOT.kRed)
+			histo.SetLineColor(ROOT.kRed)
+		histo.SetMarkerSize(1.1)
+		histo.SetLineWidth(2)
+		histo.SetMinimum(0.)
 
 
 	def set_axisTitles(self, histo, x_axis_title, y_axis_title) :

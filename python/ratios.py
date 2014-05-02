@@ -61,8 +61,10 @@ class ratios :
 
 
 	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = {}) :
-		# - sets up ratio histos
-		# - calls getPassedTotal / get_TightLoose to get ntight and nloose histos
+		'''
+		- sets up ratio histos
+		- calls get_TightLoose to get ntight and nloose histos
+		'''
 
 		samples_ewk = []
 		samples_ewk.append('WJets')
@@ -277,7 +279,7 @@ class ratios :
 		return histo.GetBinContent(bin)
 
 
-	def plot_ratios(self) :
+	def plot_ratios(self, subdir = 'Ratios') :
 		print '[status] producing fake and prompt ratio plots..'
 #			(self.h2_MufRatio   , self.h_MufRatio_pt   , self.h_MufRatio_eta   , self.h_MufRatio_nv   , self.MufRatio   , self.MufRatioE   ) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
 #			(self.h2_ElfRatio   , self.h_ElfRatio_pt   , self.h_ElfRatio_eta   , self.h_ElfRatio_nv   , self.ElfRatio   , self.ElfRatioE   ) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
@@ -285,6 +287,17 @@ class ratios :
 #			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   , self.ElpRatio   , self.ElpRatioE   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
 
 
-		pl = ttvplot.ttvplot(self.path + 'Ratios', '2L', cms_label = 2)
-		pl.save_plot_1d(self.h_MufRatio_pt, self.h_MufRatio_pt_MC, 'p_{T} [GeV]', 'Fake Rate')
-		pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
+		pl = ttvplot.ttvplot('%s%s' % (self.path, subdir), '2L', cms_label = 2)
+		pl.save_plot_1d(self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , 'p_{T} [GeV]', 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', '#eta'       , 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , '##Vertex'   , 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_MupRatio_pt , self.h_MupRatio_pt_MC , 'MupRatio_pt' , 'p_{T} [GeV]', 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', '#eta'       , 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , '##Vertex'   , 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , 'p_{T} [GeV]', 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', '#eta'       , 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , '##Vertex'   , 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_ElpRatio_pt , self.h_ElpRatio_pt_MC , 'ElpRatio_pt' , 'p_{T} [GeV]', 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', '#eta'       , 'N_{Tight}/N_{Loose}')
+		pl.save_plot_1d(self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , '##Vertex'   , 'N_{Tight}/N_{Loose}')
+		#pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
