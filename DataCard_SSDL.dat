@@ -43,10 +43,10 @@ SingleMu7		lbaeni/SSDLTrees/2013/Sep21/Data/SingleMu-Run2012D-PromptReco-v1/				
 #####################################################################################################################
 ## Top and EWK
 TTJets			mdunser/SSDLTrees/2013/Oct16/allTTJets/			1	-1	245.8
-TTJets_v2		lbaeni/SSDLTrees/2013/Aug15/MC/TT-CT10-TuneZ2star-8TeV-powheg-tauola-Summer12-DR53X-PU-S10-START53-V7A-v2/			1	-1	245.8
-TTJets_v1		lbaeni/SSDLTrees/2013/Sep08/MC/TT-CT10-TuneZ2star-8TeV-powheg-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1/			1	-1	245.8
-TTJets_madgraph_v1	lbaeni/SSDLTrees/2013/Nov14/MC/TTJets-MassiveBinDECAY-TuneZ2star-8TeV-madgraph-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1/	1	-1	234.0
-TTJets_madgraph_v2	lbaeni/SSDLTrees/2013/Nov14/MC/TTJets-MassiveBinDECAY-TuneZ2star-8TeV-madgraph-tauola-Summer12-DR53X-PU-S10-START53-V7A-v2/	1	-1	234.0
+#TTJets_v2		lbaeni/SSDLTrees/2013/Aug15/MC/TT-CT10-TuneZ2star-8TeV-powheg-tauola-Summer12-DR53X-PU-S10-START53-V7A-v2/			1	-1	245.8
+#TTJets_v1		lbaeni/SSDLTrees/2013/Sep08/MC/TT-CT10-TuneZ2star-8TeV-powheg-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1/			1	-1	245.8
+#TTJets_madgraph_v1	lbaeni/SSDLTrees/2013/Nov14/MC/TTJets-MassiveBinDECAY-TuneZ2star-8TeV-madgraph-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1/	1	-1	234.0
+#TTJets_madgraph_v2	lbaeni/SSDLTrees/2013/Nov14/MC/TTJets-MassiveBinDECAY-TuneZ2star-8TeV-madgraph-tauola-Summer12-DR53X-PU-S10-START53-V7A-v2/	1	-1	234.0
 #TTJets_mass169		lbaeni/SSDLTrees/2013/Nov14/MC/TTJets-mass169-5-TuneZ2star-8TeV-madgraph-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1-2/		1	-1	149.1
 #TTJets_mass175		lbaeni/SSDLTrees/2013/Nov14/MC/TTJets-mass175-5-TuneZ2star-8TeV-madgraph-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1-2/		1	-1	125.6
 #TTJets_matchingdown	lbaeni/SSDLTrees/2013/Nov14/MC/TTJets-matchingdown-TuneZ2star-8TeV-madgraph-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1-2/	1	-1	130.0
@@ -84,13 +84,7 @@ HWW			lbaeni/SSDLTrees/2013/Aug15/MC/WH-ZH-TTH-HToWW-M-125-8TeV-pythia6-Summer12
 HZZ			lbaeni/SSDLTrees/2013/Aug15/MC/WH-ZH-TTH-HToZZ-M-125-8TeV-pythia6-Summer12-DR53X-PU-S10-START53-V7A-v1.root		3	-1	0.0320
 HTauTau			lbaeni/SSDLTrees/2013/Aug15/MC/WH-ZH-TTH-HToTauTau-M-125-lepdecay-8TeV-pythia6-tauola-Summer12-DR53X-PU-S10-START53-V7A-v1.root	3	-1	0.0177
 TTbarW			lbaeni/SSDLTrees/2013/Aug15/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root					3	-1	0.232
-#TTbarWApr07		mdunser/SSDLTrees/2013/Apr07/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root				3	-1	0.232
-#TTbarWJul08		lbaeni/SSDLTrees/2013/Jul08/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root				3	-1	0.232
-#TTbarWJul11		lbaeni/SSDLTrees/2013/MC/Jul11/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root				3	-1	0.232
-#TTbarWJul12		lbaeni/SSDLTrees/2013/Jul12/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root				3	-1	0.232
-#TTbarWJul13		lbaeni/SSDLTrees/2013/Jul13/MC/TTWJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1.root				3	-1	0.232
-#TTbarWNLO		lbaeni/SSDLTrees/2013/Aug15/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1/			3	-1	0.1835
-TTbarWNLO		lbaeni/SSDLTrees/2013/Nov05/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1/			3	-1	0.1835
+#TTbarWNLO		lbaeni/SSDLTrees/2013/Nov05/MC/TTbarW-8TeV-aMCatNLO-herwig-Summer12-DR53X-PU-S10-START53-V7C-v1/			3	-1	0.1835
 TTbarZ			lbaeni/SSDLTrees/2013/Aug15/MC/TTZJets-8TeV-madgraph-v2-Summer12-DR53X-PU-S10-START53-V7A-v1.root			3	-1	0.2057
 TTbarG			lbaeni/SSDLTrees/2013/Aug15/MC/TTGJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V19-v1/				3	-1	2.166
 #TTbarG			lbaeni/SSDLTrees/2013/Jul08/TTGJets-8TeV-madgraph-Summer12-DR53X-PU-S10-START53-V7A-v1/					3	-1	2.166
