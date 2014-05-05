@@ -115,7 +115,7 @@ class ttvplot :
 		# set minimum and maximum
 		scale = 1.8
 		if var == 'Int' : scale = 2.4
-		if var == 'CFChan' and hs_pred.GetXaxis().GetNbins() == 7 : scale = 1.4
+		if var.endswith('TotalBin') : scale = 1.4
 		maximum = scale * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
 		gr_obs .SetMaximum(maximum)
 		hs_pred.SetMaximum(maximum)
@@ -210,13 +210,13 @@ class ttvplot :
 				binlabel = '%d' % (hs_pred.GetXaxis().GetBinLowEdge(bin))
 				hs_pred.GetXaxis().SetBinLabel(bin, binlabel)
 				hs_pred.GetXaxis().SetLabelSize(0.062)
-		elif var == 'CFChan' :
+		elif var.startswith('CFChan') :
 			total_bin = 0
-			if hs_pred.GetXaxis().GetNbins() == 7 :
+			if var == 'CFChan_TotalBin' :
 				total_bin = 1
 				hs_pred.GetXaxis().SetBinLabel(total_bin, 'Total')
 			for ibin in range(1 + total_bin, hs_pred.GetXaxis().GetNbins()+1) :
-				bin = ibin + total_bin
+				bin = ibin - total_bin
 				if bin < 4 : charge_str = '^{+}'
 				else       : charge_str = '^{-}'
 				if bin == 1 or bin == 4 : binlabel = '#mu'+charge_str+'#mu'+charge_str

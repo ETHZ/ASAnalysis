@@ -23,8 +23,9 @@ class plotter :
 
 	def __init__(self, path, cardfile) :
 		print '[status] initialize plotter..'
-		self.path = path + '/'
-		self.ssdlfile = ROOT.TFile.Open(path + '/SSDLYields.root', 'READ')
+		self.path = path
+		if not self.path.endswith('/') : self.path += '/'
+		self.ssdlfile = ROOT.TFile.Open(self.path + 'SSDLYields.root', 'READ')
 		if self.ssdlfile == None :
 			sys.exit(1)
 		self.sigtree = self.ssdlfile.Get('SigEvents')
@@ -118,9 +119,9 @@ class plotter :
 		# selections
 		sels = {}
 #		sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
-		sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
-		sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
-		sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
+#		sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
+#		sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
+#		sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
 #		sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
 		sels['final'    ] = self.selections['final'    ]
 #		sels['final++'  ] = self.selections['final++'  ]
@@ -136,8 +137,8 @@ class plotter :
 #		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
-		self.fpr.plot_ratios()
-		return
+#		self.fpr.plot_ratios()
+#		return
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
@@ -1208,6 +1209,7 @@ class plotter :
 		vars.append('M3'    )
 		vars.append('Int'   )
 		vars.append('CFChan')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
+		vars.append('CFChan_TotalBin')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 		vars.append('Charge')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 
 		print '[status] open Results tree from %s' % (treepath)
@@ -1217,9 +1219,12 @@ class plotter :
 		print '[status] getting plots from %s tree for' % (restree.GetName()), vars
 
 		for var in vars :
-			total_bin = True
-			histo_bins = config.get_histoBins(var, sel, total_bin)
-			self.plot_ObsPred(restree, sel, var, histo_bins, total_bin)
+			add_total_bin = False
+			if var.endswith('_TotalBin') :
+				var = var.split('_')[0]
+				add_total_bin = True
+			histo_bins = config.get_histoBins(var, sel)
+			self.plot_ObsPred(restree, sel, var, histo_bins, add_total_bin)
 
 		resfile.Close()
 
@@ -1229,6 +1234,10 @@ class plotter :
 		nbins = settings['nbins']
 		min   = settings['min'  ]
 		max   = settings['max'  ]
+
+		if add_total_bin :
+			min = min - (max-min)/nbins
+			nbins += 1
 
 		histos = {}
 		h_tmp  = {}
@@ -1438,6 +1447,7 @@ class plotter :
 			histo.Write()
 		histofile.Close()
 
+		if add_total_bin : var += '_TotalBin'
 		cms_label = 2
 		if sel.flavor == -2 : prefix = 'OS'
 		if sel.flavor == -1 : prefix = 'ALL'
