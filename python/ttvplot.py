@@ -215,9 +215,11 @@ class ttvplot :
 				bin = ibin - total_bin
 				if bin < 4 : charge_str = '^{+}'
 				else       : charge_str = '^{-}'
-				if bin == 1 or bin == 4 : binlabel = '#mu'+charge_str+'#mu'+charge_str
-				if bin == 2 or bin == 5 : binlabel = 'e'+charge_str+'#mu'+charge_str
-				if bin == 3 or bin == 6 : binlabel = 'e'+charge_str+'e'+charge_str
+				binlabel = '#color[0]{l}'
+				if bin == 1 or bin == 4 : binlabel += '#mu'+charge_str+'#mu'+charge_str
+				if bin == 2 or bin == 5 : binlabel += 'e'+charge_str+'#mu'+charge_str
+				if bin == 3 or bin == 6 : binlabel += 'e'+charge_str+'e'+charge_str
+				binlabel += '#color[0]{l}'
 				hs_pred.GetXaxis().SetBinLabel(ibin, binlabel)
 			hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif var == 'Charge' :
