@@ -80,6 +80,25 @@ def getGraphPoissonErrors(histo, nSigma = 1., xErrType = '0') :
 	return graph
 
 
+def getGraphPoissonErrors_new(histo, x_errors = False) :
+	'''Asymmetric Error Bars for Poisson Event Counts'''
+
+	alpha = 1 - 0.6827
+	graph = ROOT.TGraphAsymmErrors(histo)
+	for i in range(0, graph.GetN()) :
+		N = graph.GetY()[i]
+		L = 0
+		if N > 0 : L = ROOT.Math.gamma_quantile(alpha/2,N,1.)
+		U =  ROOT.Math.gamma_quantile_c(alpha/2,N+1,1)
+		graph.SetPointEYlow(i, N-L)
+		graph.SetPointEYhigh(i, U-N)
+		if not x_errors :
+			graph.SetPointEXlow(i, 0.)
+			graph.SetPointEXhigh(i, 0.)
+
+	return graph
+
+
 def save_object(obj, filepath) :
 	dir = os.path.dirname(filepath)
 	mkdir(dir)

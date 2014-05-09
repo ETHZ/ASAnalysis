@@ -90,7 +90,7 @@ class ttvplot :
 		if prefix  != '' : prefix = '_' + prefix
 
 		# data with asymmetric errors
-		gr_obs = helper.getGraphPoissonErrors(histos['obs'])
+		gr_obs = helper.getGraphPoissonErrors_new(histos['obs'])
 
 		# adding predictions to stack
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
@@ -130,12 +130,8 @@ class ttvplot :
 			histo.SetFillColor(self.get_fillColor(process))
 
 		# data histogram settings
-		histos['obs'  ].SetMarkerStyle(20)
-		histos['obs'  ].SetMarkerSize(1.1)
-		histos['obs'  ].SetLineWidth(2)
-		gr_obs         .SetMarkerStyle(20)
-		gr_obs         .SetMarkerSize(1.1)
-		gr_obs         .SetLineWidth(2)
+		self.apply_histoStyle(histos['obs'  ], 0)
+		self.apply_histoStyle(gr_obs         , 0)
 		
 		# special settings for total BG line and uncertainty
 		histos['bgtot'].SetLineWidth(3)
@@ -295,6 +291,7 @@ class ttvplot :
 		ROOT.gStyle.SetOptStat(0)
 		ROOT.gStyle.SetOptTitle(0)
 		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
+#		ROOT.gStyle.SetErrorX(0)
 		ROOT.gPad.SetTicks(1,1)
 		return canvas
 
@@ -352,6 +349,7 @@ class ttvplot :
 	def apply_histoStyle(self, histo, datamc) :
 		if   datamc == 0 :
 			histo.SetMarkerStyle(20)
+			histo.SetLineColor(ROOT.kBlack)
 		elif datamc == 1 :
 			histo.SetMarkerStyle(23)
 			histo.SetMarkerColor(ROOT.kRed)
