@@ -14,7 +14,8 @@ class optcuts(plotter.plotter) :
 
 	def __init__(self, path, cardfile, cutspath) :
 		plotter.plotter.__init__(self, path, cardfile)
-		self.cutspath = cutspath + '/'
+		self.cutspath = cutspath
+		if not self.cutspath.endswith('/') : self.cutspath += '/'
 
 
 	def optimize(self, channel) :
