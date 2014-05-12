@@ -40,6 +40,8 @@ class ttvplot :
 		self.process_names['bgtot'] = 'Backgrounds'
 		self.process_names['btag' ] = 'Non-top'
 		self.process_names['zz'   ] = 'ZZ'
+		self.process_names['wjets'] = 'W+Jets'
+		self.process_names['zjets'] = 'DY+Jets'
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
@@ -247,6 +249,38 @@ class ttvplot :
 #		raw_input('ok? ')
 
 
+	def save_controlPlot(self, histos, var, prefix = '') :
+		if prefix  != '' : prefix += '_'
+		canvas = self.get_canvas()
+		canvas.cd()
+		hstack = ROOT.THStack('hs_%s' % var, '%s' % var)
+		leg_entries = []
+		for process in histos :
+			self.apply_histoStyle(histos[process], process)
+			if process == 'data' or process == 'obs' :
+				leg_entries.append([histos[process], self.get_processName('obs'), 'lp'])
+				data_index = len(leg_entries) - 1
+				print data_index
+			else :
+				hstack.Add(histos[process])
+				leg_entries.append([histos[process], self.get_processName(process), 'f'])
+		leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
+		maximum = self.get_maximum(histos.values())
+		hstack.SetMaximum(maximum)
+		print leg_entries
+		leg = self.draw_legend(leg_entries)
+		hstack.Draw('hist')
+		bin_width = hstack.GetXaxis().GetBinWidth(1)
+		y_title = 'Events / %.0f GeV' % bin_width
+		self.set_axisTitles(hstack, self.get_varName(var), y_title)
+		histos['data'].Draw('psame')
+		self.draw_cmsLine()
+		canvas.cd()
+		leg.Draw()
+		canvas.Print('%s%s%s.pdf' % (self.path, prefix, var))
+		canvas.Print('%s%s%s.png' % (self.path, prefix, var))
+
+
 	def save_plot_1d(self, h_data, h_mc, name = '', x_title = '', y_title = '') :
 		if name == '' : name = h_mc.GetName()
 		h_data = h_data.Clone()
@@ -279,6 +313,15 @@ class ttvplot :
 		self.draw_cmsLine()
 		canvas.Print('%s%s.pdf' % (self.path, name))
 		canvas.Print('%s%s.png' % (self.path, name))
+
+
+	def get_maximum(self, histos, scale = 1.8, set_maximum = True) :
+		'''returns maximum of a list of histograms'''
+		maximum = scale * max([histo.GetMaximum() for histo in histos])
+		if set_maximum :
+			for histo in histos :
+				histo.SetMaximum(maximum)
+		return maximum
 
 
 	def get_canvas(self, name = '') :
@@ -329,7 +372,13 @@ class ttvplot :
 		latex.DrawLatex(leftedge, 0.92, 'CMS Preliminary')
 		latex.SetTextFont(42)
 		latex.SetTextSize(scale * 0.04)
-		latex.DrawLatex(rightedge, 0.92, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))
+		if self.lumi > 500. :
+			lumi = self.lumi/1000.
+			unit = 'fb^{-1}'
+		else :
+			lumi = self.lumi
+			unit = 'pb^{-1}'
+		latex.DrawLatex(rightedge, 0.92, '#sqrt{s} = 8 TeV, L_{int} = %4.1f %s' % (lumi, unit))
 
 
 	def draw_cmsLine(self) :
@@ -345,17 +394,27 @@ class ttvplot :
 		latex.DrawLatex(0.15, 0.93, cms_str)
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
-		latex.DrawLatex(0.15, 0.88, '#sqrt{s} = 8 TeV, L_{int} = %4.1f fb^{-1}' % (self.lumi/1000.))
+		if self.lumi > 500. :
+			lumi = self.lumi/1000.
+			unit = 'fb^{-1}'
+		else :
+			lumi = self.lumi
+			unit = 'pb^{-1}'
+		latex.DrawLatex(0.15, 0.88, '#sqrt{s} = 8 TeV, L_{int} = %4.1f %s' % (lumi, unit))
 
 
 	def apply_histoStyle(self, histo, datamc) :
-		if   datamc == 0 :
+		if   datamc == 0 or datamc == 'data' or datamc == 'obs' :
 			histo.SetMarkerStyle(20)
 			histo.SetLineColor(ROOT.kBlack)
 		elif datamc == 1 :
 			histo.SetMarkerStyle(23)
 			histo.SetMarkerColor(ROOT.kRed)
 			histo.SetLineColor(ROOT.kRed)
+		elif datamc == 'wjets' :
+			histo.SetFillColor(ROOT.kOrange)
+		elif datamc == 'zjets' :
+			histo.SetFillColor(ROOT.kGreen)
 		histo.SetMarkerSize(1.1)
 		histo.SetLineWidth(2)
 		histo.SetMinimum(0.)
