@@ -213,18 +213,20 @@ class ratios :
 		n_data = h_ntight_data.Integral(bin_min, bin_max)
 		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
 
-		print '         SF = data / (WJets + DYJets) = %8.1f / %8.1f = %4.2f' % (n_data, n_mc, n_data/n_mc)
+		ratio = n_data / n_mc
 
-		return n_data / n_mc
+		print '         SF = data / (WJets + DYJets) = %8.1f / %8.1f = %4.2f' % (n_data, n_mc, ratio)
+
+		return ratio
 
 
 	def get_fRatioPlots(self, samples, chan_str, ratiovar) :
 		'''gets ntight and loose histograms for various variables'''
 		## chan_str = 'mu', 'el', 'mu17', 'mu24'
 		lumi = self.lumi
-		if chan_str is 'el'   : lumi = self.lumi_HLTEl17Jet30
-		if chan_str is 'mu17' : lumi = self.lumi_HLTMu17
-		if chan_str is 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
+		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
+		if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
+		if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
 		for i, s in enumerate(samples) :
 			scale = lumi / self.samples[s].getLumi()
 			if self.samples[s].datamc == 0 : scale = 1.
@@ -301,3 +303,33 @@ class ratios :
 		pl.save_plot_1d(self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', '#eta'       , 'N_{Tight}/N_{Loose}')
 		pl.save_plot_1d(self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , '##Vertex'   , 'N_{Tight}/N_{Loose}')
 		#pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
+
+
+	def make_controlPlots(self, samples_data) :
+		self.make_controlPlot(samples_data, 'el', 'MT_MET30')
+
+
+	def make_controlPlot(self, samples_data, chan_str, ratiovar, subdir = 'RatioControlPlots', EWK_SF = 1.) :
+		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
+		if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
+		if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
+		pl = ttvplot.ttvplot('%s%s' % (self.path, subdir), '2L', lumi = lumi, cms_label = 2)
+		samples_wjets = []
+		samples_zjets = []
+		samples_qcd = [] # TODO
+		samples_wjets.append('WJets')
+		samples_zjets.append('DYJets')
+
+		histos = {}
+		histos['tight'] = {}
+		histos['loose'] = {}
+		hstack = {}
+
+		(histos['tight']['data' ], histos['loose']['data' ]) = self.get_fRatioPlots(samples_data , chan_str, ratiovar)
+		(histos['tight']['wjets'], histos['loose']['wjets']) = self.get_fRatioPlots(samples_wjets, chan_str, ratiovar)
+		(histos['tight']['zjets'], histos['loose']['zjets']) = self.get_fRatioPlots(samples_zjets, chan_str, ratiovar)
+
+		for tl in histos :
+			histos[tl]['wjets'].Scale(EWK_SF)
+			histos[tl]['zjets'].Scale(EWK_SF)
+			pl.save_controlPlot(histos[tl], ratiovar, 'n%s' % tl)
