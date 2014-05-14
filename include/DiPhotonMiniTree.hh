@@ -186,6 +186,10 @@ const int dy_dataset_id = 30; // be SURE to know where to propagate this if you 
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;
 
+// JET SELECTION
+const float min_jet_pt_alljets = 25;
+const float max_eta_jets = 4.7;
+
 // CAREFUL if you set this to true: the selection of saved pfcandidates,
 // for instance, is decided at ntuple production level.
 // Check that you really don't have to re-run the ntuple as well.

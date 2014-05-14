@@ -2844,8 +2844,8 @@ void DiPhotonMiniTree::JetSelection(std::vector<int> &passing_jets){
     float pt = fTR->JPt[*it];
     float eta = fTR->JEta[*it];
     bool pass=1;
-    if (pt<25) pass=0;
-    if (fabs(eta)>4.7) pass=0;
+    if (pt<min_jet_pt_alljets) pass=0;
+    if (fabs(eta)>max_eta_jets) pass=0;
     if (!(fTR->JEcorr[*it]>0)) pass=0;
     if (!(fTR->JPassPileupIDM0[fTR->JVrtxListStart[*it]+0])) pass=0; // pileup ID medium cut-based
     if (!pass) it=passing_jets.erase(it); else it++;
@@ -2859,8 +2859,8 @@ void DiPhotonMiniTree::GenJetSelection(std::vector<int> &passing_gen_jets){
     float pt = fTR->GenJetPt[*it];
     float eta = fTR->GenJetEta[*it];
     bool pass=1;
-    if (pt<20) pass=0;
-    if (fabs(eta)>4.7) pass=0;
+    if (pt<min_jet_pt_alljets) pass=0;
+    if (fabs(eta)>max_eta_jets) pass=0;
     if (!pass) it=passing_gen_jets.erase(it); else it++;
   }
 
