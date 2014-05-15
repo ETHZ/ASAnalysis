@@ -257,23 +257,24 @@ class plotter :
 
 
 	def get_samples(self, channel) :
-		samplelist = []
-		for name, sample in self.samples.iteritems() :
-			if   channel == 'DoubleMu' :
-				if (sample.datamc == 0) and (sample.channel == 0) : samplelist.append(sample.name)
-			elif channel == 'DoubleEle' :
-				if (sample.datamc == 0) and (sample.channel == 1) : samplelist.append(sample.name)
-			elif channel == 'MuEG' :
-				if (sample.datamc == 0) and (sample.channel == 2) : samplelist.append(sample.name)
-			elif channel == 'SingleMu' :
-				if (sample.datamc == 0) and (sample.channel == 5) : samplelist.append(sample.name)
-			elif channel == 'SingleDoubleMu' :
-				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
-			elif channel == 'MC' :
-				if (sample.datamc > 0) : samplelist.append(sample.name)
-			elif channel == 'QCD' :
-				if (sample.getType() == 1) : samplelist.append(sample.name)
-		return samplelist
+		return sample.sample.get_samples(channel, self.samples)
+#		samplelist = []
+#		for name, sample in self.samples.iteritems() :
+#			if   channel == 'DoubleMu' :
+#				if (sample.datamc == 0) and (sample.channel == 0) : samplelist.append(sample.name)
+#			elif channel == 'DoubleEle' :
+#				if (sample.datamc == 0) and (sample.channel == 1) : samplelist.append(sample.name)
+#			elif channel == 'MuEG' :
+#				if (sample.datamc == 0) and (sample.channel == 2) : samplelist.append(sample.name)
+#			elif channel == 'SingleMu' :
+#				if (sample.datamc == 0) and (sample.channel == 5) : samplelist.append(sample.name)
+#			elif channel == 'SingleDoubleMu' :
+#				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
+#			elif channel == 'MC' :
+#				if (sample.datamc > 0) : samplelist.append(sample.name)
+#			elif channel == 'QCD' :
+#				if (sample.getType() == 1) : samplelist.append(sample.name)
+#		return samplelist
 
 
 	def get_channelString(self, flavor, opt = 0) :
