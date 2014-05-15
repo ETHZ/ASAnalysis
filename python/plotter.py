@@ -137,9 +137,11 @@ class plotter :
 #		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
-#		self.fpr.make_controlPlots(self.get_samples('DoubleEle'))
+		self.fpr.make_controlPlots(self.get_samples('DoubleEle'), 'el'  )
+		self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), 'mu17')
+		self.fpr.make_controlPlots(self.get_samples('SingleMu' ), 'mu24')
 #		self.fpr.plot_ratios()
-#		return
+		return
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
