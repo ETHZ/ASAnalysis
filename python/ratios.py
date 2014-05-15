@@ -305,11 +305,33 @@ class ratios :
 		#pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
 
 
-	def make_controlPlots(self, samples_data) :
-		self.make_controlPlot(samples_data, 'el', 'MT_MET30')
+	def make_controlPlots(self, samples_data, ch_str) :
+		variables = []
+		variables.append('NJets'      )
+		variables.append('HT'         )
+		variables.append('MaxJPt'     )
+		variables.append('NVertices'  )
+		variables.append('ClosJetPt'  )
+		variables.append('AwayJetPt'  )
+		variables.append('NBJets'     )
+		variables.append('MET'        )
+		variables.append('MT'         )
+		variables.append('MET_noMTCut')
+		variables.append('MT_MET30'   )
+		variables.append('LepPt'      )
+		variables.append('LepEta'     )
+		variables.append('LepIso'     )
+		variables.append('ClosJetDR'  )
+		variables.append('AwayJetDR'  )
+
+		for var in variables :
+			self.make_controlPlot(samples_data, ch_str, var)
 
 
-	def make_controlPlot(self, samples_data, chan_str, ratiovar, subdir = 'RatioControlPlots', EWK_SF = 1.) :
+	def make_controlPlot(self, samples_data, chan_str, ratiovar, EWK_SF = 1.) :
+		scale_str = ''
+		if EWK_SF == 1. : scale_str = 'unscaled/'
+		subdir = 'RatioControlPlots/%s%s' % (scale_str, chan_str)
 		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
 		if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
 		if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
@@ -332,4 +354,4 @@ class ratios :
 		for tl in histos :
 			histos[tl]['wjets'].Scale(EWK_SF)
 			histos[tl]['zjets'].Scale(EWK_SF)
-			pl.save_controlPlot(histos[tl], ratiovar, 'n%s' % tl)
+			pl.save_controlPlot(histos[tl], ratiovar, 'N%s' % tl)
