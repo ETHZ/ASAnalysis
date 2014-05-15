@@ -62,6 +62,7 @@ class ttvplot :
 		self.var_names['NVrtx' ] = 'N_{Vertices}'
 		self.var_names['minMT' ] = 'M_{T} [GeV]'
 		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
+		self.var_names['MT_MET30'] = 'E_{T}^{miss} [GeV]'
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
@@ -260,14 +261,12 @@ class ttvplot :
 			if process == 'data' or process == 'obs' :
 				leg_entries.append([histos[process], self.get_processName('obs'), 'lp'])
 				data_index = len(leg_entries) - 1
-				print data_index
 			else :
 				hstack.Add(histos[process])
 				leg_entries.append([histos[process], self.get_processName(process), 'f'])
 		leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
 		maximum = self.get_maximum(histos.values())
 		hstack.SetMaximum(maximum)
-		print leg_entries
 		leg = self.draw_legend(leg_entries)
 		hstack.Draw('hist')
 		bin_width = hstack.GetXaxis().GetBinWidth(1)
