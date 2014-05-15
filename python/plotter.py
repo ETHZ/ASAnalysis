@@ -271,6 +271,8 @@ class plotter :
 				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
 			elif channel == 'MC' :
 				if (sample.datamc > 0) : samplelist.append(sample.name)
+			elif channel == 'QCD' :
+				if (sample.getType() == 1) : samplelist.append(sample.name)
 		return samplelist
 
 
