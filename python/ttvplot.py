@@ -42,6 +42,7 @@ class ttvplot :
 		self.process_names['zz'   ] = 'ZZ'
 		self.process_names['wjets'] = 'W+Jets'
 		self.process_names['zjets'] = 'DY+Jets'
+		self.process_names['qcd'  ] = 'QCD'
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
@@ -414,6 +415,10 @@ class ttvplot :
 			histo.SetFillColor(ROOT.kOrange)
 		elif datamc == 'zjets' :
 			histo.SetFillColor(ROOT.kGreen)
+		elif datamc == 'qcd' :
+			histo.SetFillColor(ROOT.kYellow)
+		else :
+			histo.SetFillStyle(0)
 		histo.SetMarkerSize(1.1)
 		histo.SetLineWidth(2)
 		histo.SetMinimum(0.)

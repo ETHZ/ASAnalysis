@@ -338,7 +338,10 @@ class ratios :
 		pl = ttvplot.ttvplot('%s%s' % (self.path, subdir), '2L', lumi = lumi, cms_label = 2)
 		samples_wjets = []
 		samples_zjets = []
-		samples_qcd = [] # TODO
+		samples_qcd = sample.sample.get_samples('QCD', self.samples) # TODO
+#		samples_qcd = []
+#		samples_qcd.append('MuEnr15')
+#		print samples_qcd
 		samples_wjets.append('WJets')
 		samples_zjets.append('DYJets')
 
@@ -350,6 +353,7 @@ class ratios :
 		(histos['tight']['data' ], histos['loose']['data' ]) = self.get_fRatioPlots(samples_data , chan_str, ratiovar)
 		(histos['tight']['wjets'], histos['loose']['wjets']) = self.get_fRatioPlots(samples_wjets, chan_str, ratiovar)
 		(histos['tight']['zjets'], histos['loose']['zjets']) = self.get_fRatioPlots(samples_zjets, chan_str, ratiovar)
+#		(histos['tight']['qcd'  ], histos['loose']['qcd'  ]) = self.get_fRatioPlots(samples_qcd  , chan_str, ratiovar)
 
 		for tl in histos :
 			histos[tl]['wjets'].Scale(EWK_SF)
