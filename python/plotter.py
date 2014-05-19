@@ -137,11 +137,11 @@ class plotter :
 #		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
-		self.fpr.make_controlPlots(self.get_samples('DoubleEle'), 'el'  )
-		self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), 'mu17')
-		self.fpr.make_controlPlots(self.get_samples('SingleMu' ), 'mu24')
-#		self.fpr.plot_ratios()
-		return
+#		self.fpr.make_controlPlots(self.get_samples('DoubleEle'), 'el'  )
+#		self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), 'mu17')
+#		self.fpr.make_controlPlots(self.get_samples('SingleMu' ), 'mu24')
+##		self.fpr.plot_ratios()
+#		return
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
@@ -411,8 +411,10 @@ class plotter :
 		results[SYST][CHARGE][FLAVOR]
 		'''
 
+		if not output_path.endswith('/') :
+			output_path += '/'
 		results = {}
-		resultspath = '%s/results%s.pkl' % (output_path, suffix)
+		resultspath = '%sresults%s.pkl' % (output_path, suffix)
 
 		if os.path.exists(resultspath) :
 			print '[status] loading results of predictions from %s..' % (resultspath)
@@ -435,14 +437,14 @@ class plotter :
 		for charge in results['Normal'] :
 			datacards_3channels = []
 			for chan in results['Normal'][charge] :
-				datacard = self.make_datacard(results, chan, charge, suffix, '%s/datacards%s' % (output_path, suffix), blind)
+				datacard = self.make_datacard(results, chan, charge, suffix, '%sdatacards%s' % (output_path, suffix), blind)
 				ch_str   = results['Normal'][charge][chan].chan_str
 				if charge != 'al' and chan != 'al' :
 					datacards_6channels.append('%s=%s' % (ch_str, datacard))
 				if chan != 'al' :
 					datacards_3channels.append('%s=%s' % (ch_str, datacard))
-			self.combine_datacards(datacards_3channels, '%s/datacards%s/datacard_ssdl_ttW_3channels_%s%s.txt' % (output_path, suffix, charge, suffix))
-		self.combine_datacards(datacards_6channels, '%s/datacards%s/datacard_ssdl_ttW_6channels%s.txt' % (output_path, suffix, suffix))
+			self.combine_datacards(datacards_3channels, '%sdatacards%s/datacard_ssdl_ttW_3channels_%s%s.txt' % (output_path, suffix, charge, suffix))
+		self.combine_datacards(datacards_6channels, '%sdatacards%s/datacard_ssdl_ttW_6channels%s.txt' % (output_path, suffix, suffix))
 
 		return results
 
