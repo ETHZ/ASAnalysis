@@ -55,6 +55,7 @@ class ttvplot :
 		self.var_names['HT'    ] = 'H_{T} [GeV]'
 		self.var_names['MET'   ] = 'Particle Flow E_{T}^{miss} [GeV]'
 		self.var_names['NJ'    ] = 'Jet Multiplicity'
+		self.var_names['NbJ'   ] = 'b-Jet Multiplicity (CSVL)'
 		self.var_names['NbJmed'] = 'b-Jet Multiplicity (CSVM)'
 		self.var_names['pT1'   ] = 'Leading Lepton p_{T} [GeV]'
 		self.var_names['pT2'   ] = 'Sub-Leading Lepton p_{T} [GeV]'
@@ -63,7 +64,20 @@ class ttvplot :
 		self.var_names['NVrtx' ] = 'N_{Vertices}'
 		self.var_names['minMT' ] = 'M_{T} [GeV]'
 		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
-		self.var_names['MT_MET30'] = 'E_{T}^{miss} [GeV]'
+		self.var_names['NJets'      ] = self.get_varName('NJ')
+		self.var_names['MaxJPt'     ] = 'Hardest Jet p_{T} [GeV]'
+		self.var_names['NVertices'  ] = self.get_varName('NVrtx')
+		self.var_names['ClosJetPt'  ] = 'Closest Jet p_{T} [GeV]'
+		self.var_names['AwayJetPt'  ] = 'Away Jet p_{T} [GeV]'
+		self.var_names['NBJets'     ] = self.get_varName('NbJ')
+		self.var_names['MT'         ] = 'm_{T}'
+		self.var_names['MET_noMTCut'] = 'E_{T}^{miss} [GeV]'
+		self.var_names['MT_MET30'   ] = self.get_varName('MT')
+		self.var_names['LepPt'      ] = 'Lepton p_{T} [GeV]'
+		self.var_names['LepEta'     ] = 'Lepton #eta [GeV]'
+		self.var_names['LepIso'     ] = 'Lepton Isolation'
+		self.var_names['ClosJetDR'  ] = 'Closest Jet DR'
+		self.var_names['AwayJetDR'  ] = 'Away Jet DR'
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
