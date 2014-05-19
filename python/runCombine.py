@@ -53,7 +53,7 @@ def signal_strength(datacard, opt = '') :
 
 
 def printLaTeX(obsSignif, obsPValue, expSignif, expPValue, sigStrength, loStat, hiStat, loSyst, hiSyst, channel) :
-	xsec = 232.
+	xsec = 206.
 	print '\\newcommand{\\ttWExpSignificance'+channel+'}{%.2f}' % expSignif
 	print '\\newcommand{\\ttWExpPValue'+channel+'}      {%.2f}' % expPValue
 	print '\\newcommand{\\ttWSignificance'+channel+'}   {%.2f}' % obsSignif
