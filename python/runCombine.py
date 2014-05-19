@@ -11,6 +11,7 @@ def getSignificance(filepath) :
 
 
 def observed_significance(datacard, opt = '') :
+	print '[status] calculating observed significance..'
 	combineCommand = 'combine -M ProfileLikelihood --signif %s %s' % (datacard, opt)
 	print combineCommand
 	os.system(combineCommand)
@@ -20,6 +21,7 @@ def observed_significance(datacard, opt = '') :
 
 
 def expected_significance(datacard, opt = '') :
+	print '[status] calculating expected significance..'
 	combineCommand = 'combine -M ProfileLikelihood --significance %s -t -1 --expectSignal=1 %s' % (datacard, opt)
 	print combineCommand
 	os.system(combineCommand)
@@ -29,6 +31,7 @@ def expected_significance(datacard, opt = '') :
 
 
 def signal_strength(datacard, opt = '') :
+	print '[status] calculating signal strength..'
 	combineCommand = 'combine -M MaxLikelihoodFit %s %s' % (datacard, opt)
 	print combineCommand
 	os.system(combineCommand)
