@@ -188,6 +188,7 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElCharge" , "std::vector<int>"  , &p_fTelcharge      );
 	fAnalysisTree->Branch("ElPFIso"  , "std::vector<float>", &p_fTelpfiso       );
 	fAnalysisTree->Branch("ElD0"     , "std::vector<float>", &p_fTeld0          );
+	fAnalysisTree->Branch("ElChCo"   , "std::vector<int>"  , &p_fTelchco        );
 
 	fAnalysisTree->Branch("ElIsVeto"      , "std::vector<bool>", &p_fTelisveto  );
 	fAnalysisTree->Branch("ElIsLoose"     , "std::vector<bool>", &p_fTelisloose );
@@ -328,6 +329,7 @@ void FakeAnalysis::FillAnalysisTree(){
 		p_fTelphi    ->push_back( fTR->ElPhi   [ind] );
 		p_fTelcharge ->push_back( fTR->ElCharge[ind] );
 		p_fTeld0     ->push_back( fTR->ElD0PV  [ind] );
+		p_fTelchco   ->push_back( fTR->ElCInfoIsGsfCtfScPixCons[ind] );
 		p_fTelpfiso  ->push_back( ElPFIso(ind)       );
 		
 		p_fTelisveto  ->push_back( IsVetoElectron(ind)  );
@@ -401,6 +403,7 @@ void FakeAnalysis::ResetTree(){
 	p_fTelpfiso = &fTelpfiso ; p_fTelpfiso ->reserve(fTR->NEles); p_fTelpfiso ->clear();
 	p_fTelcharge= &fTelcharge; p_fTelcharge->reserve(fTR->NEles); p_fTelcharge->clear();
 	p_fTeld0    = &fTeld0    ; p_fTeld0    ->reserve(fTR->NEles); p_fTeld0    ->clear();
+	p_fTelchco  = &fTelchco  ; p_fTelchco  ->reserve(fTR->NEles); p_fTelchco  ->clear();
 
 	// // // photon properties
 	// p_fTphpt    = &fTphpt    ; p_fTphpt    ->reserve(fTR->NPhotons); p_fTphpt    ->clear();
@@ -474,7 +477,8 @@ bool FakeAnalysis::IsLooseElectron(int ind){
 	
 	// add the conversion rejection here
 	if (!fTR->ElPassConversionVeto[ind]          ) return false;
-	if (fTR->ElNumberOfMissingInnerHits[ind] > 1 ) return false;
+	if (fTR->ElNumberOfMissingInnerHits[ind] > 0 ) return false;
+	if (fTR->ElCInfoIsGsfCtfScPixCons[ind]  != 1 ) return false;
 	
 	if(fabs(fTR->ElDzPV[ind]) > 0.1) return false;  
 	

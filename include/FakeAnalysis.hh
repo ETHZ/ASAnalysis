@@ -134,6 +134,7 @@ private:
 	vector<float> fTelpfiso ; vector<float> * p_fTelpfiso ;
 	vector< int > fTelcharge; vector< int > * p_fTelcharge;
 	vector<float> fTeld0    ; vector<float> * p_fTeld0    ;
+	vector< int > fTelchco  ; vector< int > * p_fTelchco  ;
 
 	vector<bool>  fTelisveto ; vector<bool> * p_fTelisveto ;
 	vector<bool>  fTelisloose; vector<bool> * p_fTelisloose;
