@@ -32,7 +32,7 @@ class ttvplot :
 		self.process_names = {}
 		self.process_names['obs'  ] = 'Observed'
 		self.process_names['fake' ] = 'Misidentified Lepton'
-		self.process_names['chmid'] = 'Charge MisID'
+		self.process_names['chmid'] = 'Mismeasured Charge'
 		self.process_names['rare' ] = 'Irreducible'
 		self.process_names['wz'   ] = 'WZ'
 		self.process_names['ttz'  ] = 't#bar{t}Z'
@@ -352,7 +352,7 @@ class ttvplot :
 
 		# set position
 		width = 0.17
-		x = 0.65
+		x = 0.63
 		y = 0.93
 		leg.SetX1NDC(x)
 		leg.SetX2NDC(x+width)
