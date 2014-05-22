@@ -162,31 +162,28 @@ class ttvplot :
 		histos['pred' ].SetFillStyle(3005)
 
 		# legend
-		leg = ROOT.TLegend()
-		leg.AddEntry(histos['obs'  ], self.process_names['obs'  ], 'lp')
-		leg.AddEntry(histos['fake' ], self.process_names['fake' ], 'f')
-		if self.chan == '2L' : leg.AddEntry(histos['chmid'], self.process_names['chmid'], 'f')
-		if self.chan == '3L' : leg.AddEntry(histos['btag' ], self.process_names['btag' ], 'f')
-		if self.chan == '4L' : leg.AddEntry(histos['zz'   ], self.process_names['zz'   ], 'f')
-		leg.AddEntry(histos['rare' ], self.process_names['rare' ], 'f')
-		if self.chan == '2L' : leg.AddEntry(histos['wz'   ], self.process_names['wz'   ], 'f')
-		leg.AddEntry(histos['ttz'  ], self.process_names['ttz'  ], 'f')
-		if self.chan == '2L' : leg.AddEntry(histos['ttw'  ], self.process_names['ttw'  ], 'f')
-		leg.AddEntry(histos['bgtot'], self.process_names['bgtot'], 'l')
-		leg.AddEntry(histos['pred' ], 'BG uncertainty', 'fl')
-		# set position
-		width = 0.17
-		x = 0.65
-		y = 0.93
-		leg.SetX1NDC(x)
-		leg.SetX2NDC(x+width)
-		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
-		leg.SetY2NDC(y)
-		leg.SetFillStyle(0)
-		leg.SetTextFont(42)
-		leg.SetTextSize(0.03)
-		leg.SetBorderSize(0)
-		leg.SetTextAlign(12)
+		leg_entries = []
+		leg_entries.append([histos['obs'  ], self.process_names['obs'  ], 'lp'])
+		if self.chan == '3L' :
+			leg_entries.append([histos['ttz'  ], self.process_names['ttz'  ], 'f'])
+			leg_entries.append([histos['ttw'  ], self.process_names['ttw'  ], 'f'])
+			leg_entries.append([histos['rare' ], self.process_names['rare' ], 'f'])
+			leg_entries.append([histos['btag' ], self.process_names['btag' ], 'f'])
+		if self.chan == '4L' :
+			leg_entries.append([histos['ttz'  ], self.process_names['ttz'  ], 'f'])
+			leg_entries.append([histos['ttw'  ], self.process_names['ttw'  ], 'f'])
+			leg_entries.append([histos['rare' ], self.process_names['rare' ], 'f'])
+			leg_entries.append([histos['zz'   ], self.process_names['zz'   ], 'f'])
+		if self.chan == '2L' :
+			leg_entries.append([histos['ttw'  ], self.process_names['ttw'  ], 'f'])
+			leg_entries.append([histos['ttz'  ], self.process_names['ttz'  ], 'f'])
+			leg_entries.append([histos['wz'   ], self.process_names['wz'   ], 'f'])
+			leg_entries.append([histos['rare' ], self.process_names['rare' ], 'f'])
+			leg_entries.append([histos['chmid'], self.process_names['chmid'], 'f'])
+		leg_entries.append([histos['fake' ], self.process_names['fake' ], 'f'])
+		leg_entries.append([histos['bgtot'], self.process_names['bgtot'], 'l'])
+		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
+		leg = self.draw_legend(leg_entries)
 
 #		canvas = ROOT.TCanvas('C_ObsPred_'+selname+var, 'Observed vs Predicted', 0, 0, 600, 600)
 #		canvas.SetLeftMargin(0.12)
