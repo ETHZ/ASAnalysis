@@ -439,7 +439,6 @@ class ttvplot :
 		histo.GetYaxis().SetLabelSize(0.04)
 		histo.GetXaxis().SetLabelOffset(0.012)
 		histo.GetYaxis().SetLabelOffset(0.012)
-		print histo.GetXaxis().GetLabelOffset()
 
 
 	def read_histos(self, path, var) :
