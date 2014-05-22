@@ -203,14 +203,7 @@ class ttvplot :
 
 		# draw and set axis titles
 		hs_pred.Draw()
-		hs_pred.GetXaxis().SetTitle(self.get_varName(var))
-		hs_pred.GetYaxis().SetTitle('Events')
-		hs_pred.GetXaxis().SetTitleOffset(1.25)
-		hs_pred.GetYaxis().SetTitleOffset(1.25)
-		hs_pred.GetXaxis().SetTitleSize(0.046)
-		hs_pred.GetYaxis().SetTitleSize(0.046)
-		hs_pred.GetXaxis().SetLabelSize(0.04)
-		hs_pred.GetYaxis().SetLabelSize(0.04)
+		self.set_axisTitles(hs_pred, self.get_varName(var), 'Events')
 		#hs_pred.GetXaxis().SetNdivisions(206)
 		if var == 'Int' :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
@@ -447,6 +440,9 @@ class ttvplot :
 		histo.GetYaxis().SetTitleSize(0.046)
 		histo.GetXaxis().SetLabelSize(0.04)
 		histo.GetYaxis().SetLabelSize(0.04)
+		histo.GetXaxis().SetLabelOffset(0.012)
+		histo.GetYaxis().SetLabelOffset(0.012)
+		print histo.GetXaxis().GetLabelOffset()
 
 
 	def read_histos(self, path, var) :
