@@ -355,6 +355,8 @@ def make_SystTable(path, results, chan, charge, systematics) :
 
 
 def make_YieldsTable(res, systematics) :
+	'''print all observations and predictions'''
+
 	# PRINTOUT
 	print "-------------------------------------------------------------------------------------------------------------------------------"
 	print "                 |               Mu/Mu               |                E/Mu               |                E/E                ||"

@@ -38,14 +38,14 @@ class plotter :
 
 		# selections
 		self.selections = {}
-		self.selections['1J0bJ'    ] = selection.selection(name = '1J0bJ'  , minNjets = 1)
-		self.selections['2J0bJ'    ] = selection.selection(name = '2J0bJ'  , minNjets = 2)  # loose selection
-		self.selections['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , minNjets = 2, maxNbjetsM = 0, flavor = 2)
-		self.selections['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1)  # pre-selection
-		self.selections['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , minNjets = 3, minNbjetsM = 1, flavor = 2)
-		self.selections['final'    ] = selection.selection(name = 'final'  , minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
-		self.selections['final++'  ] = selection.selection(name = 'final++', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
-		self.selections['final--'  ] = selection.selection(name = 'final--', minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
+		self.selections['1J0bJ'    ] = selection.selection(name = '1J0bJ'  , mll = 8., minNjets = 1)
+		self.selections['2J0bJ'    ] = selection.selection(name = '2J0bJ'  , mll = 8., minNjets = 2)  # loose selection
+		self.selections['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , mll = 8., minNjets = 2, maxNbjetsM = 0, flavor = 2)
+		self.selections['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1)  # pre-selection
+		self.selections['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1, flavor = 2)
+		self.selections['final'    ] = selection.selection(name = 'final'  , mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
+		self.selections['final++'  ] = selection.selection(name = 'final++', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
+		self.selections['final--'  ] = selection.selection(name = 'final--', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
 
 		# ratios
 		self.fpr = ratios.ratios(self.path, self.samples)
@@ -188,6 +188,11 @@ class plotter :
 
 			print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['++']['al'].obs, results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw, math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
 			print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['--']['al'].obs, results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw, math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
+
+			systematics = {}
+			systematics['rare'] = self.RareESyst
+			tables.make_YieldsTable(results['Normal']['al'], systematics)
+#			self.print_results(results['Normal']['al'])
 
 
 	def skim_tree(self, syst = '', minNJ = 2) :
@@ -915,95 +920,9 @@ class plotter :
 			for chan in res[ch_str] :
 				res[ch_str][chan].set_totBackground()
 
-		##########################################
-		# print all observations and predictions #
-		##########################################
-
-#		self.print_results(res['al'])
-#		self.print_results(res['++'])
-
 		# return results only if they are not written to the Results tree
 		if not write_ResTree :
 			return res
-
-
-	def print_results(self, res) :
-		# PRINTOUT
-		print "-------------------------------------------------------------------------------------------------------------------------------"
-		print "                 |               Mu/Mu               |                E/Mu               |                E/E                ||"
-		print "         YIELDS  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  ||"
-		print "-------------------------------------------------------------------------------------------------------------------------------"
-		print "%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f" % ("Data",
-			res['mm'].nt2 ,
-			res['mm'].nt10,
-			res['mm'].nt01,
-			res['mm'].nt0 ,
-			res['em'].nt2 ,
-			res['em'].nt10,
-			res['em'].nt01,
-			res['em'].nt0 ,
-			res['ee'].nt2 ,
-			res['ee'].nt10,
-			res['ee'].nt01,
-			res['ee'].nt0 )
-
-
-
-		print "  Fake Predictions:"
-		print "------------------------------------------------------------------------------------------------------"
-		print "                 |            Mu/Mu          |           El/Mu           |            El/El          |"
-		print "------------------------------------------------------------------------------------------------------"
-		print " Npp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			res['mm'].npp, res['mm'].npp_staterr, res['mm'].npp_systerr,
-			res['em'].npp, res['em'].npp_staterr, res['em'].npp_systerr,
-			res['ee'].npp, res['ee'].npp_staterr, res['ee'].npp_systerr)
-		print " Npf             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			res['mm'].npf, res['mm'].npf_staterr, res['mm'].npf_systerr,
-			res['em'].npf, res['em'].npf_staterr, res['em'].npf_systerr,
-			res['ee'].npf, res['ee'].npf_staterr, res['ee'].npf_systerr)
-		print " Nfp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			res['mm'].nfp, res['mm'].nfp_staterr, res['mm'].nfp_systerr,
-			res['em'].nfp, res['em'].nfp_staterr, res['em'].nfp_systerr,
-			res['ee'].nfp, res['ee'].nfp_staterr, res['ee'].nfp_systerr)
-		print " Nff             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-			res['mm'].nff, res['mm'].nff_staterr, res['mm'].nff_systerr,
-			res['em'].nff, res['em'].nff_staterr, res['em'].nff_systerr,
-			res['ee'].nff, res['ee'].nff_staterr, res['ee'].nff_systerr)
-		print "------------------------------------------------------------------------------------------------------"
-		print " Total Fakes     |", "%5.1f +/- %5.1f           | %5.1f +/- %5.1f           | %5.1f +/- %5.1f           |" % (
-			res['mm'].fake, res['mm'].fake_err,
-			res['em'].fake, res['em'].fake_err,
-			res['ee'].fake, res['ee'].fake_err)
-		print "------------------------------------------------------------------------------------------------------"
-		print " (Value +/- E_stat +/- E_syst) "
-		print "//////////////////////////////////////////////////////////////////////////////////////////"
-		print " ChMisID         |", "                          | %5.1f +/- %5.1f           | %5.1f +/- %5.1f           |" % (
-			res['em'].cmid, res['em'].cmid_err,
-			res['ee'].cmid, res['ee'].cmid_err)
-		print "------------------------------------------------------------------------------------------------------"
-
-		print 'rares:'
-
-		for s in res['al'].rares :
-			print "%16s || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||" % (s, 
-				res['mm'].rares[s], res['mm'].rares_staterr[s], self.RareESyst*res['mm'].rares[s],
-				res['em'].rares[s], res['em'].rares_staterr[s], self.RareESyst*res['em'].rares[s],
-				res['ee'].rares[s], res['ee'].rares_staterr[s], self.RareESyst*res['ee'].rares[s],
-				res['al'].rares[s], res['al'].rares_staterr[s], self.RareESyst*res['al'].rares[s])
-
-
-#		print "----------------------------------------------------------------------------------------------"
-#		print "       SUMMARY   ||         Mu/Mu         ||         E/Mu          ||          E/E          ||"
-#		print "=============================================================================================="
-#		print "%16s || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. fakes",
-#			self.nF_mm, FR.getMMTotEStat(), self.FakeESyst*nF_mm,
-#			self.nF_em, FR.getEMTotEStat(), self.FakeESyst*nF_em,
-#			self.nF_ee, FR.getEETotEStat(), self.FakeESyst*nF_ee)
-#		print "%16s ||                       || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. chmisid",
-#			nt2_em_chmid, nt2_em_chmid_e1, nt2_em_chmid_e2, nt2_ee_chmid, nt2_ee_chmid_e1, nt2_ee_chmid_e2)
-#
-		print "----------------------------------------------------------------------------------------------"
-		print "----------------------------------------------------------------------------------------------"
 
 
 	def make_datacard(self, results, chan, charge, suffix = '', output_dir = '', blind = False) :
