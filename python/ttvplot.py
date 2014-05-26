@@ -31,8 +31,8 @@ class ttvplot :
 		# process names
 		self.process_names = {}
 		self.process_names['obs'  ] = 'Observed'
-		self.process_names['fake' ] = 'Misidentified Lepton'
-		self.process_names['chmid'] = 'Mismeasured Charge'
+		self.process_names['fake' ] = 'Misidentified lepton'
+		self.process_names['chmid'] = 'Mismeasured charge'
 		self.process_names['rare' ] = 'Irreducible'
 		self.process_names['wz'   ] = 'WZ'
 		self.process_names['ttz'  ] = 't#bar{t}Z'
@@ -40,8 +40,8 @@ class ttvplot :
 		self.process_names['bgtot'] = 'Backgrounds'
 		self.process_names['btag' ] = 'Non-top'
 		self.process_names['zz'   ] = 'ZZ'
-		self.process_names['wjets'] = 'W+Jets'
-		self.process_names['zjets'] = 'DY+Jets'
+		self.process_names['wjets'] = 'W+jets'
+		self.process_names['zjets'] = 'DY+jets'
 		self.process_names['qcd'  ] = 'QCD'
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
@@ -53,31 +53,31 @@ class ttvplot :
 		# variable names
 		self.var_names = {}
 		self.var_names['HT'    ] = 'H_{T} [GeV]'
-		self.var_names['MET'   ] = 'Particle Flow E_{T}^{miss} [GeV]'
-		self.var_names['NJ'    ] = 'Jet Multiplicity'
-		self.var_names['NbJ'   ] = 'b-Jet Multiplicity (CSVL)'
-		self.var_names['NbJmed'] = 'b-Jet Multiplicity (CSVM)'
-		self.var_names['pT1'   ] = 'Leading Lepton p_{T} [GeV]'
-		self.var_names['pT2'   ] = 'Sub-Leading Lepton p_{T} [GeV]'
+		self.var_names['MET'   ] = 'Particle flow E_{T}^{miss} [GeV]'
+		self.var_names['NJ'    ] = 'Jet multiplicity'
+		self.var_names['NbJ'   ] = 'b-Jet multiplicity (CSVL)'
+		self.var_names['NbJmed'] = 'b-Jet multiplicity (CSVM)'
+		self.var_names['pT1'   ] = 'Leading lepton p_{T} [GeV]'
+		self.var_names['pT2'   ] = 'Sub-leading lepton p_{T} [GeV]'
 		self.var_names['Int'   ] = ''
 		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
 		self.var_names['NVrtx' ] = 'N_{Vertices}'
 		self.var_names['minMT' ] = 'M_{T} [GeV]'
 		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
 		self.var_names['NJets'      ] = self.get_varName('NJ')
-		self.var_names['MaxJPt'     ] = 'Hardest Jet p_{T} [GeV]'
+		self.var_names['MaxJPt'     ] = 'Hardest jet p_{T} [GeV]'
 		self.var_names['NVertices'  ] = self.get_varName('NVrtx')
-		self.var_names['ClosJetPt'  ] = 'Closest Jet p_{T} [GeV]'
-		self.var_names['AwayJetPt'  ] = 'Away Jet p_{T} [GeV]'
+		self.var_names['ClosJetPt'  ] = 'Closest jet p_{T} [GeV]'
+		self.var_names['AwayJetPt'  ] = 'Away jet p_{T} [GeV]'
 		self.var_names['NBJets'     ] = self.get_varName('NbJ')
 		self.var_names['MT'         ] = 'm_{T}'
 		self.var_names['MET_noMTCut'] = 'E_{T}^{miss} [GeV]'
 		self.var_names['MT_MET30'   ] = self.get_varName('MT')
 		self.var_names['LepPt'      ] = 'Lepton p_{T} [GeV]'
 		self.var_names['LepEta'     ] = 'Lepton #eta [GeV]'
-		self.var_names['LepIso'     ] = 'Lepton Isolation'
-		self.var_names['ClosJetDR'  ] = 'Closest Jet DR'
-		self.var_names['AwayJetDR'  ] = 'Away Jet DR'
+		self.var_names['LepIso'     ] = 'Lepton isolation'
+		self.var_names['ClosJetDR'  ] = 'Closest jet DR'
+		self.var_names['AwayJetDR'  ] = 'Away jet DR'
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
@@ -248,11 +248,11 @@ class ttvplot :
 			histos['obs'  ].Draw('PE X0 same')
 #		self.drawTopLine(0.56, 0.8)
 		self.draw_cmsLine()
-#		raw_input('ok? ')
+		raw_input('ok? ')
 
 		canvas.Print('%sObsPred%s_%s.pdf' % (self.path, prefix, var))
 		canvas.Print('%sObsPred%s_%s.png' % (self.path, prefix, var))
-#		raw_input('ok? ')
+		raw_input('ok? ')
 
 
 	def save_controlPlot(self, histos, var, prefix = '') :
@@ -348,7 +348,7 @@ class ttvplot :
 	def draw_legend(self, entries) :
 		leg = ROOT.TLegend()
 		for entry in entries :
-			leg.AddEntry(entry[0], entry[1], entry[2])
+			leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
 
 		# set position
 		width = 0.17
