@@ -248,11 +248,11 @@ class ttvplot :
 			histos['obs'  ].Draw('PE X0 same')
 #		self.drawTopLine(0.56, 0.8)
 		self.draw_cmsLine()
-		raw_input('ok? ')
+#		raw_input('ok? ')
 
 		canvas.Print('%sObsPred%s_%s.pdf' % (self.path, prefix, var))
 		canvas.Print('%sObsPred%s_%s.png' % (self.path, prefix, var))
-		raw_input('ok? ')
+#		raw_input('ok? ')
 
 
 	def save_controlPlot(self, histos, var, prefix = '') :
