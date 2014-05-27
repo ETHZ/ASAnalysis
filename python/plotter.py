@@ -1376,11 +1376,12 @@ class plotter :
 
 		if add_total_bin : var += '_TotalBin'
 		cms_label = 2
-		if sel.flavor == -2 : prefix = 'OS'
-		if sel.flavor == -1 : prefix = 'ALL'
-		if sel.flavor ==  0 : prefix = 'MM'
-		if sel.flavor ==  1 : prefix = 'EM'
-		if sel.flavor ==  2 : prefix = 'EE'
+		if   sel.flavor == -2 : prefix = 'OS'
+		elif sel.flavor == -1 : prefix = 'ALL'
+		elif sel.flavor ==  0 : prefix = 'MM'
+		elif sel.flavor ==  1 : prefix = 'EM'
+		elif sel.flavor ==  2 : prefix = 'EE'
+		else                  : prefix = ''
 		charge_str = ''
 		if sel.charge != 0 :
 			if sel.charge > 0 : charge_str = '^{+}'
@@ -1388,7 +1389,10 @@ class plotter :
 		if sel.name == 'final' : cms_label = 0
 #		cms_label = 2
 		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label)
-		pl.save_plot(histos, var, prefix, charge_str)
+		pl.save_plot(histos, var, prefix = prefix, suffix = '', charge_str = charge_str)
+		# preliminary plots with suffix
+		pl.cms_label = 2
+		pl.save_plot(histos, var, prefix = prefix, suffix = 'preliminary', charge_str = charge_str)
 #		raw_input('ok? ')
 #		raw_input('ok? ')
 
