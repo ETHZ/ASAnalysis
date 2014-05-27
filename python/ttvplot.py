@@ -85,7 +85,6 @@ class ttvplot(object) :
 
 	@property
 	def cms_label(self) :
-		print 'called getter'
 		if   self._cms_label == 0 : return 'CMS'
 		elif self._cms_label == 1 : return 'CMS Simulation'
 		elif self._cms_label == 2 : return 'CMS Preliminary'
@@ -95,7 +94,6 @@ class ttvplot(object) :
 
 	@cms_label.setter
 	def cms_label(self, cms_label) :
-		print 'called setter'
 		self._cms_label = cms_label
 
 
