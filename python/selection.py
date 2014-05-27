@@ -47,11 +47,11 @@ class selection :
 
 	def passes_selection(self, event, ttLeptons = True, noChargeSel = False, OSwoZVeto = False) :
 		if event.SystFlag != self.systflag                                              : return False
-		if not (OSwoZVeto and event.Flavor > 2) and self.ZVeto and event.PassZVeto is 0 : return False
+		if not (OSwoZVeto and event.Flavor > 2) and self.ZVeto and event.PassZVeto == 0 : return False
 		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)       : return False
 		if ttLeptons and event.TLCat > 0                                                : return False
 		if self.flavor > -1  and event.Flavor != self.flavor                            : return False
-		if self.flavor is -1 and event.Flavor > 2 and not (OSwoZVeto)                   : return False
+		if self.flavor == -1 and event.Flavor > 2 and not (OSwoZVeto)                   : return False
 		if event.HT     < self.minHT      : return False
 		if event.HT     > self.maxHT      : return False
 		if event.MET    < self.minMET     : return False
@@ -89,23 +89,23 @@ class selection :
 		selectionString += ' && SystFlag == %d'            % (self.systflag)
 		if not ResTree :
 			if OS_data[0] < 0 :
-				if self.ZVeto           : selectionString += ' && PassZVeto != 0'
-				if self.charge is not 0 : selectionString += ' && Charge == %d' % (self.charge)
-				if ttLeptons            : selectionString += ' && TLCat == 0'
-				if self.flavor > -1     : selectionString += ' && Flavor == %d' % (self.flavor)
-				if self.flavor is -1    : selectionString += ' && Flavor < 3'
+				if self.ZVeto        : selectionString += ' && PassZVeto != 0'
+				if self.charge != 0  : selectionString += ' && Charge == %d' % (self.charge)
+				if ttLeptons         : selectionString += ' && TLCat == 0'
+				if self.flavor > -1  : selectionString += ' && Flavor == %d' % (self.flavor)
+				if self.flavor == -1 : selectionString += ' && Flavor < 3'
 			else :
 				if OS_data[1] < 0 : return -1
 				selectionString += ' && SType < 3'
 				selectionString += ' && Flavor == %d' % (OS_data[0])
-				if OS_data[1] is 4 :
+				if OS_data[1] == 4 :
 					selectionString += ' && (TLCat == 1 || TLCat == 2)'
 				else :
 					selectionString += ' && TLCat == %d'  % (OS_data[1])
 				if self.flavor > -1 : selectionString += ' && Flavor == %d' % (self.flavor+3)
 		else :
-			if self.flavor > -1                        : selectionString += ' && Flavor == %d' % (self.flavor)
-			if OS_data[0] < 0 and self.charge is not 0 : selectionString += ' && Charge == %d' % (self.charge)
+			if self.flavor > -1                    : selectionString += ' && Flavor == %d' % (self.flavor)
+			if OS_data[0] < 0 and self.charge != 0 : selectionString += ' && Charge == %d' % (self.charge)
 		if self.sname != '' : selectionString += ' && SName == \"%s\"' % (self.sname)
 
 		return selectionString
