@@ -4,7 +4,7 @@ import os, sys
 import helper
 
 
-class ttvplot :
+class ttvplot(object) :
 
 	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
 		self.path = path
@@ -83,6 +83,22 @@ class ttvplot :
 		self.rand = ROOT.TRandom3(0)
 
 
+	@property
+	def cms_label(self) :
+		print 'called getter'
+		if   self._cms_label == 0 : return 'CMS'
+		elif self._cms_label == 1 : return 'CMS Simulation'
+		elif self._cms_label == 2 : return 'CMS Preliminary'
+		elif self._cms_label == 3 : return 'CMS Simulation Preliminary'
+		else                      : return ''
+
+
+	@cms_label.setter
+	def cms_label(self, cms_label) :
+		print 'called setter'
+		self._cms_label = cms_label
+
+
 	def get_fillColor(self, process) :
 		if process in self.colors.keys() :
 			return self.colors[process]
@@ -101,11 +117,12 @@ class ttvplot :
 		return '?'
 
 
-	def save_plot(self, histos, var, prefix = '', charge_str = '') :
+	def save_plot(self, histos, var, prefix = '', suffix = '', charge_str = '') :
 		'''save plot with observation and predictions'''
 
 #		if selname != '' : selname += '_'
-		if prefix  != '' : prefix = '_' + prefix
+		if prefix  != '' and not prefix.startswith('_') : prefix = '_' + prefix
+		if suffix  != '' and not suffix.startswith('_') : suffix = '_' + suffix
 
 		# data with asymmetric errors
 		gr_obs = helper.getGraphPoissonErrors_new(histos['obs'])
@@ -250,8 +267,8 @@ class ttvplot :
 		self.draw_cmsLine()
 #		raw_input('ok? ')
 
-		canvas.Print('%sObsPred%s_%s.pdf' % (self.path, prefix, var))
-		canvas.Print('%sObsPred%s_%s.png' % (self.path, prefix, var))
+		canvas.Print('%sObsPred%s_%s%s.pdf' % (self.path, prefix, var, suffix))
+		canvas.Print('%sObsPred%s_%s%s.png' % (self.path, prefix, var, suffix))
 #		raw_input('ok? ')
 
 
@@ -391,11 +408,7 @@ class ttvplot :
 		latex.SetTextFont(62)
 		latex.SetTextSize(0.04)
 		latex.SetTextAlign(13)
-		if self.cms_label == 0 : cms_str = 'CMS'
-		if self.cms_label == 1 : cms_str = 'CMS Simulation'
-		if self.cms_label == 2 : cms_str = 'CMS Preliminary'
-		if self.cms_label == 3 : cms_str = 'CMS Simulation Preliminary'
-		latex.DrawLatex(0.15, 0.93, cms_str)
+		latex.DrawLatex(0.15, 0.93, self.cms_label)
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
 		if self.lumi > 500. :
