@@ -112,6 +112,9 @@ class plotter :
 		for charge in range(1, -2, -1) :
 			self.charges[self.get_chargeString(charge)] = charge
 
+		# random variable
+		self.rand = ROOT.TRandom3(0)
+
 
 	def do_analysis(self, IntPred = True, DiffPred = False) :
 		print '[status] starting analysis..'
@@ -154,6 +157,11 @@ class plotter :
 #		c1.cd(4)
 #		self.h2_ElpRatio.Draw('colztext')
 #
+
+#		tmp_file = ROOT.TFile.Open(self.path + 'SSDLYields_skim_Normal.root', 'READ')
+#		tmp_tree = tmp_file.Get('SigEvents')
+#		self.plot_ObsMC(tmp_tree, self.selections['3J1bJ'    ], 'NVrtx', config.get_histoBins('NVrtx'))
+#		return
 
 		if DiffPred :
 			# produce results tree
@@ -1395,6 +1403,95 @@ class plotter :
 		pl.save_plot(histos, var, prefix = prefix, suffix = 'preliminary', charge_str = charge_str)
 #		raw_input('ok? ')
 #		raw_input('ok? ')
+
+
+	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False) :
+
+		nbins = settings['nbins']
+		min   = settings['min'  ]
+		max   = settings['max'  ]
+		if add_total_bin :
+			min = min - (max-min)/nbins
+			nbins += 1
+
+		histos = {}
+
+		############################
+		# SETUP AND GET HISTOGRAMS #
+		############################
+
+		if   var == 'pT1'   : var_str = 'TMath::Max(pT1,pT2)'
+		elif var == 'pT2'   : var_str = 'TMath::Min(pT1,pT2)'
+		elif var == 'minMT' : var_str = 'TMath::Min(MTLep1,MTLep2)'
+		elif var == 'Int'   : var_str = 'Flavor'
+		else                : var_str = var
+
+		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
+		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
+		h_top_name   = 'h_top_'   + var + sel.name; histos['top'  ] = self.get_mcHistoFromTree(tree, self.get_samples('Top'   ), var_str, h_top_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_zjets_name = 'h_zjets_' + var + sel.name; histos['zjets'] = self.get_mcHistoFromTree(tree, self.get_samples('DYJets'), var_str, h_zjets_name, settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_wjets_name = 'h_wjets_' + var + sel.name; histos['wjets'] = self.get_mcHistoFromTree(tree, self.get_samples('WJets' ), var_str, h_wjets_name, settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_rare_name  = 'h_rare_'  + var + sel.name; histos['rare' ] = self.get_mcHistoFromTree(tree, self.get_samples('Rare'  ), var_str, h_rare_name , settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_wz_name    = 'h_wz_'    + var + sel.name; histos['wz'   ] = self.get_mcHistoFromTree(tree, self.get_samples('WZ'    ), var_str, h_wz_name   , settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_ttz_name   = 'h_ttz_'   + var + sel.name; histos['ttz'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTZ'   ), var_str, h_ttz_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_ttw_name   = 'h_ttw_'   + var + sel.name; histos['ttw'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTW'   ), var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
+		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
+
+		# getting data
+		tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
+
+		# adding mc samples
+		for histo in [histos['bgtot'], histos['pred']] :
+			histo.Add(histos['top'  ])
+			histo.Add(histos['zjets'])
+			histo.Add(histos['wjets'])
+			histo.Add(histos['rare' ])
+			histo.Add(histos['wz'   ])
+			histo.Add(histos['ttz'  ])
+			if histo.GetName() != h_bgtot_name : histo.Add(histos['ttw'  ])
+
+		pl = ttvplot.ttvplot(self.path + 'ObsMCPlots/%s/'%sel.name, '2L', self.lumi, 2)
+#		pl.save_plot_1d(histo['obs'], histo['pred'], var)
+
+
+	def get_mcHistoFromTree(self, tree, samples, var, name, settings, weight = '1.', sel_str = '1==1') :
+		'''getting histogram for a list of samples'''
+
+		histo = ROOT.TH1D(name, name, settings['nbins'], settings['min'], settings['max'])
+		if not sel_str.startswith('&&') : sel_str = '&& ' + sel_str
+		for i, sample in enumerate(samples) :
+			print '[status] getting %s histogram from %s..' % (var, sample)
+			h_tmp_name = 'h_tmp_%d_%d' % (i, self.rand.Integer(10000))
+			h_tmp = ROOT.TH1D(h_tmp_name, h_tmp_name, settings['nbins'], settings['min'], settings['max'])
+			tree.Draw(var+'>>'+h_tmp_name, '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str), 'goff')
+			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
+		return histo
+
+		# getting remaining histograms
+#		tree.Draw(var_str+'>>'+h_tmp_name, 'HLTSF*PUWeight*(SName == \"%s\" && %s' % (top, sel.get_selectionString()))
+
+#		# getting histograms from results tree
+#		tree.Draw(var_str+'>>'+h_obs_name  , '%f*(SType < 3 && %s' % (1., sel.get_selectionString())
+#		tree.Draw(var_str+'>>'+h_top_name  , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
+#		tree.Draw(var_str+'>>'+h_zjets_name, '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
+#		tree.Draw(var_str+'>>'+h_wjets_name, '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
+#		tree.Draw(var_str+'>>'+h_rare_name , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
+#		tree.Draw(var_str+'>>'+h_wz_name   , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
+#		tree.Draw(var_str+'>>'+h_ttz_name  , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
+#		tree.Draw(var_str+'>>'+h_ttw_name  , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
+				
+
+#		last_sample = ''
+#		for event in tree :
+#			if last_sample != str(event.SName) :
+#				print '[status] processing %s..' % (event.SName)
+#				last_sample = str(event.SName)
+#
+#			if not sel.passes_selection(event) : continue
+#
+#			# data
+#			if event.SType < 3 :
 
 
 	def make_KinPlots(self) :
