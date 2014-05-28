@@ -344,7 +344,7 @@ class ttvplot(object) :
 
 
 	def get_canvas(self, name = '') :
-		name += '_%s' % self.rand.Integer(10000)  # add random number to avoid same names
+		name += '_%d' % self.rand.Integer(10000)  # add random number to avoid same names
 		canvas = ROOT.TCanvas(name, name, 0, 0, 600, 600)
 		canvas.SetLeftMargin(0.12)
 		canvas.SetRightMargin(0.04)
