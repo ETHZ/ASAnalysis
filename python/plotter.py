@@ -116,7 +116,7 @@ class plotter :
 		self.rand = ROOT.TRandom3(0)
 
 
-	def do_analysis(self, IntPred = True, DiffPred = False) :
+	def do_analysis(self, IntPred = True, DiffPred = False, DiffMC = False) :
 		print '[status] starting analysis..'
 
 		# selections
@@ -158,10 +158,11 @@ class plotter :
 #		self.h2_ElpRatio.Draw('colztext')
 #
 
-#		tmp_file = ROOT.TFile.Open(self.path + 'SSDLYields_skim_Normal.root', 'READ')
-#		tmp_tree = tmp_file.Get('SigEvents')
-#		self.plot_ObsMC(tmp_tree, self.selections['3J1bJ'    ], 'NVrtx', config.get_histoBins('NVrtx'))
-#		return
+		if DiffMC :
+			tmp_file = ROOT.TFile.Open(self.path + 'SSDLYields_skim_Normal.root', 'READ')
+			tmp_tree = tmp_file.Get('SigEvents')
+			self.plot_ObsMC(tmp_tree, self.selections['3J1bJ'    ], 'Mll', config.get_histoBins('Mll'))
+	#		self.plot_ObsMC(tmp_tree, self.selections['3J1bJ'    ], 'NVrtx', config.get_histoBins('NVrtx'))
 
 		if DiffPred :
 			# produce results tree
@@ -1452,7 +1453,9 @@ class plotter :
 			if histo.GetName() != h_bgtot_name : histo.Add(histos['ttw'  ])
 
 		pl = ttvplot.ttvplot(self.path + 'ObsMCPlots/%s/'%sel.name, '2L', self.lumi, 2)
-#		pl.save_plot_1d(histo['obs'], histo['pred'], var)
+		pl.save_plot_1d(histos['obs'], histos['pred'], var)
+#		raw_input('ok? ')
+#		raw_input('ok? ')
 
 
 	def get_mcHistoFromTree(self, tree, samples, var, name, settings, weight = '1.', sel_str = '1==1') :
@@ -1502,6 +1505,7 @@ if __name__ == '__main__' :
 	args = sys.argv
 	IntPred  = False
 	DiffPred = False
+	DiffMC   = False
 
 	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) :
 		print 'usage: ..'
@@ -1521,5 +1525,8 @@ if __name__ == '__main__' :
 	if ('--DiffPred' in args) :
 		DiffPred = True
 
+	if ('--DiffMC' in args) :
+		DiffMC = True
+
 	pl = plotter(path, cardfile)
-	pl.do_analysis(IntPred, DiffPred)
+	pl.do_analysis(IntPred, DiffPred, DiffMC)
