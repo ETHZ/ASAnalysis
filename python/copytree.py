@@ -1,5 +1,6 @@
 #! /usr/bin/python
 
+import os, sys
 import ROOT
 
 
@@ -13,21 +14,16 @@ def copytree(inputfile, outputfile, tree_name, cut_str):
 	print '         Inputfile:  %s' % (inputfile)
 	print '         Outputfile: %s' % (outputfile)
 	print ''
-		
+
+	if not os.path.exists(inputfile) :
+		print '[ERROR] Inputfile does not exist!'
+		sys.exit(1)
+
+	if not os.path.exists(outputfile) :
+		print '[warning] Outputfile already exists!'
+
 	input = ROOT.TFile.Open('%s' % (inputfile),'read')
 	output = ROOT.TFile.Open('%s' % (outputfile),'recreate')
-
-## NOT NEEDED?	input.cd()
-## NOT NEEDED?	obj = ROOT.TObject
-## NOT NEEDED?	for key in ROOT.gDirectory.GetListOfKeys():
-## NOT NEEDED?		input.cd()
-## NOT NEEDED?		obj = key.ReadObj()
-## NOT NEEDED?		#print obj.GetName()
-## NOT NEEDED?		if obj.GetName() == 'tree':
-## NOT NEEDED?			continue
-## NOT NEEDED?		output.cd()
-## NOT NEEDED?		#print key.GetName()
-## NOT NEEDED?		obj.Write(key.GetName())
 
 	inputTree = input.Get('%s' % (tree_name))
 	nEntries = inputTree.GetEntries()
