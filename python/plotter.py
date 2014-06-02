@@ -159,10 +159,14 @@ class plotter :
 #
 
 		if DiffMC :
-			tmp_file = ROOT.TFile.Open(self.path + 'SSDLYields_skim_Normal.root', 'READ')
-			tmp_tree = tmp_file.Get('SigEvents')
-			self.plot_ObsMC(tmp_tree, self.selections['3J1bJ'    ], 'Mll', config.get_histoBins('Mll'))
-	#		self.plot_ObsMC(tmp_tree, self.selections['3J1bJ'    ], 'NVrtx', config.get_histoBins('NVrtx'))
+			sel = self.selections['2J0bJ'    ]
+			skimtree_path = '%sSSDLYields_%s.root' % (self.path, sel.name)
+			if not os.path.exists(skimtree_path) :
+				copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
+			file = ROOT.TFile.Open(skimtree_path, 'READ')
+			tree = file.Get('SigEvents')
+			self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll'))
+	#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx'))
 
 		if DiffPred :
 			# produce results tree
