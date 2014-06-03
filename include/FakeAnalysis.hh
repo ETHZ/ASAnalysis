@@ -67,6 +67,8 @@ public:
 
 	bool IsSignalMuon(int, int&, int&, int&);
 
+	void MatchLepton(int, int, int&, int&, int&);
+
 	// photon function
 	bool IsGoodPhoton(int);
 	bool IsGoodPhotonEGMLoose(int);
@@ -126,6 +128,9 @@ private:
 	vector<int>  fTmuid  ; vector<int> * p_fTmuid;
 	vector<int>  fTmumid ; vector<int> * p_fTmumid;
 	vector<int>  fTmugmid; vector<int> * p_fTmugmid;
+	vector<int>  fTmumatchid  ; vector<int> * p_fTmumatchid;
+	vector<int>  fTmumatchmid ; vector<int> * p_fTmumatchmid;
+	vector<int>  fTmumatchgmid; vector<int> * p_fTmumatchgmid;
 
 	// Electron properties
 	vector<float> fTelpt    ; vector<float> * p_fTelpt    ;
@@ -144,6 +149,9 @@ private:
 	vector<int>  fTelid  ; vector<int> * p_fTelid;
 	vector<int>  fTelmid ; vector<int> * p_fTelmid;
 	vector<int>  fTelgmid; vector<int> * p_fTelgmid;
+	vector<int>  fTelmatchid  ; vector<int> * p_fTelmatchid;
+	vector<int>  fTelmatchmid ; vector<int> * p_fTelmatchmid;
+	vector<int>  fTelmatchgmid; vector<int> * p_fTelmatchgmid;
 
 	// Electron properties
 	vector<float> fTphpt    ; vector<float> * p_fTphpt    ;

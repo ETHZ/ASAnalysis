@@ -180,6 +180,9 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("MuID"          , "std::vector<int>", &p_fTmuid);
 	fAnalysisTree->Branch("MuMID"         , "std::vector<int>", &p_fTmumid);
 	fAnalysisTree->Branch("MuGMID"        , "std::vector<int>", &p_fTmugmid);
+	fAnalysisTree->Branch("MuMatchID"          , "std::vector<int>", &p_fTmumatchid);
+	fAnalysisTree->Branch("MuMatchMID"         , "std::vector<int>", &p_fTmumatchmid);
+	fAnalysisTree->Branch("MuMatchGMID"        , "std::vector<int>", &p_fTmumatchgmid);
 
 	// // single-electron properties
 	fAnalysisTree->Branch("ElPt"     , "std::vector<float>", &p_fTelpt          );
@@ -197,6 +200,9 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("ElID"          , "std::vector<int>", &p_fTelid);
 	fAnalysisTree->Branch("ElMID"         , "std::vector<int>", &p_fTelmid);
 	fAnalysisTree->Branch("ElGMID"        , "std::vector<int>", &p_fTelgmid);
+	fAnalysisTree->Branch("ElMatchID"          , "std::vector<int>", &p_fTelmatchid);
+	fAnalysisTree->Branch("ElMatchMID"         , "std::vector<int>", &p_fTelmatchmid);
+	fAnalysisTree->Branch("ElMatchGMID"        , "std::vector<int>", &p_fTelmatchgmid);
 
 	//// // single-photon properties
 	//fAnalysisTree->Branch("PhoPt"     , "std::vector<float>", &p_fTphpt          );
@@ -296,7 +302,7 @@ void FakeAnalysis::FillAnalysisTree(){
 
 	// Dump muon properties
 	for(int ind = 0; ind < fTR->NMus; ++ind){
-		if(fTR->MuPt[ind] < 5. || fabs(fTR->MuEta[ind]) > 2.4) continue; //save no muons with pt <5, eta > 2.5 or iso > 1.0
+		if(fTR->MuPt[ind] < 10. || fabs(fTR->MuEta[ind]) > 2.4) continue; //save no muons with pt <5, eta > 2.5 or iso > 1.0
 	//cout << Form("%i\t%i\t%i\t%.2f\t%.2f\t%.2f\t%i\t%i",fTR->Run, fTR->LumiSection, fTR->Event, fTR->MuPt[ind], fTR->MuEta[ind], fTR->MuPhi[ind], IsLooseMuon(ind), IsTightMuon(ind)) << endl;
 		p_fTmupt    ->push_back( fTR->MuPt      [ind] );
 		p_fTmueta   ->push_back( fTR->MuEta     [ind] );
@@ -309,11 +315,17 @@ void FakeAnalysis::FillAnalysisTree(){
 		p_fTmuisloose ->push_back( IsLooseMuon(ind) );
 		p_fTmuistight ->push_back( IsTightMuon(ind) );
 		
-		int id(-1), mid(-1), gmid(-1);
+		int id(0), mid(0), gmid(0);
 		p_fTmuisprompt ->push_back( IsSignalMuon(ind, id, mid, gmid) );
 		p_fTmuid       ->push_back(   id );
 		p_fTmumid      ->push_back(  mid );
 		p_fTmugmid     ->push_back( gmid );
+		
+		int id1(0), mid1(0), gmid1(0);
+		MatchLepton(ind, 0, id1, mid1, gmid1);
+		p_fTmumatchid       ->push_back(   id1 );
+		p_fTmumatchmid      ->push_back(  mid1 );
+		p_fTmumatchgmid     ->push_back( gmid1 );
 		
 		if(IsLooseMuon(ind)) nLooseLeptons++;
 
@@ -322,7 +334,7 @@ void FakeAnalysis::FillAnalysisTree(){
 
 	// Dump electron properties
 	for(int ind = 0; ind < fTR->NEles; ind++){
-		if(fTR->ElPt[ind] < 5. || fabs(fTR->ElEta[ind]) > 2.5 || ElPFIso(ind) > 1.0 ) continue; //save no electrons with pt <5, eta > 2.5 or iso > 1.0
+		if(fTR->ElPt[ind] < 10. || fabs(fTR->ElEta[ind]) > 2.5 || ElPFIso(ind) > 1.0 ) continue; //save no electrons with pt <5, eta > 2.5 or iso > 1.0
 		
 		p_fTelpt     ->push_back( fTR->ElPt    [ind] );
 		p_fTeleta    ->push_back( fTR->ElEta   [ind] );
@@ -341,6 +353,13 @@ void FakeAnalysis::FillAnalysisTree(){
 		p_fTelid       ->push_back(   id );
 		p_fTelmid      ->push_back(  mid );
 		p_fTelgmid     ->push_back( gmid );
+
+		int id1(0), mid1(0), gmid1(0);
+		MatchLepton(ind, 1, id1, mid1, gmid1);
+		p_fTelmatchid       ->push_back(   id1 );
+		p_fTelmatchmid      ->push_back(  mid1 );
+		p_fTelmatchgmid     ->push_back( gmid1 );
+		
 		
 		if(IsLooseElectron(ind)) nLooseLeptons++;
 	}
@@ -356,7 +375,7 @@ void FakeAnalysis::FillAnalysisTree(){
 	// 	
 	// }
 
-	if(nLooseLeptons < 1) return;
+	if(nLooseLeptons < 2) return;
 
 	fAnalysisTree->Fill();
 }
@@ -395,6 +414,9 @@ void FakeAnalysis::ResetTree(){
 	p_fTmuid   = &fTmuid ; p_fTmuid  ->reserve(fTR->NMus) ; p_fTmuid ->clear();
 	p_fTmumid   = &fTmumid ; p_fTmumid  ->reserve(fTR->NMus) ; p_fTmumid ->clear();
 	p_fTmugmid  = &fTmugmid ; p_fTmugmid  ->reserve(fTR->NMus) ; p_fTmugmid ->clear();
+	p_fTmumatchid       = &fTmumatchid       ; p_fTmumatchid  ->reserve(fTR->NMus)       ; p_fTmumatchid ->clear()       ;
+	p_fTmumatchmid      = &fTmumatchmid      ; p_fTmumatchmid  ->reserve(fTR->NMus)      ; p_fTmumatchmid ->clear()      ;
+	p_fTmumatchgmid     = &fTmumatchgmid     ; p_fTmumatchgmid  ->reserve(fTR->NMus)     ; p_fTmumatchgmid ->clear()     ;
 
 	// // electron properties
 	p_fTelpt    = &fTelpt    ; p_fTelpt    ->reserve(fTR->NEles); p_fTelpt    ->clear();
@@ -410,13 +432,16 @@ void FakeAnalysis::ResetTree(){
 	// p_fTpheta   = &fTpheta   ; p_fTpheta   ->reserve(fTR->NPhotons); p_fTpheta   ->clear();
 	// p_fTphphi   = &fTphphi   ; p_fTphphi   ->reserve(fTR->NPhotons); p_fTphphi   ->clear();
 
-	p_fTelisveto   = &fTelisveto  ; p_fTelisveto   ->reserve(fTR->NEles) ; p_fTelisveto  ->clear();
-	p_fTelisloose  = &fTelisloose ; p_fTelisloose  ->reserve(fTR->NEles) ; p_fTelisloose ->clear();
-	p_fTelistight  = &fTelistight ; p_fTelistight  ->reserve(fTR->NEles) ; p_fTelistight ->clear();
-	p_fTelisprompt  = &fTelisprompt ; p_fTelisprompt  ->reserve(fTR->NEles) ; p_fTelisprompt ->clear();
-	p_fTelid  = &fTelid ; p_fTelid  ->reserve(fTR->NEles) ; p_fTelid ->clear();
-	p_fTelmid  = &fTelmid ; p_fTelmid  ->reserve(fTR->NEles) ; p_fTelmid ->clear();
-	p_fTelgmid  = &fTelgmid ; p_fTelgmid  ->reserve(fTR->NEles) ; p_fTelgmid ->clear();
+	p_fTelisveto   = &fTelisveto   ; p_fTelisveto   ->reserve(fTR->NEles)  ; p_fTelisveto  ->clear();
+	p_fTelisloose  = &fTelisloose  ; p_fTelisloose  ->reserve(fTR->NEles)  ; p_fTelisloose ->clear();
+	p_fTelistight  = &fTelistight  ; p_fTelistight  ->reserve(fTR->NEles)  ; p_fTelistight ->clear();
+	p_fTelisprompt = &fTelisprompt ; p_fTelisprompt  ->reserve(fTR->NEles) ; p_fTelisprompt ->clear() ;
+	p_fTelid       = &fTelid       ; p_fTelid  ->reserve(fTR->NEles)       ; p_fTelid ->clear()       ;
+	p_fTelmid      = &fTelmid      ; p_fTelmid  ->reserve(fTR->NEles)      ; p_fTelmid ->clear()      ;
+	p_fTelgmid     = &fTelgmid     ; p_fTelgmid  ->reserve(fTR->NEles)     ; p_fTelgmid ->clear()     ;
+	p_fTelmatchid       = &fTelmatchid       ; p_fTelmatchid  ->reserve(fTR->NEles)       ; p_fTelmatchid ->clear()       ;
+	p_fTelmatchmid      = &fTelmatchmid      ; p_fTelmatchmid  ->reserve(fTR->NEles)      ; p_fTelmatchmid ->clear()      ;
+	p_fTelmatchgmid     = &fTelmatchgmid     ; p_fTelmatchgmid  ->reserve(fTR->NEles)     ; p_fTelmatchgmid ->clear()     ;
 
 	// // jet-MET properties
 	fTpfMET         = -999.99;
@@ -626,6 +651,48 @@ const float FakeAnalysis::EffAreaPhoton(float abseta){
 	if(abseta<2.4)   return 0.260;
 	return 0.266;
 }
+
+void FakeAnalysis::MatchLepton(int index, int type, int &id, int &moid, int &gmoid){
+
+	float lEta = type == 0 ? fTR->MuEta[index] : fTR->ElEta[index];
+	float lPhi = type == 0 ? fTR->MuPhi[index] : fTR->ElPhi[index];
+	// look for a generated particle in a given cone
+	int matchedPart = -1;
+	float mindrPart(100.);
+	for(size_t i = 0; i < fTR->nGenParticles; ++i){
+		if(fTR->genInfoStatus[i] != 1  && fTR->genInfoStatus[i] != 3 ) continue; // only status 1 or 3. skip the radiations
+		float eta = fTR->genInfoEta[i];
+		float phi = fTR->genInfoPhi[i];
+		float DR = Util::GetDeltaR(eta, lEta, phi, lPhi);
+		if(DR > mindrPart) continue; // minimize DR
+		mindrPart = DR;
+		matchedPart = i;
+	}
+
+	bool isGenPart = true;
+	bool isSignalGenPart = false;
+	if(mindrPart > 0.3) isGenPart = false; // max distance
+	if(matchedPart < 0) isGenPart = false; // match unsuccessful
+
+	if (isGenPart){
+		// find mother with different ID
+		int moIndex = fTR->genInfoMo1[matchedPart];
+		while (fTR->genInfoId[matchedPart] == fTR->genInfoId[moIndex]){
+			moIndex  = fTR->genInfoMo1[moIndex];
+		}
+		// find grand mother with different ID than the mother
+		int gmoIndex = fTR->genInfoMo1[moIndex];
+		while (fTR->genInfoId[moIndex] == fTR->genInfoId[gmoIndex]){
+			gmoIndex  = fTR->genInfoMo1[gmoIndex];
+		}
+		// GetPDGParticle(mo ,  abs(fTR->genInfoId[moIndex] ));
+		// GetPDGParticle(gmo,  abs(fTR->genInfoId[gmoIndex]));
+		id   = fTR->genInfoId[matchedPart];
+		moid = fTR->genInfoId[moIndex] ; //mo.get_pdgid() ;
+		gmoid= fTR->genInfoId[gmoIndex]; //gmo.get_pdgid() ;
+	}
+}
+
 
 bool FakeAnalysis::IsSignalMuon(int index, int &muid, int &mumoid, int &mugmoid){
 
