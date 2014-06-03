@@ -19,7 +19,7 @@ def copytree(inputfile, outputfile, tree_name, cut_str):
 		print '[ERROR] Inputfile does not exist!'
 		sys.exit(1)
 
-	if not os.path.exists(outputfile) :
+	if os.path.exists(outputfile) :
 		print '[warning] Outputfile already exists!'
 
 	input = ROOT.TFile.Open('%s' % (inputfile),'read')
