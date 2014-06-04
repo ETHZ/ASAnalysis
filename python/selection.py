@@ -4,7 +4,7 @@ class selection :
 	'''define and store selections'''
 
 
-	def __init__(self, name, minHT = 0., maxHT = 8000., minMET = 0., maxMET = 8000, minNjets = 0, maxNjets = 99, minNbjetsL = 0, maxNbjetsL = 99, minNbjetsM = 0, maxNbjetsM = 99, minPt1 = 20., minPt2 = 20., applyZVeto = True, charge = 0, ttw = True, systflag = 0, flavor = -1, mll = 8., sname = '') :
+	def __init__(self, name, minHT = 0., maxHT = 8000., minMET = 0., maxMET = 8000, minNjets = 0, maxNjets = 99, minNbjetsL = 0, maxNbjetsL = 99, minNbjetsM = 0, maxNbjetsM = 99, minPt1 = 20., minPt2 = 20., minMTLep1 = 0., minMTLep2 = 0., maxMTLep1 = 8000., maxMTLep2 = 8000., applyZVeto = True, charge = 0, ttw = True, systflag = 0, flavor = -1, mll = 8., sname = '') :
 		self.name       = name
 		self.minHT      = minHT
 		self.maxHT      = maxHT
@@ -18,6 +18,10 @@ class selection :
 		self.maxNbjetsM = maxNbjetsM
 		self.minPt1     = minPt1
 		self.minPt2     = minPt2
+		self.minMTLep1  = minMTLep1
+		self.minMTLep2  = minMTLep2
+		self.maxMTLep1  = maxMTLep1
+		self.maxMTLep2  = maxMTLep2
 		self.ZVeto      = applyZVeto
 		self.charge     = charge     # 0: all, +1: ++, -1: --
 		self.ttw        = ttw
@@ -65,6 +69,10 @@ class selection :
 		if event.Mll    < self.mll        : return False
 		if max(event.pT1, event.pT2) < self.minPt1 : return False
 		if min(event.pT1, event.pT2) < self.minPt2 : return False
+		if event.MTLep1 < minMTLep1 : return False
+		if event.MTLep2 < minMTLep2 : return False
+		if event.MTLep1 > maxMTLep1 : return False
+		if event.MTLep2 > maxMTLep2 : return False
 		if self.sname != '' and self.sname != str(event.SName) : return False
 
 		return True
@@ -86,6 +94,10 @@ class selection :
 		selectionString += ' && Mll >= %f'    % (self.mll       )
 		selectionString += ' && TMath::Max(pT1,pT2) >= %f' % (self.minPt1)
 		selectionString += ' && TMath::Min(pT1,pT2) >= %f' % (self.minPt2)
+		selectionString += ' && MTLep1 >= %f' % (self.minMTLep1 )
+		selectionString += ' && MTLep2 >= %f' % (self.minMTLep2 )
+		selectionString += ' && MTLep1 <= %f' % (self.maxMTLep1 )
+		selectionString += ' && MTLep2 <= %f' % (self.maxMTLep2 )
 		selectionString += ' && SystFlag == %d'            % (self.systflag)
 		if not ResTree :
 			if OS_data[0] < 0 :
