@@ -316,7 +316,7 @@ class ttvplot(object) :
 		leg = self.draw_legend(leg_entries)
 		h_mc.Draw()
 		self.set_axisTitles(h_mc, x_title, y_title)
-		h_data.Draw('same p')
+		h_data.Draw('same pe')
 		self.draw_cmsLine()
 		leg.Draw()
 		canvas.Print('%s%s.pdf' % (self.path, name))
