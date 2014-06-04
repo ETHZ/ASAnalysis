@@ -46,6 +46,9 @@ class plotter :
 		self.selections['final'    ] = selection.selection(name = 'final'  , mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
 		self.selections['final++'  ] = selection.selection(name = 'final++', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
 		self.selections['final--'  ] = selection.selection(name = 'final--', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
+		self.selections['2J0bJOS'  ] = selection.selection(name = '2J0bJ_OS'  , mll = 8., minNjets = 2, flavor = -2)
+		self.selections['ZElElChMisId'] = selection.selection(name = 'ZElElChMisId', mll = 8., maxMET = 30., minNjets = 1, flavor = 5, applyZVeto = False, maxMTLep1 = 25.)
+		self.selections['ZElElChMisId_SS'] = selection.selection(name = 'ZElElChMisId_SS', mll = 8., maxMET = 30., minNjets = 1, flavor = 2, applyZVeto = False, maxMTLep1 = 25.)
 
 		# ratios
 		self.fpr = ratios.ratios(self.path, self.samples)
@@ -156,17 +159,14 @@ class plotter :
 #		self.h2_MupRatio.Draw('colztext')
 #		c1.cd(4)
 #		self.h2_ElpRatio.Draw('colztext')
-#
+
 
 		if DiffMC :
-			sel = self.selections['2J0bJ'    ]
-			skimtree_path = '%sSSDLYields_%s.root' % (self.path, sel.name)
-			if not os.path.exists(skimtree_path) :
-				copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
-			file = ROOT.TFile.Open(skimtree_path, 'READ')
-			tree = file.Get('SigEvents')
-			self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll'))
-	#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx'))
+#			self.plot_DiffMC(self.selections['2J0bJ'    ])
+#			self.plot_DiffMC(self.selections['2J0bJOS'        ])
+			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
+			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
+
 
 		if DiffPred :
 			# produce results tree
@@ -1410,6 +1410,16 @@ class plotter :
 #		raw_input('ok? ')
 
 
+	def plot_DiffMC(self, sel) :
+		skimtree_path = '%sSSDLYields_%s.root' % (self.path, sel.name)
+		if not os.path.exists(skimtree_path) :
+			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
+		file = ROOT.TFile.Open(skimtree_path, 'READ')
+		tree = file.Get('SigEvents')
+		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
+#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+
+
 	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False) :
 
 		nbins = settings['nbins']
@@ -1440,10 +1450,12 @@ class plotter :
 		h_wz_name    = 'h_wz_'    + var + sel.name; histos['wz'   ] = self.get_mcHistoFromTree(tree, self.get_samples('WZ'    ), var_str, h_wz_name   , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_ttz_name   = 'h_ttz_'   + var + sel.name; histos['ttz'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTZ'   ), var_str, h_ttz_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_ttw_name   = 'h_ttw_'   + var + sel.name; histos['ttw'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTW'   ), var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_ttw_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
 
 		# getting data
+		print '[status] getting %s histogram from data..' % var
 		tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
 
 		# adding mc samples
@@ -1453,6 +1465,7 @@ class plotter :
 			histo.Add(histos['wjets'])
 			histo.Add(histos['rare' ])
 			histo.Add(histos['wz'   ])
+			histo.Add(histos['qcd'  ])
 			histo.Add(histos['ttz'  ])
 			if histo.GetName() != h_bgtot_name : histo.Add(histos['ttw'  ])
 
