@@ -27,5 +27,7 @@ def get_histoBins(var, sel = '') :
 				if sel.name.startswith('final') :
 					if   var == 'pT1'    : histo_settings['nbins'] =  8; histo_settings['min'] =  40.; histo_settings['max'] = 200.;
 					elif var == 'pT2'    : histo_settings['nbins'] =  6; histo_settings['min'] =  40.; histo_settings['max'] = 100.;
+			if sel.name.startswith('ZElElChMisId') :
+				if var == 'Mll'    : histo_settings['nbins'] = 60; histo_settings['min'] =  0.; histo_settings['max'] = 300.;
 
 		return histo_settings
