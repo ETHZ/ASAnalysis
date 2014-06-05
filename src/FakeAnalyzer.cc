@@ -36,10 +36,9 @@ void FakeAnalyzer::Loop(){
 			// MARC // Prescale processing...
 			// MARC if ( prescale>1 && jentry%prescale ) continue;
 
-			fTR->GetEntry(jentry);
-
-			// Upper Pt Hat cut
-			if( (fPtHatCut > -1.0) && (fTR->PtHat > fPtHatCut) ) continue;
+// if(fTR->Event == 72652549) cout << "i ran on this event this is in the src/FakeAnalyzer.cc !!!!" << endl;
+			//fTR->GetEntry(jentry);
+// if(fTR->Event == 72652549) cout << "i ran on this event this is in the src/FakeAnalyzer.cc !!!!" << endl;
 
 			// Run processing
 			if( fCurRun != fTR->Run ) { // new run
@@ -56,7 +55,7 @@ void FakeAnalyzer::Loop(){
 				skipLumi = false;
 				if ( CheckRunLumi() == false ) skipLumi = true;
 			}
-			// disable lumi checking in FakeAnalysis if(skipRun || skipLumi) continue;
+			if(skipRun || skipLumi) continue;
 			fFakeAnalysis->Analyze();
 	}
 	cout << endl;

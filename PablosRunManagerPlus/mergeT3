@@ -1,0 +1,23 @@
+#!/bin/tcsh -f
+#
+# Merge all files from a run directory
+#
+
+# Avoid wild cards
+set noglob
+
+if ( "$1" == "" ) then
+   echo "Usage: $0 <dir>"
+   echo "       where dir is the directory on the SE (/store/...)"
+   echo "       All files in the corresponding directory will be merged into"
+   echo "       one root file <basename(dir)>.root"
+   exit -1
+endif
+
+set dir=$1
+set out=`basename $1`
+
+echo Merging to $out from $dir
+
+# Merge error stream with standard output
+qsub -q short.q -N m$out -o logs/$out.out -j y ./batch/mergeBatch.csh $dir $out

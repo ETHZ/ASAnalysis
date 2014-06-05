@@ -1,0 +1,260 @@
+##################################################
+# Signal regions:
+PATHSET
+Name	HLT_MU17_MU8
+Path	HLT_Mu17_Mu8_v16
+Path	HLT_Mu17_Mu8_v17
+Path	HLT_Mu17_Mu8_v18
+Path	HLT_Mu17_Mu8_v19
+Path	HLT_Mu17_Mu8_v20
+Path	HLT_Mu17_Mu8_v21
+Path	HLT_Mu17_Mu8_v22
+
+PATHSET
+Name	HLT_MU17_TKMU8
+Path	HLT_Mu17_TkMu8_v9
+Path	HLT_Mu17_TkMu8_v10
+Path	HLT_Mu17_TkMu8_v11
+Path	HLT_Mu17_TkMu8_v12
+Path	HLT_Mu17_TkMu8_v13
+Path	HLT_Mu17_TkMu8_v14
+
+PATHSET
+Name	HLT_ELE17_ELE8_TIGHT
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v12
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v13
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v14
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v16
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v19
+
+
+PATHSET
+Name	HLT_MU8_ELE17_TIGHT
+Path	HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4
+Path	HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5
+Path	HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6
+Path	HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7
+Path	HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8
+Path	HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9
+
+PATHSET
+Name	HLT_MU17_ELE8_TIGHT
+Path	HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4
+Path	HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5
+Path	HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6
+Path	HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7
+Path	HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8
+Path	HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9
+
+
+
+##################################################
+# Control regions:
+PATHSET
+Name	HLT_MU8
+Path	HLT_Mu8_v16
+Path	HLT_Mu8_v17
+Path	HLT_Mu8_v18
+
+PATHSET
+Name	HLT_MU17
+Path	HLT_Mu17_v3
+Path	HLT_Mu17_v4
+Path	HLT_Mu17_v5
+
+PATHSET
+Name	HLT_MU5
+Path	HLT_Mu5_v18
+Path	HLT_Mu5_v19
+Path	HLT_Mu5_v20
+
+PATHSET
+Name	HLT_MU12
+Path	HLT_Mu12_v16
+Path	HLT_Mu12_v17
+Path	HLT_Mu12_v18
+
+PATHSET
+Name	HLT_MU24
+Path	HLT_Mu24_v14
+Path	HLT_Mu24_v15
+Path	HLT_Mu24_v16
+
+PATHSET
+Name	HLT_MU40
+Path	HLT_Mu40_v12
+Path	HLT_Mu40_v13
+Path	HLT_Mu40_v14
+
+PATHSET
+Name	HLT_ELE17_TIGHT
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v3
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6
+
+PATHSET
+Name	HLT_ELE17_JET30_TIGHT
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v3
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v4
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v5
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v6
+Path	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v7
+
+PATHSET
+Name	HLT_ELE8_TIGHT
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v12
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v13
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v14
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15
+
+PATHSET
+Name	HLT_ELE8_JET30_TIGHT
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v3
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v4
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v5
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v6
+Path	HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v7
+
+
+##################################################
+# Control regions:  UFL
+##		PATHSET
+##		Name	HLT_DOUBLEDISPLACEDMU4
+##		Path	HLT_DoubleDisplacedMu4_DiPFJet40Neutral_v2
+##		Path	HLT_DoubleDisplacedMu4_DiPFJet40Neutral_v3
+##		Path	HLT_DoubleDisplacedMu4_DiPFJet40Neutral_v4
+##		Path	HLT_DoubleDisplacedMu4_DiPFJet40Neutral_v5
+##		Path	HLT_DoubleDisplacedMu4_DiPFJet40Neutral_v6
+##		Path	HLT_DoubleDisplacedMu4_DiPFJet40Neutral_v7
+##		Path	HLT_DoubleDisplacedMu4_DiPFJet40Neutral_v8
+##		
+##		PATHSET
+##		Name	HLT_DOUBLEMU14_M8_MET40
+##		Path	HLT_DoubleMu14_Mass8_PFMET40_v3
+##		Path	HLT_DoubleMu14_Mass8_PFMET40_v4
+##		Path	HLT_DoubleMu14_Mass8_PFMET40_v5
+##		Path	HLT_DoubleMu14_Mass8_PFMET40_v6
+##		Path	HLT_DoubleMu14_Mass8_PFMET40_v7
+##		Path	HLT_DoubleMu14_Mass8_PFMET40_v8
+##		
+##		PATHSET
+##		Name	HLT_DOUBLEMU14_M8_MET50
+##		Path	HLT_DoubleMu14_Mass8_PFMET50_v3
+##		Path	HLT_DoubleMu14_Mass8_PFMET50_v4
+##		Path	HLT_DoubleMu14_Mass8_PFMET50_v5
+##		Path	HLT_DoubleMu14_Mass8_PFMET50_v6
+##		Path	HLT_DoubleMu14_Mass8_PFMET50_v7
+##		Path	HLT_DoubleMu14_Mass8_PFMET50_v8
+##		
+##		PATHSET
+##		Name	HLT_DOUBLEMU8_M8_PFNOPUHT175
+##		Path	HLT_DoubleMu8_Mass8_PFNoPUHT175_v1
+##		Path	HLT_DoubleMu8_Mass8_PFNoPUHT175_v3
+##		Path	HLT_DoubleMu8_Mass8_PFNoPUHT175_v4
+##		
+##		PATHSET
+##		Name	HLT_DOUBLEMU8_M8_PFNOPUHT225
+##		Path	HLT_DoubleMu8_Mass8_PFNoPUHT225_v1
+##		Path	HLT_DoubleMu8_Mass8_PFNoPUHT225_v3
+##		Path	HLT_DoubleMu8_Mass8_PFNoPUHT225_v4
+##		
+##		PATHSET
+##		Name	HLT_MU8_ELE8_M8_PFNOPUHT175
+##		Path	HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v1
+##		Path	HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v3
+##		Path	HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v4
+##		
+##		PATHSET
+##		Name	HLT_MU8_ELE8_M8_PFNOPUHT225
+##		Path	HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v1
+##		Path	HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v3
+##		Path	HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v4
+##		
+##		PATHSET
+##		Name	HLT_L2TRIPLEMU
+##		Path	HLT_L2TripleMu10_0_0_NoVertex_PFJet40Neutral_v2
+##		Path	HLT_L2TripleMu10_0_0_NoVertex_PFJet40Neutral_v3
+##		Path	HLT_L2TripleMu10_0_0_NoVertex_PFJet40Neutral_v4
+##		Path	HLT_L2TripleMu10_0_0_NoVertex_PFJet40Neutral_v5
+##		Path	HLT_L2TripleMu10_0_0_NoVertex_PFJet40Neutral_v6
+##		Path	HLT_L2TripleMu10_0_0_NoVertex_PFJet40Neutral_v7
+##		Path	HLT_L2TripleMu10_0_0_NoVertex_PFJet40Neutral_v8
+##		
+##		PATHSET
+##		Name	HLT_MU14_ELE14_M8_MET40
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8
+##		
+##		PATHSET
+##		Name	HLT_MU14_ELE14_M8_MET50
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8
+##		Path	HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8
+##		
+##		PATHSET 
+##		Name	HLT_MU40_PFNOPUHT350
+##		Path	HLT_Mu40_PFNoPUHT350_v1
+##		Path	HLT_Mu40_PFNoPUHT350_v3
+##		Path	HLT_Mu40_PFNoPUHT350_v4
+##		
+##		PATHSET
+##		Name	HLT_MU60_PFNOPUHT350
+##		Path	HLT_Mu60_PFNoPUHT350_v1
+##		Path	HLT_Mu60_PFNoPUHT350_v3
+##		Path	HLT_Mu60_PFNoPUHT350_v4
+##		
+##		PATHSET
+##		Name 	HLT_MU8_DIJET
+##		Path	HLT_Mu8_DiJet30_v3
+##		Path	HLT_Mu8_DiJet30_v4
+##		Path	HLT_Mu8_DiJet30_v5
+##		Path	HLT_Mu8_DiJet30_v7
+##		
+##		PATHSET
+##		Name 	HLT_MU8_QUADJET
+##		Path	HLT_Mu8_QuadJet30_v3
+##		Path	HLT_Mu8_QuadJet30_v4
+##		Path	HLT_Mu8_QuadJet30_v5
+##		Path	HLT_Mu8_QuadJet30_v7
+##		
+##		PATHSET
+##		Name 	HLT_MU8_TRIJET
+##		Path	HLT_Mu8_TriJet30_v3
+##		Path	HLT_Mu8_TriJet30_v4
+##		Path	HLT_Mu8_TriJet30_v5
+##		Path	HLT_Mu8_TriJet30_v7
+##		
+##		PATHSET
+##		Name	HLT_PFNOPUHT350_MU15_PFMET45
+##		Path	HLT_PFNoPUHT350_Mu15_PFMET45_v1
+##		Path	HLT_PFNoPUHT350_Mu15_PFMET45_v3
+##		Path	HLT_PFNoPUHT350_Mu15_PFMET45_v4
+##		
+##		PATHSET
+##		Name	HLT_PFNOPUHT350_MU15_PFMET50
+##		Path	HLT_PFNoPUHT350_Mu15_PFMET50_v1
+##		Path	HLT_PFNoPUHT350_Mu15_PFMET50_v3
+##		Path	HLT_PFNoPUHT350_Mu15_PFMET50_v4
+##		
+##		PATHSET
+##		Name	HLT_HT400_MU5_MET45
+##		Path	HLT_PFNoPUHT400_Mu5_PFMET45_v4
+##		Path	HLT_PFNoPUHT400_Mu5_PFMET45_v4
+##		Path	HLT_PFNoPUHT400_Mu5_PFMET45_v4
+##		
+##		PATHSET
+##		Name	HLT_HT400_MU5_MET50
+##		Path	HLT_PFNoPUHT400_Mu5_PFMET50_v1
+##		Path	HLT_PFNoPUHT400_Mu5_PFMET50_v3
+##		Path	HLT_PFNoPUHT400_Mu5_PFMET50_v4

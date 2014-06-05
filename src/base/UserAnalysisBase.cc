@@ -26,6 +26,8 @@ UserAnalysisBase::UserAnalysisBase(TreeReader *tr, bool isData, string globaltag
 
 
   if(globaltag == "") globaltag = "START53_V7A"; // need a default GT, otherwise the next line crashes
+  if(globaltag != "")
+    cout << "running JECs for globaltag: " << globaltag << endl;
   fMetCorrector = new OnTheFlyCorrections(globaltag, isData);
 }
 
@@ -301,9 +303,10 @@ float UserAnalysisBase::Aeff(float eta) {
 }
 
 float UserAnalysisBase::ElPFIso(int index){
-  double neutral = fTR->ElEventelPFIsoValueNeutral03PFIdStandard[index] + fTR->ElEventelPFIsoValueGamma03PFIdStandard[index];
-  double rhocorr = fTR->RhoForIso * Aeff(fTR->ElSCEta[index]);
-  double iso = ( fTR->ElEventelPFIsoValueCharged03PFIdStandard[index] + TMath::Max(0., neutral - rhocorr) )/ fTR->ElPt[index];
+  float neutral = fTR->ElEventelPFIsoValueNeutral03PFIdStandard[index] + fTR->ElEventelPFIsoValueGamma03PFIdStandard[index];
+  // float rhocorr = fTR->RhoForIso * Aeff(fTR->ElSCEta[index]);
+  float rhocorr = fTR->Rho * Aeff(fTR->ElSCEta[index]);
+  float iso = ( fTR->ElEventelPFIsoValueCharged03PFIdStandard[index] + TMath::Max(0., neutral - rhocorr) )/ fTR->ElPt[index];
   return iso;
 }
 

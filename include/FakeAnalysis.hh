@@ -59,9 +59,23 @@ public:
 	bool IsLooseElectron(int);
 	bool IsTightElectron(int);
 
+	bool IsSignalElectron(int, int&, int&, int&);
+
 	bool IsVetoMuon (int);
 	bool IsLooseMuon(int);
 	bool IsTightMuon(int);
+
+	bool IsSignalMuon(int, int&, int&, int&);
+
+	void MatchLepton(int, int, int&, int&, int&);
+
+	// photon function
+	bool IsGoodPhoton(int);
+	bool IsGoodPhotonEGMLoose(int);
+
+	const float EffAreaChargedHad(float);
+	const float EffAreaNeutralHad(float);
+	const float EffAreaPhoton(float);
 
 private:
 	TH1F *fHEvCount;
@@ -86,6 +100,7 @@ private:
 
 	// PileUP info
 	int   fTnvrtx;
+	int   fTntrue;
 	float fTpuweight;
 	float fTpuweightUp;
 	float fTpuweightDn;
@@ -104,11 +119,18 @@ private:
 	vector<float> fTmupfiso ; vector<float> * p_fTmupfiso ;
 	vector< int > fTmucharge; vector< int > * p_fTmucharge;
 	vector<float> fTmud0    ; vector<float> * p_fTmud0    ;
-	vector<float> fTmuMT    ; vector<float> * p_fTmuMT    ;
 
 	vector<bool>  fTmuisveto ; vector<bool> * p_fTmuisveto ;
 	vector<bool>  fTmuisloose; vector<bool> * p_fTmuisloose;
 	vector<bool>  fTmuistight; vector<bool> * p_fTmuistight;
+
+	vector<bool>  fTmuisprompt; vector<bool> * p_fTmuisprompt;
+	vector<int>  fTmuid  ; vector<int> * p_fTmuid;
+	vector<int>  fTmumid ; vector<int> * p_fTmumid;
+	vector<int>  fTmugmid; vector<int> * p_fTmugmid;
+	vector<int>  fTmumatchid  ; vector<int> * p_fTmumatchid;
+	vector<int>  fTmumatchmid ; vector<int> * p_fTmumatchmid;
+	vector<int>  fTmumatchgmid; vector<int> * p_fTmumatchgmid;
 
 	// Electron properties
 	vector<float> fTelpt    ; vector<float> * p_fTelpt    ;
@@ -117,17 +139,33 @@ private:
 	vector<float> fTelpfiso ; vector<float> * p_fTelpfiso ;
 	vector< int > fTelcharge; vector< int > * p_fTelcharge;
 	vector<float> fTeld0    ; vector<float> * p_fTeld0    ;
-	vector<float> fTelMT    ; vector<float> * p_fTelMT    ;
+	vector< int > fTelchco  ; vector< int > * p_fTelchco  ;
 
 	vector<bool>  fTelisveto ; vector<bool> * p_fTelisveto ;
 	vector<bool>  fTelisloose; vector<bool> * p_fTelisloose;
 	vector<bool>  fTelistight; vector<bool> * p_fTelistight;
 
+	vector<bool>  fTelisprompt; vector<bool> * p_fTelisprompt;
+	vector<int>  fTelid  ; vector<int> * p_fTelid;
+	vector<int>  fTelmid ; vector<int> * p_fTelmid;
+	vector<int>  fTelgmid; vector<int> * p_fTelgmid;
+	vector<int>  fTelmatchid  ; vector<int> * p_fTelmatchid;
+	vector<int>  fTelmatchmid ; vector<int> * p_fTelmatchmid;
+	vector<int>  fTelmatchgmid; vector<int> * p_fTelmatchgmid;
+
+	// Electron properties
+	vector<float> fTphpt    ; vector<float> * p_fTphpt    ;
+	vector<float> fTpheta   ; vector<float> * p_fTpheta   ;
+	vector<float> fTphphi   ; vector<float> * p_fTphphi   ;
+
 	// Jet and MET properties
 	float fTpfMET;
 	float fTpfMETphi;
+	float fTpfMET1;
+	float fTpfMET1phi;
 
 	vector<float> fTJetpt        ; vector<float> * p_fTJetpt        ;
+	vector<float> fTJetrawpt     ; vector<float> * p_fTJetrawpt     ;
 	vector<float> fTJeteta       ; vector<float> * p_fTJeteta       ;
 	vector<float> fTJetphi       ; vector<float> * p_fTJetphi       ;
 	vector<float> fTJetenergy    ; vector<float> * p_fTJetenergy    ;

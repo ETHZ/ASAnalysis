@@ -1,3 +1,4 @@
+#!/usr/bin/python
 
 ### WATCH OUT: NEEDS TO BE LAUNCHED AS python runManager.py configuration.cfg and NOT ./runManager configuration.cfg
 
@@ -49,8 +50,6 @@ parser.add_option("-v","--verbose",dest="verbose",action="store_true",default=Fa
                   help="Turn verbosity on")
 parser.add_option("-r","--renew",dest="renew",action="store_true",default=False,
                   help="Renew cached files")
-parser.add_option("-m","--merge-only",dest="mergeonly",action="store_true",default=False,
-                  help="Run the merging only")
 (options, args) = parser.parse_args(args=None, values=None)
 #---------------------------------------------------------
 
@@ -116,6 +115,15 @@ def getFiles(step, FilesPerJob, NumberOfJobs, OverloadedJobs, listOfFiles):
       
 
 #-------------------------------------------------------------#
+# createDirectory method: Creates a directory                 #
+# returns 0 if everything was all right                       #
+#-------------------------------------------------------------# 
+def createDirectory(nameOfDirectory):
+  result = os.system("mkdir " + nameOfDirectory)
+  result2 = os.system("cd " + nameOfDirectory)
+  return result 
+
+#-------------------------------------------------------------#
 # fixPath method: Just makes sure the path is ending          #
 # with slash. Otherwise appends it                            #
 #-------------------------------------------------------------# 
@@ -167,11 +175,13 @@ def createCMSConf(step, nameOfDirectory, releasePath, nameOfConf, inputString, e
   
   thisjobnumber=0
 
-  #SHORT QUEUE cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-  #MERGED OUTPUT cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-j','y',nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
+  #cmd = " ".join(['qsub','-q short.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
   cmd = " ".join(['qsub','-q all.q','-N',"RMG"+str(step)+taskName,'-o',stdout,'-e',stderr,nameOfDirectory+taskName+'/'+nameOfConf2+' '+str(step)])
-  if options.verbose: print cmd
+  print cmd
   if options.dryrun: return thisjobnumber
+
+  ## print 'foooooooo', step
+  ### if str(step) in ['11', '15', '18', '23', '27', '3', '35', '4', '47', '8', '13', '16', '22', '25', '28', '33', '38', '40', '49']: cmd = 'ls ~/scripts/'
 
   pipe=popen(cmd)#"qsub -e /tmp/ -o /tmp/ -N " + "RMJ"+str(step)+taskName + " " + nameOfDirectory + taskName + "/" + nameOfConf2 + " " + str(step))
   for l in pipe.readlines():
@@ -269,8 +279,7 @@ def getListOfTasks(nameOfFile):
     argumentEnd = line.rfind("'")
 	    
     if(argumentBegin == -1 or argumentEnd == -1 or argumentBegin == argumentEnd):
-      if len(line) > 1: 
-	showMessage("Ignoring the line : " + line)
+      showMessage("Ignoring the line : " + line)
     else:  
       arguments = line[argumentBegin+1:argumentEnd]
       endLine = line[argumentEnd+1:len(line)]
@@ -343,35 +352,34 @@ def process(task, conf):
     NumberOfJobs = numberOfFiles
     OverloadedJobs = 0
 
+  #FR FIXME: this part is tricky and might be fragile
   # Task[0] is now a dataset: /DATASET/USER-TAG_DATASET-TYPE-AOD-HASH/USER
-  # Remove the trailing '/USER' string and convert it to not contain '/'s 
-  nameOfFolder = dataset.lstrip('/').rstrip('/USER').replace('/','_')
-  taskName = nameOfFolder
-  os.system("mkdir -p " + taskName)
+  # Extract useful information (DATASET-TYPE-AOD)
 
-#  ### FOR NORMAL RUNNING:
-#  primaryDataset = dataset.lstrip('/').replace('_','-').split('/')[0]
-#  fullName = dataset.lstrip('/').replace('_','-').split('/')[1]
-#  primaryDataset2 = dataset.lstrip('/').split('/')[0]
-#  fullName2 = dataset.lstrip('/').split('/')[1]
-#  index1 = fullName.index(primaryDataset)
-#  index2 = fullName.rindex('-')
-#  nameOfFolder = fullName[index1:index2]
-#  taskName = nameOfFolder
-#  os.system("mkdir -p " + taskName)
+
+  ## ### FOR NORMAL RUNNING:
+  ## primaryDataset = dataset.lstrip('/').replace('_','-').split('/')[0]
+  ## fullName = dataset.lstrip('/').replace('_','-').split('/')[1]
+  ## primaryDataset2 = dataset.lstrip('/').split('/')[0]
+  ## fullName2 = dataset.lstrip('/').split('/')[1]
+  ## index1 = fullName.index(primaryDataset)
+  ## index2 = fullName.rindex('-')
+  ## nameOfFolder = fullName[index1:index2]
+  ## taskName = nameOfFolder
+  ## os.system("mkdir -p " + taskName)
 # ## ##  os.system("mkdir -p ../" + taskName)
 
-  ## ### FOR RUNNING WITH PRESET FILES ETC. SMSs mostly
-  ## primaryDataset = dataset.lstrip('/').replace('_','-').split('/')[0]
-  ## print 'foooooooooooooooooooooooooooooooooo', primaryDataset
-  ## ## fullName = dataset.lstrip('/').replace('_','-').split('/')[1]
-  ## ## primaryDataset2 = dataset.lstrip('/').split('/')[0]
-  ## ## fullName2 = dataset.lstrip('/').split('/')[1]
-  ## ## index1 = fullName.index(primaryDataset)
-  ## ## index2 = fullName.rindex('-')
-  ## nameOfFolder = primaryDataset
-  ## taskName = primaryDataset
-  ## os.system("mkdir -p " + taskName)
+  ### FOR RUNNING WITH PRESET FILES ETC. SMSs mostly
+  primaryDataset = dataset.lstrip('/').replace('_','-').split('/')[0]
+  print 'foooooooooooooooooooooooooooooooooo', primaryDataset
+  ## fullName = dataset.lstrip('/').replace('_','-').split('/')[1]
+  ## primaryDataset2 = dataset.lstrip('/').split('/')[0]
+  ## fullName2 = dataset.lstrip('/').split('/')[1]
+  ## index1 = fullName.index(primaryDataset)
+  ## index2 = fullName.rindex('-')
+  nameOfFolder = primaryDataset
+  taskName = primaryDataset
+  os.system("mkdir -p " + taskName)
 #  os.system("mkdir -p ../" + taskName)
 
   showMessage(str(NumberOfJobs) + " jobs with " + str(FilesPerJob) + " files each will be created")
@@ -401,21 +409,12 @@ def join_directory(path,filelist,username) :
 	cleanpath=path;
 	if (cleanpath[len(cleanpath)-1]=="/") : # remove trailing slash
 		cleanpath=cleanpath[0:len(cleanpath)-2]
-	fusecommand="hadd -f /scratch/"+username+"/ntuples/"+cleanpath+".root "
+	fusecommand="hadd -f /scratch/"+username+"/ntuples/"+cleanpath+".root > /dev/null "
 	for item in filelist:
 		copycommand="dccp dcap://t3se01.psi.ch:22125/pnfs/psi.ch/cms/trivcat/store/user/"+username+"/"+item+" /scratch/"+username+"/ntuples/"+item
-		(status,output) = commands.getstatusoutput(copycommand)
-                if status != 0: print '*** Error in dccp:',output
+		commands.getstatusoutput(copycommand)
 		fusecommand=fusecommand+" /scratch/"+username+"/ntuples/"+item
-        # Make extra sure all files were transferred
-        lscommand = 'ls -1 '+localpath+' | wc -l'
-        (status,output) = commands.getstatusoutput(lscommand)
-        if status != 0: print '*** Error in ls:',output
-        else:
-                if int(output) != len(filelist):
-                        print '*** Error: not all files have been transferred! (',output,',',len(filelist),')'
-                        sys.exit(-1)
-	print commands.getoutput(fusecommand+' > /dev/null')
+	print commands.getoutput(fusecommand)
 	deletecommand="rm -r /scratch/"+username+"/ntuples/"+path+"/" 
 	print commands.getoutput(deletecommand)
 		
@@ -435,9 +434,8 @@ def check_directory(path,username) :
 			if(currentline.count(path) > 0) :
 				supposedtobejoined=True
 				listoffiles.append(currentline[currentline.find(path):])
-	if supposedtobejoined==True:
-                print '\033[1;34m  --> Going to join',len(listoffiles),'files'
-		join_directory(path,listoffiles,username)
+	## MARC don't join on /scratch if supposedtobejoined==True:
+	## MARC don't join on /scratch 	join_directory(path,listoffiles,username)
 
 
 ##################################################################################
@@ -465,66 +463,51 @@ if __name__ == '__main__' :
                 parser.print_usage()
                 sys.exit(-1)
         
-        timeleft=commands.getoutput("voms-proxy-info -timeleft")
-        if timeleft.find("java") > 0 : 
-	  print "Java is experiencing problems ... please try again later: "
-	  print timeleft
-	  sys.exit(-1)
-        
-        print "Seems like your proxy will be alive for another "+str(timeleft)+" seconds"
-        if float(timeleft)>10800 and float(timeleft)<1000000: ## valid for >3h
-	  print "You should be ok, your proxy is still valid for a long time."
+        timeleft=commands.getoutput("timeleft=`voms-proxy-info -valid -timeleft | grep timeleft | awk '{ print $3 }'` && pos=`expr index "+'"$timeleft" :`&& timelefth=${timeleft:0:$pos-1} && echo $timelefth');
+        if(timeleft<2): 
+		print "You need to refresh your proxy! (will run voms-proxy-init -voms cms for you)"
+		os.system("voms-proxy-init -voms cms");
 	else:
-	  print "You need to refresh your proxy! (will run voms-proxy-init -voms cms for you)"
-	  os.system("voms-proxy-init -voms cms -hours 120");
-	  
+		print "Proxy lifetime is acceptable (more than "+str(timeleft)+" hours)"
+        
         result = parseInputFile(args[0])
         print result
         print result[0]
         if(result == "Error"):
-           showMessage("Error parsing input file")
-           sys.exit(-1)
+                showMessage("Error parsing input file")
+                sys.exit(-1)
 
         listOfTasks = getListOfTasks(result[0])
         fusepath=result[4]
         uname=result[6]
- 
-        # Get list of files and create scripts to run
-        if options.mergeonly:
-           print 'Skipping writing of the scripts'
-        else :
-           for l in listOfTasks:
-              if(l[0].find("/data/")>-1): isdata=1 #FIXME: This won't work anymore
-              showMessage("Processing " + l[0])
-              if domultiprocessing==True:
-                 po.apply_async(process,(l, result),callback=cb)
-              else :
-                 print "At this point you could be saving a lot of time with multiprocessing ... "
-                 jobnumber = process(l, result)
-                 jobnumbers.extend(jobnumber)
-           if domultiprocessing==True :
-              po.close()
-              po.join()
+        for l in listOfTasks:
+                if(l[0].find("/data/")>-1) :
+                        isdata=1
+                showMessage("Processing " + l[0])
+                if domultiprocessing==True:
+                        po.apply_async(process,(l, result),callback=cb)
+                else :
+                        print "At this point you could be saving a lot of time with multiprocessing ... "
+                        jobnumber = process(l, result)
+                        jobnumbers.extend(jobnumber)
+      		
+        if domultiprocessing==True :
+                po.close()
+                po.join()
 
         if options.dryrun: sys.exit(0) # We're done for the dry run
 
-        # Run the jobs
-        if options.mergeonly:
-           print 'Skipping running step'
-        else:
-           totaljobnumber=len(jobnumbers)
-           counter=0
-           print 'Total number of jobs:',totaljobnumber
-           while(len(jobnumbers)>0 and counter<300) :
-              time.sleep(60)
-              counter+=1
-              currlist=[]
-              pipe=popen("qstat | grep `whoami` | awk '{print $1}'")
-              for line in pipe.readlines():
-                 currlist.append(int(line))
-              checklist(jobnumbers,currlist)
-
-        # Merge the files
+        totaljobnumber=len(jobnumbers)
+        counter=0
+        print 'Total number of jobs:',totaljobnumber
+        while(len(jobnumbers)>0 and counter<300) :
+                time.sleep(60)
+                counter+=1
+                currlist=[]
+                pipe=popen("qstat | grep `whoami` | awk '{print $1}'")
+                for line in pipe.readlines():
+                        currlist.append(int(line))
+                checklist(jobnumbers,currlist)
         print "All jobs have finished - need to merge everything and place it in your scratch directory!"
         check_directory(fusepath,uname)
         if isdata==1 and result[2].find("RunJZBAnalyzer")>-1:
