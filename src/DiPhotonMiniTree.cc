@@ -452,8 +452,8 @@ void DiPhotonMiniTree::Analyze(){
   StatusScaleUpScaleDown_Photons_R9 = CorrectPhotonR9(kCorrectedNoShift,unscaled_r9);
   StatusScaleUpScaleDown_Photons_Sieie = CorrectPhotonSieie(kCorrectedNoShift,unscaled_sieie);
   CorrectPhotonEnergy(kCorrectedNoShift,kCorrectedNoShift,ordering,unscaled_r9,unscaled_energy);
-  StatusScaleUpScaleDown_Photons_EnergyScale==kCorrectedNoShift;
-  StatusScaleUpScaleDown_Photons_EnergySmear==kCorrectedNoShift;
+  StatusScaleUpScaleDown_Photons_EnergyScale=kCorrectedNoShift;
+  StatusScaleUpScaleDown_Photons_EnergySmear=kCorrectedNoShift;
 
   if (debug) {for (int i=0; i<fTR->NPhotons; i++) cout << fTR->PhoPt[i] << " "; cout<<endl;}
 
