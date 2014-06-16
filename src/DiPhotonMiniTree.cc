@@ -393,12 +393,6 @@ void DiPhotonMiniTree::Analyze(){
   //  return; // RUNNING FOR PU FILE
 
 
-  // FILTERS TO FIX
-  // scraping veto done at ntuplizer level
-  if (!PassPrimaryVertexFilter()) return;
-  if (!fTR->HBHENoiseFilterResult) return;
-  if (!fTR->CSCTightHaloID) return;
-
   event_weight = weight;
   event_rho = fTR->Rho;
   event_sigma = fTR->Sigma;
@@ -1476,6 +1470,12 @@ float DiPhotonMiniTree::getEtaCorrectionBarrel(float eta){
 
 std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vector<int> passing){
 
+  // FILTERS
+  // scraping veto done at ntuplizer level
+  if (!PassPrimaryVertexFilter()) passing.clear();
+  if (!fTR->HBHENoiseFilterResult) passing.clear();
+  if (!fTR->CSCTightHaloID) passing.clear();
+
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // SC matching
     if (fTR->PhotSCindex[*it]<0) it=passing.erase(it); else it++;
   }
@@ -1521,8 +1521,9 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // sieie cut
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
     float sieie=fTR->PhoSigmaIetaIeta[*it];
+    float sipip=fTR->PhoSigmaIphiIphi[*it];
     bool pass=0;
-    if (fabs(eta)<1.4442 && sieie<0.014 && sieie>0.001) pass=1; // to add sigmaiphiphi>0.001 in the future
+    if (fabs(eta)<1.4442 && sieie<0.014 && sieie>0.001 && sipip>0.001) pass=1;
     if (fabs(eta)>1.566 && sieie<0.034) pass=1;
     if (!pass) it=passing.erase(it); else it++;
   }
@@ -1538,12 +1539,11 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
     if (!pass) it=passing.erase(it); else it++;
   }
 
-//  XXX EM ENRICHMENT PRESELECTION NOT APPLIED
-//  for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // isolation cuts (filter)
-//    bool pass=0;
-//    if(fTR->pho_Cone02ChargedHadronIso_dR02_dz02_dxy01[*it]<4) pass=1;
-//    if (!pass) it=passing.erase(it); else it++;
-//  }
+  for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // isolation cuts (filter)
+    bool pass=0;
+    if(fTR->PhoCiCPFIsoChargedDR03[*it]<9.) pass=1;
+    if (!pass) it=passing.erase(it); else it++;
+  }
 
   return passing;
 

@@ -186,8 +186,8 @@ const int dy_dataset_id = 30; // be SURE to know where to propagate this if you 
 const int nclosest = 5;
 const int nclosest_inputmatching = 40;
 
-// JET SELECTION
-const float min_jet_pt_alljets = 25;
+// JET PRE-SELECTION (additional selection applied in template_production)
+const float min_jet_pt_alljets = 20;
 const float max_eta_jets = 4.7;
 
 // CAREFUL if you set this to true: the selection of saved pfcandidates,
