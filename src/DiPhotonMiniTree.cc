@@ -1521,7 +1521,7 @@ std::vector<int> DiPhotonMiniTree::PhotonPreSelection(TreeReader *fTR, std::vect
   for (vector<int>::iterator it = passing.begin(); it != passing.end(); ){ // sieie cut
     float eta=fTR->SCEta[fTR->PhotSCindex[*it]];
     float sieie=fTR->PhoSigmaIetaIeta[*it];
-    float sipip=fTR->PhoSigmaIphiIphi[*it];
+    float sipip=sqrt(fTR->PhoSigmaIphiIphi[*it]); // to be fixed in the producer
     bool pass=0;
     if (fabs(eta)<1.4442 && sieie<0.014 && sieie>0.001 && sipip>0.001) pass=1;
     if (fabs(eta)>1.566 && sieie<0.034) pass=1;
