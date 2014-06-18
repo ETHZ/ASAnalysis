@@ -426,6 +426,7 @@ private:
   Float_t event_rho;
   Float_t event_sigma;
   Int_t event_nPU;
+  Int_t event_nPUtrue;
   Int_t event_nRecVtx;
   Int_t event_pass12whoissiglike;
   

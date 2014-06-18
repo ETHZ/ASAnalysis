@@ -106,6 +106,7 @@ void DiPhotonMiniTree::Begin(){
     thistree->Branch("event_sigma",&event_sigma,"event_sigma/F");
     if (thisextratree) thisextratree->Branch("event_sigma",&event_sigma,"event_sigma/F");
     thistree->Branch("event_nPU",&event_nPU,"event_nPU/I");
+    thistree->Branch("event_nPUtrue",&event_nPUtrue,"event_nPUtrue/I");
     thistree->Branch("event_nRecVtx",&event_nRecVtx,"event_nRecVtx/I");
     thistree->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
     if (thisextratree) thisextratree->Branch("event_pass12whoissiglike",&event_pass12whoissiglike,"event_pass12whoissiglike/I");
@@ -303,6 +304,7 @@ void DiPhotonMiniTree::Begin(){
     thislighttree->Branch("event_Kfactor",&event_Kfactor,"event_Kfactor/F");
     thislighttree->Branch("event_weight",&event_weight,"event_weight/F");
     thislighttree->Branch("dataset_id",&mydataset_id,"dataset_id/I");
+    thislighttree->Branch("event_nPUtrue",&event_nPUtrue,"event_nPUtrue/I");
 
     thislighttree->Branch("pholead_pt",&pholead_pt,"pholead_pt/F");
     thislighttree->Branch("photrail_pt",&photrail_pt,"photrail_pt/F");
@@ -398,6 +400,7 @@ void DiPhotonMiniTree::Analyze(){
   event_sigma = fTR->Sigma;
   if (!isdata) {
     event_nPU = fTR->PUnumInteractions;
+    event_nPUtrue = fTR->PUnumTrueInteractions;
   }
   event_nRecVtx = fTR->NVrtx;
 
