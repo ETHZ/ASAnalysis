@@ -2354,54 +2354,54 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 	// OS YIELDS only for data:
 	// if (S->datamc == 0) 
 	// OS YIELDS for all but DYJets
-	if (S->sname.Data() != "DYJets") {
+	if (S->sname.Data() != "DYJets" || true) {
 		fChargeSwitch = 1;
 		
-//		////////////////////////////////////////////////////////////////////////////////////////////////////////
-//		// MM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
-//		if (mumuSignalTrigger() && isSSLLMuEvent(ind1, ind2)){ // trigger && select loose mu/mu pair
-//			if ( isTightMuon(ind1) && isTightMuon(ind2)) {
-//				fSETree_Mll     = getMll(ind1, ind2, Muon);
-//				fSETree_HT      = getHT();
-//				fSETree_NJ      = getNJets();
-//				fSETree_NbJ     = getNBTags();
-//				fSETree_NbJmed  = getNBTagsMed();
-//				fSETree_Flavor  = 3;
-//				fSETree_Charge  = MuCharge[ind1];
-//				fSETree_pT1     = MuPt[ind1];
-//				fSETree_pT2     = MuPt[ind2];
-//				fSETree_eta1    = MuEta[ind1];
-//				fSETree_eta2    = MuEta[ind2];
-//				fSETree_ZVeto   = passesZVeto()?1:0;
-//				//fSETree_ZVeto   = passesZVetoNew(ind1, ind2, 1)?1:0;
-//				fSETree_3rdVeto = passes3rdLepVeto()?1:0;
-//				fSETree_3rdSFLepVeto = passes3rdSFLepVeto(Muon)?1:0;
-//				fSETree_ttZSel  = passesTTZSel()?1:0;
-//				fSETree_PFIso1  = MuPFIso[ind1];
-//				fSETree_PFIso2  = MuPFIso[ind2];
-//                fSETree_D01     = MuD0[ind1];
-//                fSETree_D02     = MuD0[ind2];
-//                fSETree_Rho     = Rho;
-//				fSETree_MTLep1  = getMT(ind1, Muon);
-//				fSETree_MTLep2  = getMT(ind2, Muon);
-//				fSETree_BetaStar1 = getBetaStar(1);
-//				fSETree_BetaStar2 = getBetaStar(2);
-//				fSETree_BetaStar3 = getBetaStar(3);
-//				fSETree_BetaStar4 = getBetaStar(4);
-//				TLorentzVector lep1, lep2;
-//				lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
-//				lep2.SetPtEtaPhiM(MuPt[ind2], MuEta[ind2], MuPhi[ind2], gMMU);
-//				fSETree_M3      = getM3();
-//				fSETree_M3_v2   = getM3new();
-//				fSETree_M3_v3   = getM3new(lep1, lep2);
-//				fSETree_BetaStar5 = getBetaStar(5);
-////				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
-////				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
-//				fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
-//				fSigEv_Tree->Fill();
-//			}
-//			resetHypLeptons();
-//		}
+		////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// MM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
+		if (mumuSignalTrigger() && isSSLLMuEvent(ind1, ind2)){ // trigger && select loose mu/mu pair
+			if ( isTightMuon(ind1) && isTightMuon(ind2)) {
+				fSETree_Mll     = getMll(ind1, ind2, Muon);
+				fSETree_HT      = getHT();
+				fSETree_NJ      = getNJets();
+				fSETree_NbJ     = getNBTags();
+				fSETree_NbJmed  = getNBTagsMed();
+				fSETree_Flavor  = 3;
+				fSETree_Charge  = MuCharge[ind1];
+				fSETree_pT1     = MuPt[ind1];
+				fSETree_pT2     = MuPt[ind2];
+				fSETree_eta1    = MuEta[ind1];
+				fSETree_eta2    = MuEta[ind2];
+				fSETree_ZVeto   = passesZVeto()?1:0;
+				//fSETree_ZVeto   = passesZVetoNew(ind1, ind2, 1)?1:0;
+				fSETree_3rdVeto = passes3rdLepVeto()?1:0;
+				fSETree_3rdSFLepVeto = passes3rdSFLepVeto(Muon)?1:0;
+				fSETree_ttZSel  = passesTTZSel()?1:0;
+				fSETree_PFIso1  = MuPFIso[ind1];
+				fSETree_PFIso2  = MuPFIso[ind2];
+                fSETree_D01     = MuD0[ind1];
+                fSETree_D02     = MuD0[ind2];
+                fSETree_Rho     = Rho;
+				fSETree_MTLep1  = getMT(ind1, Muon);
+				fSETree_MTLep2  = getMT(ind2, Muon);
+				fSETree_BetaStar1 = getBetaStar(1);
+				fSETree_BetaStar2 = getBetaStar(2);
+				fSETree_BetaStar3 = getBetaStar(3);
+				fSETree_BetaStar4 = getBetaStar(4);
+				TLorentzVector lep1, lep2;
+				lep1.SetPtEtaPhiM(MuPt[ind1], MuEta[ind1], MuPhi[ind1], gMMU);
+				lep2.SetPtEtaPhiM(MuPt[ind2], MuEta[ind2], MuPhi[ind2], gMMU);
+				fSETree_M3      = getM3();
+				fSETree_M3_v2   = getM3new();
+				fSETree_M3_v3   = getM3new(lep1, lep2);
+				fSETree_BetaStar5 = getBetaStar(5);
+//				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
+//				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
+				fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
+				fSigEv_Tree->Fill();
+			}
+			resetHypLeptons();
+		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// EM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
