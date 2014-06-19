@@ -32,6 +32,9 @@ class ratios :
 				EWK_SF['mu24'] = self.get_EWK_SF(mu24_samples, 'mu24')
 
 		print '[status] filling fake and prompt ratio histograms..'
+		print '         datamc: %d' % datamc
+		print '         mu samples: %s' % ', '.join(mu_samples)
+		print '         el samples: %s' % ', '.join(el_samples)
 
 		if datamc is 0 :
 			(self.h2_MufRatio   , self.h_MufRatio_pt   , self.h_MufRatio_eta   , self.h_MufRatio_nv   , self.MufRatio   , self.MufRatioE   ) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF)
