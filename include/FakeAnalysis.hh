@@ -99,6 +99,7 @@ private:
 	int   fTLumiSection;
 
 	// PileUP info
+	float fTrho;
 	int   fTnvrtx;
 	int   fTntrue;
 	float fTpuweight;
@@ -116,9 +117,13 @@ private:
 	vector<float> fTmupt    ; vector<float> * p_fTmupt    ;
 	vector<float> fTmueta   ; vector<float> * p_fTmueta   ;
 	vector<float> fTmuphi   ; vector<float> * p_fTmuphi   ;
-	vector<float> fTmupfiso ; vector<float> * p_fTmupfiso ;
 	vector< int > fTmucharge; vector< int > * p_fTmucharge;
 	vector<float> fTmud0    ; vector<float> * p_fTmud0    ;
+	vector<float> fTmupfiso ; vector<float> * p_fTmupfiso ;
+	vector<float> fTmuneiso ; vector<float> * p_fTmuneiso ;
+	vector<float> fTmuphiso ; vector<float> * p_fTmuphiso ;
+	vector<float> fTmuchiso ; vector<float> * p_fTmuchiso ;
+	vector<float> fTmusumpu ; vector<float> * p_fTmusumpu ;
 
 	vector<bool>  fTmuisveto ; vector<bool> * p_fTmuisveto ;
 	vector<bool>  fTmuisloose; vector<bool> * p_fTmuisloose;
@@ -136,10 +141,14 @@ private:
 	vector<float> fTelpt    ; vector<float> * p_fTelpt    ;
 	vector<float> fTeleta   ; vector<float> * p_fTeleta   ;
 	vector<float> fTelphi   ; vector<float> * p_fTelphi   ;
-	vector<float> fTelpfiso ; vector<float> * p_fTelpfiso ;
 	vector< int > fTelcharge; vector< int > * p_fTelcharge;
 	vector<float> fTeld0    ; vector<float> * p_fTeld0    ;
 	vector< int > fTelchco  ; vector< int > * p_fTelchco  ;
+
+	vector<float> fTelpfiso ; vector<float> * p_fTelpfiso ;
+	vector<float> fTelneiso ; vector<float> * p_fTelneiso ;
+	vector<float> fTelphiso ; vector<float> * p_fTelphiso ;
+	vector<float> fTelchiso ; vector<float> * p_fTelchiso ;
 
 	vector<bool>  fTelisveto ; vector<bool> * p_fTelisveto ;
 	vector<bool>  fTelisloose; vector<bool> * p_fTelisloose;

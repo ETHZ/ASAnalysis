@@ -9,9 +9,6 @@
 
 using namespace std;
 
-const bool gSaveGenInfo = true;
-
-
 TString FakeAnalysis::gBaseDir = "/shome/mdunser/workspace/CMSSW_5_3_7_patch5/src/ASAnalysis/";
 
 //____________________________________________________________________________
@@ -160,6 +157,7 @@ void FakeAnalysis::BookTree(){
 	// event properties
 	fAnalysisTree->Branch("NVrtx"         ,&fTnvrtx         , "NVrtx/I"                );
 	fAnalysisTree->Branch("NTrue"         ,&fTntrue         , "NTrue/I"                );
+	fAnalysisTree->Branch("Rho"           ,&fTrho           , "Rho/F"                );
 	fAnalysisTree->Branch("PUWeight"      ,&fTpuweight      , "PUWeight/F"             );
 	fAnalysisTree->Branch("PUWeightUp"    ,&fTpuweightUp    , "PUWeightUp/F"           );
 	fAnalysisTree->Branch("PUWeightDn"    ,&fTpuweightDn    , "PUWeightDn/F"           );
@@ -170,44 +168,47 @@ void FakeAnalysis::BookTree(){
 	fAnalysisTree->Branch("MuEta"    , "std::vector<float>", &p_fTmueta         );
 	fAnalysisTree->Branch("MuPhi"    , "std::vector<float>", &p_fTmuphi         );
 	fAnalysisTree->Branch("MuCharge" , "std::vector<int>"  , &p_fTmucharge      );
-	fAnalysisTree->Branch("MuPFIso"  , "std::vector<float>", &p_fTmupfiso       );
 	fAnalysisTree->Branch("MuD0"     , "std::vector<float>", &p_fTmud0          );
+	fAnalysisTree->Branch("MuPFIso"  , "std::vector<float>", &p_fTmupfiso       );
+	fAnalysisTree->Branch("MuNeIso"  , "std::vector<float>", &p_fTmuneiso       );
+	fAnalysisTree->Branch("MuPhIso"  , "std::vector<float>", &p_fTmuphiso       );
+	fAnalysisTree->Branch("MuChIso"  , "std::vector<float>", &p_fTmuchiso       );
+	fAnalysisTree->Branch("MuSumPU"  , "std::vector<float>", &p_fTmusumpu       );
 
 	fAnalysisTree->Branch("MuIsVeto"      , "std::vector<bool>", &p_fTmuisveto  );
 	fAnalysisTree->Branch("MuIsLoose"     , "std::vector<bool>", &p_fTmuisloose );
 	fAnalysisTree->Branch("MuIsTight"     , "std::vector<bool>", &p_fTmuistight );
 	fAnalysisTree->Branch("MuIsPrompt"    , "std::vector<bool>", &p_fTmuisprompt);
-	fAnalysisTree->Branch("MuID"          , "std::vector<int>", &p_fTmuid);
-	fAnalysisTree->Branch("MuMID"         , "std::vector<int>", &p_fTmumid);
-	fAnalysisTree->Branch("MuGMID"        , "std::vector<int>", &p_fTmugmid);
-	fAnalysisTree->Branch("MuMatchID"          , "std::vector<int>", &p_fTmumatchid);
-	fAnalysisTree->Branch("MuMatchMID"         , "std::vector<int>", &p_fTmumatchmid);
-	fAnalysisTree->Branch("MuMatchGMID"        , "std::vector<int>", &p_fTmumatchgmid);
+	fAnalysisTree->Branch("MuID"          , "std::vector<int>" , &p_fTmuid);
+	fAnalysisTree->Branch("MuMID"         , "std::vector<int>" , &p_fTmumid);
+	fAnalysisTree->Branch("MuGMID"        , "std::vector<int>" , &p_fTmugmid);
+	fAnalysisTree->Branch("MuMatchID"     , "std::vector<int>" , &p_fTmumatchid);
+	fAnalysisTree->Branch("MuMatchMID"    , "std::vector<int>" , &p_fTmumatchmid);
+	fAnalysisTree->Branch("MuMatchGMID"   , "std::vector<int>" , &p_fTmumatchgmid);
 
 	// // single-electron properties
 	fAnalysisTree->Branch("ElPt"     , "std::vector<float>", &p_fTelpt          );
 	fAnalysisTree->Branch("ElEta"    , "std::vector<float>", &p_fTeleta         );
 	fAnalysisTree->Branch("ElPhi"    , "std::vector<float>", &p_fTelphi         );
 	fAnalysisTree->Branch("ElCharge" , "std::vector<int>"  , &p_fTelcharge      );
-	fAnalysisTree->Branch("ElPFIso"  , "std::vector<float>", &p_fTelpfiso       );
 	fAnalysisTree->Branch("ElD0"     , "std::vector<float>", &p_fTeld0          );
 	fAnalysisTree->Branch("ElChCo"   , "std::vector<int>"  , &p_fTelchco        );
+
+	fAnalysisTree->Branch("ElPFIso"  , "std::vector<float>", &p_fTelpfiso       );
+	fAnalysisTree->Branch("ElNeIso"  , "std::vector<float>", &p_fTelneiso       );
+	fAnalysisTree->Branch("ElPhIso"  , "std::vector<float>", &p_fTelphiso       );
+	fAnalysisTree->Branch("ElChIso"  , "std::vector<float>", &p_fTelchiso       );
 
 	fAnalysisTree->Branch("ElIsVeto"      , "std::vector<bool>", &p_fTelisveto  );
 	fAnalysisTree->Branch("ElIsLoose"     , "std::vector<bool>", &p_fTelisloose );
 	fAnalysisTree->Branch("ElIsTight"     , "std::vector<bool>", &p_fTelistight );
 	fAnalysisTree->Branch("ElIsPrompt"    , "std::vector<bool>", &p_fTelisprompt);
-	fAnalysisTree->Branch("ElID"          , "std::vector<int>", &p_fTelid);
-	fAnalysisTree->Branch("ElMID"         , "std::vector<int>", &p_fTelmid);
-	fAnalysisTree->Branch("ElGMID"        , "std::vector<int>", &p_fTelgmid);
-	fAnalysisTree->Branch("ElMatchID"          , "std::vector<int>", &p_fTelmatchid);
-	fAnalysisTree->Branch("ElMatchMID"         , "std::vector<int>", &p_fTelmatchmid);
-	fAnalysisTree->Branch("ElMatchGMID"        , "std::vector<int>", &p_fTelmatchgmid);
-
-	//// // single-photon properties
-	//fAnalysisTree->Branch("PhoPt"     , "std::vector<float>", &p_fTphpt          );
-	//fAnalysisTree->Branch("PhoEta"    , "std::vector<float>", &p_fTpheta         );
-	//fAnalysisTree->Branch("PhoPhi"    , "std::vector<float>", &p_fTphphi         );
+	fAnalysisTree->Branch("ElID"          , "std::vector<int>" , &p_fTelid);
+	fAnalysisTree->Branch("ElMID"         , "std::vector<int>" , &p_fTelmid);
+	fAnalysisTree->Branch("ElGMID"        , "std::vector<int>" , &p_fTelgmid);
+	fAnalysisTree->Branch("ElMatchID"     , "std::vector<int>" , &p_fTelmatchid);
+	fAnalysisTree->Branch("ElMatchMID"    , "std::vector<int>" , &p_fTelmatchmid);
+	fAnalysisTree->Branch("ElMatchGMID"   , "std::vector<int>" , &p_fTelmatchgmid);
 
 	// // jet-MET properties
 	fAnalysisTree->Branch("pfMET"         ,&fTpfMET         , "pfMET/F"                );
@@ -280,6 +281,8 @@ void FakeAnalysis::FillAnalysisTree(){
 	TLorentzVector met;
 	met .SetPtEtaPhiM(fTpfMET , 0., fTpfMETphi , 0.);
 
+	fTrho   = fTR->Rho;
+
 	// PU correction
 	fTnvrtx = fTR->NVrtx;
 	if(!fIsData) {
@@ -310,6 +313,11 @@ void FakeAnalysis::FillAnalysisTree(){
 		p_fTmucharge->push_back( fTR->MuCharge  [ind] );
 		p_fTmud0    ->push_back( fTR->MuD0PV    [ind] );
 		p_fTmupfiso ->push_back( MuPFIso(ind)         );
+
+		p_fTmuneiso ->push_back( fTR->MuPfIsoR03NeHad  [ind]  );
+		p_fTmuphiso ->push_back( fTR->MuPfIsoR03Photon [ind]  );
+		p_fTmuchiso ->push_back( fTR->MuPfIsoR03ChHad  [ind]  );
+		p_fTmusumpu ->push_back( fTR->MuPfIsoR03SumPUPt[ind]  );
 
 		p_fTmuisveto  ->push_back( IsVetoMuon(ind)  );
 		p_fTmuisloose ->push_back( IsLooseMuon(ind) );
@@ -343,6 +351,10 @@ void FakeAnalysis::FillAnalysisTree(){
 		p_fTeld0     ->push_back( fTR->ElD0PV  [ind] );
 		p_fTelchco   ->push_back( fTR->ElCInfoIsGsfCtfScPixCons[ind] );
 		p_fTelpfiso  ->push_back( ElPFIso(ind)       );
+
+		p_fTelneiso  ->push_back( fTR->ElEventelPFIsoValueNeutral03PFIdStandard[ind]    );
+		p_fTelphiso  ->push_back( fTR->ElEventelPFIsoValueGamma03PFIdStandard  [ind]    );
+		p_fTelchiso  ->push_back( fTR->ElEventelPFIsoValueCharged03PFIdStandard[ind]    );
 		
 		p_fTelisveto  ->push_back( IsVetoElectron(ind)  );
 		p_fTelisloose ->push_back( IsLooseElectron(ind) );
@@ -392,6 +404,7 @@ void FakeAnalysis::ResetTree(){
 		fHLTPrescales[i] -2;
 	}
 	
+	fTrho        = -999.  ;
 	fTnvrtx      = -999   ;
 	fTntrue      = -999   ;
 	fTpuweight   = -999.99;
@@ -406,6 +419,11 @@ void FakeAnalysis::ResetTree(){
 	p_fTmupfiso = &fTmupfiso ; p_fTmupfiso ->reserve(fTR->NMus) ; p_fTmupfiso ->clear();
 	p_fTmucharge= &fTmucharge; p_fTmucharge->reserve(fTR->NMus) ; p_fTmucharge->clear();
 	p_fTmud0    = &fTmud0    ; p_fTmud0    ->reserve(fTR->NMus) ; p_fTmud0    ->clear();
+
+	p_fTmuneiso = &fTmuneiso ; p_fTmuneiso ->reserve(fTR->NMus) ; p_fTmuneiso ->clear();
+	p_fTmuphiso = &fTmuphiso ; p_fTmuphiso ->reserve(fTR->NMus) ; p_fTmuphiso ->clear();
+	p_fTmuchiso = &fTmuchiso ; p_fTmuchiso ->reserve(fTR->NMus) ; p_fTmuchiso ->clear();
+	p_fTmusumpu = &fTmusumpu ; p_fTmusumpu ->reserve(fTR->NMus) ; p_fTmusumpu ->clear();
 
 	p_fTmuisveto   = &fTmuisveto  ; p_fTmuisveto   ->reserve(fTR->NMus) ; p_fTmuisveto  ->clear();
 	p_fTmuisloose  = &fTmuisloose ; p_fTmuisloose  ->reserve(fTR->NMus) ; p_fTmuisloose ->clear();
@@ -422,10 +440,14 @@ void FakeAnalysis::ResetTree(){
 	p_fTelpt    = &fTelpt    ; p_fTelpt    ->reserve(fTR->NEles); p_fTelpt    ->clear();
 	p_fTeleta   = &fTeleta   ; p_fTeleta   ->reserve(fTR->NEles); p_fTeleta   ->clear();
 	p_fTelphi   = &fTelphi   ; p_fTelphi   ->reserve(fTR->NEles); p_fTelphi   ->clear();
-	p_fTelpfiso = &fTelpfiso ; p_fTelpfiso ->reserve(fTR->NEles); p_fTelpfiso ->clear();
 	p_fTelcharge= &fTelcharge; p_fTelcharge->reserve(fTR->NEles); p_fTelcharge->clear();
 	p_fTeld0    = &fTeld0    ; p_fTeld0    ->reserve(fTR->NEles); p_fTeld0    ->clear();
 	p_fTelchco  = &fTelchco  ; p_fTelchco  ->reserve(fTR->NEles); p_fTelchco  ->clear();
+
+	p_fTelpfiso = &fTelpfiso ; p_fTelpfiso ->reserve(fTR->NEles); p_fTelpfiso ->clear();
+	p_fTelneiso = &fTelneiso ; p_fTelneiso ->reserve(fTR->NEles); p_fTelneiso ->clear();
+	p_fTelphiso = &fTelphiso ; p_fTelphiso ->reserve(fTR->NEles); p_fTelphiso ->clear();
+	p_fTelchiso = &fTelchiso ; p_fTelchiso ->reserve(fTR->NEles); p_fTelchiso ->clear();
 
 	// // // photon properties
 	// p_fTphpt    = &fTphpt    ; p_fTphpt    ->reserve(fTR->NPhotons); p_fTphpt    ->clear();
