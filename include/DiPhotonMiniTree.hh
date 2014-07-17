@@ -13,6 +13,7 @@
 #include "base/UserAnalysisBase.hh"
 
 #include "TLorentzVector.h"
+#include "TParameter.h"
 
 #include "EnergyCorrection.hh"
 
@@ -356,6 +357,7 @@ private:
   int FindPFCandType(int id);
 
   MatchingStatus check_matching_status(int phoindex);
+  MatchingStatus determine_matchingstatus(int status, float geniso);
   void FixMatchingStatusElectrons(int phoindex);
 
   int CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std::set<int> removals = std::set<int>(), bool skipvetocones=false);
@@ -533,6 +535,9 @@ private:
   TH1F *fHNumPUTrue;
   TH1F *fHNumPUTrue_noweight;
   TH1F *fHNumVtx;
+  TParameter<double> *fPNumEvents;
+  TParameter<double> *fPSumWeights;
+  TParameter<double> *fPSumWeights2;
 
   UInt_t event_fileuuid;
 

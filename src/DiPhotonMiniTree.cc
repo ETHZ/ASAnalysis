@@ -352,6 +352,9 @@ void DiPhotonMiniTree::Begin(){
   fHNumPUTrue = new TH1F("NumPUTrue_rew","NumPUTrue_rew",50,0,50);
   fHNumPUTrue_noweight = new TH1F("NumPUTrue_noweight","NumPUTrue_noweight",50,0,50);
   fHNumVtx = new TH1F("NumVtx_rew","NumVtx_rew",50,0,50);
+  fPNumEvents = new TParameter<double>("NumEvents",0);
+  fPSumWeights = new TParameter<double>("SumGenWeights",0);
+  fPSumWeights2 = new TParameter<double>("SumGenWeights2",0);
 
   cout << "Trees and histos created" << endl;
 
@@ -377,6 +380,10 @@ void DiPhotonMiniTree::Analyze(){
   
   event_luminormfactor=AddWeight;
   event_luminormfactor*=fTR->GenWeight;
+
+  fPNumEvents->SetVal(fPNumEvents->GetVal()+1);
+  fPSumWeights->SetVal(fPSumWeights->GetVal()+fTR->GenWeight);
+  fPSumWeights2->SetVal(fPSumWeights2->GetVal()+fTR->GenWeight*fTR->GenWeight);
 
   event_fileuuid = uuid;
 
@@ -512,7 +519,7 @@ void DiPhotonMiniTree::Analyze(){
       }
       passing = PhotonPreSelection(fTR,passing);
 
-      for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) passing_jets.push_back(ordering_jets.at(i).first);
+      for (int i=0; i<(int)(ordering_jets.size()); i++) passing_jets.push_back(ordering_jets.at(i).first);
       for (int i=0; i<(int)(passing_jets.size())-1; i++){
 	if (!(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)])) cout << event_run << ":" << event_lumi << ":" << event_number << " " << fTR->JPt[passing_jets.at(i)] << " " << fTR->JPt[passing_jets.at(i+1)] << endl;
         assert(fTR->JPt[passing_jets.at(i)]>=fTR->JPt[passing_jets.at(i+1)]);
@@ -802,7 +809,8 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
+	  if (fTR->PhoMatchedPFElectronCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
 	  bool removed = false;
 	  for (set<int>::iterator j=removals.begin(); j!=removals.end(); j++) if (k==*j) removed=true;
 	  if (removed) continue;
@@ -894,7 +902,8 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(i)]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonCand[passing.at(i)]==k) continue;	
+	  if (fTR->PhoMatchedPFElectronCand[passing.at(i)]==k) continue;	
 	  bool removed = false;
 	  for (set<int>::iterator j=removals.begin(); j!=removals.end(); j++) if (k==*j) removed=true;
 	  if (removed) continue;
@@ -941,7 +950,7 @@ void DiPhotonMiniTree::Analyze(){
     StatusScaleUpScaleDown_Jets_JEC=kCorrectedNoShift;
     StatusScaleUpScaleDown_Jets_JER=kCorrectedNoShift;
 
-    if (thissel==kLightDefault || thissel==kLightDiElectron) ;
+    if (thissel==kLightDefault || thissel==kLightDiElectron);
     else if (thissel==kLightJECup){
       JECJERCorrection(kShiftUp,kCorrectedNoShift,ordering_jets);
       StatusScaleUpScaleDown_Jets_JEC=kShiftUp;
@@ -999,7 +1008,7 @@ void DiPhotonMiniTree::Analyze(){
     passing = PhotonSelection(fTR,passing);
     
     std::vector<int> passing_jets;
-    for (int i=0; i<fTR->NJets; i++) if (fTR->JEcorr.at(i)>0) {
+    for (int i=0; i<(int)(ordering_jets.size()); i++) {
       passing_jets.push_back(ordering_jets.at(i).first);
       if (debug) cout << sel->second.name.Data() << " jet " << ordering_jets.at(i).second << " " << fTR->JPt[ordering_jets.at(i).first] << endl;
     }
@@ -1073,9 +1082,11 @@ void DiPhotonMiniTree::Analyze(){
       bool pass=0;
       if (!isdy){
 	int mother = fTR->GenPhotonMotherID[*it];
-	if (mother>=-6 && mother<=6) pass=1;
-	if (mother==21) pass=1;
-	if (mother==22 && fTR->GenPhotonMotherStatus[*it]==3) pass=1;
+	int mcode=-999;
+	if (mother>=-6 && mother<=6) mcode=1;
+	if (mother==21) mcode=1;
+	if (mother==22 && fTR->GenPhotonMotherStatus[*it]==3) mcode=2;
+	if (determine_matchingstatus(mcode,fTR->GenPhotonIsoDR04[*it])==kSignal) pass=1;
       }
       if (isdy) pass=1;
       if (!pass) it=passing_gen.erase(it); else it++;
@@ -1179,7 +1190,10 @@ void DiPhotonMiniTree::End(){
   fHNumPUTrue->Write();
   fHNumPUTrue_noweight->Write();
   fHNumVtx->Write();
-	
+  fPNumEvents->Write();
+  fPSumWeights->Write();
+  fPSumWeights2->Write();
+
   fOutputFile->Close();
   if (isdata && !isstep2) fOutputExtraFile->Close();
 
@@ -1850,7 +1864,7 @@ bool DiPhotonMiniTree::FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_p
 
   for (int i=0; i<fTR->NJets; i++){
     if (fTR->JPt[i]<20) continue;
-    if (fTR->JEcorr.at(i)<0) continue;
+    if (!(fTR->JEcorr.at(i)>0)) continue;
     //    cout << "vj " << fTR->JPt[i] << " " << fTR->JEta[i] << " " << fTR->JPhi[i] << endl;
     //    if (!(fTR->JPassPileupIDT0[fTR->JVrtxListStart[i]+0])) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
@@ -1907,7 +1921,7 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
   
   for (int i=0; i<fTR->NJets; i++){
     if (fTR->JPt[i]<20) continue;
-    if (fTR->JEcorr.at(i)<0) continue;
+    if (!(fTR->JEcorr.at(i)>0)) continue;
     float dR = Util::GetDeltaR(eta,fTR->JEta[i],phi,fTR->JPhi[i]);
     if (mod=="exclude_object_itself") if (dR<0.2) continue;
     TVector3 a;
@@ -1943,7 +1957,8 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
 std::set<int> DiPhotonMiniTree::GetPFCandIDedRemovals(TreeReader *fTR, int phoqi){
   std::set<int> out;
-  out.insert(fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]);
+  out.insert(fTR->PhoMatchedPFPhotonCand[phoqi]);
+  out.insert(fTR->PhoMatchedPFElectronCand[phoqi]);
   return out;
 };
 
@@ -2009,7 +2024,8 @@ std::set<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, i
 
     bool inside=false;
 
-    if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFElectronCand[phoqi]==i) continue;
 
     for (int j=0; j<nxtals; j++){
       
@@ -2353,7 +2369,8 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
     if (isbarrel && fabs(pfeta)>1.4442) continue;
     if (!isbarrel && fabs(pfeta)<1.566) continue;
 
-    if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFElectronCand[phoqi]==i) continue;
  
     int type = FindPFCandType(fTR->PfCandPdgId[i]);
 
@@ -3467,7 +3484,8 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
 
   // prepare list of pfcands to represent the photon deposit
   std::set<int> pfcands = GetPrecalculatedFootprintPhoEl(phoqi);
-  if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]);
+  if (fTR->PhoMatchedPFPhotonCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFPhotonCand[phoqi]);
+  if (fTR->PhoMatchedPFElectronCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFElectronCand[phoqi]);
 
   // init ranking
   std::vector<std::pair<int,float> > ranking;
@@ -4094,6 +4112,8 @@ void DiPhotonMiniTree::JECJERCorrection(StatusScaleUpScaleDown status_escale, St
   
   for (int i=0; i<fTR->NJets; i++){
 
+    if (!(fTR->JEcorr[i]>0)) continue;
+
     float invcorr = 1./fTR->JEcorr[i];
     fTR->JPt[i] *= invcorr;
     fTR->JE[i] *= invcorr;
@@ -4224,6 +4244,14 @@ MatchingStatus DiPhotonMiniTree::check_matching_status(int phoindex){
 
   int status = fTR->PhoMCmatchexitcode[phoindex];
   float geniso = (fTR->PhoMCmatchindex[phoindex]>=0) ? fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[phoindex]] : 999;
+
+  return determine_matchingstatus(status,geniso);
+
+};
+
+MatchingStatus DiPhotonMiniTree::determine_matchingstatus(int status, float geniso){
+
+  assert (!isdata);
 
   if ((status==1 || status==2 || dataset_id==sherpa_dataset_id) && (geniso<5)) return kSignal;
   else if (status==4) return kElectron;
