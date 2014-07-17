@@ -376,6 +376,7 @@ void DiPhotonMiniTree::Analyze(){
   else weight=1;
   
   event_luminormfactor=AddWeight;
+  event_luminormfactor*=fTR->GenWeight;
 
   event_fileuuid = uuid;
 
@@ -4222,9 +4223,9 @@ MatchingStatus DiPhotonMiniTree::check_matching_status(int phoindex){
   assert (!isdata);
 
   int status = fTR->PhoMCmatchexitcode[phoindex];
-  float geniso = (status==1 || status==2) ? fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[phoindex]] : 999;
+  float geniso = (fTR->PhoMCmatchindex[phoindex]>=0) ? fTR->GenPhotonIsoDR04[fTR->PhoMCmatchindex[phoindex]] : 999;
 
-  if ((status==1 || status==2) && (geniso<5)) return kSignal;
+  if ((status==1 || status==2 || dataset_id==sherpa_dataset_id) && (geniso<5)) return kSignal;
   else if (status==4) return kElectron;
   else return kBackground;
 
