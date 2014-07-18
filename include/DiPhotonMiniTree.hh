@@ -359,6 +359,7 @@ private:
   MatchingStatus check_matching_status(int phoindex);
   MatchingStatus determine_matchingstatus(int status, float geniso);
   void FixMatchingStatusElectrons(int phoindex);
+  void FixMatchingStatusSherpa(int phoindex);
 
   int CountChargedHadronsInCone(TreeReader *fTR, int phoqi, std::set<int> removals = std::set<int>(), bool skipvetocones=false);
   std::set<int> NChargedHadronsInConeSelection(TreeReader *fTR, std::vector<int> passing, int minimum=0, int maximum=9999);

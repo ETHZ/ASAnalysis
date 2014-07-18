@@ -455,6 +455,7 @@ void DiPhotonMiniTree::Analyze(){
   // rescale shower shapes and correct energy (once and for all, these functions should never be called twice on the same photon)
   for (int i=0; i<fTR->NPhotons; i++){
     if (!isdata) FixMatchingStatusElectrons(i); // correct match exit code for photons matched to gen electrons
+    if (dataset_id==sherpa_dataset_id) FixMatchingStatusSherpa(i); // correct match exit code for SHERPA
     unscaled_energy.push_back(fTR->PhoEnergy[i]);
   }
 
@@ -4280,4 +4281,17 @@ void DiPhotonMiniTree::FixMatchingStatusElectrons(int phoindex){
 
   }
 
+};
+
+void DiPhotonMiniTree::FixMatchingStatusSherpa(int phoindex){
+
+  assert (dataset_id==sherpa_dataset_id);
+
+  // Correct matching code to 2 in any case, if matched to status 1 photon
+  // irrespectively of the mother particle
+
+  if (fTR->PhoMCmatchexitcode[phoindex]<=0) return;
+  else if (fTR->PhoMCmatchexitcode[phoindex]==4) return;
+  else fTR->PhoMCmatchexitcode[phoindex]=2;
+  
 };
