@@ -215,13 +215,16 @@ if __name__ == '__main__' :
 	args = sys.argv
 
 	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) or ('--cuts' not in args) or ('--channel' not in args) :
-		print 'usage: ./optcuts.py -d <INPUTDIR> -c <DATACARD> -s <CUTSDIR>'
+		print 'usage: ./optcuts.py -d <INPUTDIR> -c <DATACARD> --cuts <CUTSDIR> --channel <CHANNEL>'
 		print ''
 		print '       -d Directory in which the SSDLYYields.root output from the SDLDumper is.'
 		print ''
 		print '       -c Datacard with list of samples and corresponding cross sections.'
 		print ''
-		print '       -cutsDir Directory in which the output files of TMVA with selection cuts are. Output files are written in this directory too.'
+		print '       --cuts Directory in which the output files of TMVA with selection cuts are. Output files are written in this directory too.'
+		print ''
+		print '       --channel all, plus or minus'
+		print ''
 		sys.exit(1)
 
 	if ('-d' in args) and (args[args.index('-d')+1] != '') :
