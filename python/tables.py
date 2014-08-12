@@ -104,7 +104,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['em'].obs,
 			results['--']['ee'].obs))
 		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
-			'Obs. $-$ Tot. Bkg.',
+			'Obs.\\ $-$ Tot.\\ Bkg.',
 			results['++']['mm'].obs - results['++']['mm'].tot, results['++']['mm'].tot_err,
 			results['++']['em'].obs - results['++']['em'].tot, results['++']['em'].tot_err,
 			results['++']['ee'].obs - results['++']['ee'].tot, results['++']['ee'].tot_err,
@@ -172,7 +172,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		file.write('\\hline\n')
 
 		file.write('%18s & - & %6.1f & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
-			'Bkg. Pred.',
+			'Bkg.\\ Pred.',
 			100. * results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz ,
 			100. * results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake,
 			100. * results['Normal'][charge][chan].cmid_err / results['Normal'][charge][chan].cmid,
@@ -238,7 +238,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 
 		if 'ltrig' in systematics :
 			file.write('%18s & %6.1f & %6.1f & - & - & %6.1f & %6.1f \\\\\n' % (
-				'Lept. Trig.',
+				'Lept.\\ Trig.',
 				100. * (systematics['ltrig']-1.),
 				100. * (systematics['ltrig']-1.),
 				100. * (systematics['ltrig']-1.),
