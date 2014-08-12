@@ -69,10 +69,10 @@ class selection :
 		if event.Mll    < self.mll        : return False
 		if max(event.pT1, event.pT2) < self.minPt1 : return False
 		if min(event.pT1, event.pT2) < self.minPt2 : return False
-		if event.MTLep1 < minMTLep1 : return False
-		if event.MTLep2 < minMTLep2 : return False
-		if event.MTLep1 > maxMTLep1 : return False
-		if event.MTLep2 > maxMTLep2 : return False
+		if event.MTLep1 < self.minMTLep1 : return False
+		if event.MTLep2 < self.minMTLep2 : return False
+		if event.MTLep1 > self.maxMTLep1 : return False
+		if event.MTLep2 > self.maxMTLep2 : return False
 		if self.sname != '' and self.sname != str(event.SName) : return False
 
 		return True
