@@ -327,8 +327,11 @@ class ratios :
 		variables.append('ClosJetDR'  )
 		variables.append('AwayJetDR'  )
 
+		ewk_sf = self.get_EWK_SF(samples_data, ch_str)
+
 		for var in variables :
-			self.make_controlPlot(samples_data, ch_str, var)
+			self.make_controlPlot(samples_data, ch_str, var, 1.)
+			self.make_controlPlot(samples_data, ch_str, var, ewk_sf)
 
 
 	def make_controlPlot(self, samples_data, chan_str, ratiovar, EWK_SF = 1.) :

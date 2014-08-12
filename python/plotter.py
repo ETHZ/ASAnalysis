@@ -119,7 +119,7 @@ class plotter :
 		self.rand = ROOT.TRandom3(0)
 
 
-	def do_analysis(self, IntPred = True, DiffPred = False, DiffMC = False) :
+	def do_analysis(self, IntPred = True, DiffPred = False, DiffMC = False, RatioPlots = False, RatioControlPlots = False) :
 		print '[status] starting analysis..'
 
 		# selections
@@ -143,11 +143,14 @@ class plotter :
 #		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
-#		self.fpr.make_controlPlots(self.get_samples('DoubleEle'), 'el'  )
-#		self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), 'mu17')
-#		self.fpr.make_controlPlots(self.get_samples('SingleMu' ), 'mu24')
-##		self.fpr.plot_ratios()
-#		return
+
+		if RatioControlPlots :
+			self.fpr.make_controlPlots(self.get_samples('DoubleEle'), 'el'  )
+			self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), 'mu17')
+			self.fpr.make_controlPlots(self.get_samples('SingleMu' ), 'mu24')
+
+		if RatioPlots :
+			self.fpr.plot_ratios()
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
@@ -1523,6 +1526,8 @@ if __name__ == '__main__' :
 	IntPred  = False
 	DiffPred = False
 	DiffMC   = False
+	RatioPlots        = False
+	RatioControlPlots = False
 
 	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) :
 		print 'usage: ..'
@@ -1545,5 +1550,11 @@ if __name__ == '__main__' :
 	if ('--DiffMC' in args) :
 		DiffMC = True
 
+	if ('--RatioPlots' in args) :
+		RatioPlots = True
+
+	if ('--RatioControlPlots' in args) :
+		RatioControlPlots = True
+
 	pl = plotter(path, cardfile)
-	pl.do_analysis(IntPred, DiffPred, DiffMC)
+	pl.do_analysis(IntPred, DiffPred, DiffMC, RatioPlots, RatioControlPlots)
