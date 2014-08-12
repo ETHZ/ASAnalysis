@@ -141,6 +141,11 @@ class plotter :
 #		EWK_SF['el']   = self.get_EWK_SF('el')
 #		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
 #		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
+		if RatioPlots :
+			self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, False)
+			self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, False)
+			self.fpr.plot_ratios('Ratios_uncorrected')
+
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
 
