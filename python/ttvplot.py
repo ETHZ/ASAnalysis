@@ -47,8 +47,8 @@ class ttvplot(object) :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
 			if short_names is True :
-				self.process_names['fake' ] = 'Lept. MisID'
-				self.process_names['chmid'] = 'Ch. MisID'
+				self.process_names['fake' ] = 'Lept.\\ MisID'
+				self.process_names['chmid'] = 'Ch.\\ MisID'
 
 		# variable names
 		self.var_names = {}
