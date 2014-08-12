@@ -415,7 +415,9 @@ class ttvplot(object) :
 		else :
 			lumi = self.lumi
 			unit = 'pb^{-1}'
-		latex.DrawLatex(0.15, 0.88, '#sqrt{s} = 8 TeV, L_{int} = %4.1f %s' % (lumi, unit))
+#		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
+		latex.SetTextAlign(31)
+		latex.DrawLatex(0.96, 0.97, '%4.1f %s (8 TeV)' % (lumi, unit))
 
 
 	def apply_histoStyle(self, histo, datamc) :
