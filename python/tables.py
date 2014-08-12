@@ -350,7 +350,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		else :
 			print '[WARNING] PDF systematic not found!'
 
-		file.write('\\hline\\hline')
+		file.write('\\hline\\hline\n')
 		file.write('\\end{tabular}')
 
 
