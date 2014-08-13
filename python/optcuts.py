@@ -8,6 +8,7 @@ import runCombine
 import ROOT
 import ttvplot
 import copy
+import tables
 
 
 class optcuts(plotter.plotter) :
@@ -20,6 +21,13 @@ class optcuts(plotter.plotter) :
 
 	def optimize(self, channel) :
 		effs = range(25, 105, 5)
+
+		selections = []
+		for eff in effs :
+			cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (eff))
+			selections.append((eff, cuts))
+		tables.make_CutsTable(self.cutspath, selections)
+
 		self.do_analysis(effs)
 
 		if   channel == 'all'   : charge =  0
