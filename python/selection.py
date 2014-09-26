@@ -49,6 +49,33 @@ class selection :
 		return printout
 
 
+	def set_cutsFromDict(self, cuts) :
+		if 'name'       in cuts.keys() : self.name       = cuts['name'      ]
+		if 'minHT'      in cuts.keys() : self.minHT      = cuts['minHT'     ]
+		if 'maxHT'      in cuts.keys() : self.maxHT      = cuts['maxHT'     ]
+		if 'minMET'     in cuts.keys() : self.minMET     = cuts['minMET'    ]
+		if 'maxMET'     in cuts.keys() : self.maxMET     = cuts['maxMET'    ]
+		if 'minNjets'   in cuts.keys() : self.minNjets   = cuts['minNjets'  ]
+		if 'maxNjets'   in cuts.keys() : self.maxNjets   = cuts['maxNjets'  ]
+		if 'minNbjetsL' in cuts.keys() : self.minNbjetsL = cuts['minNbjetsL']
+		if 'maxNbjetsL' in cuts.keys() : self.maxNbjetsL = cuts['maxNbjetsL']
+		if 'minNbjetsM' in cuts.keys() : self.minNbjetsM = cuts['minNbjetsM']
+		if 'maxNbjetsM' in cuts.keys() : self.maxNbjetsM = cuts['maxNbjetsM']
+		if 'minPt1'     in cuts.keys() : self.minPt1     = cuts['minPt1'    ]
+		if 'minPt2'     in cuts.keys() : self.minPt2     = cuts['minPt2'    ]
+		if 'minMTLep1'  in cuts.keys() : self.minMTLep1  = cuts['minMTLep1' ]
+		if 'minMTLep2'  in cuts.keys() : self.minMTLep2  = cuts['minMTLep2' ]
+		if 'maxMTLep1'  in cuts.keys() : self.maxMTLep1  = cuts['maxMTLep1' ]
+		if 'maxMTLep2'  in cuts.keys() : self.maxMTLep2  = cuts['maxMTLep2' ]
+		if 'applyZVeto' in cuts.keys() : self.ZVeto      = cuts['applyZVeto']
+		if 'charge'     in cuts.keys() : self.charge     = cuts['charge'    ]
+		if 'ttw'        in cuts.keys() : self.ttw        = cuts['ttw'       ]
+		if 'systflag'   in cuts.keys() : self.systflag   = cuts['systflag'  ]
+		if 'flavor'     in cuts.keys() : self.flavor     = cuts['flavor'    ]
+		if 'mll'        in cuts.keys() : self.mll        = cuts['mll'       ]
+		if 'sname'      in cuts.keys() : self.sname      = cuts['sname'     ]
+
+
 	def passes_selection(self, event, ttLeptons = True, noChargeSel = False, OSwoZVeto = False) :
 		if event.SystFlag != self.systflag                                              : return False
 		if not (OSwoZVeto and event.Flavor > 2) and self.ZVeto and event.PassZVeto == 0 : return False
