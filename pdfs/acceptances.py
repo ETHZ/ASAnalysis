@@ -4,7 +4,7 @@ import os, sys
 #from ttvStyle import ttvStyle
 from array import array
 import imp
-ttvStyle = imp.load_source('ttvStyle', '../ASAnalysis/python/ttvStyle.py')
+ttvStyle = imp.load_source('ttvStyle', '../python/ttvStyle.py')
 
 
 def make_table(central, pdfsets, sample = '') :
@@ -52,7 +52,6 @@ def make_plot(central, pdfsets, sample = '') :
 	graph.Draw()
 	graph.GetXaxis().SetRangeUser(0., 3.)
 	graph.Draw()
-	print graph.GetXaxis().GetNbins()
 	histo.Draw('goff')
 	for i, pdfset in enumerate(pdfsets) :
 		histo.SetBinContent(i+1, pdfset[2])
