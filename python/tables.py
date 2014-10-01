@@ -438,3 +438,48 @@ def make_YieldsTable(res, systematics) :
 #			nt2_em_chmid, nt2_em_chmid_e1, nt2_em_chmid_e2, nt2_ee_chmid, nt2_ee_chmid_e1, nt2_ee_chmid_e2)
 #
 	print "----------------------------------------------------------------------------------------------"
+
+
+def make_CutsTable(path, selections) :
+	'''
+	writes cuts table
+
+	selections is a list of tuples: (eff, cuts)
+	'''
+
+	table_name = 'cuts.tex'
+	table_path = path
+	if not table_path.endswith('/') : table_path += '/'
+	helper.mkdir(table_path)
+#	pl = ttvplot.ttvplot(table_path, '2L', TeX_switch = True, short_names = True)
+	print '[status] writing %s' % table_name
+	ncuts = len(selections[0][1])
+	with open(table_path + table_name, 'w') as file :
+		timestamp = time.asctime()
+		file.write('%!TEX root = ../AN-12-445.tex\n')
+		file.write('%=========================================================================================\n')
+		file.write('% Cuts table for ttW analysis, same-sign channel, subchannels\n')
+		file.write('%% Generated on: %s\n' % str(timestamp))
+		file.write('%-----------------------------------------------------------------------------------------\n')
+		file.write('\n\n')
+		file.write('\\begin{tabular}{l')
+		for i in range(ncuts) :
+			file.write('|cc')
+		file.write('}\n')
+		file.write('\\hline\\hline\n')
+		file.write('{\\bf Eff.}')
+		for var in selections[0][1] :
+#			file.write(' & \\multicolumn{2}{|c}{\\bf %s}' % pl.get_varName(var))
+			file.write(' & \\multicolumn{2}{|c}{\\bf %s}' % var)
+		file.write(' \\\\\n')
+		for i in range(ncuts) :
+			file.write(' & min & max')
+		file.write(' \\\\\n')
+		file.write('\\hline\n')
+		for (eff, cuts) in selections :
+			file.write('%3.0f \\%%' % eff)
+			for var in cuts :
+				file.write(' & %5.0f & %5.0e' % (cuts[var][0], cuts[var][1]))
+			file.write(' \\\\\n')
+		file.write('\\hline\\hline\n')
+		file.write('\\end{tabular}')
