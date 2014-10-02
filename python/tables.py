@@ -562,21 +562,31 @@ def make_OptTable(path, FoM, table, charge_str) :
 		timestamp = time.asctime()
 		file.write('%!TEX root = ../../Dissertation.tex\n')
 		file.write('\n\n')
+		file.write('\\sisetup{\n')
+		file.write('\tseparate-uncertainty,\n')
+		file.write('\ttable-number-alignment = center,\n')
+		file.write('\ttable-figures-integer  = 1,\n')
+		file.write('\ttable-figures-decimal  = 0\n')
+		file.write('}\n')
 		file.write('\\begin{tabular}{')
 #		file.write('l') # column for ieff
 		for cut in table[0]['cuts'] :
-			file.write('S') # columns for cuts
-		file.write('|S|') # column for efficiency
+			option = ''
+			if table[0]['cuts'][cut][0] >= 1. :
+				exp = int(math.log10(table[0]['cuts'][cut][0]))
+				option = '[table-figures-integer = %d]' % (exp+1)
+			file.write('\n\tS%s' % option) # columns for cuts
+		file.write('|\n\tS[table-figures-integer = 2, table-figures-decimal = 1, table-figures-uncertainty = 2]|\n') # column for efficiency
 		for FoM in table[0]['results'] :
-			file.write('S') # columns for results
+			file.write('\tS[table-figures-decimal = 1]\n') # columns for results
 		file.write('}\n')
-		file.write('\\hline\\hline\n')
+		file.write('\t\\hline\\hline\n')
 
 		# first title row
 #		file.write('{\\bf Eff.} & ')
 		for var in table[0]['cuts'] :
 #			file.write('\\multicolumn{2}{c|}{\\bf %s} &' % pl.get_varName(var))
-			file.write('{\\bf %s} & ' % var)
+			file.write('\t{\\bf %s} & ' % var)
 		file.write('{$\\varepsilon$}')
 		for FoM in table[0]['results'] :
 			file.write(' & {%s}' % FoM)
@@ -590,16 +600,17 @@ def make_OptTable(path, FoM, table, charge_str) :
 #			for chan in table[0]['results'][FoM] :
 #				file.write(' & {%s}' % chan)
 #		file.write(' \\\\\n')
-		file.write('\\hline\n')
+		file.write('\t\\hline\n')
 
 		# data rows
 		for row in table :
 #			file.write('%3d &' % row['ieff'])
+			file.write('\t')
 			for var in row['cuts'] :
 				file.write('%5.0f & ' % row['cuts'][var][0])
 			file.write('%4.1f +- %3.1f' % (row['eff'][0]*100., row['eff'][1]*100.))
 			for FoM in row['results'] :
 				file.write(' & %5.1f' % row['results'][FoM]['6channels'][1])
 			file.write(' \\\\\n')
-		file.write('\\hline\\hline\n')
+		file.write('\t\\hline\\hline\n')
 		file.write('\\end{tabular}')
