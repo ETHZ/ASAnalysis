@@ -485,7 +485,7 @@ def make_CutsTable(path, selections) :
 		file.write('\\end{tabular}')
 
 
-def make_OptTable(path, FoM, table, charge_str) :
+def make_FullOptTable(path, FoM, table, charge_str) :
 	'''
 	writes table with optimization results
 
@@ -517,7 +517,7 @@ def make_OptTable(path, FoM, table, charge_str) :
 		for var in table[0]['cuts'] :
 #			file.write(' & \\multicolumn{2}{c|}{\\bf %s}' % pl.get_varName(var))
 			file.write(' & \\multicolumn{2}{c|}{\\bf %s}' % var)
-		file.write(' & {\\varepsilon}')
+		file.write(' & {$\\varepsilon$}')
 		for FoM in table[0]['results'] :
 			file.write(' & \\multicolumn{%d}{c|}{%s}' % (len(table[0]['results'][FoM]), FoM))
 		file.write(' \\\\\n')
@@ -541,6 +541,65 @@ def make_OptTable(path, FoM, table, charge_str) :
 			for FoM in row['results'] :
 				for chan in row['results'][FoM] :
 					file.write(' & %5.1f' % row['results'][FoM][chan][1])
+			file.write(' \\\\\n')
+		file.write('\\hline\\hline\n')
+		file.write('\\end{tabular}')
+
+
+def make_OptTable(path, FoM, table, charge_str) :
+	'''
+	writes table with optimization results
+
+	selections is a list of tuples: (eff, cuts)
+	'''
+
+	table_name = 'OptCutsTable_%s.tex' % charge_str
+	table_path = path
+	if not table_path.endswith('/') : table_path += '/'
+	helper.mkdir(table_path)
+	print '[status] writing %s' % table_name
+	with open(table_path + table_name, 'w') as file :
+		timestamp = time.asctime()
+		file.write('%!TEX root = ../../Dissertation.tex\n')
+		file.write('\n\n')
+		file.write('\\begin{tabular}{')
+#		file.write('l') # column for ieff
+		for cut in table[0]['cuts'] :
+			file.write('S') # columns for cuts
+		file.write('|S|') # column for efficiency
+		for FoM in table[0]['results'] :
+			file.write('S') # columns for results
+		file.write('}\n')
+		file.write('\\hline\\hline\n')
+
+		# first title row
+#		file.write('{\\bf Eff.} & ')
+		for var in table[0]['cuts'] :
+#			file.write('\\multicolumn{2}{c|}{\\bf %s} &' % pl.get_varName(var))
+			file.write('{\\bf %s} & ' % var)
+		file.write('{$\\varepsilon$}')
+		for FoM in table[0]['results'] :
+			file.write(' & {%s}' % FoM)
+		file.write(' \\\\\n')
+
+#		# second title row
+#		for cut in table[0]['cuts'] :
+#			file.write('& {min} & {max} ')
+#		file.write('&')
+#		for FoM in table[0]['results'] :
+#			for chan in table[0]['results'][FoM] :
+#				file.write(' & {%s}' % chan)
+#		file.write(' \\\\\n')
+		file.write('\\hline\n')
+
+		# data rows
+		for row in table :
+#			file.write('%3d &' % row['ieff'])
+			for var in row['cuts'] :
+				file.write('%5.0f & ' % row['cuts'][var][0])
+			file.write('%4.1f +- %3.1f' % (row['eff'][0]*100., row['eff'][1]*100.))
+			for FoM in row['results'] :
+				file.write(' & %5.1f' % row['results'][FoM]['6channels'][1])
 			file.write(' \\\\\n')
 		file.write('\\hline\\hline\n')
 		file.write('\\end{tabular}')
