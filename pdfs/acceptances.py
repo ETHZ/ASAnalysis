@@ -5,18 +5,23 @@ import os, sys
 from array import array
 import imp
 ttvStyle = imp.load_source('ttvStyle', '../python/ttvStyle.py')
+from math import log10
 
 
 def make_table(central, pdfsets, sample = '') :
 	'''print latex table'''
 
+	exponent = int(log10(central))
+	if exponent < 0 : exponent -= 1
 	if sample != '' : sample += '_'
 	with open('%sacceptances.tex' % sample, 'w') as file :
 		file.write('\\sisetup{\n')
 		file.write('\ttable-number-alignment = center,\n')
 		file.write('\ttable-figures-integer  = 1,\n')
 		file.write('\ttable-figures-decimal  = 2,\n')
-		file.write('\ttable-figures-exponent = 2\n')
+		file.write('\ttable-figures-exponent = 2,\n')
+		file.write('\tscientific-notation    = fixed,\n')
+		file.write('\tfixed-exponent         = %d\n' % exponent)
 		file.write('}\n\n')
 		file.write('\\begin{tabular}{l|SSS}\n')
 		file.write('\t\\hline\\hline\n')
