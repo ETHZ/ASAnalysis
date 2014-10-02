@@ -19,7 +19,7 @@ class optcuts(plotter.plotter) :
 		if not self.cutspath.endswith('/') : self.cutspath += '/'
 
 
-	def optimize(self, channel) :
+	def optimize(self, channel, doAnalysis = True, analizeDatacards = True) :
 		effs = range(25, 105, 5)
 
 		selections = []
@@ -28,13 +28,12 @@ class optcuts(plotter.plotter) :
 			selections.append((eff, cuts))
 		tables.make_CutsTable(self.cutspath, selections)
 
-		self.do_analysis(effs)
+		if doAnalysis : self.do_analysis(effs)
 
 		if   channel == 'all'   : charge =  0
 		elif channel == 'plus'  : charge = +1
 		elif channel == 'minus' : charge = -1
-
-		self.analize_datacards(effs, charge)
+		if analizeDatacards : self.analize_datacards(effs, charge)
 
 
 	def do_analysis(self, effs) :
@@ -115,6 +114,30 @@ class optcuts(plotter.plotter) :
 		presel.charge = charge
 		presel.sname = 'TTbarW'
 
+		# selections
+		selections_path = '%sselections.pkl' % self.cutspath
+		if os.path.exists(selections_path) :
+			selections = helper.load_object(selections_path)
+		else :
+			selections = {}
+			for ieff in effs :
+				cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
+				selections[ieff] = cuts
+			helper.save_object(selections, selections_path)
+
+		# efficiencies
+		efficiencies_path = '%sefficiencies.pkl' % self.cutspath
+		if os.path.exists(efficiencies_path) :
+			efficiencies = helper.load_object(efficiencies_path)
+		else :
+			efficiencies = {}
+			for ieff in effs :
+				cuts = selections[ieff]
+				sel = self.get_selection('eff%d' % ieff, cuts, 0, True)
+				sel.sname = 'TTbarW'
+				efficiencies[ieff] = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
+			helper.save_object(efficiencies, efficiencies_path)
+
 		FoMs = {}
 		FoMs['ExpSign'] = {}
 		FoMs['XSecErr'] = {}
@@ -133,15 +156,16 @@ class optcuts(plotter.plotter) :
 				print '========================='
 				print ''
 
-				FoMs[FoM]['int'      ] = []
-				FoMs[FoM]['3channels'] = []
-				if charge == 0 : FoMs[FoM]['6channels'] = []
+				FoMs[FoM]['int'      ] = {}
+				FoMs[FoM]['3channels'] = {}
+				if charge == 0 : FoMs[FoM]['6channels'] = {}
 				for ieff in effs :
 					# calculate efficiency of selection
-					cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
-					sel = self.get_selection('eff%d' % ieff, cuts, 0, True)
-					sel.sname = 'TTbarW'
-					(eff, eff_err) = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
+#					cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
+#					sel = self.get_selection('eff%d' % ieff, cuts, 0, True)
+#					sel.sname = 'TTbarW'
+#					(eff, eff_err) = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
+					(eff, eff_err) = efficiencies[ieff]
 
 					# get expected significance
 					for chan in FoMs[FoM] :
@@ -151,11 +175,25 @@ class optcuts(plotter.plotter) :
 						datacard = self.cutspath + 'datacards_eff%d/datacard_ssdl_ttW_%s%s_eff%d.txt' % (ieff, chan, charge_suffix, ieff)
 						if FoM == 'ExpSign' : result = runCombine.expected_significance(datacard, '')
 						if FoM == 'XSecErr' : result = max(runCombine.signal_strength(datacard, '')[1:])
-						FoMs[FoM][chan].append([eff, result])
+						FoMs[FoM][chan][ieff] = [eff, result]
 
 				helper.save_object(FoMs[FoM], signif_path)
 
 			self.plot_results(FoM, FoMs[FoM], self.get_chargeString(charge))
+
+		table = []
+		for ieff in effs :
+			results = {}
+			for FoM in FoMs :
+				results[FoM] = {}
+				for chan in FoMs[FoM] :
+					results[FoM][chan] = FoMs[FoM][chan][ieff]
+			row = {'ieff'   : ieff,
+			       'cuts'   : selections[ieff],
+			       'eff'    : efficiencies[ieff],
+			       'results': results}
+			table.append(row)
+#		tables.make_OptTable(self.cutspath, FoM, table, self.get_chargeString(charge))
 
 
 	def get_efficiency(self, path, sel, base_sel) :
@@ -198,7 +236,8 @@ class optcuts(plotter.plotter) :
 
 			gr_res[chan] = ROOT.TGraphErrors(0)
 
-			for i, [eff, result] in enumerate(res) :
+			for i, ieff in enumerate(res) :
+				[eff, result] = res[ieff]
 				gr_res[chan].SetPoint(i, 100.*eff, result*scale)
 
 			gr_res[chan].SetMarkerSize(1.2)
@@ -252,5 +291,15 @@ if __name__ == '__main__' :
 			print '[ERROR] Invalid channel!'
 			sys.exit(1)
 
+	if ('--doAnalysis' in args) :
+		doAnalysis = True
+	else :
+		doAnalysis = False
+
+	if ('--analizeDatacards' in args) :
+		analizeDatacards = True
+	else :
+		analizeDatacards = False
+
 	opt = optcuts(path, cardfile, cutspath)
-	opt.optimize(channel)
+	opt.optimize(channel, doAnalysis, analizeDatacards)
