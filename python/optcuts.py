@@ -193,7 +193,7 @@ class optcuts(plotter.plotter) :
 			       'eff'    : efficiencies[ieff],
 			       'results': results}
 			table.append(row)
-#		tables.make_OptTable(self.cutspath, FoM, table, self.get_chargeString(charge))
+		tables.make_OptTable(self.cutspath, FoM, table, self.get_chargeString(charge))
 
 
 	def get_efficiency(self, path, sel, base_sel) :
