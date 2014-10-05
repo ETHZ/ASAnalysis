@@ -47,6 +47,7 @@ class plotter :
 		self.selections['final++'  ] = selection.selection(name = 'final++', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
 		self.selections['final--'  ] = selection.selection(name = 'final--', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
 		self.selections['2J0bJOS'  ] = selection.selection(name = '2J0bJ_OS'  , mll = 8., minNjets = 2, flavor = -2)
+		self.selections['0J0bJOS'  ] = selection.selection(name = '0J0bJ_OS'  , mll = 8., flavor = -2, applyZVeto = False)
 		self.selections['ZElElChMisId'] = selection.selection(name = 'ZElElChMisId', mll = 8., maxMET = 30., minNjets = 1, flavor = 5, applyZVeto = False, maxMTLep1 = 25.)
 		self.selections['ZElElChMisId_SS'] = selection.selection(name = 'ZElElChMisId_SS', mll = 8., maxMET = 30., minNjets = 1, flavor = 2, applyZVeto = False, maxMTLep1 = 25.)
 
@@ -172,8 +173,9 @@ class plotter :
 		if DiffMC :
 #			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
-			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
-			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
+			self.plot_DiffMC(self.selections['0J0bJOS'        ])
+#			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
+#			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
 
 
 		if DiffPred :
@@ -1429,8 +1431,8 @@ class plotter :
 			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
-		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
-#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
+		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
 
 
 	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False) :
