@@ -1049,6 +1049,7 @@ public:
 	int         fSETree_Charge;
 	int         fSETree_TLCat; // TL category: TT(0), TL(1), LT(2), LL(3)
 	int         fSETree_PFCat; // PF category: PP(0), PF(1), FP(2), FF(3)
+	int         fSETree_BECat;
 	int         fSETree_ZVeto;   // passes Z veto
 	int         fSETree_3rdVeto; // passes 3rd lepton veto
 	int			fSETree_3rdSFLepVeto; // passes 3rd SF lepton veto

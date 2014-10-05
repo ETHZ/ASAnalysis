@@ -2101,6 +2101,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			if (!isPromptMuon(ind1) &&  isPromptMuon(ind2)) fSETree_PFCat = 2;
 			if (!isPromptMuon(ind1) && !isPromptMuon(ind2)) fSETree_PFCat = 3;
 		}
+		fSETree_BECat = -1;
 		fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
 //		if (mu3 > -1) {
 //			fSETree_Ml1l3			= getMll(ind1, mu3, Muon);
@@ -2210,6 +2211,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			if (!isPromptMuon(ind1) &&  isPromptElectron(ind2)) fSETree_PFCat = 2;
 			if (!isPromptMuon(ind1) && !isPromptElectron(ind2)) fSETree_PFCat = 3;
 		}
+		fSETree_BECat = -1;
 		fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
 
 			// SETTING OF THE BDT VARIABLES:
@@ -2308,6 +2310,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 			if (!isPromptElectron(ind1) &&  isPromptElectron(ind2)) fSETree_PFCat = 2;
 			if (!isPromptElectron(ind1) && !isPromptElectron(ind2)) fSETree_PFCat = 3;
 		}
+		fSETree_BECat = -1;
 		fSETree_HLTSF   = getSF(S, Elec, ind1, ind2);
 
 			// SETTING OF THE BDT VARIABLES:
@@ -2395,8 +2398,8 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_M3_v2   = getM3new();
 				fSETree_M3_v3   = getM3new(lep1, lep2);
 				fSETree_BetaStar5 = getBetaStar(5);
-//				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
-//				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
+				fSETree_TLCat = 0;
+				fSETree_BECat = -1;
 				fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
 				fSigEv_Tree->Fill();
 			}
@@ -2448,8 +2451,9 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_M3      = getM3();
 				fSETree_M3_v2   = getM3new();
 				fSETree_M3_v3   = getM3new(lep1, lep2);
-				if( isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel-Electron
-				if(!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Endcap-Electron
+				fSETree_TLCat = 0;
+				if( isBarrelElectron(ind2)) fSETree_BECat = 0; // TLCat == 0 if Barrel-Electron
+				if(!isBarrelElectron(ind2)) fSETree_BECat = 1; // TLCat == 1 if Endcap-Electron
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
 				fSigEv_Tree->Fill();
 			}
@@ -2501,10 +2505,11 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_M3      = getM3();
 				fSETree_M3_v2   = getM3new();
 				fSETree_M3_v3   = getM3new(lep1, lep2);
-				if( isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 0; // TLCat == 0 if Barrel/Barrel
-				if( isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_TLCat = 1; // TLCat == 1 if Barrel/Endcap
-				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_TLCat = 2; // TLCat == 2 if Endcap/Barrel
-				if(!isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_TLCat = 3; // TLCat == 3 if Endcap/Endcap
+				fSETree_TLCat   = 0;
+				if( isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_BECat = 0; // TLCat == 0 if Barrel/Barrel
+				if( isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_BECat = 1; // TLCat == 1 if Barrel/Endcap
+				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_BECat = 2; // TLCat == 2 if Endcap/Barrel
+				if(!isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_BECat = 3; // TLCat == 3 if Endcap/Endcap
 				fSETree_HLTSF   = getSF(S, Elec, ind1, ind2);
 				fSigEv_Tree->Fill();
 			}
@@ -3409,6 +3414,7 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("Charge",      &fSETree_Charge  , "Charge/I");
 	fSigEv_Tree->Branch("TLCat",       &fSETree_TLCat   , "TLCat/I");
 	fSigEv_Tree->Branch("PFCat",       &fSETree_PFCat   , "PFCat/I");
+	fSigEv_Tree->Branch("BECat",       &fSETree_BECat   , "BECat/I");
 	fSigEv_Tree->Branch("Pass3rdVeto", &fSETree_3rdVeto , "Pass3rdVeto/I");
 	fSigEv_Tree->Branch("Pass3rdSFLepVeto", &fSETree_3rdSFLepVeto , "Pass3rdSFLepVeto/I");
 	fSigEv_Tree->Branch("PassTTZSel",  &fSETree_ttZSel  , "PassTTZSel/I");
@@ -3468,6 +3474,7 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_Charge   = -99;
 	fSETree_TLCat    = -1;
 	fSETree_PFCat    = -1;
+	fSETree_BECat    = -1;
 	fSETree_ZVeto    = -1;
 	fSETree_3rdVeto  = -1;
 	fSETree_3rdSFLepVeto = -1;
