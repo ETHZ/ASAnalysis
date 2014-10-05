@@ -354,6 +354,7 @@ class plotter :
 		self.ResTree_Charge    = np.zeros(1, dtype=int  ); self.results_tree.Branch('Charge',      self.ResTree_Charge     , 'Charge/I'   );
 		self.ResTree_CFChan    = np.zeros(1, dtype=int  ); self.results_tree.Branch('CFChan',      self.ResTree_CFChan     , 'CFChan/I'   );
 		self.ResTree_TLCat     = np.zeros(1, dtype=int  ); self.results_tree.Branch('TLCat',       self.ResTree_TLCat      , 'TLCat/I'    );
+		self.ResTree_BECat     = np.zeros(1, dtype=int  ); self.results_tree.Branch('BECat',       self.ResTree_BECat      , 'BECat/I'    );
 #		self.ResTree_ZVeto     = np.zeros(1, dtype=int  ); self.results_tree.Branch('PassZVeto',   self.ResTree_ZVeto      , 'PassZVeto/I');
 		self.ResTree_HT        = np.zeros(1, dtype=float); self.results_tree.Branch('HT',          self.ResTree_HT         , 'HT/D'       );
 		self.ResTree_MET       = np.zeros(1, dtype=float); self.results_tree.Branch('MET',         self.ResTree_MET        , 'MET/D'      );
@@ -615,6 +616,7 @@ class plotter :
 				else :
 					self.ResTree_CFChan   [0] = self.ResTree_Flavor[0] + 3
 				self.ResTree_TLCat    [0] = event.TLCat
+				self.ResTree_BECat    [0] = event.BECat
 #				self.ResTree_ZVeto    [0] = event.PassZVeto
 				self.ResTree_HT       [0] = event.HT
 				self.ResTree_MET      [0] = event.MET
@@ -724,14 +726,14 @@ class plotter :
 
 					# EM OS
 					if event.Flavor is 4 :
-						if event.TLCat is 0 : self.ResTree_Weight[0] = chargeFactor * fbb
-						if event.TLCat is 1 : self.ResTree_Weight[0] = chargeFactor * fee
+						if event.BECat is 0 : self.ResTree_Weight[0] = chargeFactor * fbb
+						if event.BECat is 1 : self.ResTree_Weight[0] = chargeFactor * fee
 
 					# EE OS
 					if event.Flavor is 5 :
-						if event.TLCat is 0                     : self.ResTree_Weight[0] = chargeFactor * 2*fbb
-						if event.TLCat is 1 or event.TLCat is 2 : self.ResTree_Weight[0] = chargeFactor * 2*feb
-						if event.TLCat is 3                     : self.ResTree_Weight[0] = chargeFactor * 2*fee
+						if event.BECat is 0                     : self.ResTree_Weight[0] = chargeFactor * 2*fbb
+						if event.BECat is 1 or event.BECat is 2 : self.ResTree_Weight[0] = chargeFactor * 2*feb
+						if event.BECat is 3                     : self.ResTree_Weight[0] = chargeFactor * 2*fee
 
 					self.ResTree_Charge[0] = 1
 					self.ResTree_CFChan[0] = self.ResTree_Flavor[0]
@@ -1280,11 +1282,11 @@ class plotter :
 		tree.Draw(var_str+'>>'+h_ee_nt10_name,         '(ObsPred == 0 && TLCat == 1 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ee_nt01_name,         '(ObsPred == 0 && TLCat == 2 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ee_nt0_name ,         '(ObsPred == 0 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_em_BB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_em_EE_os_name, '%f*(ObsPred == 2 && TLCat == 1 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_BB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_EB_os_name, '%f*(ObsPred == 2 && (TLCat == 1 || TLCat == 2) && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_EE_os_name, '%f*(ObsPred == 2 && TLCat == 3 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_em_BB_os_name, '%f*(ObsPred == 2 && BECat == 0 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_em_EE_os_name, '%f*(ObsPred == 2 && BECat == 1 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_BB_os_name, '%f*(ObsPred == 2 && BECat == 0 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_EB_os_name, '%f*(ObsPred == 2 && (BECat == 1 || BECat == 2) && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_EE_os_name, '%f*(ObsPred == 2 && BECat == 3 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
 
 		if add_total_bin :
 			for key, histo in dict(histos.items() + h_tmp.items() + h_rares_npass.items()).iteritems() :

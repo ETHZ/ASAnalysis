@@ -137,10 +137,11 @@ class selection :
 				if OS_data[1] < 0 : return -1
 				selectionString += ' && SType < 3'
 				selectionString += ' && Flavor == %d' % (OS_data[0])
+				if ttLeptons         : selectionString += ' && TLCat == 0'
 				if OS_data[1] == 4 :
-					selectionString += ' && (TLCat == 1 || TLCat == 2)'
+					selectionString += ' && (BECat == 1 || BECat == 2)'
 				else :
-					selectionString += ' && TLCat == %d'  % (OS_data[1])
+					selectionString += ' && BECat == %d'  % (OS_data[1])
 				if self.flavor > -1 : selectionString += ' && Flavor == %d' % (self.flavor+3)
 		else :
 			if self.flavor > -1                    : selectionString += ' && Flavor == %d' % (self.flavor)
