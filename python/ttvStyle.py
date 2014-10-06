@@ -51,11 +51,11 @@ class ttvStyle(object) :
 		self.ttvStyle.SetFrameLineWidth(1)
 
 		# histo
-##		self.ttvStyle.SetHistFillColor(63)
-#		# self.ttvStyle.SetHistFillStyle(0)
-#		self.ttvStyle.SetHistLineColor(1)
-#		self.ttvStyle.SetHistLineStyle(0)
-#		self.ttvStyle.SetHistLineWidth(1)
+		self.ttvStyle.SetHistFillColor(63)
+		self.ttvStyle.SetHistFillStyle(1001)
+		self.ttvStyle.SetHistLineColor(1)
+		self.ttvStyle.SetHistLineStyle(0)
+		self.ttvStyle.SetHistLineWidth(1)
 #		# self.ttvStyle.SetLegoInnerR(Float_t rad = 0.5)
 #		# self.ttvStyle.SetNumberContours(Int_t number = 20)
 #
@@ -192,6 +192,10 @@ class ttvStyle(object) :
 		self.colors['ttw'  ] = 44
 		self.colors['btag' ] = 31
 		self.colors['zz'   ] = 30
+		self.colors['wjets'] = 36
+		self.colors['zjets'] = 49
+		self.colors['qcd'  ] = 40
+		self.colors['top'  ] = 46
 
 
 	def define_processNames(self, TeX_switch = False) :
@@ -211,6 +215,7 @@ class ttvStyle(object) :
 		self.process_names['wjets'] = 'W+jets'
 		self.process_names['zjets'] = 'DY+jets'
 		self.process_names['qcd'  ] = 'QCD'
+		self.process_names['top'  ] = 't#bar{t}'
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'

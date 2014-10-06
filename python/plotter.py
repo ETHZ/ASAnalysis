@@ -176,9 +176,9 @@ class plotter :
 #			self.plot_DiffMC(self.selections['1J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
-#			self.plot_DiffMC(self.selections['0J0bJOS'        ])
+			self.plot_DiffMC(self.selections['0J0bJOS'        ])
 #			self.plot_DiffMC(self.selections['3J1bJ'    ])
-			self.plot_DiffMC(self.selections['3J1bJOS'    ])
+#			self.plot_DiffMC(self.selections['3J1bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
 
@@ -1451,6 +1451,7 @@ class plotter :
 			min = min - (max-min)/nbins
 			nbins += 1
 
+		pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 2, TeX_switch = False)
 		histos = {}
 
 		############################
@@ -1481,27 +1482,35 @@ class plotter :
 		print '[status] getting %s histogram from data..' % var
 		tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
 
+		# processes
+		processes = []
+		processes.append('top'  )
+		processes.append('zjets')
+		processes.append('wjets')
+		processes.append('rare' )
+		processes.append('wz'   )
+		processes.append('qcd'  )
+		processes.append('ttz'  )
+		processes.append('ttw'  )
+
 		# adding mc samples
 		for histo in [histos['bgtot'], histos['pred'], histos['stack']] :
-			histo.Add(histos['top'  ])
-			histo.Add(histos['zjets'])
-			histo.Add(histos['wjets'])
-			histo.Add(histos['rare' ])
-			histo.Add(histos['wz'   ])
-			histo.Add(histos['qcd'  ])
-			histo.Add(histos['ttz'  ])
-			if histo.GetName() != h_bgtot_name : histo.Add(histos['ttw'  ])
+			for process in processes :
+				if 'h_bgtot' in histo.GetName() and process == 'ttw' : continue
+				histo.Add(histos[process])
 
-		pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 2, TeX_switch = False)
 		canvas = pl.get_canvas(var)
 		canvas.cd()
 
 		leg_entries = []
-		for process, histo in histos.iteritems() :
+		for process in reversed(processes) :
+			histo = histos[process]
 			if process == 'obs' :
 				leg_entries.append([histo, pl.get_processName(process), 'lp'])
 			else :
 				leg_entries.append([histo, pl.get_processName(process), 'f'])
+				histo.SetFillColor(pl.get_fillColor(process))
+			print process, pl.get_processName(process)
 		leg = pl.draw_legend(leg_entries)
 
 		histos['obs'].SetMarkerStyle(20)
@@ -1513,9 +1522,11 @@ class plotter :
 		histos['obs'  ].Draw('PE X0 same')
 		pl.draw_cmsLine()
 
+		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
 		prefix = ''
 		suffix = ''
-		canvas.Print('%sObsMCPlots/%s/ObsMC%s_%s%s.pdf' % (self.path, sel.name, prefix, var, suffix))
+		helper.mkdir(path)
+		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
 
 
 
