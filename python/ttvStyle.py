@@ -213,8 +213,8 @@ class ttvStyle(object) :
 
 		# set position
 		width = 0.17
-		x = 0.63
-		y = 0.93
+		x = 1. - self.ttvStyle.GetPadRightMargin() - 0.33
+		y = 1. - self.ttvStyle.GetPadTopMargin() - 0.03
 		leg.SetX1NDC(x)
 		leg.SetX2NDC(x+width)
 		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
@@ -230,12 +230,16 @@ class ttvStyle(object) :
 
 
 	def draw_cmsLine(self) :
+		cms_x  = self.ttvStyle.GetPadLeftMargin() + 0.03
+		cms_y  = 1. - self.ttvStyle.GetPadTopMargin() - 0.03
+		lumi_x = 1. - self.ttvStyle.GetPadRightMargin()
+		lumi_y = 1. - self.ttvStyle.GetPadTopMargin() + 0.01
 		latex = ROOT.TLatex()
 		latex.SetNDC()
 		latex.SetTextFont(62)
 		latex.SetTextSize(0.04)
 		latex.SetTextAlign(13)
-		latex.DrawLatex(0.15, 0.93, self.cms_label)
+		latex.DrawLatex(cms_x, cms_y, self.cms_label)
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
 		if self.lumi > 500. :
@@ -246,4 +250,4 @@ class ttvStyle(object) :
 			unit = 'pb^{-1}'
 #		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
 		latex.SetTextAlign(31)
-		latex.DrawLatex(0.96, 0.97, '%4.1f %s (8 TeV)' % (lumi, unit))
+		latex.DrawLatex(lumi_x, lumi_y, '%4.1f %s (8 TeV)' % (lumi, unit))
