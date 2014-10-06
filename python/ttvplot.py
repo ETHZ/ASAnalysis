@@ -8,7 +8,7 @@ import ttvStyle
 class ttvplot(object) :
 
 	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
-		self.ttvStyle = ttvStyle.ttvStyle(lumi, cms_label)
+		self.ttvStyle = ttvStyle.ttvStyle(lumi = lumi, cms_label = cms_label, TeX_switch = TeX_switch)
 		self.path = path
 		if not self.path.endswith('/') : self.path += '/'
 		if not os.path.exists(self.path) :
@@ -18,103 +18,89 @@ class ttvplot(object) :
 #		self.cms_label = cms_label
 		self.asymmErr = asymmErr
 
-		# colors
-		self.colors = {}
-		self.colors['obs'  ] = 1
-		self.colors['fake' ] = 46
-		self.colors['chmid'] = 49
-		self.colors['rare' ] = 38
-		self.colors['wz'   ] = 39
-		self.colors['ttz'  ] = 42
-		self.colors['ttw'  ] = 44
-		self.colors['btag' ] = 31
-		self.colors['zz'   ] = 30
-
-		# process names
-		self.process_names = {}
-		self.process_names['obs'  ] = 'Observed'
-		self.process_names['fake' ] = 'Misidentified lepton'
-		self.process_names['chmid'] = 'Mismeasured charge'
-		self.process_names['rare' ] = 'Irreducible'
-		self.process_names['wz'   ] = 'WZ'
-		self.process_names['ttz'  ] = 't#bar{t}Z'
-		self.process_names['ttw'  ] = 't#bar{t}W'
-		self.process_names['bgtot'] = 'Backgrounds'
-		self.process_names['btag' ] = 'Non-top'
-		self.process_names['zz'   ] = 'ZZ'
-		self.process_names['wjets'] = 'W+jets'
-		self.process_names['zjets'] = 'DY+jets'
-		self.process_names['qcd'  ] = 'QCD'
-		if TeX_switch is True :
-			self.process_names['ttz'  ] = '\\ttz'
-			self.process_names['ttw'  ] = '\\ttw'
-			if short_names is True :
-				self.process_names['fake' ] = 'Lept.\\ MisID'
-				self.process_names['chmid'] = 'Ch.\\ MisID'
-
-		# variable names
-		self.var_names = {}
-		self.var_names['HT'    ] = 'H_{T} [GeV]'
-		self.var_names['MET'   ] = 'Particle flow E_{T}^{miss} [GeV]'
-		self.var_names['NJ'    ] = 'Jet multiplicity'
-		self.var_names['NbJ'   ] = 'b-Jet multiplicity (CSVL)'
-		self.var_names['NbJmed'] = 'b-Jet multiplicity (CSVM)'
-		self.var_names['pT1'   ] = 'Leading lepton p_{T} [GeV]'
-		self.var_names['pT2'   ] = 'Sub-leading lepton p_{T} [GeV]'
-		self.var_names['Int'   ] = ''
-		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
-		self.var_names['NVrtx' ] = 'N_{Vertices}'
-		self.var_names['minMT' ] = 'M_{T} [GeV]'
-		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
-		self.var_names['NJets'      ] = self.get_varName('NJ')
-		self.var_names['MaxJPt'     ] = 'Hardest jet p_{T} [GeV]'
-		self.var_names['NVertices'  ] = self.get_varName('NVrtx')
-		self.var_names['ClosJetPt'  ] = 'Closest jet p_{T} [GeV]'
-		self.var_names['AwayJetPt'  ] = 'Away jet p_{T} [GeV]'
-		self.var_names['NBJets'     ] = self.get_varName('NbJ')
-		self.var_names['MT'         ] = 'm_{T}'
-		self.var_names['MET_noMTCut'] = 'E_{T}^{miss} [GeV]'
-		self.var_names['MT_MET30'   ] = self.get_varName('MT')
-		self.var_names['LepPt'      ] = 'Lepton p_{T} [GeV]'
-		self.var_names['LepEta'     ] = 'Lepton #eta [GeV]'
-		self.var_names['LepIso'     ] = 'Lepton isolation'
-		self.var_names['ClosJetDR'  ] = 'Closest jet DR'
-		self.var_names['AwayJetDR'  ] = 'Away jet DR'
+#		# colors
+#		self.colors = {}
+#		self.colors['obs'  ] = 1
+#		self.colors['fake' ] = 46
+#		self.colors['chmid'] = 49
+#		self.colors['rare' ] = 38
+#		self.colors['wz'   ] = 39
+#		self.colors['ttz'  ] = 42
+#		self.colors['ttw'  ] = 44
+#		self.colors['btag' ] = 31
+#		self.colors['zz'   ] = 30
+#
+#		# process names
+#		self.process_names = {}
+#		self.process_names['obs'  ] = 'Observed'
+#		self.process_names['fake' ] = 'Misidentified lepton'
+#		self.process_names['chmid'] = 'Mismeasured charge'
+#		self.process_names['rare' ] = 'Irreducible'
+#		self.process_names['wz'   ] = 'WZ'
+#		self.process_names['ttz'  ] = 't#bar{t}Z'
+#		self.process_names['ttw'  ] = 't#bar{t}W'
+#		self.process_names['bgtot'] = 'Backgrounds'
+#		self.process_names['btag' ] = 'Non-top'
+#		self.process_names['zz'   ] = 'ZZ'
+#		self.process_names['wjets'] = 'W+jets'
+#		self.process_names['zjets'] = 'DY+jets'
+#		self.process_names['qcd'  ] = 'QCD'
+#		if TeX_switch is True :
+#			self.process_names['ttz'  ] = '\\ttz'
+#			self.process_names['ttw'  ] = '\\ttw'
+#			if short_names is True :
+#				self.process_names['fake' ] = 'Lept.\\ MisID'
+#				self.process_names['chmid'] = 'Ch.\\ MisID'
+#
+#		# variable names
+#		self.var_names = {}
+#		self.var_names['HT'    ] = 'H_{T} [GeV]'
+#		self.var_names['MET'   ] = 'Particle flow E_{T}^{miss} [GeV]'
+#		self.var_names['NJ'    ] = 'Jet multiplicity'
+#		self.var_names['NbJ'   ] = 'b-Jet multiplicity (CSVL)'
+#		self.var_names['NbJmed'] = 'b-Jet multiplicity (CSVM)'
+#		self.var_names['pT1'   ] = 'Leading lepton p_{T} [GeV]'
+#		self.var_names['pT2'   ] = 'Sub-leading lepton p_{T} [GeV]'
+#		self.var_names['Int'   ] = ''
+#		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
+#		self.var_names['NVrtx' ] = 'N_{Vertices}'
+#		self.var_names['minMT' ] = 'M_{T} [GeV]'
+#		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
+#		self.var_names['NJets'      ] = self.ttvStyle.get_varName('NJ')
+#		self.var_names['MaxJPt'     ] = 'Hardest jet p_{T} [GeV]'
+#		self.var_names['NVertices'  ] = self.ttvStyle.get_varName('NVrtx')
+#		self.var_names['ClosJetPt'  ] = 'Closest jet p_{T} [GeV]'
+#		self.var_names['AwayJetPt'  ] = 'Away jet p_{T} [GeV]'
+#		self.var_names['NBJets'     ] = self.ttvStyle.get_varName('NbJ')
+#		self.var_names['MT'         ] = 'm_{T}'
+#		self.var_names['MET_noMTCut'] = 'E_{T}^{miss} [GeV]'
+#		self.var_names['MT_MET30'   ] = self.ttvStyle.get_varName('MT')
+#		self.var_names['LepPt'      ] = 'Lepton p_{T} [GeV]'
+#		self.var_names['LepEta'     ] = 'Lepton #eta [GeV]'
+#		self.var_names['LepIso'     ] = 'Lepton isolation'
+#		self.var_names['ClosJetDR'  ] = 'Closest jet DR'
+#		self.var_names['AwayJetDR'  ] = 'Away jet DR'
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
 
 
-#	@property
-#	def cms_label(self) :
-#		if   self._cms_label == 0 : return 'CMS'
-#		elif self._cms_label == 1 : return 'CMS Simulation'
-#		elif self._cms_label == 2 : return 'CMS Preliminary'
-#		elif self._cms_label == 3 : return 'CMS Simulation Preliminary'
-#		else                      : return ''
+#	def get_fillColor(self, process) :
+#		if process in self.colors.keys() :
+#			return self.colors[process]
+#		return 0
 #
 #
-#	@cms_label.setter
-#	def cms_label(self, cms_label) :
-#		self._cms_label = cms_label
-
-
-	def get_fillColor(self, process) :
-		if process in self.colors.keys() :
-			return self.colors[process]
-		return 0
-
-
-	def get_varName(self, var) :
-		if var in self.var_names.keys() :
-			return self.var_names[var]
-		return ''
-
-
-	def get_processName(self, process) :
-		if process in self.process_names.keys() :
-			return self.process_names[process]
-		return '?'
+#	def get_varName(self, var) :
+#		if var in self.var_names.keys() :
+#			return self.var_names[var]
+#		return ''
+#
+#
+#	def get_processName(self, process) :
+#		if process in self.process_names.keys() :
+#			return self.process_names[process]
+#		return '?'
 
 
 	def save_plot(self, histos, var, prefix = '', suffix = '', charge_str = '') :
@@ -162,7 +148,7 @@ class ttvplot(object) :
 			histo.SetMinimum(0.)
 			histo.SetLineColor(1)
 			histo.SetLineWidth(1)
-			histo.SetFillColor(self.get_fillColor(process))
+			histo.SetFillColor(self.ttvStyle.get_fillColor(process))
 
 		# data histogram settings
 		self.apply_histoStyle(histos['obs'  ], 0)
@@ -180,25 +166,25 @@ class ttvplot(object) :
 
 		# legend
 		leg_entries = []
-		leg_entries.append([histos['obs'  ], self.process_names['obs'  ], 'lp'])
+		leg_entries.append([histos['obs'  ], self.ttvStyle.get_processName('obs'  ), 'lp'])
 		if self.chan == '3L' :
-			leg_entries.append([histos['ttz'  ], self.process_names['ttz'  ], 'f'])
-			leg_entries.append([histos['ttw'  ], self.process_names['ttw'  ], 'f'])
-			leg_entries.append([histos['rare' ], self.process_names['rare' ], 'f'])
-			leg_entries.append([histos['btag' ], self.process_names['btag' ], 'f'])
+			leg_entries.append([histos['ttz'  ], self.ttvStyle.get_processName('ttz'  ), 'f'])
+			leg_entries.append([histos['ttw'  ], self.ttvStyle.get_processName('ttw'  ), 'f'])
+			leg_entries.append([histos['rare' ], self.ttvStyle.get_processName('rare' ), 'f'])
+			leg_entries.append([histos['btag' ], self.ttvStyle.get_processName('btag' ), 'f'])
 		if self.chan == '4L' :
-			leg_entries.append([histos['ttz'  ], self.process_names['ttz'  ], 'f'])
-			leg_entries.append([histos['ttw'  ], self.process_names['ttw'  ], 'f'])
-			leg_entries.append([histos['rare' ], self.process_names['rare' ], 'f'])
-			leg_entries.append([histos['zz'   ], self.process_names['zz'   ], 'f'])
+			leg_entries.append([histos['ttz'  ], self.ttvStyle.get_processName('ttz'  ), 'f'])
+			leg_entries.append([histos['ttw'  ], self.ttvStyle.get_processName('ttw'  ), 'f'])
+			leg_entries.append([histos['rare' ], self.ttvStyle.get_processName('rare' ), 'f'])
+			leg_entries.append([histos['zz'   ], self.ttvStyle.get_processName('zz'   ), 'f'])
 		if self.chan == '2L' :
-			leg_entries.append([histos['ttw'  ], self.process_names['ttw'  ], 'f'])
-			leg_entries.append([histos['ttz'  ], self.process_names['ttz'  ], 'f'])
-			leg_entries.append([histos['wz'   ], self.process_names['wz'   ], 'f'])
-			leg_entries.append([histos['rare' ], self.process_names['rare' ], 'f'])
-			leg_entries.append([histos['chmid'], self.process_names['chmid'], 'f'])
-		leg_entries.append([histos['fake' ], self.process_names['fake' ], 'f'])
-		leg_entries.append([histos['bgtot'], self.process_names['bgtot'], 'l'])
+			leg_entries.append([histos['ttw'  ], self.ttvStyle.get_processName('ttw'  ), 'f'])
+			leg_entries.append([histos['ttz'  ], self.ttvStyle.get_processName('ttz'  ), 'f'])
+			leg_entries.append([histos['wz'   ], self.ttvStyle.get_processName('wz'   ), 'f'])
+			leg_entries.append([histos['rare' ], self.ttvStyle.get_processName('rare' ), 'f'])
+			leg_entries.append([histos['chmid'], self.ttvStyle.get_processName('chmid'), 'f'])
+		leg_entries.append([histos['fake' ], self.ttvStyle.get_processName('fake' ), 'f'])
+		leg_entries.append([histos['bgtot'], self.ttvStyle.get_processName('bgtot'), 'l'])
 		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
 		leg = self.ttvStyle.draw_legend(leg_entries)
 
@@ -217,7 +203,7 @@ class ttvplot(object) :
 
 		# draw and set axis titles
 		hs_pred.Draw()
-		self.set_axisTitles(hs_pred, self.get_varName(var), 'Events')
+		self.set_axisTitles(hs_pred, self.ttvStyle.get_varName(var), 'Events')
 		#hs_pred.GetXaxis().SetNdivisions(206)
 		if var == 'Int' :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
@@ -281,11 +267,11 @@ class ttvplot(object) :
 		for process in histos :
 			self.apply_histoStyle(histos[process], process)
 			if process == 'data' or process == 'obs' :
-				leg_entries.append([histos[process], self.get_processName('obs'), 'lp'])
+				leg_entries.append([histos[process], self.ttvStyle.get_processName('obs'), 'lp'])
 				data_index = len(leg_entries) - 1
 			else :
 				hstack.Add(histos[process])
-				leg_entries.append([histos[process], self.get_processName(process), 'f'])
+				leg_entries.append([histos[process], self.ttvStyle.get_processName(process), 'f'])
 		leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
 		maximum = self.get_maximum(histos.values())
 		hstack.SetMaximum(maximum)
@@ -293,7 +279,7 @@ class ttvplot(object) :
 		hstack.Draw('hist')
 		bin_width = hstack.GetXaxis().GetBinWidth(1)
 		y_title = 'Events / %.0f GeV' % bin_width
-		self.set_axisTitles(hstack, self.get_varName(var), y_title)
+		self.set_axisTitles(hstack, self.ttvStyle.get_varName(var), y_title)
 		histos['data'].Draw('psame')
 		self.ttvStyle.draw_cmsLine()
 		canvas.cd()

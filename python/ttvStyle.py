@@ -5,15 +5,19 @@ from array import array
 
 class ttvStyle(object) :
 
-	def __init__(self, lumi, cms_label) :
+	def __init__(self, lumi, cms_label, TeX_switch) :
 		self.ttvStyle = ROOT.TStyle('ttvStyle','ttV Style')
 		self.lumi = lumi
 		self.cms_label = cms_label
+		self.TeX_switch = TeX_switch
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
 
 		self.set_style()
+		self.define_colors()
+		self.define_processNames(self.TeX_switch)
+		self.define_varNames()
 
 
 	def set_style(self) :
@@ -173,6 +177,96 @@ class ttvStyle(object) :
 ##		self.ttvStyle.SetHistMinimumZero(kTRUE)
 
 		self.ttvStyle.cd()
+
+
+	def define_colors(self) :
+		'''define histogram colors'''
+
+		self.colors = {}
+		self.colors['obs'  ] = 1
+		self.colors['fake' ] = 46
+		self.colors['chmid'] = 49
+		self.colors['rare' ] = 38
+		self.colors['wz'   ] = 39
+		self.colors['ttz'  ] = 42
+		self.colors['ttw'  ] = 44
+		self.colors['btag' ] = 31
+		self.colors['zz'   ] = 30
+
+
+	def define_processNames(self, TeX_switch = False) :
+		'''define process names'''
+
+		self.process_names = {}
+		self.process_names['obs'  ] = 'Observed'
+		self.process_names['fake' ] = 'Misidentified lepton'
+		self.process_names['chmid'] = 'Mismeasured charge'
+		self.process_names['rare' ] = 'Irreducible'
+		self.process_names['wz'   ] = 'WZ'
+		self.process_names['ttz'  ] = 't#bar{t}Z'
+		self.process_names['ttw'  ] = 't#bar{t}W'
+		self.process_names['bgtot'] = 'Backgrounds'
+		self.process_names['btag' ] = 'Non-top'
+		self.process_names['zz'   ] = 'ZZ'
+		self.process_names['wjets'] = 'W+jets'
+		self.process_names['zjets'] = 'DY+jets'
+		self.process_names['qcd'  ] = 'QCD'
+		if TeX_switch is True :
+			self.process_names['ttz'  ] = '\\ttz'
+			self.process_names['ttw'  ] = '\\ttw'
+			if short_names is True :
+				self.process_names['fake' ] = 'Lept.\\ MisID'
+				self.process_names['chmid'] = 'Ch.\\ MisID'
+
+
+	def define_varNames(self) :
+		''' define variable names'''
+
+		self.var_names = {}
+		self.var_names['HT'    ] = 'H_{T} [GeV]'
+		self.var_names['MET'   ] = 'Particle flow E_{T}^{miss} [GeV]'
+		self.var_names['NJ'    ] = 'Jet multiplicity'
+		self.var_names['NbJ'   ] = 'b-Jet multiplicity (CSVL)'
+		self.var_names['NbJmed'] = 'b-Jet multiplicity (CSVM)'
+		self.var_names['pT1'   ] = 'Leading lepton p_{T} [GeV]'
+		self.var_names['pT2'   ] = 'Sub-leading lepton p_{T} [GeV]'
+		self.var_names['Int'   ] = ''
+		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
+		self.var_names['NVrtx' ] = 'N_{Vertices}'
+		self.var_names['minMT' ] = 'M_{T} [GeV]'
+		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
+		self.var_names['NJets'      ] = self.get_varName('NJ')
+		self.var_names['MaxJPt'     ] = 'Hardest jet p_{T} [GeV]'
+		self.var_names['NVertices'  ] = self.get_varName('NVrtx')
+		self.var_names['ClosJetPt'  ] = 'Closest jet p_{T} [GeV]'
+		self.var_names['AwayJetPt'  ] = 'Away jet p_{T} [GeV]'
+		self.var_names['NBJets'     ] = self.get_varName('NbJ')
+		self.var_names['MT'         ] = 'm_{T}'
+		self.var_names['MET_noMTCut'] = 'E_{T}^{miss} [GeV]'
+		self.var_names['MT_MET30'   ] = self.get_varName('MT')
+		self.var_names['LepPt'      ] = 'Lepton p_{T} [GeV]'
+		self.var_names['LepEta'     ] = 'Lepton #eta [GeV]'
+		self.var_names['LepIso'     ] = 'Lepton isolation'
+		self.var_names['ClosJetDR'  ] = 'Closest jet DR'
+		self.var_names['AwayJetDR'  ] = 'Away jet DR'
+
+
+	def get_fillColor(self, process) :
+		if process in self.colors.keys() :
+			return self.colors[process]
+		return 0
+
+
+	def get_varName(self, var) :
+		if var in self.var_names.keys() :
+			return self.var_names[var]
+		return ''
+
+
+	def get_processName(self, process) :
+		if process in self.process_names.keys() :
+			return self.process_names[process]
+		return '?'
 
 
 	@property
