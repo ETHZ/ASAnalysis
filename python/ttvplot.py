@@ -14,93 +14,10 @@ class ttvplot(object) :
 		if not os.path.exists(self.path) :
 			os.makedirs(self.path)
 		self.chan = chan
-#		self.lumi = lumi
-#		self.cms_label = cms_label
 		self.asymmErr = asymmErr
-
-#		# colors
-#		self.colors = {}
-#		self.colors['obs'  ] = 1
-#		self.colors['fake' ] = 46
-#		self.colors['chmid'] = 49
-#		self.colors['rare' ] = 38
-#		self.colors['wz'   ] = 39
-#		self.colors['ttz'  ] = 42
-#		self.colors['ttw'  ] = 44
-#		self.colors['btag' ] = 31
-#		self.colors['zz'   ] = 30
-#
-#		# process names
-#		self.process_names = {}
-#		self.process_names['obs'  ] = 'Observed'
-#		self.process_names['fake' ] = 'Misidentified lepton'
-#		self.process_names['chmid'] = 'Mismeasured charge'
-#		self.process_names['rare' ] = 'Irreducible'
-#		self.process_names['wz'   ] = 'WZ'
-#		self.process_names['ttz'  ] = 't#bar{t}Z'
-#		self.process_names['ttw'  ] = 't#bar{t}W'
-#		self.process_names['bgtot'] = 'Backgrounds'
-#		self.process_names['btag' ] = 'Non-top'
-#		self.process_names['zz'   ] = 'ZZ'
-#		self.process_names['wjets'] = 'W+jets'
-#		self.process_names['zjets'] = 'DY+jets'
-#		self.process_names['qcd'  ] = 'QCD'
-#		if TeX_switch is True :
-#			self.process_names['ttz'  ] = '\\ttz'
-#			self.process_names['ttw'  ] = '\\ttw'
-#			if short_names is True :
-#				self.process_names['fake' ] = 'Lept.\\ MisID'
-#				self.process_names['chmid'] = 'Ch.\\ MisID'
-#
-#		# variable names
-#		self.var_names = {}
-#		self.var_names['HT'    ] = 'H_{T} [GeV]'
-#		self.var_names['MET'   ] = 'Particle flow E_{T}^{miss} [GeV]'
-#		self.var_names['NJ'    ] = 'Jet multiplicity'
-#		self.var_names['NbJ'   ] = 'b-Jet multiplicity (CSVL)'
-#		self.var_names['NbJmed'] = 'b-Jet multiplicity (CSVM)'
-#		self.var_names['pT1'   ] = 'Leading lepton p_{T} [GeV]'
-#		self.var_names['pT2'   ] = 'Sub-leading lepton p_{T} [GeV]'
-#		self.var_names['Int'   ] = ''
-#		self.var_names['Mll'   ] = 'm_{ll} [GeV]'
-#		self.var_names['NVrtx' ] = 'N_{Vertices}'
-#		self.var_names['minMT' ] = 'M_{T} [GeV]'
-#		self.var_names['M3'    ] = 'm_{bjj} [GeV]'
-#		self.var_names['NJets'      ] = self.ttvStyle.get_varName('NJ')
-#		self.var_names['MaxJPt'     ] = 'Hardest jet p_{T} [GeV]'
-#		self.var_names['NVertices'  ] = self.ttvStyle.get_varName('NVrtx')
-#		self.var_names['ClosJetPt'  ] = 'Closest jet p_{T} [GeV]'
-#		self.var_names['AwayJetPt'  ] = 'Away jet p_{T} [GeV]'
-#		self.var_names['NBJets'     ] = self.ttvStyle.get_varName('NbJ')
-#		self.var_names['MT'         ] = 'm_{T}'
-#		self.var_names['MET_noMTCut'] = 'E_{T}^{miss} [GeV]'
-#		self.var_names['MT_MET30'   ] = self.ttvStyle.get_varName('MT')
-#		self.var_names['LepPt'      ] = 'Lepton p_{T} [GeV]'
-#		self.var_names['LepEta'     ] = 'Lepton #eta [GeV]'
-#		self.var_names['LepIso'     ] = 'Lepton isolation'
-#		self.var_names['ClosJetDR'  ] = 'Closest jet DR'
-#		self.var_names['AwayJetDR'  ] = 'Away jet DR'
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
-
-
-#	def get_fillColor(self, process) :
-#		if process in self.colors.keys() :
-#			return self.colors[process]
-#		return 0
-#
-#
-#	def get_varName(self, var) :
-#		if var in self.var_names.keys() :
-#			return self.var_names[var]
-#		return ''
-#
-#
-#	def get_processName(self, process) :
-#		if process in self.process_names.keys() :
-#			return self.process_names[process]
-#		return '?'
 
 
 	def save_plot(self, histos, var, prefix = '', suffix = '', charge_str = '') :
@@ -188,11 +105,6 @@ class ttvplot(object) :
 		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
 		leg = self.ttvStyle.draw_legend(leg_entries)
 
-#		canvas = ROOT.TCanvas('C_ObsPred_'+selname+var, 'Observed vs Predicted', 0, 0, 600, 600)
-#		canvas.SetLeftMargin(0.12)
-#		canvas.SetRightMargin(0.04)
-#		canvas.SetTopMargin(0.04)
-#		canvas.SetBottomMargin(0.12)
 		canvas = self.ttvStyle.get_canvas('C_ObsPred')
 		canvas.cd()
 
@@ -249,7 +161,6 @@ class ttvplot(object) :
 			gr_obs         .Draw('PE same')
 		else :
 			histos['obs'  ].Draw('PE X0 same')
-#		self.drawTopLine(0.56, 0.8)
 		self.ttvStyle.draw_cmsLine()
 #		raw_input('ok? ')
 
@@ -331,46 +242,6 @@ class ttvplot(object) :
 		return maximum
 
 
-#	def get_canvas(self, name = '') :
-#		name += '_%d' % self.rand.Integer(10000)  # add random number to avoid same names
-#		canvas = ROOT.TCanvas(name, name, 0, 0, 600, 600)
-#		canvas.SetLeftMargin(0.12)
-#		canvas.SetRightMargin(0.04)
-#		canvas.SetTopMargin(0.04)
-#		canvas.SetBottomMargin(0.12)
-#		canvas.cd()
-#
-#		ROOT.gStyle.SetOptStat(0)
-#		ROOT.gStyle.SetOptTitle(0)
-#		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
-##		ROOT.gStyle.SetErrorX(0)
-#		ROOT.gPad.SetTicks(1,1)
-#		return canvas
-#
-#
-#	def draw_legend(self, entries) :
-#		leg = ROOT.TLegend()
-#		for entry in entries :
-#			leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
-#
-#		# set position
-#		width = 0.17
-#		x = 0.63
-#		y = 0.93
-#		leg.SetX1NDC(x)
-#		leg.SetX2NDC(x+width)
-#		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
-#		leg.SetY2NDC(y)
-#		leg.SetFillStyle(0)
-#		leg.SetTextFont(42)
-#		leg.SetTextSize(0.03)
-#		leg.SetBorderSize(0)
-#		leg.SetTextAlign(12)
-#
-#		leg.Draw()
-#		return leg
-
-
 	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :
 		latex = ROOT.TLatex()
 		latex.SetNDC()
@@ -386,26 +257,6 @@ class ttvplot(object) :
 			lumi = self.lumi
 			unit = 'pb^{-1}'
 		latex.DrawLatex(rightedge, 0.92, '#sqrt{s} = 8 TeV, L_{int} = %4.1f %s' % (lumi, unit))
-
-
-#	def draw_cmsLine(self) :
-#		latex = ROOT.TLatex()
-#		latex.SetNDC()
-#		latex.SetTextFont(62)
-#		latex.SetTextSize(0.04)
-#		latex.SetTextAlign(13)
-#		latex.DrawLatex(0.15, 0.93, self.cms_label)
-#		latex.SetTextFont(42)
-#		latex.SetTextSize(0.03)
-#		if self.lumi > 500. :
-#			lumi = self.lumi/1000.
-#			unit = 'fb^{-1}'
-#		else :
-#			lumi = self.lumi
-#			unit = 'pb^{-1}'
-##		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
-#		latex.SetTextAlign(31)
-#		latex.DrawLatex(0.96, 0.97, '%4.1f %s (8 TeV)' % (lumi, unit))
 
 
 	def apply_histoStyle(self, histo, datamc) :
