@@ -5,7 +5,7 @@ from array import array
 
 class ttvStyle(object) :
 
-	def __init__(self, lumi, cms_label, TeX_switch) :
+	def __init__(self, lumi, cms_label, TeX_switch = False) :
 		self.ttvStyle = ROOT.TStyle('ttvStyle','ttV Style')
 		self.lumi = lumi
 		self.cms_label = cms_label

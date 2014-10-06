@@ -16,6 +16,7 @@ import ttvplot
 import config
 import tables
 import copy
+import ttvStyle
 
 
 class plotter :
@@ -43,6 +44,7 @@ class plotter :
 		self.selections['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , mll = 8., minNjets = 2, maxNbjetsM = 0, flavor = 2)
 		self.selections['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1)  # pre-selection
 		self.selections['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1, flavor = 2)
+		self.selections['3J1bJOS'  ] = selection.selection(name = '3J1bJOS', mll = 8., minNjets = 3, minNbjetsM = 1, flavor = -2, applyZVeto = False)
 		self.selections['final'    ] = selection.selection(name = 'final'  , mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
 		self.selections['final++'  ] = selection.selection(name = 'final++', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
 		self.selections['final--'  ] = selection.selection(name = 'final--', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
@@ -171,9 +173,12 @@ class plotter :
 
 
 		if DiffMC :
+#			self.plot_DiffMC(self.selections['1J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
-			self.plot_DiffMC(self.selections['0J0bJOS'        ])
+#			self.plot_DiffMC(self.selections['0J0bJOS'        ])
+#			self.plot_DiffMC(self.selections['3J1bJ'    ])
+			self.plot_DiffMC(self.selections['3J1bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
 
@@ -1470,13 +1475,14 @@ class plotter :
 		h_ttw_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
+		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
 
 		# getting data
 		print '[status] getting %s histogram from data..' % var
 		tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
 
 		# adding mc samples
-		for histo in [histos['bgtot'], histos['pred']] :
+		for histo in [histos['bgtot'], histos['pred'], histos['stack']] :
 			histo.Add(histos['top'  ])
 			histo.Add(histos['zjets'])
 			histo.Add(histos['wjets'])
@@ -1486,8 +1492,35 @@ class plotter :
 			histo.Add(histos['ttz'  ])
 			if histo.GetName() != h_bgtot_name : histo.Add(histos['ttw'  ])
 
-		pl = ttvplot.ttvplot(self.path + 'ObsMCPlots/%s/'%sel.name, '2L', self.lumi, 2)
-		pl.save_plot_1d(histos['obs'], histos['pred'], var)
+		pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 2, TeX_switch = False)
+		canvas = pl.get_canvas(var)
+		canvas.cd()
+
+		leg_entries = []
+		for process, histo in histos.iteritems() :
+			if process == 'obs' :
+				leg_entries.append([histo, pl.get_processName(process), 'lp'])
+			else :
+				leg_entries.append([histo, pl.get_processName(process), 'f'])
+		leg = pl.draw_legend(leg_entries)
+
+		histos['obs'].SetMarkerStyle(20)
+#		histos['pred'].Draw()
+		histos['stack'].Draw()
+		leg.Draw()
+#		histos['pred'].Draw('0 E2 same')
+#		histos['bgtot'].Draw('hist same')
+		histos['obs'  ].Draw('PE X0 same')
+		pl.draw_cmsLine()
+
+		prefix = ''
+		suffix = ''
+		canvas.Print('%sObsMCPlots/%s/ObsMC%s_%s%s.pdf' % (self.path, sel.name, prefix, var, suffix))
+
+
+
+#		pl = ttvplot.ttvplot(self.path + 'ObsMCPlots/%s/'%sel.name, '2L', self.lumi, 2)
+#		pl.save_plot_1d(histos['obs'], histos['pred'], var)
 #		raw_input('ok? ')
 #		raw_input('ok? ')
 
