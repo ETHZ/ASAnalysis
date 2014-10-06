@@ -3,160 +3,247 @@ import ROOT
 from array import array
 
 
-def ttvStyle() :
-	ttvStyle = ROOT.TStyle('ttvStyle','RD42 Style')
+class ttvStyle(object) :
 
-	# canvas
-	ttvStyle.SetCanvasBorderMode(0)
-	ttvStyle.SetCanvasColor(ROOT.kWhite)
-	ttvStyle.SetCanvasDefH(600)
-	ttvStyle.SetCanvasDefW(600)
-	ttvStyle.SetCanvasDefX(0)
-	ttvStyle.SetCanvasDefY(0)
+	def __init__(self, lumi, cms_label) :
+		self.ttvStyle = ROOT.TStyle('ttvStyle','ttV Style')
+		self.lumi = lumi
+		self.cms_label = cms_label
 
-	# pad
-#	ttvStyle.SetPadBorderMode(0)
-#	# ttvStyle.SetPadBorderSize(Width_t size = 1)
-#	ttvStyle.SetPadColor(ROOT.kWhite)
-#	ttvStyle.SetPadGridX(False)
-#	ttvStyle.SetPadGridY(False)
-#	ttvStyle.SetGridColor(0)
-#	ttvStyle.SetGridStyle(3)
-#	ttvStyle.SetGridWidth(1)
+		# random variable
+		self.rand = ROOT.TRandom3(0)
 
-	# frame
-	ttvStyle.SetFrameBorderMode(0)
-	ttvStyle.SetFrameBorderSize(1)
-	ttvStyle.SetFrameFillColor(0)
-	ttvStyle.SetFrameFillStyle(0)
-	ttvStyle.SetFrameLineColor(1)
-	ttvStyle.SetFrameLineStyle(1)
-	ttvStyle.SetFrameLineWidth(1)
+		self.set_style()
 
-	# histo
-##	ttvStyle.SetHistFillColor(63)
-#	# ttvStyle.SetHistFillStyle(0)
-#	ttvStyle.SetHistLineColor(1)
-#	ttvStyle.SetHistLineStyle(0)
-#	ttvStyle.SetHistLineWidth(1)
-#	# ttvStyle.SetLegoInnerR(Float_t rad = 0.5)
-#	# ttvStyle.SetNumberContours(Int_t number = 20)
+
+	def set_style(self) :
+		'''make all the style settings'''
+
+		# canvas
+		self.ttvStyle.SetCanvasBorderMode(0)
+		self.ttvStyle.SetCanvasColor(ROOT.kWhite)
+		self.ttvStyle.SetCanvasDefH(600)
+		self.ttvStyle.SetCanvasDefW(600)
+		self.ttvStyle.SetCanvasDefX(0)
+		self.ttvStyle.SetCanvasDefY(0)
+
+		# pad
+#		self.ttvStyle.SetPadBorderMode(0)
+#		# self.ttvStyle.SetPadBorderSize(Width_t size = 1)
+#		self.ttvStyle.SetPadColor(ROOT.kWhite)
+#		self.ttvStyle.SetPadGridX(False)
+#		self.ttvStyle.SetPadGridY(False)
+#		self.ttvStyle.SetGridColor(0)
+#		self.ttvStyle.SetGridStyle(3)
+#		self.ttvStyle.SetGridWidth(1)
+
+		# frame
+		self.ttvStyle.SetFrameBorderMode(0)
+		self.ttvStyle.SetFrameBorderSize(1)
+		self.ttvStyle.SetFrameFillColor(0)
+		self.ttvStyle.SetFrameFillStyle(0)
+		self.ttvStyle.SetFrameLineColor(1)
+		self.ttvStyle.SetFrameLineStyle(1)
+		self.ttvStyle.SetFrameLineWidth(1)
+
+		# histo
+##		self.ttvStyle.SetHistFillColor(63)
+#		# self.ttvStyle.SetHistFillStyle(0)
+#		self.ttvStyle.SetHistLineColor(1)
+#		self.ttvStyle.SetHistLineStyle(0)
+#		self.ttvStyle.SetHistLineWidth(1)
+#		# self.ttvStyle.SetLegoInnerR(Float_t rad = 0.5)
+#		# self.ttvStyle.SetNumberContours(Int_t number = 20)
 #
-#	ttvStyle.SetEndErrorSize(2)
-##	ttvStyle.SetErrorMarker(20)
-#	#ttvStyle.SetErrorX(0.)
+#		self.ttvStyle.SetEndErrorSize(2)
+##		self.ttvStyle.SetErrorMarker(20)
+#		#self.ttvStyle.SetErrorX(0.)
 #	
-#	ttvStyle.SetMarkerStyle(20)
-#	ttvStyle.SetMarkerSize(1.2)
+#		self.ttvStyle.SetMarkerStyle(20)
+#		self.ttvStyle.SetMarkerSize(1.2)
 #
-#	# fit/function
-##	ttvStyle.SetOptFit(1)
-	ttvStyle.SetOptFit(0)
-#	ttvStyle.SetFitFormat('5.4g')
-	ttvStyle.SetFuncColor(3)
-#	ttvStyle.SetFuncStyle(1)
-#	ttvStyle.SetFuncWidth(1)
+#		# fit/function
+##		self.ttvStyle.SetOptFit(1)
+		self.ttvStyle.SetOptFit(0)
+#		self.ttvStyle.SetFitFormat('5.4g')
+		self.ttvStyle.SetFuncColor(3)
+#		self.ttvStyle.SetFuncStyle(1)
+#		self.ttvStyle.SetFuncWidth(1)
 #
-#	# date
-#	ttvStyle.SetOptDate(0)
-#	# ttvStyle.SetDateX(Float_t x = 0.01)
-#	# ttvStyle.SetDateY(Float_t y = 0.01)
+#		# date
+#		self.ttvStyle.SetOptDate(0)
+#		# self.ttvStyle.SetDateX(Float_t x = 0.01)
+#		# self.ttvStyle.SetDateY(Float_t y = 0.01)
 
-	# statistics box
-#	ttvStyle.SetOptFile(0)
-	ttvStyle.SetOptStat(0)  # To display the mean and RMS:   SetOptStat('mr')
-	ttvStyle.SetStatColor(ROOT.kWhite)
-	ttvStyle.SetStatFont(42)
-	ttvStyle.SetStatFontSize(0.025)
-	ttvStyle.SetStatTextColor(1)
-#	ttvStyle.SetStatFormat('6.4g')
-	ttvStyle.SetStatBorderSize(0)
-#	ttvStyle.SetStatH(0.1)
-	ttvStyle.SetStatW(0.35)
-	ttvStyle.SetStatStyle(1001)
-	ttvStyle.SetStatX(0.9)
-	ttvStyle.SetStatY(0.9)
+		# statistics box
+#		self.ttvStyle.SetOptFile(0)
+		self.ttvStyle.SetOptStat(0)  # To display the mean and RMS:   SetOptStat('mr')
+		self.ttvStyle.SetStatColor(ROOT.kWhite)
+		self.ttvStyle.SetStatFont(42)
+		self.ttvStyle.SetStatFontSize(0.025)
+		self.ttvStyle.SetStatTextColor(1)
+#		self.ttvStyle.SetStatFormat('6.4g')
+		self.ttvStyle.SetStatBorderSize(0)
+#		self.ttvStyle.SetStatH(0.1)
+		self.ttvStyle.SetStatW(0.35)
+		self.ttvStyle.SetStatStyle(1001)
+		self.ttvStyle.SetStatX(0.9)
+		self.ttvStyle.SetStatY(0.9)
 
-	# margins
-	ttvStyle.SetPadTopMargin   (0.06)
-	ttvStyle.SetPadBottomMargin(0.14)
-	ttvStyle.SetPadLeftMargin  (0.14)
-	ttvStyle.SetPadRightMargin (0.06)
+		# margins
+		self.ttvStyle.SetPadTopMargin   (0.06)
+		self.ttvStyle.SetPadBottomMargin(0.14)
+		self.ttvStyle.SetPadLeftMargin  (0.14)
+		self.ttvStyle.SetPadRightMargin (0.06)
 
-	# global title
-	ttvStyle.SetOptTitle(0)
-	ttvStyle.SetTitleFont(42)
-	ttvStyle.SetTitleColor(1)
-#	ttvStyle.SetTitleTextColor(1)
-	ttvStyle.SetTitleFillColor(10)
-#	ttvStyle.SetTitleFontSize(0.05)
-#	# ttvStyle.SetTitleH(0)  # Set the height of the title box
-#	# ttvStyle.SetTitleW(0)  # Set the width of the title box
-#	# ttvStyle.SetTitleX(0)  # Set the position of the title box
-#	# ttvStyle.SetTitleY(0.985)  # Set the position of the title box
-#	# ttvStyle.SetTitleStyle(Style_t style = 1001)
-#	# ttvStyle.SetTitleBorderSize(2)
+		# global title
+		self.ttvStyle.SetOptTitle(0)
+		self.ttvStyle.SetTitleFont(42)
+		self.ttvStyle.SetTitleColor(1)
+#		self.ttvStyle.SetTitleTextColor(1)
+		self.ttvStyle.SetTitleFillColor(10)
+#		self.ttvStyle.SetTitleFontSize(0.05)
+#		# self.ttvStyle.SetTitleH(0)  # Set the height of the title box
+#		# self.ttvStyle.SetTitleW(0)  # Set the width of the title box
+#		# self.ttvStyle.SetTitleX(0)  # Set the position of the title box
+#		# self.ttvStyle.SetTitleY(0.985)  # Set the position of the title box
+#		# self.ttvStyle.SetTitleStyle(Style_t style = 1001)
+#		# self.ttvStyle.SetTitleBorderSize(2)
 #
-#	# axis titles
-#	ttvStyle.SetTitleColor(1, 'XYZ')
-	ttvStyle.SetTitleFont(42, 'XYZ')
-	ttvStyle.SetTitleSize(0.046, 'XYZ')
-#	ttvStyle.SetTitleXSize(0.02)  # Another way to set the size?
-#	ttvStyle.SetTitleYSize(0.02)
-#	ttvStyle.SetTitleXOffset(1.25)
-#	ttvStyle.SetTitleYOffset(1.25)
-	ttvStyle.SetTitleOffset(1.5, 'XYZ')  # Another way to set the Offset
+#		# axis titles
+#		self.ttvStyle.SetTitleColor(1, 'XYZ')
+		self.ttvStyle.SetTitleFont(42, 'XYZ')
+		self.ttvStyle.SetTitleSize(0.046, 'XYZ')
+#		self.ttvStyle.SetTitleXSize(0.02)  # Another way to set the size?
+#		self.ttvStyle.SetTitleYSize(0.02)
+#		self.ttvStyle.SetTitleXOffset(1.25)
+#		self.ttvStyle.SetTitleYOffset(1.25)
+		self.ttvStyle.SetTitleOffset(1.5, 'XYZ')  # Another way to set the Offset
 #
-#	# axis labels
-#	ttvStyle.SetLabelColor(1, 'XYZ')
-	ttvStyle.SetLabelFont(42, 'XYZ')
-	ttvStyle.SetLabelOffset(0.012, 'XYZ')
-	ttvStyle.SetLabelSize(0.04, 'XYZ')
+#		# axis labels
+#		self.ttvStyle.SetLabelColor(1, 'XYZ')
+		self.ttvStyle.SetLabelFont(42, 'XYZ')
+		self.ttvStyle.SetLabelOffset(0.012, 'XYZ')
+		self.ttvStyle.SetLabelSize(0.04, 'XYZ')
 #
-#	# axis
-#	ttvStyle.SetAxisColor(1, 'XYZ')
-#	ttvStyle.SetStripDecimals(ROOT.kTRUE)
-#	ttvStyle.SetTickLength(0.03, 'XYZ')
-#	ttvStyle.SetNdivisions(510, 'XYZ')
-	ttvStyle.SetPadTickX(1)   # To get tick marks on the opposite side of the frame
-	ttvStyle.SetPadTickY(1)
+#		# axis
+#		self.ttvStyle.SetAxisColor(1, 'XYZ')
+#		self.ttvStyle.SetStripDecimals(ROOT.kTRUE)
+#		self.ttvStyle.SetTickLength(0.03, 'XYZ')
+#		self.ttvStyle.SetNdivisions(510, 'XYZ')
+		self.ttvStyle.SetPadTickX(1)   # To get tick marks on the opposite side of the frame
+		self.ttvStyle.SetPadTickY(1)
 #
-#	# Change for log plots:
-#	ttvStyle.SetOptLogx(0)
-#	ttvStyle.SetOptLogy(0)
-#	ttvStyle.SetOptLogz(0)
+#		# Change for log plots:
+#		self.ttvStyle.SetOptLogx(0)
+#		self.ttvStyle.SetOptLogy(0)
+#		self.ttvStyle.SetOptLogz(0)
 #
-#	# colors
-	ttvStyle.SetPalette(1)
-	stops = [0.00, 0.34, 0.61, 0.84, 1.00]
-	red   = [0.00, 0.00, 0.87, 1.00, 0.51]
-	green = [0.00, 0.81, 1.00, 0.20, 0.00]
-	blue  = [0.51, 1.00, 0.12, 0.00, 0.00]
-	s = array('d', stops)
-	r = array('d', red)
-	g = array('d', green)
-	b = array('d', blue)
-	ncontours = 999
-	npoints = len(s)
-	ROOT.TColor.CreateGradientColorTable(npoints, s, r, g, b, ncontours)
-	ttvStyle.SetNumberContours(ncontours)
+#		# colors
+		self.ttvStyle.SetPalette(1)
+		stops = [0.00, 0.34, 0.61, 0.84, 1.00]
+		red   = [0.00, 0.00, 0.87, 1.00, 0.51]
+		green = [0.00, 0.81, 1.00, 0.20, 0.00]
+		blue  = [0.51, 1.00, 0.12, 0.00, 0.00]
+		s = array('d', stops)
+		r = array('d', red)
+		g = array('d', green)
+		b = array('d', blue)
+		ncontours = 999
+		npoints = len(s)
+		ROOT.TColor.CreateGradientColorTable(npoints, s, r, g, b, ncontours)
+		self.ttvStyle.SetNumberContours(ncontours)
 
-	# text
-#	ttvStyle.SetTextAlign(12)
+		# text
+#		self.ttvStyle.SetTextAlign(12)
 
 #
-#	# postscript options:
-#	#ttvStyle.SetPaperSize(20.,20.)
-##	ttvStyle.SetLineScalePS(Float_t scale = 3)
-##	ttvStyle.SetLineStyleString(Int_t i, const char* text)
-##	ttvStyle.SetHeaderPS(const char* header)
-##	ttvStyle.SetTitlePS(const char* pstitle)
+#		# postscript options:
+#		#self.ttvStyle.SetPaperSize(20.,20.)
+##		self.ttvStyle.SetLineScalePS(Float_t scale = 3)
+##		self.ttvStyle.SetLineStyleString(Int_t i, const char* text)
+##		self.ttvStyle.SetHeaderPS(const char* header)
+##		self.ttvStyle.SetTitlePS(const char* pstitle)
 #
-##	ttvStyle.SetBarOffset(Float_t baroff = 0.5)
-##	ttvStyle.SetBarWidth(Float_t barwidth = 0.5)
-##	ttvStyle.SetPaintTextFormat(const char* format = 'g')
-##	ttvStyle.SetPalette(Int_t ncolors = 0, Int_t* colors = 0)
-##	ttvStyle.SetTimeOffset(Double_t toffset)
-##	ttvStyle.SetHistMinimumZero(kTRUE)
+##		self.ttvStyle.SetBarOffset(Float_t baroff = 0.5)
+##		self.ttvStyle.SetBarWidth(Float_t barwidth = 0.5)
+##		self.ttvStyle.SetPaintTextFormat(const char* format = 'g')
+##		self.ttvStyle.SetPalette(Int_t ncolors = 0, Int_t* colors = 0)
+##		self.ttvStyle.SetTimeOffset(Double_t toffset)
+##		self.ttvStyle.SetHistMinimumZero(kTRUE)
 
-	ttvStyle.cd()
+		self.ttvStyle.cd()
+
+
+	@property
+	def cms_label(self) :
+		if   self._cms_label == 0 : return 'CMS'
+		elif self._cms_label == 1 : return 'CMS Simulation'
+		elif self._cms_label == 2 : return 'CMS Preliminary'
+		elif self._cms_label == 3 : return 'CMS Simulation Preliminary'
+		else                      : return ''
+
+
+	@cms_label.setter
+	def cms_label(self, cms_label) :
+		self._cms_label = cms_label
+
+
+	def get_canvas(self, name = '') :
+		name += '_%d' % self.rand.Integer(10000)  # add random number to avoid same names
+		canvas = ROOT.TCanvas(name, name)
+#		canvas.SetLeftMargin(0.12)
+#		canvas.SetRightMargin(0.04)
+#		canvas.SetTopMargin(0.04)
+#		canvas.SetBottomMargin(0.12)
+		canvas.cd()
+
+#		ROOT.gStyle.SetOptStat(0)
+#		ROOT.gStyle.SetOptTitle(0)
+#		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
+##		ROOT.gStyle.SetErrorX(0)
+#		ROOT.gPad.SetTicks(1,1)
+		return canvas
+
+
+	def draw_legend(self, entries) :
+		leg = ROOT.TLegend()
+		for entry in entries :
+			leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
+
+		# set position
+		width = 0.17
+		x = 0.63
+		y = 0.93
+		leg.SetX1NDC(x)
+		leg.SetX2NDC(x+width)
+		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
+		leg.SetY2NDC(y)
+		leg.SetFillStyle(0)
+		leg.SetTextFont(42)
+		leg.SetTextSize(0.03)
+		leg.SetBorderSize(0)
+		leg.SetTextAlign(12)
+
+		leg.Draw()
+		return leg
+
+
+	def draw_cmsLine(self) :
+		latex = ROOT.TLatex()
+		latex.SetNDC()
+		latex.SetTextFont(62)
+		latex.SetTextSize(0.04)
+		latex.SetTextAlign(13)
+		latex.DrawLatex(0.15, 0.93, self.cms_label)
+		latex.SetTextFont(42)
+		latex.SetTextSize(0.03)
+		if self.lumi > 500. :
+			lumi = self.lumi/1000.
+			unit = 'fb^{-1}'
+		else :
+			lumi = self.lumi
+			unit = 'pb^{-1}'
+#		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
+		latex.SetTextAlign(31)
+		latex.DrawLatex(0.96, 0.97, '%4.1f %s (8 TeV)' % (lumi, unit))

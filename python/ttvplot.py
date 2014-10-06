@@ -2,18 +2,20 @@
 import ROOT
 import os, sys
 import helper
+import ttvStyle
 
 
 class ttvplot(object) :
 
 	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
+		self.ttvStyle = ttvStyle.ttvStyle(lumi, cms_label)
 		self.path = path
 		if not self.path.endswith('/') : self.path += '/'
 		if not os.path.exists(self.path) :
 			os.makedirs(self.path)
 		self.chan = chan
-		self.lumi = lumi
-		self.cms_label = cms_label
+#		self.lumi = lumi
+#		self.cms_label = cms_label
 		self.asymmErr = asymmErr
 
 		# colors
@@ -83,18 +85,18 @@ class ttvplot(object) :
 		self.rand = ROOT.TRandom3(0)
 
 
-	@property
-	def cms_label(self) :
-		if   self._cms_label == 0 : return 'CMS'
-		elif self._cms_label == 1 : return 'CMS Simulation'
-		elif self._cms_label == 2 : return 'CMS Preliminary'
-		elif self._cms_label == 3 : return 'CMS Simulation Preliminary'
-		else                      : return ''
-
-
-	@cms_label.setter
-	def cms_label(self, cms_label) :
-		self._cms_label = cms_label
+#	@property
+#	def cms_label(self) :
+#		if   self._cms_label == 0 : return 'CMS'
+#		elif self._cms_label == 1 : return 'CMS Simulation'
+#		elif self._cms_label == 2 : return 'CMS Preliminary'
+#		elif self._cms_label == 3 : return 'CMS Simulation Preliminary'
+#		else                      : return ''
+#
+#
+#	@cms_label.setter
+#	def cms_label(self, cms_label) :
+#		self._cms_label = cms_label
 
 
 	def get_fillColor(self, process) :
@@ -198,14 +200,14 @@ class ttvplot(object) :
 		leg_entries.append([histos['fake' ], self.process_names['fake' ], 'f'])
 		leg_entries.append([histos['bgtot'], self.process_names['bgtot'], 'l'])
 		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
-		leg = self.draw_legend(leg_entries)
+		leg = self.ttvStyle.draw_legend(leg_entries)
 
 #		canvas = ROOT.TCanvas('C_ObsPred_'+selname+var, 'Observed vs Predicted', 0, 0, 600, 600)
 #		canvas.SetLeftMargin(0.12)
 #		canvas.SetRightMargin(0.04)
 #		canvas.SetTopMargin(0.04)
 #		canvas.SetBottomMargin(0.12)
-		canvas = self.get_canvas('C_ObsPred')
+		canvas = self.ttvStyle.get_canvas('C_ObsPred')
 		canvas.cd()
 
 #		ROOT.gStyle.SetOptStat(0)
@@ -262,7 +264,7 @@ class ttvplot(object) :
 		else :
 			histos['obs'  ].Draw('PE X0 same')
 #		self.drawTopLine(0.56, 0.8)
-		self.draw_cmsLine()
+		self.ttvStyle.draw_cmsLine()
 #		raw_input('ok? ')
 
 		canvas.Print('%sObsPred%s_%s%s.pdf' % (self.path, prefix, var, suffix))
@@ -272,7 +274,7 @@ class ttvplot(object) :
 
 	def save_controlPlot(self, histos, var, prefix = '') :
 		if prefix  != '' : prefix += '_'
-		canvas = self.get_canvas()
+		canvas = self.ttvStyle.get_canvas()
 		canvas.cd()
 		hstack = ROOT.THStack('hs_%s' % var, '%s' % var)
 		leg_entries = []
@@ -287,13 +289,13 @@ class ttvplot(object) :
 		leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
 		maximum = self.get_maximum(histos.values())
 		hstack.SetMaximum(maximum)
-		leg = self.draw_legend(leg_entries)
+		leg = self.ttvStyle.draw_legend(leg_entries)
 		hstack.Draw('hist')
 		bin_width = hstack.GetXaxis().GetBinWidth(1)
 		y_title = 'Events / %.0f GeV' % bin_width
 		self.set_axisTitles(hstack, self.get_varName(var), y_title)
 		histos['data'].Draw('psame')
-		self.draw_cmsLine()
+		self.ttvStyle.draw_cmsLine()
 		canvas.cd()
 		leg.Draw()
 		canvas.Print('%s%s%s.pdf' % (self.path, prefix, var))
@@ -310,14 +312,14 @@ class ttvplot(object) :
 		maximum = scale * max(h_data.GetMaximum(), h_mc.GetMaximum())
 		h_data.SetMaximum(maximum)
 		h_mc  .SetMaximum(maximum)
-		canvas = self.get_canvas()
+		canvas = self.ttvStyle.get_canvas()
 		canvas.cd()
 		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'lp']]
-		leg = self.draw_legend(leg_entries)
+		leg = self.ttvStyle.draw_legend(leg_entries)
 		h_mc.Draw()
 		self.set_axisTitles(h_mc, x_title, y_title)
 		h_data.Draw('same pe')
-		self.draw_cmsLine()
+		self.ttvStyle.draw_cmsLine()
 		leg.Draw()
 		canvas.Print('%s%s.pdf' % (self.path, name))
 		canvas.Print('%s%s.png' % (self.path, name))
@@ -325,11 +327,11 @@ class ttvplot(object) :
 
 	def save_plot_2d(self, histo, name = '', x_title = '', y_title = '') :
 		if name == '' : name = histo.GetName()
-		canvas = self.get_canvas()
+		canvas = self.ttvStyle.get_canvas()
 		canvas.cd()
 		histo.Draw('colztext')
 		self.set_axisTitles(histo, x_title, y_title)
-		self.draw_cmsLine()
+		self.ttvStyle.draw_cmsLine()
 		canvas.Print('%s%s.pdf' % (self.path, name))
 		canvas.Print('%s%s.png' % (self.path, name))
 
@@ -343,44 +345,44 @@ class ttvplot(object) :
 		return maximum
 
 
-	def get_canvas(self, name = '') :
-		name += '_%d' % self.rand.Integer(10000)  # add random number to avoid same names
-		canvas = ROOT.TCanvas(name, name, 0, 0, 600, 600)
-		canvas.SetLeftMargin(0.12)
-		canvas.SetRightMargin(0.04)
-		canvas.SetTopMargin(0.04)
-		canvas.SetBottomMargin(0.12)
-		canvas.cd()
-
-		ROOT.gStyle.SetOptStat(0)
-		ROOT.gStyle.SetOptTitle(0)
-		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
-#		ROOT.gStyle.SetErrorX(0)
-		ROOT.gPad.SetTicks(1,1)
-		return canvas
-
-
-	def draw_legend(self, entries) :
-		leg = ROOT.TLegend()
-		for entry in entries :
-			leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
-
-		# set position
-		width = 0.17
-		x = 0.63
-		y = 0.93
-		leg.SetX1NDC(x)
-		leg.SetX2NDC(x+width)
-		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
-		leg.SetY2NDC(y)
-		leg.SetFillStyle(0)
-		leg.SetTextFont(42)
-		leg.SetTextSize(0.03)
-		leg.SetBorderSize(0)
-		leg.SetTextAlign(12)
-
-		leg.Draw()
-		return leg
+#	def get_canvas(self, name = '') :
+#		name += '_%d' % self.rand.Integer(10000)  # add random number to avoid same names
+#		canvas = ROOT.TCanvas(name, name, 0, 0, 600, 600)
+#		canvas.SetLeftMargin(0.12)
+#		canvas.SetRightMargin(0.04)
+#		canvas.SetTopMargin(0.04)
+#		canvas.SetBottomMargin(0.12)
+#		canvas.cd()
+#
+#		ROOT.gStyle.SetOptStat(0)
+#		ROOT.gStyle.SetOptTitle(0)
+#		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
+##		ROOT.gStyle.SetErrorX(0)
+#		ROOT.gPad.SetTicks(1,1)
+#		return canvas
+#
+#
+#	def draw_legend(self, entries) :
+#		leg = ROOT.TLegend()
+#		for entry in entries :
+#			leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
+#
+#		# set position
+#		width = 0.17
+#		x = 0.63
+#		y = 0.93
+#		leg.SetX1NDC(x)
+#		leg.SetX2NDC(x+width)
+#		leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
+#		leg.SetY2NDC(y)
+#		leg.SetFillStyle(0)
+#		leg.SetTextFont(42)
+#		leg.SetTextSize(0.03)
+#		leg.SetBorderSize(0)
+#		leg.SetTextAlign(12)
+#
+#		leg.Draw()
+#		return leg
 
 
 	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :
@@ -400,24 +402,24 @@ class ttvplot(object) :
 		latex.DrawLatex(rightedge, 0.92, '#sqrt{s} = 8 TeV, L_{int} = %4.1f %s' % (lumi, unit))
 
 
-	def draw_cmsLine(self) :
-		latex = ROOT.TLatex()
-		latex.SetNDC()
-		latex.SetTextFont(62)
-		latex.SetTextSize(0.04)
-		latex.SetTextAlign(13)
-		latex.DrawLatex(0.15, 0.93, self.cms_label)
-		latex.SetTextFont(42)
-		latex.SetTextSize(0.03)
-		if self.lumi > 500. :
-			lumi = self.lumi/1000.
-			unit = 'fb^{-1}'
-		else :
-			lumi = self.lumi
-			unit = 'pb^{-1}'
-#		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
-		latex.SetTextAlign(31)
-		latex.DrawLatex(0.96, 0.97, '%4.1f %s (8 TeV)' % (lumi, unit))
+#	def draw_cmsLine(self) :
+#		latex = ROOT.TLatex()
+#		latex.SetNDC()
+#		latex.SetTextFont(62)
+#		latex.SetTextSize(0.04)
+#		latex.SetTextAlign(13)
+#		latex.DrawLatex(0.15, 0.93, self.cms_label)
+#		latex.SetTextFont(42)
+#		latex.SetTextSize(0.03)
+#		if self.lumi > 500. :
+#			lumi = self.lumi/1000.
+#			unit = 'fb^{-1}'
+#		else :
+#			lumi = self.lumi
+#			unit = 'pb^{-1}'
+##		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
+#		latex.SetTextAlign(31)
+#		latex.DrawLatex(0.96, 0.97, '%4.1f %s (8 TeV)' % (lumi, unit))
 
 
 	def apply_histoStyle(self, histo, datamc) :
@@ -444,14 +446,14 @@ class ttvplot(object) :
 	def set_axisTitles(self, histo, x_axis_title, y_axis_title) :
 		histo.GetXaxis().SetTitle(x_axis_title)
 		histo.GetYaxis().SetTitle(y_axis_title)
-		histo.GetXaxis().SetTitleOffset(1.25)
-		histo.GetYaxis().SetTitleOffset(1.25)
-		histo.GetXaxis().SetTitleSize(0.046)
-		histo.GetYaxis().SetTitleSize(0.046)
-		histo.GetXaxis().SetLabelSize(0.04)
-		histo.GetYaxis().SetLabelSize(0.04)
-		histo.GetXaxis().SetLabelOffset(0.012)
-		histo.GetYaxis().SetLabelOffset(0.012)
+#		histo.GetXaxis().SetTitleOffset(1.25)
+#		histo.GetYaxis().SetTitleOffset(1.25)
+#		histo.GetXaxis().SetTitleSize(0.046)
+#		histo.GetYaxis().SetTitleSize(0.046)
+#		histo.GetXaxis().SetLabelSize(0.04)
+#		histo.GetYaxis().SetLabelSize(0.04)
+#		histo.GetXaxis().SetLabelOffset(0.012)
+#		histo.GetYaxis().SetLabelOffset(0.012)
 
 
 	def read_histos(self, path, var) :
