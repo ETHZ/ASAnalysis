@@ -239,5 +239,5 @@ class sample :
 			elif channel == 'Top' :
 				if (sample.getType() == 2) : samplelist.append(sample.name)
 			elif channel == 'Rare' :
-				if (sample.getSampleType() == 15) and (sample.name != 'TTbarW') and (sample.name != 'TTbarZ') : samplelist.append(sample.name)
+				if (sample.getSampleType() == 15) and (sample.name != 'TTbarW') and (sample.name != 'TTbarZ') and (sample.name != 'WZTo3LNu') : samplelist.append(sample.name)
 		return samplelist
