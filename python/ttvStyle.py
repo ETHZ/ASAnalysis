@@ -350,3 +350,12 @@ class ttvStyle(object) :
 #		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
 		latex.SetTextAlign(31)
 		latex.DrawLatex(lumi_x, lumi_y, '%4.1f %s (8 TeV)' % (lumi, unit))
+
+
+	def get_maximum(self, histos, scale = 1.8, set_maximum = True) :
+		'''returns maximum of a list of histograms'''
+		maximum = scale * max([histo.GetMaximum() for histo in histos])
+		if set_maximum :
+			for histo in histos :
+				histo.SetMaximum(maximum)
+		return maximum

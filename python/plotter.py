@@ -1464,6 +1464,42 @@ class plotter :
 		elif var == 'Int'   : var_str = 'Flavor'
 		else                : var_str = var
 
+		## printouts for debugging
+		print self.samples['MuEnr15'].xsec
+		print self.samples['MuEnr15'].getLumi()
+		print self.get_samples('Top'   )
+		print self.get_samples('DYJets')
+		print self.get_samples('WJets' )
+		print self.get_samples('Rare'  )
+		print self.get_samples('WZ'    )
+		print self.get_samples('TTZ'   )
+		print self.get_samples('TTW'   )
+		print self.get_samples('QCD'   )
+		for sample in self.get_samples('QCD'   ) :
+			print '%10s scale: %e' % (sample, (self.lumi/self.samples[sample].getLumi()))
+#		for sample in self.samples :
+#			print sample
+#		print self.samples.keys()
+		missing = []
+		for sample in self.samples :
+			if sample in self.get_samples('Top'   ) : continue
+			if sample in self.get_samples('DYJets') : continue
+			if sample in self.get_samples('WJets' ) : continue
+			if sample in self.get_samples('Rare'  ) : continue
+			if sample in self.get_samples('WZ'    ) : continue
+			if sample in self.get_samples('TTZ'   ) : continue
+			if sample in self.get_samples('TTW'   ) : continue
+			if sample in self.get_samples('QCD'   ) : continue
+			if sample in self.get_samples('DoubleMu' ) : continue
+			if sample in self.get_samples('DoubleEle') : continue
+			if sample in self.get_samples('MuEG'     ) : continue
+			if sample in self.get_samples('SingleMu' ) : continue
+			if sample in ['WJets2', 'WJets1'] : continue
+			missing.append(sample)
+		print missing
+#		return
+		## end of printouts
+
 		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
 		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
 		h_top_name   = 'h_top_'   + var + sel.name; histos['top'  ] = self.get_mcHistoFromTree(tree, self.get_samples('Top'   ), var_str, h_top_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
@@ -1474,6 +1510,7 @@ class plotter :
 		h_ttz_name   = 'h_ttz_'   + var + sel.name; histos['ttz'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTZ'   ), var_str, h_ttz_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_ttw_name   = 'h_ttw_'   + var + sel.name; histos['ttw'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTW'   ), var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_ttw_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
+		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
 		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
@@ -1490,6 +1527,7 @@ class plotter :
 		processes.append('rare' )
 		processes.append('wz'   )
 		processes.append('qcd'  )
+		processes.append('miss' )
 		processes.append('ttz'  )
 		processes.append('ttw'  )
 
@@ -1512,6 +1550,8 @@ class plotter :
 				histo.SetFillColor(pl.get_fillColor(process))
 			print process, pl.get_processName(process)
 		leg = pl.draw_legend(leg_entries)
+
+		pl.get_maximum(histos.values())
 
 		histos['obs'].SetMarkerStyle(20)
 #		histos['pred'].Draw()
@@ -1547,6 +1587,8 @@ class plotter :
 			h_tmp = ROOT.TH1D(h_tmp_name, h_tmp_name, settings['nbins'], settings['min'], settings['max'])
 			tree.Draw(var+'>>'+h_tmp_name, '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str), 'goff')
 			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
+#			print '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str)
+#			print '%10s: %5e entries scaling with %e' % (sample, h_tmp.GetEntries(), self.lumi / self.samples[sample].getLumi())
 		return histo
 
 		# getting remaining histograms

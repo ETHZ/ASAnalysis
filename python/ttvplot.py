@@ -184,7 +184,7 @@ class ttvplot(object) :
 				hstack.Add(histos[process])
 				leg_entries.append([histos[process], self.ttvStyle.get_processName(process), 'f'])
 		leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
-		maximum = self.get_maximum(histos.values())
+		maximum = self.ttvStyle.get_maximum(histos.values())
 		hstack.SetMaximum(maximum)
 		leg = self.ttvStyle.draw_legend(leg_entries)
 		hstack.Draw('hist')
@@ -233,13 +233,13 @@ class ttvplot(object) :
 		canvas.Print('%s%s.png' % (self.path, name))
 
 
-	def get_maximum(self, histos, scale = 1.8, set_maximum = True) :
-		'''returns maximum of a list of histograms'''
-		maximum = scale * max([histo.GetMaximum() for histo in histos])
-		if set_maximum :
-			for histo in histos :
-				histo.SetMaximum(maximum)
-		return maximum
+#	def get_maximum(self, histos, scale = 1.8, set_maximum = True) :
+#		'''returns maximum of a list of histograms'''
+#		maximum = scale * max([histo.GetMaximum() for histo in histos])
+#		if set_maximum :
+#			for histo in histos :
+#				histo.SetMaximum(maximum)
+#		return maximum
 
 
 	def drawTopLine(self, rightedge = 0.60, scale = 1., leftedge = 0.13) :
