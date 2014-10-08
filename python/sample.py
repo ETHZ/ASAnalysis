@@ -25,7 +25,7 @@ class sample :
 
 
 	def __str__(self) :
-		return '%s:\tdatamc: %d, channel: %d, xsec: %f, ngen: %d, lumi: %f' % (self.name, self.datamc, self.channel, self.xsec, self.ngen, self.getLumi())
+		return '%14s:\tdatamc: %2d, channel: %2d, xsec: %9.2e, ngen: %9d, lumi: %9.2e' % (self.name, self.datamc, self.channel, self.xsec, self.ngen, self.getLumi())
 
 
 	def getLumi(self) :
