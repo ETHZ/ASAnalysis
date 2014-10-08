@@ -521,9 +521,9 @@ void SSDLPlotter::doAnalysis(){
 //  make2DRatioPlots(Muon);
 //  make2DRatioPlots(Elec);
 
-  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;
-  makeTTWIntPredictionsSigEvent();
-  cout << "...done ===" << endl;
+//  cout << "=== Going to call makeTTWIntPredictionsSigEvent..." << endl;
+//  makeTTWIntPredictionsSigEvent();
+//  cout << "...done ===" << endl;
 
 
 	// final selection w/o charge selection
@@ -536,9 +536,9 @@ void SSDLPlotter::doAnalysis(){
 
 
 
-//  cout << "=== Going to call makeTTWKinPlotsSigEvent..." << endl;  
-//  makeTTWKinPlotsSigEvent(); // BM: what is this for ??
-//  cout << "...done ===" << endl;
+  cout << "=== Going to call makeTTWKinPlotsSigEvent..." << endl;  
+  makeTTWKinPlotsSigEvent(); // BM: what is this for ??
+  cout << "...done ===" << endl;
   
   //-- Perhaps Marc needs this
   //makeTTWIntPredictionsSigEvent(285., 8000., 0., 8000., 3, 1, 1, 40., 40., 0, true);
@@ -18777,18 +18777,18 @@ void SSDLPlotter::makeTTWKinPlotsSigEvent() {
 	xmin       .clear();
 	xmax       .clear();
 
-	diffVarName.push_back("HT"    );   nbins.push_back(KinPlots::nbins[ 0]);   xmin.push_back(KinPlots::xmin[ 0]);   xmax.push_back(KinPlots::xmax[ 0]);   xAxisTitle.push_back("H_{T} [GeV]"                     );   yAxisTitle.push_back("Events / 100 GeV");
-	diffVarName.push_back("MET"   );   nbins.push_back(KinPlots::nbins[ 1]);   xmin.push_back(KinPlots::xmin[ 1]);   xmax.push_back(KinPlots::xmax[ 1]);   xAxisTitle.push_back("Particle Flow E_{T}^{miss} [GeV]");   yAxisTitle.push_back("Events / 20 GeV" );
-	diffVarName.push_back("NJ"    );   nbins.push_back(KinPlots::nbins[ 2]);   xmin.push_back(KinPlots::xmin[ 2]);   xmax.push_back(KinPlots::xmax[ 2]);   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("NbJmed");   nbins.push_back(KinPlots::nbins[11]);   xmin.push_back(KinPlots::xmin[11]);   xmax.push_back(KinPlots::xmax[11]);   xAxisTitle.push_back("b-Jet Multiplicity (medium)"     );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("pT1"   );   nbins.push_back(KinPlots::nbins[ 3]);   xmin.push_back(KinPlots::xmin[ 3]);   xmax.push_back(KinPlots::xmax[ 3]);   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
-	diffVarName.push_back("pT2"   );   nbins.push_back(KinPlots::nbins[ 4]);   xmin.push_back(KinPlots::xmin[ 4]);   xmax.push_back(KinPlots::xmax[ 4]);   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
-	diffVarName.push_back("Mll"   );   nbins.push_back(KinPlots::nbins[ 5]);   xmin.push_back(KinPlots::xmin[ 5]);   xmax.push_back(KinPlots::xmax[ 5]);   xAxisTitle.push_back("m_{ll} [GeV]"                    );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("HT"    );   nbins.push_back(KinPlots::nbins[ 0]);   xmin.push_back(KinPlots::xmin[ 0]);   xmax.push_back(KinPlots::xmax[ 0]);   xAxisTitle.push_back("H_{T} [GeV]"                     );   yAxisTitle.push_back("Events / 100 GeV");
+//	diffVarName.push_back("MET"   );   nbins.push_back(KinPlots::nbins[ 1]);   xmin.push_back(KinPlots::xmin[ 1]);   xmax.push_back(KinPlots::xmax[ 1]);   xAxisTitle.push_back("Particle Flow E_{T}^{miss} [GeV]");   yAxisTitle.push_back("Events / 20 GeV" );
+//	diffVarName.push_back("NJ"    );   nbins.push_back(KinPlots::nbins[ 2]);   xmin.push_back(KinPlots::xmin[ 2]);   xmax.push_back(KinPlots::xmax[ 2]);   xAxisTitle.push_back("Jet Multiplicity"                );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("NbJmed");   nbins.push_back(KinPlots::nbins[11]);   xmin.push_back(KinPlots::xmin[11]);   xmax.push_back(KinPlots::xmax[11]);   xAxisTitle.push_back("b-Jet Multiplicity (medium)"     );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("pT1"   );   nbins.push_back(KinPlots::nbins[ 3]);   xmin.push_back(KinPlots::xmin[ 3]);   xmax.push_back(KinPlots::xmax[ 3]);   xAxisTitle.push_back("Leading Lepton p_{T} [GeV]"      );   yAxisTitle.push_back("Events / 20 GeV" );
+//	diffVarName.push_back("pT2"   );   nbins.push_back(KinPlots::nbins[ 4]);   xmin.push_back(KinPlots::xmin[ 4]);   xmax.push_back(KinPlots::xmax[ 4]);   xAxisTitle.push_back("Subleading Lepton p_{T} [GeV]"   );   yAxisTitle.push_back("Events / 10 GeV" );
+//	diffVarName.push_back("Mll"   );   nbins.push_back(KinPlots::nbins[ 5]);   xmin.push_back(KinPlots::xmin[ 5]);   xmax.push_back(KinPlots::xmax[ 5]);   xAxisTitle.push_back("m_{ll} [GeV]"                    );   yAxisTitle.push_back("Events"          );
 	diffVarName.push_back("NVrtx" );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("N_{Vertices}"                    );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("PFIso1");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Leading Lepton PF Iso"           );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("PFIso2");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Subleading Lepton PF Iso"        );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
-	diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("PFIso1");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Leading Lepton PF Iso"           );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("PFIso2");   nbins.push_back(               10  );   xmin.push_back(                0.);   xmax.push_back(               0.1);   xAxisTitle.push_back("Subleading Lepton PF Iso"        );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("D01"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Leading Lepton D0"               );   yAxisTitle.push_back("Events"          );
+//	diffVarName.push_back("D02"   );   nbins.push_back(                40 );   xmin.push_back(             -0.01);   xmax.push_back(              0.01);   xAxisTitle.push_back("Subleading Lepton D0"            );   yAxisTitle.push_back("Events"          );
 //	diffVarName.push_back("Rho"   );   nbins.push_back(                40 );   xmin.push_back(                0.);   xmax.push_back(               40.);   xAxisTitle.push_back("rho"                             );   yAxisTitle.push_back("Events"          );
 //	diffVarName.push_back("BetaStar1"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
 //	diffVarName.push_back("BetaStar2"   );   nbins.push_back(                20 );   xmin.push_back(                0.);   xmax.push_back(               1.);   xAxisTitle.push_back("2nd hardest jet BetaStar"                             );   yAxisTitle.push_back("Events"          );
@@ -18881,7 +18881,6 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	fOutputSubDir = "KinPlotsSigEventTree/";
 	
 	bool verbose = false;
-//	if (diffVarName == "NJ") verbose = true;
 	
 	TLatex *lat = new TLatex();
 	lat->SetNDC(kTRUE);
@@ -19015,6 +19014,7 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 	TString histoname;
 	
 	for (int i = 0; i < diffVarName.size(); i++) {
+		if (diffVarName[i] == "NVrtx") verbose = true;
 		// TOP
 		histoname = "h_top_"        + diffVarName[i];   h_top  .push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_top[i]  ->Sumw2();
 		histoname = "h_ttbar_"      + diffVarName[i];   h_ttbar.push_back(new TH1F(histoname, histoname, nbins[i], xmin[i], xmax[i] ));	h_ttbar[i]->Sumw2();
@@ -19271,10 +19271,10 @@ void SSDLPlotter::makeTTWKinPlotSigEvent(vector<TString> diffVarName, vector<int
 					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (Rare SM)" << endl; samplename = *sname;}
 				}
 				else {
-					//				if (verbose && samplename != *sname) {
-					//					cout << *sname << endl;
-					//					samplename = *sname;
-					//				}
+									if (verbose && samplename != *sname) {
+										cout << "missing (qcd?): " << *sname << endl;
+										samplename = *sname;
+									}
 					h_mc[j]->Fill(diffVar, weight);
 					if (verbose && samplename != *sname) {cout << setw(15) << *sname << " (remaining SM MC)" << endl; samplename = *sname;}
 				}
