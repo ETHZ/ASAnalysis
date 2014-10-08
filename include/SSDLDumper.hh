@@ -128,7 +128,7 @@ public:
 //		MuEG1                   , MuEG1a     , MuEG2     ,  MuEG3     , MuEG4     , MuEG5     , 
 		SingleMu1, SingleMu2, SingleMu3, SingleMu4, SingleMu5, SingleMu6, SingleMu7,
 		// fake samples
-		TTJets,  TTJets_v2, TTJets_v1, TTJets_madgraph_v1, TTJets_madgraph_v2,
+		TTJets, // TTJets_v2, TTJets_v1, TTJets_madgraph_v1, TTJets_madgraph_v2,
 		SingleT_t, SingleTbar_t, SingleT_tW, SingleTbar_tW, SingleT_s, SingleTbar_s,
 		WJets, WJets1, WJets2, WbbJets,
 		DYJets,
@@ -142,7 +142,7 @@ public:
 		HWW,
 		HZZ, HTauTau,
 		TTbarW,
-		TTbarWNLO,
+//		TTbarWNLO,
 		TTbarZ, TTbarG, TbZ, DPSWW,
 		WWZ, WZZ, 
 		WWG, ZZZ,
