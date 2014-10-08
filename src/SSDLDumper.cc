@@ -2103,6 +2103,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		}
 		fSETree_BECat = -1;
 		fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
+		fSETree_LepSF   = getSF(S, Muon, ind1, ind2, 1);
 //		if (mu3 > -1) {
 //			fSETree_Ml1l3			= getMll(ind1, mu3, Muon);
 //			fSETree_Ml2l3			= getMll(ind2, mu3, Muon);
@@ -2213,6 +2214,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		}
 		fSETree_BECat = -1;
 		fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
+		fSETree_LepSF   = getSF(S, ElMu, ind1, ind2, 1);
 
 			// SETTING OF THE BDT VARIABLES:
 			fHT_bdt      = fSETree_HT;
@@ -2312,6 +2314,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 		}
 		fSETree_BECat = -1;
 		fSETree_HLTSF   = getSF(S, Elec, ind1, ind2);
+		fSETree_LepSF   = getSF(S, Elec, ind1, ind2, 1);
 
 			// SETTING OF THE BDT VARIABLES:
 			fHT_bdt      = fSETree_HT;
@@ -2401,6 +2404,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_TLCat = 0;
 				fSETree_BECat = -1;
 				fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
+				fSETree_LepSF   = getSF(S, Muon, ind1, ind2, 1);
 				fSigEv_Tree->Fill();
 			}
 			resetHypLeptons();
@@ -2455,6 +2459,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				if( isBarrelElectron(ind2)) fSETree_BECat = 0; // TLCat == 0 if Barrel-Electron
 				if(!isBarrelElectron(ind2)) fSETree_BECat = 1; // TLCat == 1 if Endcap-Electron
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
+				fSETree_LepSF   = getSF(S, ElMu, ind1, ind2, 1);
 				fSigEv_Tree->Fill();
 			}
 			resetHypLeptons();
@@ -2511,6 +2516,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				if(!isBarrelElectron(ind1)&& isBarrelElectron(ind2)) fSETree_BECat = 2; // TLCat == 2 if Endcap/Barrel
 				if(!isBarrelElectron(ind1)&&!isBarrelElectron(ind2)) fSETree_BECat = 3; // TLCat == 3 if Endcap/Endcap
 				fSETree_HLTSF   = getSF(S, Elec, ind1, ind2);
+				fSETree_LepSF   = getSF(S, Elec, ind1, ind2, 1);
 				fSigEv_Tree->Fill();
 			}
 			resetHypLeptons();
@@ -3402,6 +3408,7 @@ void SSDLDumper::bookSigEvTree(){
 	fSigEv_Tree->Branch("PUWeight",    &fSETree_PUWeight, "PUWeight/F");
 	fSigEv_Tree->Branch("SystFlag",    &fSETree_SystFlag, "SystFlag/I");
 	fSigEv_Tree->Branch("HLTSF",       &fSETree_HLTSF   , "HLTSF/F");
+	fSigEv_Tree->Branch("LepSF",       &fSETree_LepSF   , "LepSF/F");
 	fSigEv_Tree->Branch("SLumi",       &fSETree_SLumi   , "SLumi/F");
 	fSigEv_Tree->Branch("xsec",        &fSETree_xsec    , "xsec/F");
 	fSigEv_Tree->Branch("SName",       &fSETree_SName);
@@ -3462,6 +3469,7 @@ void SSDLDumper::resetSigEventTree(){
 	fSETree_SystFlag = -1;
 	fSETree_PUWeight = -1.;
 	fSETree_HLTSF    = -1.;
+	fSETree_LepSF    = -1.;
 	fSETree_SLumi    = -1.;
 	fSETree_xsec     = -1.;
 	fSETree_SName    = "?";
@@ -7479,24 +7487,24 @@ float SSDLDumper::getErrPt(float Pt, float Eta) {
 
 	return sqrt(InvPerr2);
 }
-float SSDLDumper::getSF(Sample *S, gChannel chan, int ind1, int ind2){
+float SSDLDumper::getSF(Sample *S, gChannel chan, int ind1, int ind2, int sf_switch){
 	if(S->datamc == 0)       return 1.; // don't scale data
 	if(ind1 < 0 || ind2 < 0) return 1.; //sanity check!!;
 	float trig = 1.;
 	float id   = 1.;
 	if(chan == Muon){
 		trig = getTriggerSFMuMu(MuEta[ind2]);
-		id   = getLeptonSFMu(MuPt[ind1], MuEta[ind1])*getLeptonSFMu(MuPt[ind2], MuEta[ind2]);
+		id   = getLeptonSFMu(MuPt[ind1], MuEta[ind1], sf_switch)*getLeptonSFMu(MuPt[ind2], MuEta[ind2], sf_switch);
 		id = id * gScaleMuSF * gScaleMuSF;
 	}
 	else if(chan == Elec){
 		trig = getTriggerSFElEl(ElPt[ind2]);
-		id   = getLeptonSFEl(ElPt[ind1], ElEta[ind1])*getLeptonSFEl(ElPt[ind2], ElEta[ind2]);
+		id   = getLeptonSFEl(ElPt[ind1], ElEta[ind1], sf_switch)*getLeptonSFEl(ElPt[ind2], ElEta[ind2], sf_switch);
 		id = id * gScaleElSF * gScaleElSF;
 	}
 	else if(chan == ElMu){
 	        trig = getTriggerSFMuEl();
-		id   = getLeptonSFMu(MuPt[ind1], MuEta[ind1])*getLeptonSFEl(ElPt[ind2], ElEta[ind2]);
+		id   = getLeptonSFMu(MuPt[ind1], MuEta[ind1], sf_switch)*getLeptonSFEl(ElPt[ind2], ElEta[ind2], sf_switch);
 		id = id * gScaleMuSF * gScaleElSF;
 	}
 	return (trig*id);
@@ -7504,9 +7512,10 @@ float SSDLDumper::getSF(Sample *S, gChannel chan, int ind1, int ind2){
 
 ///////////////////////////////////////////////////
 // 2013 T&P lepton SFs from ryan kelley.
-float SSDLDumper::getLeptonSFMu(float pt, float eta){
+float SSDLDumper::getLeptonSFMu(float pt, float eta, int sf_switch){
 	const double aeta = fabs(eta);
 	
+	if (sf_switch == 0) {
 	if (10 < pt && pt < 15)
 	{
 		if (0.00  < aeta && aeta < 1.20) {return 0.918;}
@@ -7537,15 +7546,49 @@ float SSDLDumper::getLeptonSFMu(float pt, float eta){
 		if (0.00  < aeta && aeta < 1.20) {return 0.974;}
 		if (1.20  < aeta && aeta < 2.50) {return 0.980;}
 	}
+	}
+	else if (sf_switch == 1) {
+		if (10 < pt && pt < 15)
+		{
+			if (0.00 < aeta && aeta < 1.20) {return 0.91;}
+			if (1.20 < aeta && aeta < 2.50) {return 1.03;}
+		}
+		else if (15 < pt && pt < 20)
+		{
+			if (0.00 < aeta && aeta < 1.20) {return 1.01;}
+			if (1.20 < aeta && aeta < 2.50) {return 1.05;}
+		}
+		else if (20 < pt && pt < 30)
+		{
+			if (0.00 < aeta && aeta < 1.20) {return 0.98;}
+			if (1.20 < aeta && aeta < 2.50) {return 1.02;}
+		}
+		else if (30 < pt && pt < 40)
+		{
+			if (0.00 < aeta && aeta < 1.20) {return 1.00;}
+			if (1.20 < aeta && aeta < 2.50) {return 0.98;}
+		}
+		else if (40 < pt && pt < 50)
+		{
+			if (0.00 < aeta && aeta < 1.20) {return 0.96;}
+			if (1.20 < aeta && aeta < 2.50) {return 0.99;}
+		}
+		else if (pt > 50)
+		{
+			if (0.00 < aeta && aeta < 1.20) {return 0.90;}
+			if (1.20 < aeta && aeta < 2.50) {return 0.94;}
+		}
+	}
 	
 	// if we get here, return no SF
 	cout << "this should not happen" << endl;
 	return 0.;
 }
-float SSDLDumper::getLeptonSFEl(float pt, float eta){
+float SSDLDumper::getLeptonSFEl(float pt, float eta, int sf_switch){
 	// take the SC eta for this one...
 	const double aeta = fabs(eta);
 	
+	if (sf_switch == 0) {
 	if (10 < pt && pt < 15)
 	{
 		if (0.00   < aeta && aeta < 0.80  ) {return 0.787;}
@@ -7587,6 +7630,52 @@ float SSDLDumper::getLeptonSFEl(float pt, float eta){
 		if (0.80   < aeta && aeta < 1.4442) {return 0.950;}
 		if (1.566  < aeta && aeta < 2.00  ) {return 0.964;}
 		if (2.00   < aeta && aeta < 2.50  ) {return 0.955;}
+	}
+	}
+
+	else if (sf_switch == 1) {
+		if (10 < pt && pt < 15)
+		{
+			if (0.00 < aeta && aeta < 0.80 ) {return 0.66;}
+			if (0.80 < aeta && aeta < 1.4442) {return 0.85;}
+			if (1.566 < aeta && aeta < 2.00 ) {return 0.41;}
+			if (2.00 < aeta && aeta < 2.50 ) {return 0.76;}
+		}
+		else if (15 < pt && pt < 20)
+		{
+			if (0.00 < aeta && aeta < 0.80 ) {return 0.90;}
+			if (0.80 < aeta && aeta < 1.4442) {return 0.86;}
+			if (1.566 < aeta && aeta < 2.00 ) {return 0.68;}
+			if (2.00 < aeta && aeta < 2.50 ) {return 1.48;}
+		}
+		else if (20 < pt && pt < 30)
+		{
+			if (0.00 < aeta && aeta < 0.80 ) {return 1.00;}
+			if (0.80 < aeta && aeta < 1.4442) {return 0.89;}
+			if (1.566 < aeta && aeta < 2.00 ) {return 0.90;}
+			if (2.00 < aeta && aeta < 2.50 ) {return 0.97;}
+		}
+		else if (30 < pt && pt < 40)
+		{
+			if (0.00 < aeta && aeta < 0.80 ) {return 0.94;}
+			if (0.80 < aeta && aeta < 1.4442) {return 0.97;}
+			if (1.566 < aeta && aeta < 2.00 ) {return 0.88;}
+			if (2.00 < aeta && aeta < 2.50 ) {return 0.97;}
+		}
+		else if (40 < pt && pt < 50)
+		{
+			if (0.00 < aeta && aeta < 0.80 ) {return 0.96;}
+			if (0.80 < aeta && aeta < 1.4442) {return 1.20;}
+			if (1.566 < aeta && aeta < 2.00 ) {return 0.96;}
+			if (2.00 < aeta && aeta < 2.50 ) {return 0.88;}
+		}
+		else if (pt > 50)
+		{
+			if (0.00 < aeta && aeta < 0.80 ) {return 0.93;}
+			if (0.80 < aeta && aeta < 1.4442) {return 1.27;}
+			if (1.566 < aeta && aeta < 2.00 ) {return 0.64;}
+			if (2.00 < aeta && aeta < 2.50 ) {return 1.06;}
+		}
 	}
 	
 	// if we get here, return 0.

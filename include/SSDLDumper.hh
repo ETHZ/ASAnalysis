@@ -961,9 +961,9 @@ public:
 	ValueAndError getElectronRecoSF(          float pt, float eta );
 	ValueAndError getElectronIsoSF(           float pt, float eta );
         
-        float getSF(Sample *S, gChannel, int, int);
-	float getLeptonSFMu( float pt, float eta );
-	float getLeptonSFEl( float pt, float eta );
+        float getSF(Sample *S, gChannel, int, int, int = 0);
+	float getLeptonSFMu( float pt, float eta, int = 0);
+	float getLeptonSFEl( float pt, float eta, int = 0);
 
 	float getMuScale(float pt, float eta);
 	float getElScale(float pt, float eta);
@@ -1037,6 +1037,7 @@ public:
 	int         fSETree_SystFlag; // 0 nominal, 1 jets up, 2 jets dn, 3 jets smeared, 4 btag up, 5 btag dn, 6 lep up, 7 lep dn
 	float       fSETree_PUWeight;
 	float       fSETree_HLTSF;
+	float       fSETree_LepSF;
 	float       fSETree_SLumi;
 	float       fSETree_xsec;
 	std::string fSETree_SName;
