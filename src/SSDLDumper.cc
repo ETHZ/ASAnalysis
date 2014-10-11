@@ -7562,6 +7562,7 @@ float SSDLDumper::getLeptonSFMu(float pt, float eta, int sf_switch){
 	}
 	}
 	else if (sf_switch == 1) {
+// 2013 T&P lepton SFs from marc.
 		if (10 < pt && pt < 15)
 		{
 			if (0.00 < aeta && aeta < 1.20) {return 0.91;}
@@ -7648,6 +7649,7 @@ float SSDLDumper::getLeptonSFEl(float pt, float eta, int sf_switch){
 	}
 
 	else if (sf_switch == 1) {
+// 2013 T&P lepton SFs from marc.
 		if (10 < pt && pt < 15)
 		{
 			if (0.00 < aeta && aeta < 0.80 ) {return 0.66;}
