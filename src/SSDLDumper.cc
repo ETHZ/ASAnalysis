@@ -2363,11 +2363,12 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 //	if (S->sname.Data() != "DYJets") {
 	if (flag == 0) {
 		fChargeSwitch = 1;
+		bool storeLooseOS = true;
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// MM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
 		if (mumuSignalTrigger() && isSSLLMuEvent(ind1, ind2)){ // trigger && select loose mu/mu pair
-//			if ( isTightMuon(ind1) && isTightMuon(ind2)) {
+			if ( (isTightMuon(ind1) && isTightMuon(ind2)) || storeLooseOS) {
 				fSETree_Mll     = getMll(ind1, ind2, Muon);
 				fSETree_HT      = getHT();
 				fSETree_NJ      = getNJets();
@@ -2411,14 +2412,14 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_HLTSF   = getSF(S, Muon, ind1, ind2);
 				fSETree_LepSF   = getSF(S, Muon, ind1, ind2, 1);
 				fSigEv_Tree->Fill();
-//			}
+			}
 			resetHypLeptons();
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// EM CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
 		if (elmuSignalTrigger() && isSSLLElMuEvent(ind1, ind2)){ // trigger && select loose e/mu pair
-//			if ( isTightMuon(ind1) && isTightElectron(ind2)) {
+			if ( (isTightMuon(ind1) && isTightElectron(ind2)) || storeLooseOS) {
 				fSETree_Mll     = getMll(ind1, ind2, ElMu);
 				fSETree_HT      = getHT();
 				fSETree_NJ      = getNJets();
@@ -2470,14 +2471,14 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_HLTSF   = getSF(S, ElMu, ind1, ind2);
 				fSETree_LepSF   = getSF(S, ElMu, ind1, ind2, 1);
 				fSigEv_Tree->Fill();
-//			}
+			}
 			resetHypLeptons();
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// EE CHANNEL:  OS  ////////////////////////////////////////////////////////////////////////////////////////
 		if (elelSignalTrigger() && isSSLLElEvent(ind1, ind2)){ // trigger && select loose e/e pair
-//			if ( isTightElectron(ind1) && isTightElectron(ind2)) {
+			if ( (isTightElectron(ind1) && isTightElectron(ind2)) || storeLooseOS) {
 				fSETree_Mll     = getMll(ind1, ind2, Elec);
 				fSETree_HT      = getHT();
 				fSETree_NJ      = getNJets();
@@ -2531,7 +2532,7 @@ void SSDLDumper::fillSigEventTree(Sample *S, int flag=0){
 				fSETree_HLTSF   = getSF(S, Elec, ind1, ind2);
 				fSETree_LepSF   = getSF(S, Elec, ind1, ind2, 1);
 				fSigEv_Tree->Fill();
-//			}
+			}
 			resetHypLeptons();
 		}
 		fChargeSwitch = 0;
