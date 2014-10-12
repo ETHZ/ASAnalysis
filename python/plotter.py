@@ -1512,7 +1512,7 @@ class plotter :
 		h_ttw_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_ttw_name  , settings, 'HLTSF*PUWeight', sel.get_selectionString())
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
-		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max)
+		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
 		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
 
 		# getting data
@@ -1549,15 +1549,23 @@ class plotter :
 				leg_entries.append([histo, pl.get_processName(process), 'f'])
 				histo.SetFillColor(pl.get_fillColor(process))
 			print process, pl.get_processName(process)
+		leg_entries.append([histos['pred'], 'MC uncertainty', 'fl'])
 		leg = pl.draw_legend(leg_entries)
 
 		pl.get_maximum(histos.values())
 
-		histos['obs'].SetMarkerStyle(20)
+		histos['pred'].SetLineWidth(0)
+		histos['pred'].SetMarkerSize(0)
+		histos['pred'].SetFillColor(12)
+		histos['pred'].SetFillStyle(3005)
+
+#		histos['obs'].SetMarkerStyle(20)
 #		histos['pred'].Draw()
-		histos['stack'].Draw()
+		histos['stack'].Draw('hist')
+		histos['stack'].GetXaxis().SetTitle(pl.get_varName(var))
+		histos['stack'].GetXaxis().SetTitle('Events')
 		leg.Draw()
-#		histos['pred'].Draw('0 E2 same')
+		histos['pred'].Draw('0 E2 same')
 #		histos['bgtot'].Draw('hist same')
 		histos['obs'  ].Draw('PE X0 same')
 		pl.draw_cmsLine()
@@ -1566,13 +1574,14 @@ class plotter :
 		prefix = ''
 		suffix = ''
 		helper.mkdir(path)
+#		canvas.Update()
 		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
 
 
 
 #		pl = ttvplot.ttvplot(self.path + 'ObsMCPlots/%s/'%sel.name, '2L', self.lumi, 2)
 #		pl.save_plot_1d(histos['obs'], histos['pred'], var)
-#		raw_input('ok? ')
+		raw_input('ok? ')
 #		raw_input('ok? ')
 
 
@@ -1580,11 +1589,13 @@ class plotter :
 		'''getting histogram for a list of samples'''
 
 		histo = ROOT.TH1D(name, name, settings['nbins'], settings['min'], settings['max'])
+		histo.Sumw2()
 		if not sel_str.startswith('&&') : sel_str = '&& ' + sel_str
 		for i, sample in enumerate(samples) :
 			print '[status] getting %s histogram from %s..' % (var, sample)
 			h_tmp_name = 'h_tmp_%d_%d' % (i, self.rand.Integer(10000))
 			h_tmp = ROOT.TH1D(h_tmp_name, h_tmp_name, settings['nbins'], settings['min'], settings['max'])
+			h_tmp.Sumw2()
 			tree.Draw(var+'>>'+h_tmp_name, '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str), 'goff')
 			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
 #			print '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str)
