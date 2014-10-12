@@ -1513,8 +1513,8 @@ class plotter :
 		h_wz_name    = 'h_wz_'    + var + sel.name; histos['wz'   ] = self.get_mcHistoFromTree(tree, self.get_samples('WZ'    ), var_str, h_wz_name   , settings, weight_str, sel.get_selectionString())
 		h_ttz_name   = 'h_ttz_'   + var + sel.name; histos['ttz'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTZ'   ), var_str, h_ttz_name  , settings, weight_str, sel.get_selectionString())
 		h_ttw_name   = 'h_ttw_'   + var + sel.name; histos['ttw'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTW'   ), var_str, h_ttw_name  , settings, weight_str, sel.get_selectionString())
-		h_ttw_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_ttw_name  , settings, weight_str, sel.get_selectionString())
-		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_ttw_name  , settings, weight_str, sel.get_selectionString())
+		h_ttw_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_qcd_name  , settings, weight_str, sel.get_selectionString())
+		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
 		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
@@ -1577,7 +1577,7 @@ class plotter :
 		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
 		prefix = ''
 		suffix = ''
-		if noPUWeight : suffix = 'woPUWeight'
+		if noPUWeight : suffix = '_woPUWeight'
 		helper.mkdir(path)
 		canvas.Update()
 		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
