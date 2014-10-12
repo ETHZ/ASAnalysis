@@ -63,7 +63,7 @@ class ttvStyle(object) :
 ##		self.ttvStyle.SetErrorMarker(20)
 #		#self.ttvStyle.SetErrorX(0.)
 #	
-#		self.ttvStyle.SetMarkerStyle(20)
+		self.ttvStyle.SetMarkerStyle(20)
 #		self.ttvStyle.SetMarkerSize(1.2)
 #
 #		# fit/function
@@ -215,7 +215,7 @@ class ttvStyle(object) :
 		self.process_names['wjets'] = 'W+jets'
 		self.process_names['zjets'] = 'DY+jets'
 		self.process_names['qcd'  ] = 'QCD'
-		self.process_names['top'  ] = 't#bar{t}'
+		self.process_names['top'  ] = 'Top'
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
@@ -259,7 +259,7 @@ class ttvStyle(object) :
 	def get_fillColor(self, process) :
 		if process in self.colors.keys() :
 			return self.colors[process]
-		return 0
+		return 2
 
 
 	def get_varName(self, var) :
