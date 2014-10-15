@@ -173,12 +173,12 @@ class plotter :
 
 
 		if DiffMC :
-#			self.plot_DiffMC(self.selections['1J0bJ'    ])
-#			self.plot_DiffMC(self.selections['2J0bJ'    ])
+			self.plot_DiffMC(self.selections['1J0bJ'    ])
+			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
 			self.plot_DiffMC(self.selections['0J0bJOS'        ])
-#			self.plot_DiffMC(self.selections['3J1bJ'    ])
-#			self.plot_DiffMC(self.selections['3J1bJOS'    ])
+			self.plot_DiffMC(self.selections['3J1bJ'    ])
+			self.plot_DiffMC(self.selections['3J1bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
 
@@ -1438,8 +1438,8 @@ class plotter :
 			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
-#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
-		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
+#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
 
 
 	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False) :
@@ -1513,7 +1513,7 @@ class plotter :
 		h_wz_name    = 'h_wz_'    + var + sel.name; histos['wz'   ] = self.get_mcHistoFromTree(tree, self.get_samples('WZ'    ), var_str, h_wz_name   , settings, weight_str, sel.get_selectionString())
 		h_ttz_name   = 'h_ttz_'   + var + sel.name; histos['ttz'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTZ'   ), var_str, h_ttz_name  , settings, weight_str, sel.get_selectionString())
 		h_ttw_name   = 'h_ttw_'   + var + sel.name; histos['ttw'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTW'   ), var_str, h_ttw_name  , settings, weight_str, sel.get_selectionString())
-		h_ttw_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_qcd_name  , settings, weight_str, sel.get_selectionString())
+		h_qcd_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_qcd_name  , settings, weight_str, sel.get_selectionString())
 		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
@@ -1579,6 +1579,10 @@ class plotter :
 		suffix = ''
 		if noPUWeight : suffix = '_woPUWeight'
 		helper.mkdir(path)
+		canvas.Update()
+		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
+		ROOT.gPad.SetLogy()
+		suffix += '_log'
 		canvas.Update()
 		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
 
