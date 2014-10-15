@@ -45,6 +45,7 @@ class plotter :
 		self.selections['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1)  # pre-selection
 		self.selections['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1, flavor = 2)
 		self.selections['3J1bJOS'  ] = selection.selection(name = '3J1bJOS', mll = 8., minNjets = 3, minNbjetsM = 1, flavor = -2, applyZVeto = False)
+		self.selections['3J0bJOS'  ] = selection.selection(name = '3J0bJOS', mll = 8., minNjets = 3, minNbjetsM = 0, flavor = -2, applyZVeto = False)
 		self.selections['final'    ] = selection.selection(name = 'final'  , mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
 		self.selections['final++'  ] = selection.selection(name = 'final++', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
 		self.selections['final--'  ] = selection.selection(name = 'final--', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
@@ -173,12 +174,13 @@ class plotter :
 
 
 		if DiffMC :
-			self.plot_DiffMC(self.selections['1J0bJ'    ])
-			self.plot_DiffMC(self.selections['2J0bJ'    ])
+#			self.plot_DiffMC(self.selections['1J0bJ'    ])
+#			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
-			self.plot_DiffMC(self.selections['0J0bJOS'        ])
-			self.plot_DiffMC(self.selections['3J1bJ'    ])
-			self.plot_DiffMC(self.selections['3J1bJOS'    ])
+#			self.plot_DiffMC(self.selections['0J0bJOS'        ])
+#			self.plot_DiffMC(self.selections['3J1bJ'    ])
+#			self.plot_DiffMC(self.selections['3J1bJOS'    ])
+			self.plot_DiffMC(self.selections['3J0bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
 
@@ -1544,14 +1546,13 @@ class plotter :
 		canvas = pl.get_canvas(var)
 		canvas.cd()
 
+		# legend
 		leg_entries = []
+		leg_entries.append([histos['obs'], pl.get_processName('obs'), 'lp'])
 		for process in reversed(processes) :
 			histo = histos[process]
-			if process == 'obs' :
-				leg_entries.append([histo, pl.get_processName(process), 'lp'])
-			else :
-				leg_entries.append([histo, pl.get_processName(process), 'f'])
-				histo.SetFillColor(pl.get_fillColor(process))
+			leg_entries.append([histo, pl.get_processName(process), 'f'])
+			histo.SetFillColor(pl.get_fillColor(process))
 			print process, pl.get_processName(process)
 		leg_entries.append([histos['pred'], 'MC uncertainty', 'fl'])
 		leg = pl.draw_legend(leg_entries)
