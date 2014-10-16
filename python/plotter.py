@@ -1473,16 +1473,16 @@ class plotter :
 		## printouts for debugging
 		print self.samples['MuEnr15'].xsec
 		print self.samples['MuEnr15'].getLumi()
-		print self.get_samples('Top'   )
-		print self.get_samples('DYJets')
-		print self.get_samples('WJets' )
-		print self.get_samples('Rare'  )
-		print self.get_samples('WZ'    )
-		print self.get_samples('TTZ'   )
-		print self.get_samples('TTW'   )
-		print self.get_samples('QCD'   )
-		for sample in self.get_samples('QCD'   ) :
-			print '%10s scale: %e' % (sample, (self.lumi/self.samples[sample].getLumi()))
+		for sample in self.get_samples('Top'   ) : print self.samples[sample]
+		for sample in self.get_samples('DYJets') : print self.samples[sample]
+		for sample in self.get_samples('WJets' ) : print self.samples[sample]
+		for sample in self.get_samples('Rare'  ) : print self.samples[sample]
+		for sample in self.get_samples('WZ'    ) : print self.samples[sample]
+		for sample in self.get_samples('TTZ'   ) : print self.samples[sample]
+		for sample in self.get_samples('TTW'   ) : print self.samples[sample]
+		for sample in self.get_samples('QCD'   ) : print self.samples[sample]
+#		for sample in self.get_samples('QCD'   ) :
+#			print '%10s scale: %e' % (sample, (self.lumi/self.samples[sample].getLumi()))
 #		for sample in self.samples :
 #			print sample
 #		print self.samples.keys()
