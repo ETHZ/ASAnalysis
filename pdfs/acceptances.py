@@ -93,18 +93,18 @@ if __name__ == '__main__' :
 
 	# ttW
 	pdfsets = []
+	pdfsets.append(('CT10'    , '\\pdfCT{}   ', 0.00426224, 0.00002749, 0.00003023))
 	pdfsets.append(('MSTW2008', '\\pdfMSTW{} ', 0.00428543, 0.00004291, 0.00008705))
 	pdfsets.append(('NNPDF2.0', '\\pdfNNPDF{}', 0.00426639, 0.00002546, 0.00002425))
-	pdfsets.append(('CT10'    , '\\pdfCT{}   ', 0.00426224, 0.00002749, 0.00003023))
 	central = 0.00421983005211805
 	make_table(central, pdfsets, 'ttw')
 	make_plot (central, pdfsets, 'ttw')
 
 	# WZ
 	pdfsets = []
+	pdfsets.append(('CT10'    , '\\pdfCT{}   ', 0.00009001, 0.00000319, 0.00000255))
 	pdfsets.append(('MSTW2008', '\\pdfMSTW{} ', 0.00008988, 0.00000184, 0.00000205))
 	pdfsets.append(('NNPDF2.0', '\\pdfNNPDF{}', 0.00009225, 0.00000227, 0.00000222))
-	pdfsets.append(('CT10'    , '\\pdfCT{}   ', 0.00009001, 0.00000319, 0.00000255))
 	central = 0.0000857803883223637
 	make_table(central, pdfsets, 'wz')
 	make_plot (central, pdfsets, 'wz')
