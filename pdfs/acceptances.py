@@ -22,7 +22,9 @@ def make_table(central, pdfsets, sample = '') :
 		file.write('\ttable-figures-decimal  = 2,\n')
 		file.write('\ttable-figures-exponent = 2,\n')
 		file.write('\tscientific-notation    = fixed,\n')
-		file.write('\tfixed-exponent         = %d\n' % exponent)
+		file.write('\tfixed-exponent         = %d,\n' % exponent)
+		file.write('\tround-mode             = places,\n')
+		file.write('\tround-precision        = 2\n')
 		file.write('}\n\n')
 		file.write('\\begin{tabular}{l|SSS}\n')
 		file.write('\t\\hline\\hline\n')
@@ -31,7 +33,7 @@ def make_table(central, pdfsets, sample = '') :
 		file.write('\t\\pdfCTEQ{}  & %.2e & & \\\\\n' % central)
 		file.write('\t\\hline\n')
 		for pdfset in pdfsets :
-			file.write('\t%s & %.2e & %.0e & %.0e \\\\\n' % pdfset[1:])
+			file.write('\t%s & %.2e & %.2e & %.2e \\\\\n' % pdfset[1:])
 		file.write('\t\\hline\\hline\n')
 		file.write('\\end{tabular}')
 
