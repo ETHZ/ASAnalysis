@@ -14,7 +14,8 @@ def make_table(central, pdfsets, sample = '') :
 	exponent = int(log10(central))
 	if exponent < 0 : exponent -= 1
 	if sample != '' : sample += '_'
-	with open('%sacceptances.tex' % sample, 'w') as file :
+	with open('%spdf_acceptances.tex' % sample, 'w') as file :
+		file.write('%!TEX root = ../../Dissertation.tex\n\n')
 		file.write('\\sisetup{\n')
 		file.write('\ttable-number-alignment = center,\n')
 		file.write('\ttable-figures-integer  = 1,\n')
