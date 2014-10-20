@@ -50,7 +50,7 @@ def make_plot(central, pdfsets, sample = '') :
 	y   = array('d', y  )
 	eyl = array('d', eyl)
 	eyh = array('d', eyh)
-	ttvStyle.ttvStyle()
+	pl = ttvStyle.ttvStyle(lumi = -1, cms_label = 1, TeX_switch = False)
 	canvas = ROOT.TCanvas('canvas', 'canvas')
 	graph = ROOT.TGraphAsymmErrors(3, x, y, exl, exh, eyl, eyh)
 	histo = ROOT.TH1D('acceptances', 'acceptances', 3, 0., 3.)
@@ -77,46 +77,16 @@ def make_plot(central, pdfsets, sample = '') :
 	line.SetLineWidth(2)
 	line.Draw()
 
-	latex = ROOT.TLatex()
-	latex.SetNDC()
-	latex.SetTextFont(62)
-	latex.SetTextSize(0.04)
-	latex.SetTextAlign(13)
-	x_pos = ROOT.gStyle.GetPadLeftMargin() + 0.03
-	y_pos = 1. - ROOT.gStyle.GetPadTopMargin() - 0.03
-	latex.DrawLatex(x_pos, y_pos, 'CMS Simulation')
+	pl.draw_cmsLine()
 
 	leg_entries = []
 	leg_entries.append([line, 'CTEQ', 'l'])
-	leg = draw_legend(leg_entries)
+	leg = pl.draw_legend(leg_entries)
 	leg.Draw()
 
 	canvas.Update()
 	canvas.Print('%spdf_acceptances.pdf' % sample)
 #	raw_input('ok? ')
-
-
-def draw_legend(entries) :
-	leg = ROOT.TLegend()
-	for entry in entries :
-		leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
-
-	# set position
-	width = 0.17
-	x = 0.63
-	y = 0.91
-	leg.SetX1NDC(x)
-	leg.SetX2NDC(x+width)
-	leg.SetY1NDC(y-leg.GetNRows()*0.25*width)
-	leg.SetY2NDC(y)
-	leg.SetFillStyle(0)
-	leg.SetTextFont(42)
-	leg.SetTextSize(0.03)
-	leg.SetBorderSize(0)
-	leg.SetTextAlign(12)
-
-	leg.Draw()
-	return leg
 
 
 if __name__ == '__main__' :

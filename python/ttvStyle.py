@@ -341,6 +341,7 @@ class ttvStyle(object) :
 		latex.DrawLatex(cms_x, cms_y, self.cms_label)
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
+		if self.lumi < 0 : return
 		if self.lumi > 500. :
 			lumi = self.lumi/1000.
 			unit = 'fb^{-1}'
