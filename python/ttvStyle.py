@@ -64,6 +64,7 @@ class ttvStyle(object) :
 #		#self.ttvStyle.SetErrorX(0.)
 #	
 		self.ttvStyle.SetMarkerStyle(20)
+		self.ttvStyle.SetMarkerColor(1)
 #		self.ttvStyle.SetMarkerSize(1.2)
 #
 #		# fit/function
