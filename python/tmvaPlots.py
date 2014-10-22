@@ -9,11 +9,10 @@ def plot_correlation(path, sb_switch = 'S') :
 	if not os.path.exists(path) :
 		print '[ERROR] %s does not exist!' % path
 		sys.exit(1)
-
+	file = ROOT.TFile.Open(path, 'READ')
 	pl = ttvStyle.ttvStyle(lumi = -1, cms_label = 1, TeX_switch = False)
 
 	name = 'CorrelationMatrix%s' % sb_switch
-	file = ROOT.TFile.Open(path, 'READ')
 	histo = file.Get(name)
 
 	canvas = pl.get_canvas()
@@ -36,6 +35,34 @@ def plot_correlation(path, sb_switch = 'S') :
 	canvas.Update()
 	canvas.Print('%s.pdf' % name)
 #	raw_input('ok?')
+	file.Close()
+
+
+def plot_bgRej_vs_sigEff(path) :
+	if not os.path.exists(path) :
+		print '[ERROR] %s does not exist!' % path
+		sys.exit(1)
+	file = ROOT.TFile.Open(path, 'READ')
+	pl = ttvStyle.ttvStyle(lumi = -1, cms_label = 1, TeX_switch = False)
+
+	name = 'MVA_CutsGA_rejBvsS'
+	histo_path = 'Method_Cuts/CutsGA/%s' % name
+	histo = file.Get(histo_path)
+
+	canvas = pl.get_canvas(name)
+	histo.UseCurrentStyle()
+	histo.SetFillStyle(0)
+	histo.GetXaxis().SetTitle('#varepsilon_{S}')
+	histo.GetYaxis().SetTitle('1-#varepsilon_{BG}')
+	histo.Draw()
+	histo.SetMaximum(1.1)
+	pl.draw_cmsLine()
+	canvas.Update()
+	canvas.Print('%s.pdf' % name)
+	raw_input('ok?')
+
+
+	file.Close()
 
 
 if __name__ == '__main__' :
@@ -45,5 +72,7 @@ if __name__ == '__main__' :
 	if ('-f' in args) and (args[args.index('-f')+1] != '') :
 		path = str(args[args.index('-f')+1])
 
+	plot_bgRej_vs_sigEff(path)
+	sys.exit(0)
 	plot_correlation(path, 'S')
 	plot_correlation(path, 'B')
