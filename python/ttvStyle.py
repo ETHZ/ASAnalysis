@@ -52,7 +52,7 @@ class ttvStyle(object) :
 
 		# histo
 		self.ttvStyle.SetHistFillColor(63)
-		self.ttvStyle.SetHistFillStyle(1001)
+		self.ttvStyle.SetHistFillStyle(1001) # 0: hollow, 1001: solid
 		self.ttvStyle.SetHistLineColor(1)
 		self.ttvStyle.SetHistLineStyle(0)
 		self.ttvStyle.SetHistLineWidth(1)
