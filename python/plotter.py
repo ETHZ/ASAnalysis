@@ -282,23 +282,6 @@ class plotter :
 
 	def get_samples(self, channel) :
 		return sample.sample.get_samples(channel, self.samples)
-#		samplelist = []
-#		for name, sample in self.samples.iteritems() :
-#			if   channel == 'DoubleMu' :
-#				if (sample.datamc == 0) and (sample.channel == 0) : samplelist.append(sample.name)
-#			elif channel == 'DoubleEle' :
-#				if (sample.datamc == 0) and (sample.channel == 1) : samplelist.append(sample.name)
-#			elif channel == 'MuEG' :
-#				if (sample.datamc == 0) and (sample.channel == 2) : samplelist.append(sample.name)
-#			elif channel == 'SingleMu' :
-#				if (sample.datamc == 0) and (sample.channel == 5) : samplelist.append(sample.name)
-#			elif channel == 'SingleDoubleMu' :
-#				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
-#			elif channel == 'MC' :
-#				if (sample.datamc > 0) : samplelist.append(sample.name)
-#			elif channel == 'QCD' :
-#				if (sample.getType() == 1) : samplelist.append(sample.name)
-#		return samplelist
 
 
 	def read_selections(self, path) :
@@ -846,17 +829,7 @@ class plotter :
 		FR.setNToyMCs(100)
 		FR.setAddESyst(self.FakeESyst)
 
-		# numbers from SSDLPlotter.cc just to check
-#		mufratio_data = 0.040942; mufratio_data_e = 0.002156;
-#		mupratio_data = 0.804292; mupratio_data_e = 0.001193;
-#		elfratio_data = 0.069959; elfratio_data_e = 0.001419;
-#		elpratio_data = 0.750609; elpratio_data_e = 0.001473;
-#		FR.setMFRatio(mufratio_data, mufratio_data_e) # set error to pure statistical of ratio
-#		FR.setEFRatio(elfratio_data, elfratio_data_e)
-#		FR.setMPRatio(mupratio_data, mupratio_data_e)
-#		FR.setEPRatio(elpratio_data, elpratio_data_e)
-
-		# TODO: use these (ratios with ewk subtraction)
+		# ratios with ewk subtraction
 		FR.setMFRatio(self.fpr.MufRatio, self.fpr.MufRatioE) # set error to pure statistical of ratio
 		FR.setEFRatio(self.fpr.ElfRatio, self.fpr.ElfRatioE)
 		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
