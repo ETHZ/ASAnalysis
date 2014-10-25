@@ -17,12 +17,13 @@ import config
 import tables
 import copy
 import ttvStyle
+import ConfigParser
 
 
 class plotter :
 	'''the plotter reads sigtree and produces plots'''
 
-	def __init__(self, path, cardfile) :
+	def __init__(self, path, cardfile, sel_path = '') :
 		print '[status] initialize plotter..'
 		self.path = path
 		if not self.path.endswith('/') : self.path += '/'
@@ -38,21 +39,9 @@ class plotter :
 		self.samples = self.readDatacard(cardfile)
 
 		# selections
-		self.selections = {}
-		self.selections['1J0bJ'    ] = selection.selection(name = '1J0bJ'  , mll = 8., minNjets = 1)
-		self.selections['2J0bJ'    ] = selection.selection(name = '2J0bJ'  , mll = 8., minNjets = 2)  # loose selection
-		self.selections['2JnobJ_ee'] = selection.selection(name = '2JnobJ' , mll = 8., minNjets = 2, maxNbjetsM = 0, flavor = 2)
-		self.selections['3J1bJ'    ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1)  # pre-selection
-		self.selections['3J1bJ_ee' ] = selection.selection(name = '3J1bJ'  , mll = 8., minNjets = 3, minNbjetsM = 1, flavor = 2)
-		self.selections['3J1bJOS'  ] = selection.selection(name = '3J1bJOS', mll = 8., minNjets = 3, minNbjetsM = 1, flavor = -2, applyZVeto = False)
-		self.selections['3J0bJOS'  ] = selection.selection(name = '3J0bJOS', mll = 8., minNjets = 3, minNbjetsM = 0, flavor = -2, applyZVeto = False)
-		self.selections['final'    ] = selection.selection(name = 'final'  , mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge =  0)
-		self.selections['final++'  ] = selection.selection(name = 'final++', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = +1)
-		self.selections['final--'  ] = selection.selection(name = 'final--', mll = 8., minNjets = 3, minNbjetsL = 1, minNbjetsM = 1, minPt1 = 40., minPt2 = 40., minHT = 155., charge = -1)
-		self.selections['2J0bJOS'  ] = selection.selection(name = '2J0bJ_OS'  , mll = 8., minNjets = 2, flavor = -2)
-		self.selections['0J0bJOS'  ] = selection.selection(name = '0J0bJ_OS'  , mll = 8., flavor = -2, applyZVeto = False)
-		self.selections['ZElElChMisId'] = selection.selection(name = 'ZElElChMisId', mll = 8., maxMET = 30., minNjets = 1, flavor = 5, applyZVeto = False, maxMTLep1 = 25.)
-		self.selections['ZElElChMisId_SS'] = selection.selection(name = 'ZElElChMisId_SS', mll = 8., maxMET = 30., minNjets = 1, flavor = 2, applyZVeto = False, maxMTLep1 = 25.)
+		if sel_path == '' :
+			sel_path = '%s/selections.cfg' % os.path.dirname(os.path.realpath(__file__))
+		self.selections = self.read_selections(sel_path)
 
 		# ratios
 		self.fpr = ratios.ratios(self.path, self.samples)
@@ -310,6 +299,30 @@ class plotter :
 #			elif channel == 'QCD' :
 #				if (sample.getType() == 1) : samplelist.append(sample.name)
 #		return samplelist
+
+
+	def read_selections(self, path) :
+		'''reads selections from config file'''
+
+		print '[status] reading selections from %s..' % path
+		if not os.path.isfile(path) :
+			print '[ERROR] %s does not exist!' % path
+			sys.exit(1)
+		sel_file = ConfigParser.ConfigParser()
+		sel_file.optionxform = str # case sensitive options
+		sel_file.read(path)
+
+		sels = {}
+		for sel_name in sel_file.sections() :
+			sel = selection.selection(name = sel_name)
+			for cut in sel_file.options(sel_name) :
+				if not hasattr(sel, cut) :
+					print '[ERROR] selection instance has no attribute %s! Check your selections config file!' % cut
+					sys.exit(1)
+				setattr(sel, cut, eval(sel_file.get(sel_name, cut)))
+			sels[sel_name] = sel
+
+		return sels
 
 
 	def get_channelString(self, flavor, opt = 0) :
@@ -1644,6 +1657,7 @@ class plotter :
 
 if __name__ == '__main__' :
 	args = sys.argv
+	selfile  = ''
 	IntPred  = False
 	DiffPred = False
 	DiffMC   = False
@@ -1662,6 +1676,10 @@ if __name__ == '__main__' :
 		cardfile = str(args[args.index('-c')+1])
 		print cardfile
 
+	if ('-s' in args) and (args[args.index('-s')+1] != '') :
+		selfile = str(args[args.index('-s')+1])
+		print selfile
+
 	if ('--IntPred' in args) :
 		IntPred = True
 
@@ -1677,5 +1695,5 @@ if __name__ == '__main__' :
 	if ('--RatioControlPlots' in args) :
 		RatioControlPlots = True
 
-	pl = plotter(path, cardfile)
+	pl = plotter(path, cardfile, selfile)
 	pl.do_analysis(IntPred, DiffPred, DiffMC, RatioPlots, RatioControlPlots)

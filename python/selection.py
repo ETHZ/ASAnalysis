@@ -22,7 +22,7 @@ class selection :
 		self.minMTLep2  = minMTLep2
 		self.maxMTLep1  = maxMTLep1
 		self.maxMTLep2  = maxMTLep2
-		self.ZVeto      = applyZVeto
+		self.applyZVeto = applyZVeto
 		self.charge     = charge     # 0: all, +1: ++, -1: --
 		self.ttw        = ttw
 		self.systflag   = systflag
@@ -40,7 +40,7 @@ class selection :
 		printout += '\n   %3d   <= N b-tags medium   <= %4d'   % (self.minNbjetsM, self.maxNbjetsM)
 		printout += '\n   %5.1f <= lead. lept. pT'             % (self.minPt1    )
 		printout += '\n   %5.1f <= sublead. lept. pT'          % (self.minPt2    )
-		if self.ZVeto       : printout += '\n   Z veto'
+		if self.applyZVeto  : printout += '\n   Z veto'
 		if self.charge > 0  : printout += '\n   only l+l+ events'
 		if self.charge < 0  : printout += '\n   only l-l- events'
 		if self.flavor > -1 : printout += '\n   flavor = %d' % (self.flavor)
@@ -67,7 +67,7 @@ class selection :
 		if 'minMTLep2'  in cuts.keys() : self.minMTLep2  = cuts['minMTLep2' ]
 		if 'maxMTLep1'  in cuts.keys() : self.maxMTLep1  = cuts['maxMTLep1' ]
 		if 'maxMTLep2'  in cuts.keys() : self.maxMTLep2  = cuts['maxMTLep2' ]
-		if 'applyZVeto' in cuts.keys() : self.ZVeto      = cuts['applyZVeto']
+		if 'applyZVeto' in cuts.keys() : self.applyZVeto = cuts['applyZVeto']
 		if 'charge'     in cuts.keys() : self.charge     = cuts['charge'    ]
 		if 'ttw'        in cuts.keys() : self.ttw        = cuts['ttw'       ]
 		if 'systflag'   in cuts.keys() : self.systflag   = cuts['systflag'  ]
@@ -77,12 +77,12 @@ class selection :
 
 
 	def passes_selection(self, event, ttLeptons = True, noChargeSel = False, OSwoZVeto = False) :
-		if event.SystFlag != self.systflag                                              : return False
-		if not (OSwoZVeto and event.Flavor > 2) and self.ZVeto and event.PassZVeto == 0 : return False
-		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)       : return False
-		if ttLeptons and event.TLCat > 0                                                : return False
-		if self.flavor > -1  and event.Flavor != self.flavor                            : return False
-		if self.flavor == -1 and event.Flavor > 2 and not (OSwoZVeto)                   : return False
+		if event.SystFlag != self.systflag                                                   : return False
+		if not (OSwoZVeto and event.Flavor > 2) and self.applyZVeto and event.PassZVeto == 0 : return False
+		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)            : return False
+		if ttLeptons and event.TLCat > 0                                                     : return False
+		if self.flavor > -1  and event.Flavor != self.flavor                                 : return False
+		if self.flavor == -1 and event.Flavor > 2 and not (OSwoZVeto)                        : return False
 		if event.HT     < self.minHT      : return False
 		if event.HT     > self.maxHT      : return False
 		if event.MET    < self.minMET     : return False
@@ -128,7 +128,7 @@ class selection :
 		selectionString += ' && SystFlag == %d'            % (self.systflag)
 		if not ResTree :
 			if OS_data[0] < 0 :
-				if self.ZVeto        : selectionString += ' && PassZVeto != 0'
+				if self.applyZVeto   : selectionString += ' && PassZVeto != 0'
 				if self.charge != 0  : selectionString += ' && Charge == %d' % (self.charge)
 				if ttLeptons         : selectionString += ' && TLCat == 0'
 				if self.flavor > -1  : selectionString += ' && Flavor == %d' % (self.flavor)
