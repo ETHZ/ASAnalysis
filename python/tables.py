@@ -14,24 +14,36 @@ def make_ObsPredTable(path, results) :
 	print '[status] writing %s' % table_name
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
-		file.write('%!TEX root = ../AN-12-445.tex\n')
+		file.write('%!TEX root = ../../Dissertation.tex\n')
 		file.write('%=========================================================================================\n')
 		file.write('% Observation and predictions table for ttW analysis, same-sign channel, subchannels\n')
 		file.write('%% Generated on: %s\n' % str(timestamp))
 		file.write('%-----------------------------------------------------------------------------------------\n')
 		file.write('\n\n')
-		file.write('\\providecommand{\\ttbar}{$t\\bar{t}$}\n')
-		file.write('\\providecommand{\\ttw}{\\ttbar{}W}\n')
-		file.write('\\providecommand{\\ttz}{\\ttbar{}Z}\n')
-		file.write('\\providecommand{\\Pep}{e^+}\n')
-		file.write('\\providecommand{\\Pem}{e^-}\n')
-		file.write('\\providecommand{\\Pgmp}{\\mu^+}\n')
-		file.write('\\providecommand{\\Pgmm}{\\mu^-}\n')
+		file.write('\\providecommand{\\ttbar}{\\ensuremath{t\\bar{t}}}\n')
+		file.write('\\providecommand{\\ttw}  {\\ensuremath{\\ttbar{}W}}\n')
+		file.write('\\providecommand{\\ttz}  {\\ensuremath{\\ttbar{}Z}}\n')
+		file.write('\\providecommand{\\wz}   {\\ensuremath{WZ}}\n')
+		file.write('\\providecommand{\\Pep}  {\\ensuremath{e^+}}\n')
+		file.write('\\providecommand{\\Pem}  {\\ensuremath{e^-}}\n')
+		file.write('\\providecommand{\\PGmp} {\\ensuremath{\\mu^+}}\n')
+		file.write('\\providecommand{\\PGmm} {\\ensuremath{\\mu^-}}\n')
 		file.write('\n\n')
-	##	fOUTSTREAM << "%% Format is m+m+, e+m+, e+e+, m-m-, e-m-, e-e-" << endl;
-		file.write('\\begin{tabular}{l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l|r@{$\\,\\pm\\,$}l}\n\\hline \\hline\n')
-		file.write('                  &\\multicolumn{2}{c|}{$\\Pgmp\\Pgmp$}&\\multicolumn{2}{c|}{$\\Pep\\Pgmp$}&\\multicolumn{2}{c|}{$\\Pep\\Pep$} &\\multicolumn{2}{c|}{$\\Pgmm\\Pgmm$}&\\multicolumn{2}{c|}{$\\Pem\\Pgmm$}&\\multicolumn{2}{c}{$\\Pem\\Pem$} \\\\\n\\hline\n')
-		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\\sisetup{\n')
+		file.write('\tseparate-uncertainty\n')
+		file.write('}\n')
+		file.write('\n\n')
+		file.write('\\begin{tabular}{\n')
+		file.write('\tl|\n')
+		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
+		file.write('}\n\t\\hline \\hline\n')
+		file.write('\t                     & {\\PGmp\\PGmp} &  {\\Pep\\PGmp} &   {\\Pep\\Pep} & {\\PGmm\\PGmm} &  {\\Pem\\PGmm} &   {\\Pem\\Pem} \\\\\n\t\\hline\n')
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('fake'),
 			results['++']['mm'].fake, results['++']['mm'].fake_err,
 			results['++']['em'].fake, results['++']['em'].fake_err,
@@ -49,13 +61,13 @@ def make_ObsPredTable(path, results) :
 	##//					   npf_em + nfp_em, sqrt(FR->getEMSingleEStat()*FR->getEMSingleEStat() + (npf_em+nfp_em)*(npf_em+nfp_em)*FakeESyst2),
 	##//					   npf_ee,          sqrt(FR->getEENpfEStat()   *FR->getEENpfEStat()    +  npf_ee*npf_ee*FakeESyst2),
 	##//					   npf_em + nfp_em + npf_mm + npf_ee, sqrt(FR->getTotSingleEStat()*FR->getTotSingleEStat() + nSF*nSF*FakeESyst2));
-		file.write('%18s & \\multicolumn{2}{c|}{-}        & %13.1f & %13.1f & %13.1f & %13.1f & \\multicolumn{2}{c|}{-}        & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t%-20s &      {-}     & %5.1f +- %3.1f & %5.1f +- %3.1f &      {-}     & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('chmid'),
 			results['++']['em'].cmid, results['++']['em'].cmid_err,
 			results['++']['ee'].cmid, results['++']['ee'].cmid_err,
 			results['--']['em'].cmid, results['--']['em'].cmid_err,
 			results['--']['ee'].cmid, results['--']['ee'].cmid_err))
-		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('rare'),
 			results['++']['mm'].rare, results['++']['mm'].rare_err,
 			results['++']['em'].rare, results['++']['em'].rare_err,
@@ -63,7 +75,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].rare, results['--']['mm'].rare_err,
 			results['--']['em'].rare, results['--']['em'].rare_err,
 			results['--']['ee'].rare, results['--']['ee'].rare_err))
-		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('wz'),
 			results['++']['mm'].wz, results['++']['mm'].wz_err,
 			results['++']['em'].wz, results['++']['em'].wz_err,
@@ -71,7 +83,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].wz, results['--']['mm'].wz_err,
 			results['--']['em'].wz, results['--']['em'].wz_err,
 			results['--']['ee'].wz, results['--']['ee'].wz_err))
-		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('ttz'),
 			results['++']['mm'].ttz, results['++']['mm'].ttz_err,
 			results['++']['em'].ttz, results['++']['em'].ttz_err,
@@ -79,7 +91,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].ttz, results['--']['mm'].ttz_err,
 			results['--']['em'].ttz, results['--']['em'].ttz_err,
 			results['--']['ee'].ttz, results['--']['ee'].ttz_err))
-		file.write('\\hline\n')
+		file.write('\t\\hline\n')
 	##//	if (separateTTH) {
 	##//		fOUTSTREAM3 << Form("ttH Prod.      & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \\hline \n",
 	##//							tth_nt2_mm, sqrt(tth_nt2_mm_e1 + RareESyst2*tth_nt2_mm*tth_nt2_mm),
@@ -87,7 +99,7 @@ def make_ObsPredTable(path, results) :
 	##//							tth_nt2_ee, sqrt(tth_nt2_ee_e1 + RareESyst2*tth_nt2_ee*tth_nt2_ee),
 	##//							tth_nt2_ee + tth_nt2_mm + tth_nt2_em, sqrt(tth_nt2_mm_e1 + tth_nt2_ee_e1 + tth_nt2_em_e1 + RareESyst2*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)));
 	##//	}
-		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			'Total Bkg.',
 			results['++']['mm'].tot, results['++']['mm'].tot_err,
 			results['++']['em'].tot, results['++']['em'].tot_err,
@@ -95,7 +107,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].tot, results['--']['mm'].tot_err,
 			results['--']['em'].tot, results['--']['em'].tot_err,
 			results['--']['ee'].tot, results['--']['ee'].tot_err))
-		file.write('{\\bf %12s} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c|}{\\bf %3d} &  \\multicolumn{2}{c}{\\bf %3d}  \\\\\n' % (
+		file.write('\t{\\bf %-14s} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} \\\\\n' % (
 			pl.get_processName('obs'),
 			results['++']['mm'].obs,
 			results['++']['em'].obs,
@@ -103,7 +115,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].obs,
 			results['--']['em'].obs,
 			results['--']['ee'].obs))
-		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			'Obs.\\ $-$ Tot.\\ Bkg.',
 			results['++']['mm'].obs - results['++']['mm'].tot, results['++']['mm'].tot_err,
 			results['++']['em'].obs - results['++']['em'].tot, results['++']['em'].tot_err,
@@ -111,8 +123,8 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].obs - results['--']['mm'].tot, results['--']['mm'].tot_err,
 			results['--']['em'].obs - results['--']['em'].tot, results['--']['em'].tot_err,
 			results['--']['ee'].obs - results['--']['ee'].tot, results['--']['ee'].tot_err))
-		file.write('\\hline\n')
-#		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t\\hline\n')
+#		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 #			pl.get_processName('ttw') + ' (exp.)',
 #			results['++']['mm'].ttw, results['++']['mm'].ttw_err,
 #			results['++']['em'].ttw, results['++']['em'].ttw_err,
@@ -120,7 +132,7 @@ def make_ObsPredTable(path, results) :
 #			results['--']['mm'].ttw, results['--']['mm'].ttw_err,
 #			results['--']['em'].ttw, results['--']['em'].ttw_err,
 #			results['--']['ee'].ttw, results['--']['ee'].ttw_err))
-		file.write('%18s & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f & %13.1f \\\\\n' % (
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('ttw') + ' (exp.)',
 			results['++']['mm'].ttw, math.sqrt(results['++']['mm'].ttw_staterr*results['++']['mm'].ttw_staterr + 0.08*0.08*results['++']['mm'].ttw*results['++']['mm'].ttw),
 			results['++']['em'].ttw, math.sqrt(results['++']['em'].ttw_staterr*results['++']['em'].ttw_staterr + 0.08*0.08*results['++']['em'].ttw*results['++']['em'].ttw),
@@ -128,9 +140,8 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].ttw, math.sqrt(results['--']['mm'].ttw_staterr*results['--']['mm'].ttw_staterr + 0.08*0.08*results['--']['mm'].ttw*results['--']['mm'].ttw),
 			results['--']['em'].ttw, math.sqrt(results['--']['em'].ttw_staterr*results['--']['em'].ttw_staterr + 0.08*0.08*results['--']['em'].ttw*results['--']['em'].ttw),
 			results['--']['ee'].ttw, math.sqrt(results['--']['ee'].ttw_staterr*results['--']['ee'].ttw_staterr + 0.08*0.08*results['--']['ee'].ttw*results['--']['ee'].ttw)))
-		file.write('\\hline \\hline\n')
+		file.write('\t\\hline \\hline\n')
 		file.write('\\end{tabular}\n')
-		file.write('\n\n')
 
 
 def make_SystTable(path, results, chan, charge, systematics) :

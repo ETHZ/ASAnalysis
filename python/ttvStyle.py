@@ -221,6 +221,7 @@ class ttvStyle(object) :
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
+			self.process_names['wz'   ] = '\\wz'
 			if self.short_names is True :
 				self.process_names['fake' ] = 'Lept.\\ MisID'
 				self.process_names['chmid'] = 'Ch.\\ MisID'
