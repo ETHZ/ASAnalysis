@@ -5,11 +5,12 @@ from array import array
 
 class ttvStyle(object) :
 
-	def __init__(self, lumi, cms_label, TeX_switch = False) :
+	def __init__(self, lumi = 19500., cms_label = 0, TeX_switch = False, short_names = False) :
 		self.ttvStyle = ROOT.TStyle('ttvStyle','ttV Style')
 		self.lumi = lumi
 		self.cms_label = cms_label
 		self.TeX_switch = TeX_switch
+		self.short_names = short_names
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
@@ -220,7 +221,7 @@ class ttvStyle(object) :
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
-			if short_names is True :
+			if self.short_names is True :
 				self.process_names['fake' ] = 'Lept.\\ MisID'
 				self.process_names['chmid'] = 'Ch.\\ MisID'
 

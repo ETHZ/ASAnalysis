@@ -1,7 +1,7 @@
 #! /usr/bin/python
 import helper
 import time
-import ttvplot
+import ttvStyle
 import math
 
 
@@ -10,7 +10,7 @@ def make_ObsPredTable(path, results) :
 	table_name = 'ObsPredTable.tex'
 	table_path = path + 'IntPredictions/'
 	helper.mkdir(table_path)
-	pl = ttvplot.ttvplot(table_path, '2L', TeX_switch = True)
+	pl = ttvStyle.ttvStyle(TeX_switch = True)
 	print '[status] writing %s' % table_name
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
@@ -145,7 +145,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 	table_name = 'SystTable'+channel+'.tex'
 	table_path = path + 'IntPredictions/'
 	helper.mkdir(table_path)
-	pl = ttvplot.ttvplot(table_path, '2L', TeX_switch = True, short_names = True)
+	pl = ttvStyle.ttvStyle(TeX_switch = True, short_names = True)
 	print '[status] writing %s' % table_name
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
@@ -451,7 +451,7 @@ def make_CutsTable(path, selections) :
 	table_path = path
 	if not table_path.endswith('/') : table_path += '/'
 	helper.mkdir(table_path)
-#	pl = ttvplot.ttvplot(table_path, '2L', TeX_switch = True, short_names = True)
+#	pl = ttvStyle.ttvStyle(TeX_switch = True, short_names = True)
 	print '[status] writing %s' % table_name
 	ncuts = len(selections[0][1])
 	with open(table_path + table_name, 'w') as file :
