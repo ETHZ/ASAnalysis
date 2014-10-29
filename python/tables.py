@@ -34,15 +34,17 @@ def make_ObsPredTable(path, results) :
 		file.write('}\n')
 		file.write('\n\n')
 		file.write('\\begin{tabular}{\n')
-		file.write('\tl|\n')
+		file.write('\tl\n')
 		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-figures-decimal = 1, table-figures-integer = 1, table-figures-uncertainty = 2]\n')
-		file.write('}\n\t\\hline \\hline\n')
-		file.write('\t                     & {\\PGmp\\PGmp} &  {\\Pep\\PGmp} &   {\\Pep\\Pep} & {\\PGmm\\PGmm} &  {\\Pem\\PGmm} &   {\\Pem\\Pem} \\\\\n\t\\hline\n')
+		file.write('}\n')
+		file.write('\t\\toprule\n')
+		file.write('\t                     & {\\PGmp\\PGmp} &  {\\Pep\\PGmp} &   {\\Pep\\Pep} & {\\PGmm\\PGmm} &  {\\Pem\\PGmm} &   {\\Pem\\Pem} \\\\\n')
+		file.write('\t\\midrule\n')
 		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('fake'),
 			results['++']['mm'].fake, results['++']['mm'].fake_err,
@@ -91,9 +93,9 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].ttz, results['--']['mm'].ttz_err,
 			results['--']['em'].ttz, results['--']['em'].ttz_err,
 			results['--']['ee'].ttz, results['--']['ee'].ttz_err))
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 	##//	if (separateTTH) {
-	##//		fOUTSTREAM3 << Form("ttH Prod.      & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \\hline \n",
+	##//		fOUTSTREAM3 << Form("ttH Prod.      & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \\midrule \n",
 	##//							tth_nt2_mm, sqrt(tth_nt2_mm_e1 + RareESyst2*tth_nt2_mm*tth_nt2_mm),
 	##//							tth_nt2_em, sqrt(tth_nt2_em_e1 + RareESyst2*tth_nt2_em*tth_nt2_em),
 	##//							tth_nt2_ee, sqrt(tth_nt2_ee_e1 + RareESyst2*tth_nt2_ee*tth_nt2_ee),
@@ -123,7 +125,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['mm'].obs - results['--']['mm'].tot, results['--']['mm'].tot_err,
 			results['--']['em'].obs - results['--']['em'].tot, results['--']['em'].tot_err,
 			results['--']['ee'].obs - results['--']['ee'].tot, results['--']['ee'].tot_err))
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 #		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 #			pl.get_processName('ttw') + ' (exp.)',
 #			results['++']['mm'].ttw, results['++']['mm'].ttw_err,
@@ -133,14 +135,14 @@ def make_ObsPredTable(path, results) :
 #			results['--']['em'].ttw, results['--']['em'].ttw_err,
 #			results['--']['ee'].ttw, results['--']['ee'].ttw_err))
 		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-			pl.get_processName('ttw') + ' (exp.)',
+			pl.get_processName('ttw') + '{} (exp.)',
 			results['++']['mm'].ttw, math.sqrt(results['++']['mm'].ttw_staterr*results['++']['mm'].ttw_staterr + 0.08*0.08*results['++']['mm'].ttw*results['++']['mm'].ttw),
 			results['++']['em'].ttw, math.sqrt(results['++']['em'].ttw_staterr*results['++']['em'].ttw_staterr + 0.08*0.08*results['++']['em'].ttw*results['++']['em'].ttw),
 			results['++']['ee'].ttw, math.sqrt(results['++']['ee'].ttw_staterr*results['++']['ee'].ttw_staterr + 0.08*0.08*results['++']['ee'].ttw*results['++']['ee'].ttw),
 			results['--']['mm'].ttw, math.sqrt(results['--']['mm'].ttw_staterr*results['--']['mm'].ttw_staterr + 0.08*0.08*results['--']['mm'].ttw*results['--']['mm'].ttw),
 			results['--']['em'].ttw, math.sqrt(results['--']['em'].ttw_staterr*results['--']['em'].ttw_staterr + 0.08*0.08*results['--']['em'].ttw*results['--']['em'].ttw),
 			results['--']['ee'].ttw, math.sqrt(results['--']['ee'].ttw_staterr*results['--']['ee'].ttw_staterr + 0.08*0.08*results['--']['ee'].ttw*results['--']['ee'].ttw)))
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 
 
@@ -170,9 +172,11 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		file.write('\\providecommand{\\ttw}{\\ttbar{}W}\n')
 		file.write('\\providecommand{\\ttz}{\\ttbar{}Z}\n')
 		file.write('\n\n')
-		file.write('\\begin{tabular}{l|c|ccccc}\n')
-		file.write('\\hline\\hline\n')
+		file.write('\\begin{tabular}{lcccccc}\n')
+		file.write('\\toprule\n')
 		file.write('{\\bf Source} & {\\bf Signal} [\\%] & \\multicolumn{5}{c}{{\\bf Backgrounds} [\\%]} \\\\\n')
+		file.write('\\cmidrule(lr){2-2}\n')
+		file.write('\\cmidrule(lr){3-7}\n')
 		file.write('& $\\Delta\\varepsilon_s$ & %s & %s & %s & %s & %s \\\\\n' % (
 			pl.get_processName('ttz'  ),
 			pl.get_processName('fake' ),
@@ -180,7 +184,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			pl.get_processName('wz'   ),
 			pl.get_processName('rare' )
 			))
-		file.write('\\hline\n')
+		file.write('\\midrule\n')
 
 		file.write('%18s & - & %6.1f & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 			'Bkg.\\ Pred.',
@@ -361,7 +365,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		else :
 			print '[WARNING] PDF systematic not found!'
 
-		file.write('\\hline\\hline\n')
+		file.write('\\bottomrule\n')
 		file.write('\\end{tabular}')
 
 
@@ -381,14 +385,14 @@ def make_YieldsTable(path, res, systematics) :
 		file.write(providecommands())
 		file.write('\n\n')
 		file.write('\\begin{tabular}{\n')
-		file.write('\tl|\n')
+		file.write('\tl\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.0]\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.0]\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.0]\n')
 		file.write('}\n')
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\toprule\n')
 		file.write('\tYields & {\\PGm\\PGm} & {\\Pe\\PGm} & {\\Pe\\Pe} \\\\\n')
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 		file.write('\t%-6s &   %8.0f &  %8.0f & %8.0f \\\\\n' % (
 			'\\ntt',
 			res['mm'].nt2,
@@ -409,7 +413,7 @@ def make_YieldsTable(path, res, systematics) :
 			res['mm'].nt0,
 			res['em'].nt0,
 			res['ee'].nt0))
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 
 	# predictions
@@ -427,15 +431,15 @@ def make_YieldsTable(path, res, systematics) :
 		file.write('\\sisetup{separate-uncertainty}\n')
 		file.write('\n\n')
 		file.write('\\begin{tabular}{\n')
-		file.write('\tl|\n')
+		file.write('\tl\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('}\n')
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\toprule\n')
 		file.write('\tPrediction   &  {\\PGm\\PGm}  &   {\\Pe\\PGm}  &   {\\Pe\\Pe}   \\\\\n')
 		# fakes
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\midrule\n')
 		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			'\\npp',
 			res['mm'].npp, res['mm'].npp_staterr, #res['mm'].npp_systerr,
@@ -456,33 +460,33 @@ def make_YieldsTable(path, res, systematics) :
 			res['mm'].nff, res['mm'].nff_staterr, #res['mm'].nff_systerr,
 			res['em'].nff, res['em'].nff_staterr, #res['em'].nff_systerr,
 			res['ee'].nff, res['ee'].nff_staterr))#, res['ee'].nff_systerr))
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			'Total Fakes',
 			res['mm'].fake, res['mm'].fake_err,
 			res['em'].fake, res['em'].fake_err,
 			res['ee'].fake, res['ee'].fake_err))
 		# charge mis-ID
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\midrule\n')
 		file.write('\t%-12s &              & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			'Charge MisID',
 			res['em'].cmid, res['em'].cmid_err,
 			res['ee'].cmid, res['ee'].cmid_err))
 		# rares
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\midrule\n')
 		for s in res['al'].rares :
 			file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 				s,
 				res['mm'].rares[s], res['mm'].rares_staterr[s],# systematics['rare']*res['mm'].rares[s],
 				res['em'].rares[s], res['em'].rares_staterr[s],# systematics['rare']*res['em'].rares[s],
 				res['ee'].rares[s], res['ee'].rares_staterr[s]))#, systematics['rare']*res['ee'].rares[s],
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			'Rares',
 			res['mm'].rare, res['mm'].rare_staterr,# systematics['rare']*res['mm'].rare,
 			res['em'].rare, res['em'].rare_staterr,# systematics['rare']*res['em'].rare,
 			res['ee'].rare, res['ee'].rare_staterr))#, systematics['rare']*res['ee'].rare,
-		file.write('\t\\hline \\hline\n')
+		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 
 
@@ -622,11 +626,11 @@ def make_OptTable(path, FoM, table, charge_str) :
 				exp = int(math.log10(table[0]['cuts'][cut][0]))
 				option = '[table-figures-integer = %d]' % (exp+1)
 			file.write('\n\tS%s' % option) # columns for cuts
-		file.write('|\n\tS[table-figures-integer = 2, table-figures-decimal = 1, table-figures-uncertainty = 2]|\n') # column for efficiency
+		file.write('\n\tS[table-figures-integer = 2, table-figures-decimal = 1, table-figures-uncertainty = 2]\n') # column for efficiency
 		for FoM in table[0]['results'] :
 			file.write('\tS[table-figures-decimal = 1]\n') # columns for results
 		file.write('}\n')
-		file.write('\t\\hline\\hline\n')
+		file.write('\t\\toprule\n')
 
 		# first title row
 #		file.write('{\\bf Eff.} & ')
@@ -637,16 +641,7 @@ def make_OptTable(path, FoM, table, charge_str) :
 		for FoM in table[0]['results'] :
 			file.write(' & {%s}' % FoM)
 		file.write(' \\\\\n')
-
-#		# second title row
-#		for cut in table[0]['cuts'] :
-#			file.write('& {min} & {max} ')
-#		file.write('&')
-#		for FoM in table[0]['results'] :
-#			for chan in table[0]['results'][FoM] :
-#				file.write(' & {%s}' % chan)
-#		file.write(' \\\\\n')
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 
 		# data rows
 		for row in table :
@@ -658,7 +653,7 @@ def make_OptTable(path, FoM, table, charge_str) :
 			for FoM in row['results'] :
 				file.write(' & %5.1f' % row['results'][FoM]['6channels'][1])
 			file.write(' \\\\\n')
-		file.write('\t\\hline\\hline\n')
+		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}')
 
 

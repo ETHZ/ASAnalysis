@@ -14,7 +14,9 @@ def make_table(central, pdfsets, sample = '') :
 	exponent = int(log10(central))
 	if exponent < 0 : exponent -= 1
 	if sample != '' : sample += '_'
-	with open('%spdf_acceptances.tex' % sample, 'w') as file :
+	table_name = '%spdf_acceptances.tex' % sample
+	print '[status] writing %s' % table_name
+	with open(table_name, 'w') as file :
 		file.write('%!TEX root = ../../Dissertation.tex\n\n')
 		file.write('\\sisetup{\n')
 		file.write('\ttable-number-alignment = center,\n')
@@ -26,15 +28,15 @@ def make_table(central, pdfsets, sample = '') :
 		file.write('\tround-mode             = places,\n')
 		file.write('\tround-precision        = 2\n')
 		file.write('}\n\n')
-		file.write('\\begin{tabular}{l|SSS}\n')
-		file.write('\t\\hline\\hline\n')
+		file.write('\\begin{tabular}{lSSS}\n')
+		file.write('\t\\toprule\n')
 		file.write('\t{PDF set}   & {$A_0$} & {$\\Delta A^+$} & {$\\Delta A^-$} \\\\\n')
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 		file.write('\t\\pdfCTEQ{}  & %.2e & & \\\\\n' % central)
-		file.write('\t\\hline\n')
+		file.write('\t\\midrule\n')
 		for pdfset in pdfsets :
 			file.write('\t%s & %.2e & %.2e & %.2e \\\\\n' % pdfset[1:])
-		file.write('\t\\hline\\hline\n')
+		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}')
 
 
