@@ -171,22 +171,35 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		file.write('\\providecommand{\\ttbar}{$t\\bar{t}$}\n')
 		file.write('\\providecommand{\\ttw}{\\ttbar{}W}\n')
 		file.write('\\providecommand{\\ttz}{\\ttbar{}Z}\n')
+		file.write('\\providecommand{\\wz}{WZ}\n')
 		file.write('\n\n')
-		file.write('\\begin{tabular}{lcccccc}\n')
-		file.write('\\toprule\n')
-		file.write('{\\bf Source} & {\\bf Signal} [\\%] & \\multicolumn{5}{c}{{\\bf Backgrounds} [\\%]} \\\\\n')
-		file.write('\\cmidrule(lr){2-2}\n')
-		file.write('\\cmidrule(lr){3-7}\n')
-		file.write('& $\\Delta\\varepsilon_s$ & %s & %s & %s & %s & %s \\\\\n' % (
+		file.write('\\begin{tabular}{\n')
+		file.write('\tl\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]@{/}\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]@{/}\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]\n')
+		file.write('\tS[table-format = 2.1]\n')
+		file.write('\tS[table-format = 2.1]\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]@{/}\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]@{/}\n')
+		file.write('\tS[table-format = 2.1, retain-explicit-plus]\n')
+		file.write('}\n')
+		file.write('\t\\toprule\n')
+		file.write('\t{\\bf Source} & \\multicolumn{2}{c}{{\\bf Signal} (\\si{\\percent})} & \\multicolumn{8}{c}{{\\bf Backgrounds} (\\si{\\percent})} \\\\\n')
+		file.write('\t\\cmidrule(lr){2-3}\n')
+		file.write('\t\\cmidrule(lr){4-11}\n')
+		file.write('\t& \\multicolumn{2}{c}{$\\Delta\\varepsilon_s$} & \\multicolumn{2}{c}{%s} & {%s} & {%s} & \\multicolumn{2}{c}{%s} & \\multicolumn{2}{c}{%s} \\\\\n' % (
 			pl.get_processName('ttz'  ),
 			pl.get_processName('fake' ),
 			pl.get_processName('chmid'),
 			pl.get_processName('wz'   ),
 			pl.get_processName('rare' )
 			))
-		file.write('\\midrule\n')
+		file.write('\t\\midrule\n')
 
-		file.write('%18s & - & %6.1f & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
+		file.write('\t%-18s & \\multicolumn{2}{c}{-} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & %6.1f & %6.1f & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} \\\\\n' % (
 			'Bkg.\\ Pred.',
 			100. * results['Normal'][charge][chan].ttz_err  / results['Normal'][charge][chan].ttz ,
 			100. * results['Normal'][charge][chan].fake_err / results['Normal'][charge][chan].fake,
@@ -196,7 +209,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			))
 
 		if 'lumi' in systematics :
-			file.write('%18s & %6.1f & %6.1f & - & - & %6.1f & %6.1f \\\\\n' % (
+			file.write('\t%-18s & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & {-} & {-} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} \\\\\n' % (
 				'Luminosity',
 				100. * (systematics['lumi']-1.),
 				100. * (systematics['lumi']-1.),
@@ -207,7 +220,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] Luminosity systematic not found!'
 
 		if 'JetUp' in results and 'JetDown' in results :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'JES',
 				100. * (results['JetUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
 				100. * (results['JetDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
@@ -222,7 +235,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] JetUp/Down systematic not found!'
 
 		if 'JetSmearUp' in results and 'JetSmearDown' in results :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'JER',
 				100. * (results['JetSmearUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
 				100. * (results['JetSmearDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
@@ -237,7 +250,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] JetSmearUp/Down systematic not found!'
 
 		if 'BUp' in results and 'BDown' in results :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'b-tagging',
 				100. * (results['BUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
 				100. * (results['BDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
@@ -252,7 +265,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] BUp/Down systematic not found!'
 
 		if 'ltrig' in systematics :
-			file.write('%18s & %6.1f & %6.1f & - & - & %6.1f & %6.1f \\\\\n' % (
+			file.write('\t%-18s & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & {-} & {-} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} \\\\\n' % (
 				'Lept.\\ Trig.',
 				100. * (systematics['ltrig']-1.),
 				100. * (systematics['ltrig']-1.),
@@ -263,7 +276,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] Trigger systematic not found!'
 
 		if 'LepUp' in results and 'LepDown' in results :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'Lepton SF',
 				100. * (results['LepUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
 				100. * (results['LepDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
@@ -278,7 +291,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] LepUp/Down systematic not found!'
 
 		if 'MuUp' in results and 'MuDown' in results :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'Muon SF',
 				100. * (results['MuUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
 				100. * (results['MuDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
@@ -293,7 +306,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] MuUp/Down systematic not found!'
 
 		if 'ElUp' in results and 'ElDown' in results :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'Electron SF',
 				100. * (results['ElUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
 				100. * (results['ElDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
@@ -308,7 +321,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] ElUp/Down systematic not found!'
 
 		if 'PileupUp' in results and 'PileupDown' in results :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'Pileup',
 				100. * (results['PileupUp'  ][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
 				100. * (results['PileupDown'][charge][chan].ttwz / results['Normal'][charge][chan].ttwz - 1.),
@@ -323,7 +336,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] PileupUp/Down systematic not found!'
 
 		if 'scale_up' in systematics and 'scale_dn' in systematics :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & %6.1f / %6.1f & %6.1f / %6.1f \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & %6.1f & %6.1f & %6.1f & %6.1f \\\\\n' % (
 				'$Q^2$',
 				100. * (systematics['scale_up']-1.),
 				100. * (systematics['scale_dn']-1.),
@@ -338,7 +351,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] Scale systematic not found!'
 
 		if 'tmass_up' in systematics and 'tmass_dn' in systematics :
-			file.write('%18s & %6.1f / %6.1f & %6.1f / %6.1f & - & - & - & - \\\\\n' % (
+			file.write('\t%-18s & %6.1f & %6.1f & %6.1f & %6.1f & {-} & {-} & \\multicolumn{2}{c}{-} & \\multicolumn{2}{c}{-} \\\\\n' % (
 				'$m_{\\text{top}}$',
 				100. * (systematics['tmass_up']-1.),
 				100. * (systematics['tmass_dn']-1.),
@@ -349,7 +362,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] Top mass systematic not found!'
 
 		if 'gen' in systematics :
-			file.write('%18s & %6.1f & - & - & - & - & - \\\\\n' % (
+			file.write('\t%-18s & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{-} & {-} & {-} & \\multicolumn{2}{c}{-} & \\multicolumn{2}{c}{-} \\\\\n' % (
 				'Generator',
 				100. * (systematics['gen']-1.)
 				))
@@ -357,7 +370,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] Generator systematic not found!'
 
 		if 'pdf' in systematics and 'wz_pdf' in systematics :
-			file.write('%18s & %6.1f & - & - & - & %6.1f & - \\\\\n' % (
+			file.write('\t%-18s & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{-} & {-} & {-} & \\multicolumn{2}{c}{\\tablenum[table-format = 1.1]{%6.1f}} & \\multicolumn{2}{c}{-} \\\\\n' % (
 				'PDF',
 				100. * (systematics['pdf']-1.),
 				100. * (systematics['wz_pdf']-1.)
@@ -365,8 +378,8 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		else :
 			print '[WARNING] PDF systematic not found!'
 
-		file.write('\\bottomrule\n')
-		file.write('\\end{tabular}')
+		file.write('\t\\bottomrule\n')
+		file.write('\\end{tabular}\n')
 
 
 def make_YieldsTable(path, res, systematics) :
