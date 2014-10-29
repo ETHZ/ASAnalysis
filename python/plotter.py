@@ -205,13 +205,18 @@ class plotter :
 			# make overview table of systematic studies
 			tables.make_SystTable(self.path, results, 'al', 'al', self.systematics)
 
-			print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['++']['al'].obs, results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw, math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
-			print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (results['Normal']['--']['al'].obs, results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw, math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
+			print '++:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (
+					results['Normal']['++']['al'].obs,
+					results['Normal']['++']['al'].tot + results['Normal']['++']['al'].ttw,
+					math.sqrt(results['Normal']['++']['al'].tot_err*results['Normal']['++']['al'].tot_err + results['Normal']['++']['al'].ttw_err*results['Normal']['++']['al'].ttw_err))
+			print '--:   Observed: %3d   Predicted: %5.1f +/- %4.1f' % (
+					results['Normal']['--']['al'].obs,
+					results['Normal']['--']['al'].tot + results['Normal']['--']['al'].ttw,
+					math.sqrt(results['Normal']['--']['al'].tot_err*results['Normal']['--']['al'].tot_err + results['Normal']['--']['al'].ttw_err*results['Normal']['--']['al'].ttw_err))
 
 			systematics = {}
 			systematics['rare'] = self.RareESyst
-			tables.make_YieldsTable(results['Normal']['al'], systematics)
-#			self.print_results(results['Normal']['al'])
+			tables.make_YieldsTable(self.path, results['Normal']['al'], systematics)
 
 
 	def skim_tree(self, syst = '', minNJ = 2) :

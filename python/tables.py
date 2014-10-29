@@ -365,90 +365,125 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		file.write('\\end{tabular}')
 
 
-def make_YieldsTable(res, systematics) :
+def make_YieldsTable(path, res, systematics) :
 	'''print all observations and predictions'''
 
-	# PRINTOUT
-	print "-------------------------------------------------------------------------------------------------------------------------------"
-	print "                 |               Mu/Mu               |                E/Mu               |                E/E                ||"
-	print "         YIELDS  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  |   Ntt  |   Ntl  |   Nlt  |   Nll  ||"
-	print "-------------------------------------------------------------------------------------------------------------------------------"
-	print "%16s & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f & %6.0f" % ("Data",
-		res['mm'].nt2 ,
-		res['mm'].nt10,
-		res['mm'].nt01,
-		res['mm'].nt0 ,
-		res['em'].nt2 ,
-		res['em'].nt10,
-		res['em'].nt01,
-		res['em'].nt0 ,
-		res['ee'].nt2 ,
-		res['ee'].nt10,
-		res['ee'].nt01,
-		res['ee'].nt0 )
+	# data yields
+	table_name = 'DataYieldsTable.tex'
+	table_path = path + 'IntPredictions/'
+	helper.mkdir(table_path)
+	pl = ttvStyle.ttvStyle(TeX_switch = True)
+	print '[status] writing %s' % table_name
+	with open(table_path + table_name, 'w') as file :
+		timestamp = time.asctime()
+		file.write('%!TEX root = ../../Dissertation.tex\n')
+		file.write('\n')
+		file.write(providecommands())
+		file.write('\n\n')
+		file.write('\\begin{tabular}{\n')
+		file.write('\tl|\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.0]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.0]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.0]\n')
+		file.write('}\n')
+		file.write('\t\\hline \\hline\n')
+		file.write('\tYields & {\\PGm\\PGm} & {\\Pe\\PGm} & {\\Pe\\Pe} \\\\\n')
+		file.write('\t\\hline\n')
+		file.write('\t%-6s &   %8.0f &  %8.0f & %8.0f \\\\\n' % (
+			'\\ntt',
+			res['mm'].nt2,
+			res['em'].nt2,
+			res['ee'].nt2))
+		file.write('\t%-6s &   %8.0f &  %8.0f & %8.0f \\\\\n' % (
+			'\\ntl',
+			res['mm'].nt10,
+			res['em'].nt10,
+			res['ee'].nt10))
+		file.write('\t%-6s &   %8.0f &  %8.0f & %8.0f \\\\\n' % (
+			'\\nlt',
+			res['mm'].nt01,
+			res['em'].nt01,
+			res['ee'].nt01))
+		file.write('\t%-6s &   %8.0f &  %8.0f & %8.0f \\\\\n' % (
+			'\\nll',
+			res['mm'].nt0,
+			res['em'].nt0,
+			res['ee'].nt0))
+		file.write('\t\\hline \\hline\n')
+		file.write('\\end{tabular}\n')
 
-
-
-	print "  Fake Predictions:"
-	print "------------------------------------------------------------------------------------------------------"
-	print "                 |            Mu/Mu          |           El/Mu           |            El/El          |"
-	print "------------------------------------------------------------------------------------------------------"
-	print " Npp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-		res['mm'].npp, res['mm'].npp_staterr, res['mm'].npp_systerr,
-		res['em'].npp, res['em'].npp_staterr, res['em'].npp_systerr,
-		res['ee'].npp, res['ee'].npp_staterr, res['ee'].npp_systerr)
-	print " Npf             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-		res['mm'].npf, res['mm'].npf_staterr, res['mm'].npf_systerr,
-		res['em'].npf, res['em'].npf_staterr, res['em'].npf_systerr,
-		res['ee'].npf, res['ee'].npf_staterr, res['ee'].npf_systerr)
-	print " Nfp             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-		res['mm'].nfp, res['mm'].nfp_staterr, res['mm'].nfp_systerr,
-		res['em'].nfp, res['em'].nfp_staterr, res['em'].nfp_systerr,
-		res['ee'].nfp, res['ee'].nfp_staterr, res['ee'].nfp_systerr)
-	print " Nff             |", "%5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f | %5.1f +/- %5.1f +/- %5.1f |" % (
-		res['mm'].nff, res['mm'].nff_staterr, res['mm'].nff_systerr,
-		res['em'].nff, res['em'].nff_staterr, res['em'].nff_systerr,
-		res['ee'].nff, res['ee'].nff_staterr, res['ee'].nff_systerr)
-	print "------------------------------------------------------------------------------------------------------"
-	print " Total Fakes     |", "%5.1f +/- %5.1f           | %5.1f +/- %5.1f           | %5.1f +/- %5.1f           |" % (
-		res['mm'].fake, res['mm'].fake_err,
-		res['em'].fake, res['em'].fake_err,
-		res['ee'].fake, res['ee'].fake_err)
-	print "------------------------------------------------------------------------------------------------------"
-	print " (Value +/- E_stat +/- E_syst) "
-	print "//////////////////////////////////////////////////////////////////////////////////////////"
-	print " ChMisID         |", "                          | %5.1f +/- %5.1f           | %5.1f +/- %5.1f           |" % (
-		res['em'].cmid, res['em'].cmid_err,
-		res['ee'].cmid, res['ee'].cmid_err)
-	print "------------------------------------------------------------------------------------------------------"
-
-	print 'rares:'
-
-	for s in res['al'].rares :
-		print "%16s || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||" % (s, 
-			res['mm'].rares[s], res['mm'].rares_staterr[s], systematics['rare']*res['mm'].rares[s],
-			res['em'].rares[s], res['em'].rares_staterr[s], systematics['rare']*res['em'].rares[s],
-			res['ee'].rares[s], res['ee'].rares_staterr[s], systematics['rare']*res['ee'].rares[s],
-			res['al'].rares[s], res['al'].rares_staterr[s], systematics['rare']*res['al'].rares[s])
-	print "----------------------------------------------------------------------------------------------"
-	print "%16s || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||" % ('Total', 
-		res['mm'].rare, res['mm'].rare_staterr, systematics['rare']*res['mm'].rare,
-		res['em'].rare, res['em'].rare_staterr, systematics['rare']*res['em'].rare,
-		res['ee'].rare, res['ee'].rare_staterr, systematics['rare']*res['ee'].rare,
-		res['al'].rare, res['al'].rare_staterr, systematics['rare']*res['al'].rare)
-
-
-#		print "----------------------------------------------------------------------------------------------"
-#		print "       SUMMARY   ||         Mu/Mu         ||         E/Mu          ||          E/E          ||"
-#		print "=============================================================================================="
-#		print "%16s || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. fakes",
-#			self.nF_mm, FR.getMMTotEStat(), self.FakeESyst*nF_mm,
-#			self.nF_em, FR.getEMTotEStat(), self.FakeESyst*nF_em,
-#			self.nF_ee, FR.getEETotEStat(), self.FakeESyst*nF_ee)
-#		print "%16s ||                       || %5.2f +/- %5.2f +/- %5.2f || %5.2f +/- %5.2f +/- %5.2f ||\n" % ("pred. chmisid",
-#			nt2_em_chmid, nt2_em_chmid_e1, nt2_em_chmid_e2, nt2_ee_chmid, nt2_ee_chmid_e1, nt2_ee_chmid_e2)
-#
-	print "----------------------------------------------------------------------------------------------"
+	# predictions
+	table_name = 'PredTable.tex'
+	table_path = path + 'IntPredictions/'
+	helper.mkdir(table_path)
+	pl = ttvStyle.ttvStyle(TeX_switch = True)
+	print '[status] writing %s' % table_name
+	with open(table_path + table_name, 'w') as file :
+		timestamp = time.asctime()
+		file.write('%!TEX root = ../../Dissertation.tex\n')
+		file.write('\n')
+		file.write(providecommands())
+		file.write('\n\n')
+		file.write('\\sisetup{separate-uncertainty}\n')
+		file.write('\n\n')
+		file.write('\\begin{tabular}{\n')
+		file.write('\tl|\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('}\n')
+		file.write('\t\\hline \\hline\n')
+		file.write('\tPrediction   &  {\\PGm\\PGm}  &   {\\Pe\\PGm}  &   {\\Pe\\Pe}   \\\\\n')
+		# fakes
+		file.write('\t\\hline \\hline\n')
+		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'\\npp',
+			res['mm'].npp, res['mm'].npp_staterr, #res['mm'].npp_systerr,
+			res['em'].npp, res['em'].npp_staterr, #res['em'].npp_systerr,
+			res['ee'].npp, res['ee'].npp_staterr))#, res['ee'].npp_systerr))
+		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'\\npf',
+			res['mm'].npf, res['mm'].npf_staterr, #res['mm'].npf_systerr,
+			res['em'].npf, res['em'].npf_staterr, #res['em'].npf_systerr,
+			res['ee'].npf, res['ee'].npf_staterr))#, res['ee'].npf_systerr))
+		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'\\nfp',
+			res['mm'].nfp, res['mm'].nfp_staterr, #res['mm'].nfp_systerr,
+			res['em'].nfp, res['em'].nfp_staterr, #res['em'].nfp_systerr,
+			res['ee'].nfp, res['ee'].nfp_staterr))#, res['ee'].nfp_systerr))
+		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'\\nff',
+			res['mm'].nff, res['mm'].nff_staterr, #res['mm'].nff_systerr,
+			res['em'].nff, res['em'].nff_staterr, #res['em'].nff_systerr,
+			res['ee'].nff, res['ee'].nff_staterr))#, res['ee'].nff_systerr))
+		file.write('\t\\hline\n')
+		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'Total Fakes',
+			res['mm'].fake, res['mm'].fake_err,
+			res['em'].fake, res['em'].fake_err,
+			res['ee'].fake, res['ee'].fake_err))
+		# charge mis-ID
+		file.write('\t\\hline \\hline\n')
+		file.write('\t%-12s &              & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'Charge MisID',
+			res['em'].cmid, res['em'].cmid_err,
+			res['ee'].cmid, res['ee'].cmid_err))
+		# rares
+		file.write('\t\\hline \\hline\n')
+		for s in res['al'].rares :
+			file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+				s,
+				res['mm'].rares[s], res['mm'].rares_staterr[s],# systematics['rare']*res['mm'].rares[s],
+				res['em'].rares[s], res['em'].rares_staterr[s],# systematics['rare']*res['em'].rares[s],
+				res['ee'].rares[s], res['ee'].rares_staterr[s]))#, systematics['rare']*res['ee'].rares[s],
+		file.write('\t\\hline\n')
+		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'Rares',
+			res['mm'].rare, res['mm'].rare_staterr,# systematics['rare']*res['mm'].rare,
+			res['em'].rare, res['em'].rare_staterr,# systematics['rare']*res['em'].rare,
+			res['ee'].rare, res['ee'].rare_staterr))#, systematics['rare']*res['ee'].rare,
+		file.write('\t\\hline \\hline\n')
+		file.write('\\end{tabular}\n')
 
 
 def make_CutsTable(path, selections) :
@@ -625,3 +660,18 @@ def make_OptTable(path, FoM, table, charge_str) :
 			file.write(' \\\\\n')
 		file.write('\t\\hline\\hline\n')
 		file.write('\\end{tabular}')
+
+
+def providecommands() :
+	commands = ''
+	commands += '\\providecommand{\\Pe} {\\ensuremath{\\mathrm{e}}}\n'
+	commands += '\\providecommand{\\PGm}{\\ensuremath{\\mu}}\n'
+	commands += '\\providecommand{\\npp}{\\ensuremath{N_{\\mathrm{pp}}}}\n'
+	commands += '\\providecommand{\\npf}{\\ensuremath{N_{\\mathrm{pf}}}}\n'
+	commands += '\\providecommand{\\nfp}{\\ensuremath{N_{\\mathrm{fp}}}}\n'
+	commands += '\\providecommand{\\nff}{\\ensuremath{N_{\\mathrm{ff}}}}\n'
+	commands += '\\providecommand{\\ntt}{\\ensuremath{N_{\\mathrm{tt}}}}\n'
+	commands += '\\providecommand{\\ntl}{\\ensuremath{N_{\\mathrm{tl}}}}\n'
+	commands += '\\providecommand{\\nlt}{\\ensuremath{N_{\\mathrm{lt}}}}\n'
+	commands += '\\providecommand{\\nll}{\\ensuremath{N_{\\mathrm{ll}}}}\n'
+	return commands
