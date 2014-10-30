@@ -351,7 +351,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 			print '[WARNING] Scale systematic not found!'
 
 		if 'tmass_up' in systematics and 'tmass_dn' in systematics :
-			file.write('\t%-18s &            %5.1f & %5.1f            &            %5.1f & %5.1f            &  {-} &  {-} & \\multicolumn{2}{c}{-}               & \\multicolumn{2}{c}{-}               \\\\\n' % (
+			file.write('\t%-18s &            %+5.1f & %+5.1f            &            %+5.1f & %+5.1f            &  {-} &  {-} & \\multicolumn{2}{c}{-}               & \\multicolumn{2}{c}{-}               \\\\\n' % (
 				'$m_{\\text{top}}$',
 				100. * (systematics['tmass_up']-1.),
 				100. * (systematics['tmass_dn']-1.),
