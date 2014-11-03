@@ -115,6 +115,10 @@ class plotter :
 	def do_analysis(self, IntPred = True, DiffPred = False, DiffMC = False, RatioPlots = False, RatioControlPlots = False) :
 		print '[status] starting analysis..'
 
+		# make table of samples
+		tables.make_SampleTable(self.path, [self.samples[name] for name in self.get_samples('Rare')], 'Irreducible')
+		return
+
 		# selections
 		sels = {}
 #		sels['1J0bJ'    ] = self.selections['1J0bJ'    ]

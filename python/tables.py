@@ -670,6 +670,44 @@ def make_OptTable(path, FoM, table, charge_str) :
 		file.write('\\end{tabular}')
 
 
+def make_SampleTable(path, samples, name = '') :
+	'''list all samples'''
+
+	# data yields
+	table_name = '%sSamples.tex' % name
+	table_path = path
+	if not table_path.endswith('/') : table_path += '/'
+	helper.mkdir(table_path)
+	pl = ttvStyle.ttvStyle(TeX_switch = True)
+	print '[status] writing %s' % table_name
+	ngen_digits = int(math.log10(max([s.ngen for s in samples]))) + 1
+	with open(table_path + table_name, 'w') as file :
+		timestamp = time.asctime()
+		file.write('%!TEX root = ../../Dissertation.tex\n')
+#		file.write('\n')
+#		file.write(providecommands())
+		file.write('\n\n')
+		file.write('\\begin{tabular}{\n')
+		file.write('\tl\n')
+		file.write('\tS[table-number-alignment = center, table-format = %d.0]\n' % ngen_digits)
+		file.write('\tS[table-number-alignment = center, table-format = 1.2e+1, round-mode = figures, round-precision = 3]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 1.2e+1, round-mode = figures, round-precision = 3]\n')
+		file.write('}\n')
+		file.write('\t\\toprule\n')
+		file.write('\tSample & {$N_{\\text{gen}}$} & {$\\sigma$ (\\si{\\pico\\barn})} & {$L$ (\\si{\\femto\\barn})} \\\\\n')
+		file.write('\t\\midrule\n')
+		for s in samples :
+			if s.datamc == 0 : continue
+			if s.getSampleType() != 15 : continue
+			file.write('\t%-14s &   %8.0f &  %14.8e & %e \\\\\n' % (
+				s.name.replace('_', '\\_'),
+				s.ngen,
+				s.xsec,
+				s.getLumi() / 1000.))
+		file.write('\t\\bottomrule\n')
+		file.write('\\end{tabular}\n')
+
+
 def providecommands() :
 	commands = ''
 	commands += '\\providecommand{\\Pe} {\\ensuremath{\\mathrm{e}}}\n'
