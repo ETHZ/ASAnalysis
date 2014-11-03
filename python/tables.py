@@ -690,7 +690,7 @@ def make_SampleTable(path, samples, name = '') :
 		file.write('\\begin{tabular}{\n')
 		file.write('\tl\n')
 		file.write('\tS[table-number-alignment = center, table-format = %d.0]\n' % ngen_digits)
-		file.write('\tS[table-number-alignment = center, table-format = 1.2e+1, round-mode = figures, round-precision = 3]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 1.2e-1, round-mode = figures, round-precision = 3]\n')
 		file.write('\tS[table-number-alignment = center, table-format = 1.2e+1, round-mode = figures, round-precision = 3]\n')
 		file.write('}\n')
 		file.write('\t\\toprule\n')
