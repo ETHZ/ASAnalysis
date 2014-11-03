@@ -673,7 +673,6 @@ def make_OptTable(path, FoM, table, charge_str) :
 def make_SampleTable(path, samples, name = '') :
 	'''list all samples'''
 
-	# data yields
 	table_name = '%sSamples.tex' % name
 	table_path = path
 	if not table_path.endswith('/') : table_path += '/'
@@ -699,7 +698,7 @@ def make_SampleTable(path, samples, name = '') :
 		for s in samples :
 			if s.datamc == 0 : continue
 			if s.getSampleType() != 15 : continue
-			file.write('\t%-14s &   %8.0f &  %14.8e & %e \\\\\n' % (
+			file.write('\t%-14s &   %8.0f &  %11g & %11g \\\\\n' % (
 				s.name.replace('_', '\\_'),
 				s.ngen,
 				s.xsec,
