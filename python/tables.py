@@ -693,7 +693,7 @@ def make_SampleTable(path, samples, name = '') :
 		file.write('\tS[table-number-alignment = center, table-format = 1.2e+1, round-mode = figures, round-precision = 3]\n')
 		file.write('}\n')
 		file.write('\t\\toprule\n')
-		file.write('\tSample & {$N_{\\text{gen}}$} & {$\\sigma$ (\\si{\\pico\\barn})} & {$L$ (\\si{\\femto\\barn})} \\\\\n')
+		file.write('\tSample & {$N_{\\text{gen}}$} & {$\\sigma$ (\\si{\\femto\\barn})} & {$L$ (\\si{\\per\\femto\\barn})} \\\\\n')
 		file.write('\t\\midrule\n')
 		for s in samples :
 			if s.datamc == 0 : continue
@@ -701,7 +701,7 @@ def make_SampleTable(path, samples, name = '') :
 			file.write('\t%-14s &   %8.0f &  %11g & %11g \\\\\n' % (
 				s.name.replace('_', '\\_'),
 				s.ngen,
-				s.xsec,
+				s.xsec * 1000.,
 				s.getLumi() / 1000.))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
