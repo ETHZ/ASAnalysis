@@ -695,12 +695,10 @@ def make_SampleTable(path, samples, name = '') :
 		file.write('\tS[table-number-alignment = center, table-format = %d.0, round-mode = figures, round-precision = 3]\n' % lumi_digits)
 		file.write('}\n')
 		file.write('\t\\toprule\n')
-		file.write('\tSample & {$\\sigma$ (\\si{\\femto\\barn})} & {$N_{\\text{gen}}$} & {$L$ (\\si{\\per\\femto\\barn})} \\\\\n')
+		file.write('\tSample         & {$\\sigma$ (\\si{\\femto\\barn})} & {$N_{\\text{gen}}$} & {$L$ (\\si{\\per\\femto\\barn})} \\\\\n')
 		file.write('\t\\midrule\n')
 		for s in samples :
-			if s.datamc == 0 : continue
-			if s.getSampleType() != 15 : continue
-			file.write('\t%-14s &  %11g &   %8.0f & %11g \\\\\n' % (
+			file.write('\t%-14s & %28g  &   %15.0f  & %27g  \\\\\n' % (
 				s.name.replace('_', '\\_'),
 				s.xsec * 1000.,
 				s.ngen,
