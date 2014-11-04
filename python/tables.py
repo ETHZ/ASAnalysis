@@ -680,6 +680,8 @@ def make_SampleTable(path, samples, name = '') :
 	pl = ttvStyle.ttvStyle(TeX_switch = True)
 	print '[status] writing %s' % table_name
 	ngen_digits = int(math.log10(max([s.ngen for s in samples]))) + 1
+	xsec_digits = int(math.log10(max([s.xsec for s in samples]))) + 4
+	lumi_digits = int(math.log10(max([s.getLumi() for s in samples]))) - 2
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
 		file.write('%!TEX root = ../../Dissertation.tex\n')
@@ -688,20 +690,20 @@ def make_SampleTable(path, samples, name = '') :
 		file.write('\n\n')
 		file.write('\\begin{tabular}{\n')
 		file.write('\tl\n')
+		file.write('\tS[table-number-alignment = center, table-format = %d.2, round-mode = figures, round-precision = 3]\n' % xsec_digits)
 		file.write('\tS[table-number-alignment = center, table-format = %d.0]\n' % ngen_digits)
-		file.write('\tS[table-number-alignment = center, table-format = 1.2e-1, round-mode = figures, round-precision = 3]\n')
-		file.write('\tS[table-number-alignment = center, table-format = 1.2e+1, round-mode = figures, round-precision = 3]\n')
+		file.write('\tS[table-number-alignment = center, table-format = %d.0, round-mode = figures, round-precision = 3]\n' % lumi_digits)
 		file.write('}\n')
 		file.write('\t\\toprule\n')
-		file.write('\tSample & {$N_{\\text{gen}}$} & {$\\sigma$ (\\si{\\femto\\barn})} & {$L$ (\\si{\\per\\femto\\barn})} \\\\\n')
+		file.write('\tSample & {$\\sigma$ (\\si{\\femto\\barn})} & {$N_{\\text{gen}}$} & {$L$ (\\si{\\per\\femto\\barn})} \\\\\n')
 		file.write('\t\\midrule\n')
 		for s in samples :
 			if s.datamc == 0 : continue
 			if s.getSampleType() != 15 : continue
-			file.write('\t%-14s &   %8.0f &  %11g & %11g \\\\\n' % (
+			file.write('\t%-14s &  %11g &   %8.0f & %11g \\\\\n' % (
 				s.name.replace('_', '\\_'),
-				s.ngen,
 				s.xsec * 1000.,
+				s.ngen,
 				s.getLumi() / 1000.))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
