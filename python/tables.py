@@ -682,6 +682,7 @@ def make_SampleTable(path, samples, name = '') :
 	ngen_digits = int(math.log10(max([s.ngen for s in samples]))) + 1
 	xsec_digits = int(math.log10(max([s.xsec for s in samples]))) + 4
 	lumi_digits = int(math.log10(max([s.getLumi() for s in samples]))) - 2
+	samples.sort(key = lambda s: s.xsec, reverse = True) # sort samples by cross section
 	with open(table_path + table_name, 'w') as file :
 		timestamp = time.asctime()
 		file.write('%!TEX root = ../../Dissertation.tex\n')
