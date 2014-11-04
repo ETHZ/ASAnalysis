@@ -277,6 +277,14 @@ class ttvStyle(object) :
 		return '?'
 
 
+	def get_processCommand(self, process) :
+		if   process == 'WWTo2L2Nu' : command = '\\ww'
+		elif process == 'WZTo3LNu'  : command = '\\wz'
+		elif process == 'ZZTo4L'    : command = '\\zz'
+		else : command = '\\%s' % process.replace('+', 'p').replace('-', 'm').replace('_', '')
+		return command
+
+
 	@property
 	def cms_label(self) :
 		if   self._cms_label == 0 : return 'CMS'

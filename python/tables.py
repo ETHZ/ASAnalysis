@@ -696,11 +696,12 @@ def make_SampleTable(path, samples, name = '') :
 		file.write('\tS[table-number-alignment = center, table-format = %d.0, round-mode = figures, round-precision = 3]\n' % lumi_digits)
 		file.write('}\n')
 		file.write('\t\\toprule\n')
-		file.write('\tSample         & {$\\sigma$ (\\si{\\femto\\barn})} & {$N_{\\text{gen}}$} & {$L$ (\\si{\\per\\femto\\barn})} \\\\\n')
+		file.write('\tSample         & {$\\sigma$ (\\si{\\femto\\barn})} & {$N_{\\text{gen}}$} & {\\intlumi{} (\\si{\\per\\femto\\barn})} \\\\\n')
 		file.write('\t\\midrule\n')
 		for s in samples :
-			file.write('\t%-14s & %28g  &   %15.0f  & %27g  \\\\\n' % (
-				s.name.replace('_', '\\_'),
+			file.write('\t%-14s & %28g  &   %15.0f  & %34g  \\\\\n' % (
+#				s.name.replace('_', '\\_'),
+				pl.get_processCommand(s.name),
 				s.xsec * 1000.,
 				s.ngen,
 				s.getLumi() / 1000.))
