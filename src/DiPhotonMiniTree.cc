@@ -810,8 +810,9 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->PhoMatchedPFPhotonCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
-	  if (fTR->PhoMatchedPFElectronCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonCand.size()>0) if (fTR->PhoMatchedPFPhotonCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
+	  if (fTR->PhoMatchedPFElectronCand.size()>0) if (fTR->PhoMatchedPFElectronCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonOrElectronCand.size()>0) if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(!pass12_whoissiglike[sel_cat])]==k) continue;	
 	  bool removed = false;
 	  for (set<int>::iterator j=removals.begin(); j!=removals.end(); j++) if (k==*j) removed=true;
 	  if (removed) continue;
@@ -903,8 +904,9 @@ void DiPhotonMiniTree::Analyze(){
 	  float eta = fabs(fTR->PfCandEta[k]);
 	  if (eta>1.4442 && eta<1.566) continue;
 	  if (eta>2.5) continue;
-	  if (fTR->PhoMatchedPFPhotonCand[passing.at(i)]==k) continue;	
-	  if (fTR->PhoMatchedPFElectronCand[passing.at(i)]==k) continue;	
+	  if (fTR->PhoMatchedPFPhotonCand.size()>0) if (fTR->PhoMatchedPFPhotonCand[passing.at(i)]==k) continue;	
+	  if (fTR->PhoMatchedPFElectronCand.size()>0) if (fTR->PhoMatchedPFElectronCand[passing.at(i)]==k) continue;
+	  if (fTR->PhoMatchedPFPhotonOrElectronCand.size()>0) if (fTR->PhoMatchedPFPhotonOrElectronCand[passing.at(i)]==k) continue;
 	  bool removed = false;
 	  for (set<int>::iterator j=removals.begin(); j!=removals.end(); j++) if (k==*j) removed=true;
 	  if (removed) continue;
@@ -1958,8 +1960,9 @@ void DiPhotonMiniTree::FillVetoObjects(TreeReader *fTR, int phoqi, TString mod){
 
 std::set<int> DiPhotonMiniTree::GetPFCandIDedRemovals(TreeReader *fTR, int phoqi){
   std::set<int> out;
-  out.insert(fTR->PhoMatchedPFPhotonCand[phoqi]);
-  out.insert(fTR->PhoMatchedPFElectronCand[phoqi]);
+  if (fTR->PhoMatchedPFPhotonCand.size()>0) out.insert(fTR->PhoMatchedPFPhotonCand[phoqi]);
+  if (fTR->PhoMatchedPFElectronCand.size()>0) out.insert(fTR->PhoMatchedPFElectronCand[phoqi]);
+  if (fTR->PhoMatchedPFPhotonOrElectronCand.size()>0) out.insert(fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]);
   return out;
 };
 
@@ -2025,8 +2028,9 @@ std::set<int> DiPhotonMiniTree::GetPFCandWithFootprintRemoval(TreeReader *fTR, i
 
     bool inside=false;
 
-    if (fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
-    if (fTR->PhoMatchedPFElectronCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFPhotonCand.size()>0)           if (fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFElectronCand.size()>0)         if (fTR->PhoMatchedPFElectronCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFPhotonOrElectronCand.size()>0) if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]==i) continue;
 
     for (int j=0; j<nxtals; j++){
       
@@ -2370,9 +2374,10 @@ float DiPhotonMiniTree::PFIsolation(int phoqi, float rotation_phi, TString compo
     if (isbarrel && fabs(pfeta)>1.4442) continue;
     if (!isbarrel && fabs(pfeta)<1.566) continue;
 
-    if (fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
-    if (fTR->PhoMatchedPFElectronCand[phoqi]==i) continue;
- 
+    if (fTR->PhoMatchedPFPhotonCand.size()>0)           if (fTR->PhoMatchedPFPhotonCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFElectronCand.size()>0)         if (fTR->PhoMatchedPFElectronCand[phoqi]==i) continue;
+    if (fTR->PhoMatchedPFPhotonOrElectronCand.size()>0) if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]==i) continue;
+
     int type = FindPFCandType(fTR->PfCandPdgId[i]);
 
     if (!(type==0 || type==1 || type==2)) continue;
@@ -3485,8 +3490,9 @@ jetmatching_struct DiPhotonMiniTree::PFMatchPhotonToJet(int phoqi){ // returns (
 
   // prepare list of pfcands to represent the photon deposit
   std::set<int> pfcands = GetPrecalculatedFootprintPhoEl(phoqi);
-  if (fTR->PhoMatchedPFPhotonCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFPhotonCand[phoqi]);
-  if (fTR->PhoMatchedPFElectronCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFElectronCand[phoqi]);
+  if (fTR->PhoMatchedPFPhotonCand.size()>0)           if (fTR->PhoMatchedPFPhotonCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFPhotonCand[phoqi]);
+  if (fTR->PhoMatchedPFElectronCand.size()>0)         if (fTR->PhoMatchedPFElectronCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFElectronCand[phoqi]);
+  if (fTR->PhoMatchedPFPhotonOrElectronCand.size()>0) if (fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]>=0) pfcands.insert(fTR->PhoMatchedPFPhotonOrElectronCand[phoqi]);
 
   // init ranking
   std::vector<std::pair<int,float> > ranking;
