@@ -347,11 +347,11 @@ void DiPhotonMiniTree::Begin(){
   }
 
 
-  fHNumPU = new TH1F("NumPU_rew","NumPU_rew",50,0,50);
-  fHNumPU_noweight = new TH1F("NumPU_noweight","NumPU_noweight",50,0,50);
-  fHNumPUTrue = new TH1F("NumPUTrue_rew","NumPUTrue_rew",50,0,50);
-  fHNumPUTrue_noweight = new TH1F("NumPUTrue_noweight","NumPUTrue_noweight",50,0,50);
-  fHNumVtx = new TH1F("NumVtx_rew","NumVtx_rew",50,0,50);
+  fHNumPU = new TH1F("NumPU_rew","NumPU_rew",100,0,100);
+  fHNumPU_noweight = new TH1F("NumPU_noweight","NumPU_noweight",100,0,100);
+  fHNumPUTrue = new TH1F("NumPUTrue_rew","NumPUTrue_rew",100,0,100);
+  fHNumPUTrue_noweight = new TH1F("NumPUTrue_noweight","NumPUTrue_noweight",100,0,100);
+  fHNumVtx = new TH1F("NumVtx_rew","NumVtx_rew",100,0,100);
   fPNumEvents = new TParameter<double>("NumEvents",0);
   fPSumWeights = new TParameter<double>("SumGenWeights",0);
   fPSumWeights2 = new TParameter<double>("SumGenWeights2",0);
@@ -379,7 +379,7 @@ void DiPhotonMiniTree::Analyze(){
   else weight=1;
   
   event_luminormfactor=AddWeight;
-  event_luminormfactor*=fTR->GenWeight;
+  if (!isdata) event_luminormfactor*=fTR->GenWeight;
 
   fPNumEvents->SetVal(fPNumEvents->GetVal()+1);
   fPSumWeights->SetVal(fPSumWeights->GetVal()+fTR->GenWeight);
