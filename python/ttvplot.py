@@ -15,6 +15,7 @@ class ttvplot(object) :
 			os.makedirs(self.path)
 		self.chan = chan
 		self.asymmErr = asymmErr
+		self.TeX_switch = TeX_switch
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
@@ -101,8 +102,9 @@ class ttvplot(object) :
 			leg_entries.append([histos['rare' ], self.ttvStyle.get_processName('rare' ), 'f'])
 			leg_entries.append([histos['chmid'], self.ttvStyle.get_processName('chmid'), 'f'])
 		leg_entries.append([histos['fake' ], self.ttvStyle.get_processName('fake' ), 'f'])
-		leg_entries.append([histos['bgtot'], self.ttvStyle.get_processName('bgtot'), 'l'])
-		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
+		if self.TeX_switch is False :
+			leg_entries.append([histos['bgtot'], self.ttvStyle.get_processName('bgtot'), 'l'])
+			leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
 		leg = self.ttvStyle.draw_legend(leg_entries)
 
 		canvas = self.ttvStyle.get_canvas('C_ObsPred')
@@ -136,13 +138,20 @@ class ttvplot(object) :
 				hs_pred.GetXaxis().SetBinLabel(total_bin, 'Total')
 			for ibin in range(1 + total_bin, hs_pred.GetXaxis().GetNbins()+1) :
 				bin = ibin - total_bin
-				if bin < 4 : charge_str = '^{+}'
-				else       : charge_str = '^{-}'
-				binlabel = '#color[0]{l}'
-				if bin == 1 or bin == 4 : binlabel += '#mu'+charge_str+'#mu'+charge_str
-				if bin == 2 or bin == 5 : binlabel += 'e'+charge_str+'#mu'+charge_str
-				if bin == 3 or bin == 6 : binlabel += 'e'+charge_str+'e'+charge_str
-				binlabel += '#color[0]{l}'
+				if self.TeX_switch is True :
+					if bin < 4 : charge_str = 'p'
+					else       : charge_str = 'm'
+					if bin == 1 or bin == 4 : binlabel = '\\PGm'+charge_str+'\\PGm'+charge_str
+					if bin == 2 or bin == 5 : binlabel = '\\Pe'+charge_str+'\\PGm'+charge_str
+					if bin == 3 or bin == 6 : binlabel = '\\Pe'+charge_str+'\\Pe'+charge_str
+				else :
+					if bin < 4 : charge_str = '^{+}'
+					else       : charge_str = '^{-}'
+					binlabel = '#color[0]{l}'
+					if bin == 1 or bin == 4 : binlabel += '#mu'+charge_str+'#mu'+charge_str
+					if bin == 2 or bin == 5 : binlabel += 'e'+charge_str+'#mu'+charge_str
+					if bin == 3 or bin == 6 : binlabel += 'e'+charge_str+'e'+charge_str
+					binlabel += '#color[0]{l}'
 				hs_pred.GetXaxis().SetBinLabel(ibin, binlabel)
 			hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif var == 'Charge' :
@@ -155,8 +164,9 @@ class ttvplot(object) :
 			bin_width = hs_pred.GetXaxis().GetBinWidth(1)
 			hs_pred.GetYaxis().SetTitle('Events / %.0f GeV' % bin_width)
 		leg.Draw()
-		histos['pred'].Draw('0 E2 same')
-		histos['bgtot'].Draw('hist same')
+		if self.TeX_switch is False :
+			histos['pred'].Draw('0 E2 same')
+			histos['bgtot'].Draw('hist same')
 		if self.asymmErr :
 			gr_obs         .Draw('PE same')
 		else :
@@ -166,6 +176,8 @@ class ttvplot(object) :
 
 		canvas.Print('%sObsPred%s_%s%s.pdf' % (self.path, prefix, var, suffix))
 		canvas.Print('%sObsPred%s_%s%s.png' % (self.path, prefix, var, suffix))
+		canvas.Print('%sObsPred%s_%s%s.tex' % (self.path, prefix, var, suffix))
+		canvas.Print('%sObsPred%s_%s%s.root' % (self.path, prefix, var, suffix))
 #		raw_input('ok? ')
 
 

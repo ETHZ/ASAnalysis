@@ -117,7 +117,6 @@ class plotter :
 
 		# make table of samples
 		tables.make_SampleTable(self.path, [self.samples[name] for name in self.get_samples('Rare')], 'Irreducible')
-		return
 
 		# selections
 		sels = {}
@@ -1420,7 +1419,7 @@ class plotter :
 			if sel.charge < 0 : charge_str = '^{-}'
 		if sel.name == 'final' : cms_label = 0
 #		cms_label = 2
-		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label)
+		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label, TeX_switch = True)
 		pl.save_plot(histos, var, prefix = prefix, suffix = '', charge_str = charge_str)
 		# preliminary plots with suffix
 		pl.cms_label = 2
@@ -1577,6 +1576,7 @@ class plotter :
 		helper.mkdir(path)
 		canvas.Update()
 		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
+		canvas.Print('%sObsMC%s_%s%s.tex' % (path, prefix, var, suffix))
 		ROOT.gPad.SetLogy()
 		suffix += '_log'
 		canvas.Update()

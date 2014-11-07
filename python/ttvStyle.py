@@ -257,6 +257,19 @@ class ttvStyle(object) :
 		self.var_names['LepIso'     ] = 'Lepton isolation'
 		self.var_names['ClosJetDR'  ] = 'Closest jet DR'
 		self.var_names['AwayJetDR'  ] = 'Away jet DR'
+		if self.TeX_switch is True :
+			self.var_names['HT'    ] = '\\text{\\HT{} (\\si{\\giga\\electronvolt})}'
+			self.var_names['MET'   ] = '\\text{\\MET{} (\\si{\\giga\\electronvolt})}'
+			self.var_names['NJ'    ] = '\\nj'
+			self.var_names['NbJ'   ] = '\\nb'
+			self.var_names['NbJmed'] = '\\nb'
+			self.var_names['pT1'   ] = '\\text{Leading lepton \\pt{} (\\si{\\giga\\electronvolt})}'
+			self.var_names['pT2'   ] = '\\text{Sub-leading lepton \pt{} (\\si{\\giga\\electronvolt})}'
+			self.var_names['Int'   ] = ''
+			self.var_names['Mll'   ] = '\\text{\\mll{} (\\si{\\giga\\electronvolt})}'
+			self.var_names['NVrtx' ] = '\\nvrtx'
+			self.var_names['minMT' ] = '\\text{\\mt{} (\\si{\\giga\\electronvolt})}'
+			self.var_names['M3'    ] = '\\text{\\mbjj{} (\\si{\\giga\\electronvolt})}'
 
 
 	def get_fillColor(self, process) :
@@ -353,15 +366,22 @@ class ttvStyle(object) :
 		latex.SetTextFont(42)
 		latex.SetTextSize(0.03)
 		if self.lumi < 0 : return
+		latex.SetTextAlign(31)
 		if self.lumi > 500. :
 			lumi = self.lumi/1000.
 			unit = 'fb^{-1}'
+			if self.TeX_switch is True :
+				unit = '\\femto'
 		else :
 			lumi = self.lumi
 			unit = 'pb^{-1}'
+			if self.TeX_switch is True :
+				unit = '\\pico'
 #		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
-		latex.SetTextAlign(31)
-		latex.DrawLatex(lumi_x, lumi_y, '%4.1f %s (8 TeV)' % (lumi, unit))
+		if self.TeX_switch is True :
+			latex.DrawLatex(lumi_x, lumi_y, '\\text{\\SI{%4.1f}{%s\\barn} (\\SI{8}{\\tera\\electronvolt})}' % (lumi, unit))
+		else :
+			latex.DrawLatex(lumi_x, lumi_y, '%4.1f %s (8 TeV)' % (lumi, unit))
 
 
 	def get_maximum(self, histos, scale = 1.8, set_maximum = True) :
