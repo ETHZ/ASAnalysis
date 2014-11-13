@@ -79,7 +79,7 @@ class ttvplot(object) :
 		histos['bgtot'].SetFillStyle(0)
 
 		histos['pred' ].SetLineWidth(0)
-		histos['pred' ].SetFillColor(12)
+		histos['pred' ].SetFillColor(1)
 		histos['pred' ].SetFillStyle(3005)
 
 		# legend
@@ -104,7 +104,7 @@ class ttvplot(object) :
 		leg_entries.append([histos['fake' ], self.ttvStyle.get_processName('fake' ), 'f'])
 		if self.TeX_switch is False :
 			leg_entries.append([histos['bgtot'], self.ttvStyle.get_processName('bgtot'), 'l'])
-			leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
+		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
 		leg = self.ttvStyle.draw_legend(leg_entries)
 
 		canvas = self.ttvStyle.get_canvas('C_ObsPred')
@@ -167,8 +167,8 @@ class ttvplot(object) :
 			else :
 				hs_pred.GetYaxis().SetTitle('Events / %.0f GeV' % bin_width)
 		leg.Draw()
+		histos['pred'].Draw('0 E2 same')
 		if self.TeX_switch is False :
-			histos['pred'].Draw('0 E2 same')
 			histos['bgtot'].Draw('hist same')
 		if self.asymmErr :
 			gr_obs         .Draw('PE same')
