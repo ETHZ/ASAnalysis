@@ -456,6 +456,7 @@ void DiPhotonMiniTree::Analyze(){
   for (int i=0; i<fTR->NPhotons; i++){
     if (!isdata) FixMatchingStatusElectrons(i); // correct match exit code for photons matched to gen electrons
     if (dataset_id==sherpa_dataset_id) FixMatchingStatusSherpa(i); // correct match exit code for SHERPA
+    FixIsolationGeometricCorrection(i);
     unscaled_energy.push_back(fTR->PhoEnergy[i]);
   }
 
@@ -722,7 +723,7 @@ void DiPhotonMiniTree::Analyze(){
 	    pholead_PhoSCRemovalPFIsoNeutral = fTR->PhoSCRemovalPFIsoNeutralRCone[passing.at(0)];
 	    pholead_PhoSCRemovalPFIsoPhoton = fTR->PhoSCRemovalPFIsoPhotonRCone[passing.at(0)];
 	    pholead_PhoSCRemovalPFIsoCombined = pholead_PhoSCRemovalPFIsoCharged+pholead_PhoSCRemovalPFIsoNeutral+pholead_PhoSCRemovalPFIsoPhoton;
-	    if (pholead_PhoSCRemovalPFIsoCharged==999 || pholead_PhoSCRemovalPFIsoNeutral==999 || pholead_PhoSCRemovalPFIsoPhoton==999) dofill=false;
+	    if (pholead_PhoSCRemovalPFIsoCharged>=999 || pholead_PhoSCRemovalPFIsoNeutral>=999 || pholead_PhoSCRemovalPFIsoPhoton>=999) dofill=false;
 	  }
       }
       if (sel_cat==k2Drandomcone_template || ((sel_cat==k2Drandomconesideband_template || sel_cat==k2Drconeplusgenfake_template) && pass12_whoissiglike[sel_cat]==1)) {
@@ -760,7 +761,7 @@ void DiPhotonMiniTree::Analyze(){
 	  photrail_PhoSCRemovalPFIsoNeutral = fTR->PhoSCRemovalPFIsoNeutralRCone[passing.at(1)];
 	  photrail_PhoSCRemovalPFIsoPhoton = fTR->PhoSCRemovalPFIsoPhotonRCone[passing.at(1)];
 	  photrail_PhoSCRemovalPFIsoCombined = photrail_PhoSCRemovalPFIsoCharged+photrail_PhoSCRemovalPFIsoNeutral+photrail_PhoSCRemovalPFIsoPhoton;
-	  if (photrail_PhoSCRemovalPFIsoCharged==999 || photrail_PhoSCRemovalPFIsoNeutral==999 || photrail_PhoSCRemovalPFIsoPhoton==999) dofill=false;
+	  if (photrail_PhoSCRemovalPFIsoCharged>=999 || photrail_PhoSCRemovalPFIsoNeutral>=999 || photrail_PhoSCRemovalPFIsoPhoton>=999) dofill=false;
 	}
 
 	}
@@ -882,7 +883,7 @@ void DiPhotonMiniTree::Analyze(){
 	pholead_PhoSCRemovalPFIsoNeutral = fTR->PhoSCRemovalPFIsoNeutralRCone[passing.at(i)];
 	pholead_PhoSCRemovalPFIsoPhoton = fTR->PhoSCRemovalPFIsoPhotonRCone[passing.at(i)];
 	pholead_PhoSCRemovalPFIsoCombined = pholead_PhoSCRemovalPFIsoCharged+pholead_PhoSCRemovalPFIsoNeutral+pholead_PhoSCRemovalPFIsoPhoton;
-	if (pholead_PhoSCRemovalPFIsoCharged==999 || pholead_PhoSCRemovalPFIsoNeutral==999 || pholead_PhoSCRemovalPFIsoPhoton==999) dofill=false;
+	if (pholead_PhoSCRemovalPFIsoCharged>=999 || pholead_PhoSCRemovalPFIsoNeutral>=999 || pholead_PhoSCRemovalPFIsoPhoton>=999) dofill=false;
 	}
 
 	if (debug) cout << "here" << endl;
@@ -2322,6 +2323,9 @@ std::pair<float,float> DiPhotonMiniTree::PFPhotonIsolationFromMinitree(int phoqi
 
   } // end pf cand loop
 
+
+  result1 *= IsolationGeometricCorrectionFactor(matched_eta1);
+  result2 *= IsolationGeometricCorrectionFactor(matched_eta2);
 
   return std::make_pair<float,float>(float(result1),float(result2));
 
@@ -4300,4 +4304,47 @@ void DiPhotonMiniTree::FixMatchingStatusSherpa(int phoindex){
   else if (fTR->PhoMCmatchexitcode[phoindex]==4) return;
   else fTR->PhoMCmatchexitcode[phoindex]=2;
   
+};
+
+void DiPhotonMiniTree::FixIsolationGeometricCorrection(int phoindex){
+  if (fTR->PhotSCindex[phoindex]<0) return;
+  float correction = IsolationGeometricCorrectionFactor(fTR->SCEta[fTR->PhotSCindex[phoindex]]);
+  fTR->PhoSCRemovalPFIsoChargedPrimVtx[phoindex]*=correction;
+  fTR->PhoSCRemovalPFIsoNeutral[phoindex]*=correction;
+  fTR->PhoSCRemovalPFIsoPhoton[phoindex]*=correction;
+  fTR->PhoSCRemovalPFIsoChargedPrimVtxRCone[phoindex]*=correction;
+  fTR->PhoSCRemovalPFIsoNeutralRCone[phoindex]*=correction;
+  fTR->PhoSCRemovalPFIsoPhotonRCone[phoindex]*=correction;
+};
+
+
+float DiPhotonMiniTree::IsolationGeometricCorrectionFactor(float eta){
+
+  if (!do_isolation_geometric_correction) return 1;
+
+  assert (!do_recalc_isolation); // NOT IMPLEMENTED FOR RECALCULATED ISOLATION
+
+  // it must be eeend-eebegin > 2*conesize !!!
+  static const float conesize = 0.4;
+  static const float ebend = 1.4442;
+  static const float eebegin = 1.566;
+  static const float eeend = 2.5;
+
+  eta = fabs(eta);
+
+  float d = 999;
+  if (eta<=ebend && eta>ebend-conesize){
+    d = ebend-eta;
+  }
+  if (eta>=eebegin && eta<eebegin+conesize){
+    d = eta-eebegin;
+  } 
+  if (eta>eeend-conesize && eta<=eeend){
+    d = eeend-eta;
+  } 
+  if (d>=conesize) return 1;
+
+  float theta = 2. * TMath::ACos(d/conesize);
+  return 1./(1.-(theta-TMath::Sin(theta))/(2.*TMath::Pi()));
+
 };

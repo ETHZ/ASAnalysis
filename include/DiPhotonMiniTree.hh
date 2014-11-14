@@ -198,6 +198,10 @@ const float max_eta_jets = 4.7;
 const bool do_recalc_isolation = false; // DO NOT USE WITH V03-10-04
 // ------------------------------------
 
+// RESCALE ISOLATION IF CONE IS PARTIALLY CUT BY ACCEPTANCE BOUNDARIES
+// DO NOT USE IF do_recalc_isolation IS TRUE
+const bool do_isolation_geometric_correction = true;
+
 typedef struct {
   float photon;
   float charged;
@@ -321,6 +325,9 @@ private:
   bool FindCloseJetsAndPhotons(TreeReader *fTR, float rotation_phi, int phoqi, TString mod="");
   bool FindCloseJetsAndPhotons(std::vector<std::pair<float,float> > obj, float eta, float phi);
   std::set<int> GetPFCandIDedRemovals(TreeReader *fTR, int phoqi);
+
+  void FixIsolationGeometricCorrection(int phoindex);
+  float IsolationGeometricCorrectionFactor(float eta);
 
   void FillPhoIso_NewTemplates(TreeReader *fTR, Int_t *n1_arr, Int_t *n2_arr, std::vector<int> passing, SigBkgMode mode, ChoiceMixingTemplates mixing);
   void FillVetoObjects(TreeReader *fTR, int phoqi, TString mod);
