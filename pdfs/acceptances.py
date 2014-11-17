@@ -68,7 +68,9 @@ def make_plot(central, pdfsets, sample = '', TeX_switch = False) :
 	histo.Draw('goff')
 	for i, pdfset in enumerate(pdfsets) :
 		histo.SetBinContent(i+1, pdfset[2])
-		histo.GetXaxis().SetBinLabel(i+1, pdfset[0])
+		if TeX_switch : label = pdfset[1]
+		else          : label = pdfset[0]
+		histo.GetXaxis().SetBinLabel(i+1, label)
 	delta = graph.GetYaxis().GetXmax()-graph.GetYaxis().GetXmin()
 	histo.SetMaximum(max(graph.GetYaxis().GetXmax() + 0.2*delta, central + 0.2*delta))
 	histo.SetMinimum(min(graph.GetYaxis().GetXmin(), central - 0.2*delta))
