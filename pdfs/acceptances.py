@@ -1,20 +1,21 @@
 #!/usr/bin/python
 import ROOT
 import os, sys
-#from ttvStyle import ttvStyle
 from array import array
 import imp
 ttvStyle = imp.load_source('ttvStyle', '../python/ttvStyle.py')
 from math import log10
+helper = imp.load_source('helper', '../python/helper.py')
 
 
 def make_table(central, pdfsets, sample = '') :
 	'''print latex table'''
 
+	helper.mkdir('tables')
 	exponent = int(log10(central))
 	if exponent < 0 : exponent -= 1
 	if sample != '' : sample += '_'
-	table_name = '%spdf_acceptances.tex' % sample
+	table_name = 'tables/%spdf_acceptances.tex' % sample
 	print '[status] writing %s' % table_name
 	with open(table_name, 'w') as file :
 		file.write('%!TEX root = ../../Dissertation.tex\n\n')
@@ -41,7 +42,8 @@ def make_table(central, pdfsets, sample = '') :
 		file.write('\\end{tabular}')
 
 
-def make_plot(central, pdfsets, sample = '') :
+def make_plot(central, pdfsets, sample = '', TeX_switch = False) :
+	helper.mkdir('figures')
 	if sample != '' : sample += '_'
 	x   = array('d', [0.5, 1.5, 2.5])
 	exl = array('d', [0, 0, 0])
@@ -56,7 +58,7 @@ def make_plot(central, pdfsets, sample = '') :
 	y   = array('d', y  )
 	eyl = array('d', eyl)
 	eyh = array('d', eyh)
-	pl = ttvStyle.ttvStyle(lumi = -1, cms_label = 1, TeX_switch = False)
+	pl = ttvStyle.ttvStyle(lumi = -1, cms_label = 1, TeX_switch = TeX_switch)
 	canvas = ROOT.TCanvas('canvas', 'canvas')
 	graph = ROOT.TGraphAsymmErrors(3, x, y, exl, exh, eyl, eyh)
 	histo = ROOT.TH1D('acceptances', 'acceptances', 3, 0., 3.)
@@ -91,11 +93,19 @@ def make_plot(central, pdfsets, sample = '') :
 	leg.Draw()
 
 	canvas.Update()
-	canvas.Print('%spdf_acceptances.pdf' % sample)
+	if TeX_switch :
+		canvas.Print('figures/%spdf_acceptances.tex' % sample)
+	else :
+		canvas.Print('figures/%spdf_acceptances.pdf' % sample)
 #	raw_input('ok? ')
 
 
 if __name__ == '__main__' :
+	args = sys.argv
+	TeX_switch = False
+
+	if ('--tex' in args) :
+		TeX_switch = True
 
 	# ttW
 	pdfsets = []
@@ -104,7 +114,7 @@ if __name__ == '__main__' :
 	pdfsets.append(('NNPDF2.0', '\\pdfNNPDF{}', 0.00426639, 0.00002546, 0.00002425))
 	central = 0.00421983005211805
 	make_table(central, pdfsets, 'ttw')
-	make_plot (central, pdfsets, 'ttw')
+	make_plot (central, pdfsets, 'ttw', TeX_switch)
 
 	# WZ
 	pdfsets = []
@@ -113,4 +123,4 @@ if __name__ == '__main__' :
 	pdfsets.append(('NNPDF2.0', '\\pdfNNPDF{}', 0.00009225, 0.00000227, 0.00000222))
 	central = 0.0000857803883223637
 	make_table(central, pdfsets, 'wz')
-	make_plot (central, pdfsets, 'wz')
+	make_plot (central, pdfsets, 'wz', TeX_switch)
