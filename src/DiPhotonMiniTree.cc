@@ -367,6 +367,13 @@ void DiPhotonMiniTree::Begin(){
   MyJetCorrector = new OnTheFlyCorrections(mygtag,isdata,mypath);
   cout << "Using GTAG " << mygtag << " for JEC/JER" << endl;
 
+  if (do_energyscale_miscalibration){
+    cout << "************************" << endl;
+    cout << "WARNING WARNING WARNING!" << endl << "ENERGY SCALE MIS-CALIBRATION APPLIED" << endl;
+    cout << "EB = " << energy_scale_miscalibration_EB << " - EE = " << energy_scale_miscalibration_EE << endl;
+    cout << "************************" << endl;
+  }
+
 }
 
 void DiPhotonMiniTree::Analyze(){
@@ -1462,6 +1469,11 @@ void DiPhotonMiniTree::CorrPhoton(TreeReader *fTR, int i, std::vector<float> con
   }
 
   if (debug) cout << corr << " " << status_escale << " " << status_esmear << " -> ";
+
+  if (do_energyscale_miscalibration){
+    if (fabs(fTR->PhoEta[i])<1.5) corr*=energy_scale_miscalibration_EB;
+    else corr*=energy_scale_miscalibration_EE;
+  }
 
   fTR->PhoPt[i]*=corr;
   fTR->PhoPx[i]*=corr;

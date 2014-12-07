@@ -202,6 +202,11 @@ const bool do_recalc_isolation = false; // DO NOT USE WITH V03-10-04
 // DO NOT USE IF do_recalc_isolation IS TRUE
 const bool do_isolation_geometric_correction = true;
 
+// INTENTIONALLY MIS-CALIBRATE PHOTON ENERGY SCALE - WARNING WARNING WARNING!!!
+const bool do_energyscale_miscalibration = false;
+const float energy_scale_miscalibration_EB = 1.;
+const float energy_scale_miscalibration_EE = 1.;
+
 typedef struct {
   float photon;
   float charged;
