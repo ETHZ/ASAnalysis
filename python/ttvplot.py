@@ -184,36 +184,6 @@ class ttvplot(object) :
 #		raw_input('ok? ')
 
 
-	def save_controlPlot(self, histos, var, prefix = '') :
-		if prefix  != '' : prefix += '_'
-		canvas = self.ttvStyle.get_canvas()
-		canvas.cd()
-		hstack = ROOT.THStack('hs_%s' % var, '%s' % var)
-		leg_entries = []
-		for process in histos :
-			self.apply_histoStyle(histos[process], process)
-			if process == 'data' or process == 'obs' :
-				leg_entries.append([histos[process], self.ttvStyle.get_processName('obs'), 'lp'])
-				data_index = len(leg_entries) - 1
-			else :
-				hstack.Add(histos[process])
-				leg_entries.append([histos[process], self.ttvStyle.get_processName(process), 'f'])
-		leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
-		maximum = self.ttvStyle.get_maximum(histos.values())
-		hstack.SetMaximum(maximum)
-		leg = self.ttvStyle.draw_legend(leg_entries)
-		hstack.Draw('hist')
-		bin_width = hstack.GetXaxis().GetBinWidth(1)
-		y_title = 'Events / %.0f GeV' % bin_width
-		self.set_axisTitles(hstack, self.ttvStyle.get_varName(var), y_title)
-		histos['data'].Draw('psame')
-		self.ttvStyle.draw_cmsLine()
-		canvas.cd()
-		leg.Draw()
-		canvas.Print('%s%s%s.pdf' % (self.path, prefix, var))
-		canvas.Print('%s%s%s.png' % (self.path, prefix, var))
-
-
 	def save_plot_1d(self, h_data, h_mc, name = '', x_title = '', y_title = '') :
 		if name == '' : name = h_mc.GetName()
 		h_data = h_data.Clone()
