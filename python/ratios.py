@@ -344,7 +344,6 @@ class ratios :
 		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
 		if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
 		if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
-#		pl = ttvplot.ttvplot('%s%s' % (self.path, subdir), '2L', lumi = lumi, cms_label = 2)
 		samples_wjets = []
 		samples_zjets = []
 		samples_qcd = sample.sample.get_samples('QCD', self.samples) # TODO
@@ -367,35 +366,39 @@ class ratios :
 		for tl in histos :
 			histos[tl]['wjets'].Scale(EWK_SF)
 			histos[tl]['zjets'].Scale(EWK_SF)
-#			pl.save_controlPlot(histos[tl], ratiovar, 'N%s' % tl)
-			pl = ttvStyle.ttvStyle(lumi = lumi, cms_label = 0, TeX_switch = False, short_names = False)
-			canvas = pl.get_canvas()
+			for TeX_switch in [True, False] :
+				pl = ttvStyle.ttvStyle(lumi = lumi, cms_label = 0, TeX_switch = TeX_switch, short_names = False)
+				canvas = pl.get_canvas()
 
-			hstack = ROOT.THStack('hs_%s' % ratiovar, '%s' % ratiovar)
-			leg_entries = []
-			for process in histos[tl] :
-#				self.apply_histostyle(histos[tl][process], process)
-				histos[tl][process].SetFillColor(pl.get_fillColor(process))
-				if process == 'data' or process == 'obs' :
-					leg_entries.append([histos[tl][process], pl.get_processName('obs'), 'lp'])
-					data_index = len(leg_entries) - 1
+				hstack = ROOT.THStack('hs_%s' % ratiovar, '%s' % ratiovar)
+				leg_entries = []
+				for process in histos[tl] :
+					histos[tl][process].SetFillColor(pl.get_fillColor(process))
+					if process == 'data' or process == 'obs' :
+						leg_entries.append([histos[tl][process], pl.get_processName('obs'), 'lp'])
+						data_index = len(leg_entries) - 1
+					else :
+						hstack.Add(histos[tl][process])
+						leg_entries.append([histos[tl][process], pl.get_processName(process), 'f'])
+				leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
+				maximum = pl.get_maximum(histos[tl].values())
+				hstack.SetMaximum(maximum)
+				leg = pl.draw_legend(leg_entries)
+				hstack.Draw('hist')
+				bin_width = hstack.GetXaxis().GetBinWidth(1)
+				if ratiovar == 'NJets' or ratiovar == 'NBJets' :
+					y_title = 'Events'
 				else :
-					hstack.Add(histos[tl][process])
-					leg_entries.append([histos[tl][process], pl.get_processName(process), 'f'])
-			leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
-			maximum = pl.get_maximum(histos[tl].values())
-			hstack.SetMaximum(maximum)
-			leg = pl.draw_legend(leg_entries)
-			hstack.Draw('hist')
-			bin_width = hstack.GetXaxis().GetBinWidth(1)
-			y_title = 'Events / %.0f GeV' % bin_width
-#			self.set_axisTitles(hstack, self.ttvStyle.get_ratiovarName(ratiovar), y_title)
-			hstack.GetXaxis().SetTitle(pl.get_varName(ratiovar))
-			hstack.GetYaxis().SetTitle(y_title)
-			histos[tl]['data'].Draw('psame')
-			pl.draw_cmsLine()
-			canvas.cd()
-			leg.Draw()
-			canvas.UseCurrentStyle()
-			canvas.Print('%sN%s_%s.pdf' % (path, tl, ratiovar))
-			canvas.Print('%sN%s_%s.png' % (path, tl, ratiovar))
+					y_title = pl.get_eventsPerGeVString(bin_width)
+				hstack.GetXaxis().SetTitle(pl.get_varName(ratiovar))
+				hstack.GetYaxis().SetTitle(y_title)
+				histos[tl]['data'].Draw('psame')
+				pl.draw_cmsLine()
+				canvas.cd()
+				leg.Draw()
+				canvas.UseCurrentStyle()
+				if TeX_switch :
+					canvas.Print('%sN%s_%s.tex' % (path, tl, ratiovar))
+				else :
+					canvas.Print('%sN%s_%s.pdf' % (path, tl, ratiovar))
+					canvas.Print('%sN%s_%s.png' % (path, tl, ratiovar))
