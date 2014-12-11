@@ -222,6 +222,8 @@ class ttvStyle(object) :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
 			self.process_names['wz'   ] = '\\wz'
+			self.process_names['wjets'] = '\\wjets'
+			self.process_names['zjets'] = '\\zjets'
 			if self.short_names is True :
 				self.process_names['fake' ] = 'Lept.\\ MisID'
 				self.process_names['chmid'] = 'Ch.\\ MisID'
