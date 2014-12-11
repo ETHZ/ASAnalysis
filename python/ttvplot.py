@@ -162,10 +162,7 @@ class ttvplot(object) :
 				hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif not hs_pred.GetXaxis().IsVariableBinSize() and var != 'NVrtx' :
 			bin_width = hs_pred.GetXaxis().GetBinWidth(1)
-			if self.TeX_switch is True :
-				hs_pred.GetYaxis().SetTitle('\\text{Events / \\SI{%.0f}{\\giga\\electronvolt}}' % bin_width)
-			else :
-				hs_pred.GetYaxis().SetTitle('Events / %.0f GeV' % bin_width)
+			hs_pred.GetYaxis().SetTitle(self.ttvStyle.get_eventsPerGeVString(bin_width))
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
 		if self.TeX_switch is False :
