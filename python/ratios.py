@@ -386,7 +386,7 @@ class ratios :
 				leg = pl.draw_legend(leg_entries)
 				hstack.Draw('hist')
 				bin_width = hstack.GetXaxis().GetBinWidth(1)
-				if ratiovar == 'NJets' or ratiovar == 'NBJets' :
+				if ratiovar == 'NJets' or ratiovar == 'NBJets' or hstack.GetXaxis().IsVariableBinSize() :
 					y_title = 'Events'
 				else :
 					y_title = pl.get_eventsPerGeVString(bin_width)
