@@ -298,6 +298,13 @@ class ttvStyle(object) :
 		return command
 
 
+	def get_eventsPerGeVString(self, bin_width) :
+		if self.TeX_switch :
+			return '\\text{Events / \\SI{%g}{\\GeV}}' % bin_width
+		else :
+			return 'Events / %g GeV' % bin_width
+
+
 	@property
 	def cms_label(self) :
 		if   self._cms_label == 0 : return 'CMS'
