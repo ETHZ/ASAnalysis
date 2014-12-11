@@ -1419,11 +1419,12 @@ class plotter :
 			if sel.charge < 0 : charge_str = '^{-}'
 		if sel.name == 'final' : cms_label = 0
 #		cms_label = 2
-		pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label, TeX_switch = True)
-		pl.save_plot(histos, var, prefix = prefix, suffix = '', charge_str = charge_str)
-		# preliminary plots with suffix
-		pl.cms_label = 2
-		pl.save_plot(histos, var, prefix = prefix, suffix = 'preliminary', charge_str = charge_str)
+		for TeX_switch in [True, False] :
+			pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label, TeX_switch = TeX_switch)
+			pl.save_plot(histos, var, prefix = prefix, suffix = '', charge_str = charge_str)
+			# preliminary plots with suffix
+			pl.cms_label = 2
+			pl.save_plot(histos, var, prefix = prefix, suffix = 'preliminary', charge_str = charge_str)
 #		raw_input('ok? ')
 #		raw_input('ok? ')
 

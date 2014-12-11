@@ -24,6 +24,12 @@ class ttvplot(object) :
 	def save_plot(self, histos, var, prefix = '', suffix = '', charge_str = '') :
 		'''save plot with observation and predictions'''
 
+		# clone all histograms to avoid that histograms get scaled multiple times
+		histos_tmp = {}
+		for histo in histos :
+			histos_tmp[histo] = histos[histo].Clone()
+		histos = histos_tmp
+
 #		if selname != '' : selname += '_'
 		if prefix  != '' and not prefix.startswith('_') : prefix = '_' + prefix
 		if suffix  != '' and not suffix.startswith('_') : suffix = '_' + suffix
@@ -174,10 +180,13 @@ class ttvplot(object) :
 		self.ttvStyle.draw_cmsLine()
 #		raw_input('ok? ')
 
-		canvas.Print('%sObsPred%s_%s%s.pdf' % (self.path, prefix, var, suffix))
-		canvas.Print('%sObsPred%s_%s%s.png' % (self.path, prefix, var, suffix))
-		canvas.Print('%sObsPred%s_%s%s.tex' % (self.path, prefix, var, suffix))
-		canvas.Print('%sObsPred%s_%s%s.root' % (self.path, prefix, var, suffix))
+		print self.TeX_switch
+		if self.TeX_switch :
+			canvas.Print('%sObsPred%s_%s%s.tex' % (self.path, prefix, var, suffix))
+		else :
+			canvas.Print('%sObsPred%s_%s%s.pdf' % (self.path, prefix, var, suffix))
+			canvas.Print('%sObsPred%s_%s%s.png' % (self.path, prefix, var, suffix))
+			canvas.Print('%sObsPred%s_%s%s.root' % (self.path, prefix, var, suffix))
 #		raw_input('ok? ')
 
 
