@@ -397,8 +397,4 @@ class ratios :
 				canvas.cd()
 				leg.Draw()
 				canvas.UseCurrentStyle()
-				if TeX_switch :
-					canvas.Print('%sN%s_%s.tex' % (path, tl, ratiovar))
-				else :
-					canvas.Print('%sN%s_%s.pdf' % (path, tl, ratiovar))
-					canvas.Print('%sN%s_%s.png' % (path, tl, ratiovar))
+				pl.save_canvas(canvas, path, 'N%s_%s' % (tl, ratiovar))

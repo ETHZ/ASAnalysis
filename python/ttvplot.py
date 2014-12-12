@@ -209,8 +209,7 @@ class ttvplot(object) :
 		h_data.Draw('same pe')
 		self.ttvStyle.draw_cmsLine()
 		leg.Draw()
-		canvas.Print('%s%s.pdf' % (self.path, name))
-		canvas.Print('%s%s.png' % (self.path, name))
+		self.ttvStyle.save_canvas(canvas, self.path, name)
 
 
 	def save_plot_2d(self, histo, name = '', x_title = '', y_title = '') :
