@@ -388,7 +388,7 @@ class ttvStyle(object) :
 				unit = '\\pico'
 #		latex.DrawLatex(0.15, 0.88, '%4.1f %s (8 TeV)' % (lumi, unit))
 		if self.TeX_switch is True :
-			latex.DrawLatex(lumi_x, lumi_y, '\\text{\\SI{%4.1f}{%s\\barn} (\\SI{8}{\\tera\\electronvolt})}' % (lumi, unit))
+			latex.DrawLatex(lumi_x, lumi_y, '\\text{\\SI{%4.1f}{\\per%s\\barn} (\\SI{8}{\\tera\\electronvolt})}' % (lumi, unit))
 		else :
 			latex.DrawLatex(lumi_x, lumi_y, '%4.1f %s (8 TeV)' % (lumi, unit))
 
