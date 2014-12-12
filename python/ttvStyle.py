@@ -1,6 +1,7 @@
 #! /usr/bin/python
 import ROOT
 from array import array
+import helper
 
 
 class ttvStyle(object) :
@@ -336,6 +337,17 @@ class ttvStyle(object) :
 ##		ROOT.gStyle.SetErrorX(0)
 #		ROOT.gPad.SetTicks(1,1)
 		return canvas
+
+
+	def save_canvas(self, canvas, path, file_name) :
+		if not path.endswith('/') : path += '/'
+		helper.mkdir(path)
+		if self.TeX_switch :
+			canvas.Print('%s%s.tex' % (path, file_name))
+		else :
+			canvas.Print('%s%s.pdf' % (path, file_name))
+			canvas.Print('%s%s.png' % (path, file_name))
+			canvas.Print('%s%s.root' % (path, file_name))
 
 
 	def draw_legend(self, entries) :
