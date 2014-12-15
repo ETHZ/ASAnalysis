@@ -145,10 +145,13 @@ class plotter :
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
 		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
 
-		if RatioControlPlots :
-			self.fpr.make_controlPlots(self.get_samples('DoubleEle'), 'el'  )
-			self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), 'mu17')
-			self.fpr.make_controlPlots(self.get_samples('SingleMu' ), 'mu24')
+		if RatioControlPlots != False :
+			if RatioControlPlots == 'el' :
+				self.fpr.make_controlPlots(self.get_samples('DoubleEle'), RatioControlPlots)
+			if RatioControlPlots == 'mu17' :
+				self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), RatioControlPlots)
+			if RatioControlPlots == 'mu24' :
+				self.fpr.make_controlPlots(self.get_samples('SingleMu' ), RatioControlPlots)
 
 		if RatioPlots :
 			self.fpr.plot_ratios()
@@ -1676,7 +1679,11 @@ if __name__ == '__main__' :
 		RatioPlots = True
 
 	if ('--RatioControlPlots' in args) :
-		RatioControlPlots = True
+		if (len(args) > args.index('--RatioControlPlots')+1) and (not args[args.index('--RatioControlPlots')+1].startswith('-')) :
+			RatioControlPlots = args[args.index('--RatioControlPlots')+1]
+		else :
+			print '[ERROR] Please specify which ratio control plots you like!'
+			sys.exit(1)
 
 	pl = plotter(path, cardfile, selfile)
 	pl.do_analysis(IntPred, DiffPred, DiffMC, RatioPlots, RatioControlPlots)
