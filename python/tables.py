@@ -382,11 +382,14 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		file.write('\\end{tabular}\n')
 
 
-def make_YieldsTable(path, res, systematics) :
+def make_YieldsTable(path, res, systematics, suffix = '') :
 	'''print all observations and predictions'''
 
+	if suffix != '' and not suffix.startswith('_') :
+		suffix = '_' + suffix
+
 	# data yields
-	table_name = 'DataYieldsTable.tex'
+	table_name = 'DataYieldsTable%s.tex' % suffix
 	table_path = path + 'IntPredictions/'
 	helper.mkdir(table_path)
 	pl = ttvStyle.ttvStyle(TeX_switch = True)
@@ -430,7 +433,7 @@ def make_YieldsTable(path, res, systematics) :
 		file.write('\\end{tabular}\n')
 
 	# predictions
-	table_name = 'PredTable.tex'
+	table_name = 'PredTable%s.tex' % suffix
 	table_path = path + 'IntPredictions/'
 	helper.mkdir(table_path)
 	pl = ttvStyle.ttvStyle(TeX_switch = True)
@@ -450,51 +453,59 @@ def make_YieldsTable(path, res, systematics) :
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('}\n')
 		file.write('\t\\toprule\n')
-		file.write('\tPrediction   &  {\\PGm\\PGm}  &   {\\Pe\\PGm}  &   {\\Pe\\Pe}   \\\\\n')
+		file.write('\tPrediction   &     {\\PGm\\PGm}     &      {\\Pe\\PGm}     &      {\\Pe\\Pe}      \\\\\n')
 		# fakes
 		file.write('\t\\midrule\n')
-		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 			'\\npp',
 			res['mm'].npp, res['mm'].npp_staterr, #res['mm'].npp_systerr,
 			res['em'].npp, res['em'].npp_staterr, #res['em'].npp_systerr,
 			res['ee'].npp, res['ee'].npp_staterr))#, res['ee'].npp_systerr))
-		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 			'\\npf',
 			res['mm'].npf, res['mm'].npf_staterr, #res['mm'].npf_systerr,
 			res['em'].npf, res['em'].npf_staterr, #res['em'].npf_systerr,
 			res['ee'].npf, res['ee'].npf_staterr))#, res['ee'].npf_systerr))
-		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 			'\\nfp',
 			res['mm'].nfp, res['mm'].nfp_staterr, #res['mm'].nfp_systerr,
 			res['em'].nfp, res['em'].nfp_staterr, #res['em'].nfp_systerr,
 			res['ee'].nfp, res['ee'].nfp_staterr))#, res['ee'].nfp_systerr))
-		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 			'\\nff',
 			res['mm'].nff, res['mm'].nff_staterr, #res['mm'].nff_systerr,
 			res['em'].nff, res['em'].nff_staterr, #res['em'].nff_systerr,
 			res['ee'].nff, res['ee'].nff_staterr))#, res['ee'].nff_systerr))
 		file.write('\t\\midrule\n')
-		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 			'Total Fakes',
 			res['mm'].fake, res['mm'].fake_err,
 			res['em'].fake, res['em'].fake_err,
 			res['ee'].fake, res['ee'].fake_err))
 		# charge mis-ID
 		file.write('\t\\midrule\n')
-		file.write('\t%-12s &              & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#		file.write('\t%-12s &              & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-12s &                    & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 			'Charge MisID',
 			res['em'].cmid, res['em'].cmid_err,
 			res['ee'].cmid, res['ee'].cmid_err))
 		# rares
 		file.write('\t\\midrule\n')
 		for s in res['al'].rares :
-			file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#			file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 				s,
 				res['mm'].rares[s], res['mm'].rares_staterr[s],# systematics['rare']*res['mm'].rares[s],
 				res['em'].rares[s], res['em'].rares_staterr[s],# systematics['rare']*res['em'].rares[s],
 				res['ee'].rares[s], res['ee'].rares_staterr[s]))#, systematics['rare']*res['ee'].rares[s],
 		file.write('\t\\midrule\n')
-		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
 			'Rares',
 			res['mm'].rare, res['mm'].rare_staterr,# systematics['rare']*res['mm'].rare,
 			res['em'].rare, res['em'].rare_staterr,# systematics['rare']*res['em'].rare,

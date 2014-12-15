@@ -204,6 +204,7 @@ class plotter :
 
 		if IntPred :
 			results = self.make_IntPredictions(self.selections['final'], self.path + 'IntPredictions/')
+			results_presel = self.make_IntPredictions(self.selections['3J1bJ'], self.path + 'IntPredictions/3J1bJ/', '3J1bJ')
 
 			# make table of observation and predictions
 			tables.make_ObsPredTable(self.path, results['Normal'])
@@ -223,6 +224,7 @@ class plotter :
 			systematics = {}
 			systematics['rare'] = self.RareESyst
 			tables.make_YieldsTable(self.path, results['Normal']['al'], systematics)
+			tables.make_YieldsTable(self.path, results_presel['Normal']['al'], systematics, '3J1bJ')
 
 
 	def skim_tree(self, syst = '', minNJ = 2) :
