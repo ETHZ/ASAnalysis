@@ -99,6 +99,16 @@ def getGraphPoissonErrors_new(histo, x_errors = False) :
 	return graph
 
 
+def get_signifErrDigits(err) :
+	err = abs(err)
+	err_str = '%e' % err
+	coeff = float(err_str.split('e')[0])
+	if coeff < 3.55 :
+		return 2
+	else :
+		return 1
+
+
 def save_object(obj, filepath) :
 	dir = os.path.dirname(filepath)
 	mkdir(dir)
