@@ -204,7 +204,7 @@ class plotter :
 
 		if IntPred :
 			results = self.make_IntPredictions(self.selections['final'], self.path + 'IntPredictions/')
-			results_presel = self.make_IntPredictions(self.selections['3J1bJ'], self.path + 'IntPredictions/3J1bJ/', '3J1bJ')
+			results_presel = self.make_IntPredictions(self.selections['3J1bJ'], self.path + 'IntPredictions/3J1bJ/', '3J1bJ', noSyst = False)
 
 			# make table of observation and predictions
 			tables.make_ObsPredTable(self.path, results['Normal'])
@@ -450,7 +450,7 @@ class plotter :
 		foo = 0
 
 
-	def make_IntPredictions(self, sel, output_path, suffix = '', blind = False) :
+	def make_IntPredictions(self, sel, output_path, suffix = '', blind = False, noSyst = False) :
 		'''
 		makes predictions for all systematics with a given selection and returns a nested dictionary of result objects
 		results[SYST][CHARGE][FLAVOR]
@@ -467,7 +467,7 @@ class plotter :
 
 		else :
 			for syst in self.systflags :
-#				if syst != 'Normal' : continue
+				if noSyst and syst != 'Normal' : continue
 				print '[status] making predictions for %s systematic' % (syst)
 				self.skim_tree(syst)  # makes sure the skimmed SigEvents tree exists
 				systpath = self.path + 'SSDLYields_skim_' + syst + '.root'
