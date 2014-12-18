@@ -109,6 +109,28 @@ def get_signifErrDigits(err) :
 		return 1
 
 
+def get_precision(num, err) :
+	err_precision = get_signifErrDigits(err)
+	precision = get_exponent(num) - get_exponent(err) + get_signifErrDigits(err)
+	return [precision, err_precision]
+
+
+def get_exponent(num) :
+	num_str = '%e' % num
+	exp = int(num_str.split('e')[1])
+	return exp
+
+
+def get_roundedNumber(num, err) :
+	err_precision = get_signifErrDigits(err)
+	rnd = err_precision - get_exponent(err) - 1
+	float_digits = rnd
+	if float_digits < 0 : float_digits = 0
+	num_str = format(round(num, rnd), '.%df' % float_digits)
+	err_str = format(round(err, rnd), '.%df' % float_digits)
+	return (num_str, err_str)
+
+
 def save_object(obj, filepath) :
 	dir = os.path.dirname(filepath)
 	mkdir(dir)
