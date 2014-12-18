@@ -510,6 +510,18 @@ def make_YieldsTable(path, res, systematics, suffix = '') :
 			res['mm'].rare, res['mm'].rare_staterr,# systematics['rare']*res['mm'].rare,
 			res['em'].rare, res['em'].rare_staterr,# systematics['rare']*res['em'].rare,
 			res['ee'].rare, res['ee'].rare_staterr))#, systematics['rare']*res['ee'].rare,
+		file.write('\t\\midrule\n')
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
+			'\\wz',
+			res['mm'].wz, res['mm'].wz_staterr,
+			res['em'].wz, res['em'].wz_staterr,
+			res['ee'].wz, res['ee'].wz_staterr))
+		file.write('\t\\midrule\n')
+		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
+			'\\ttz',
+			res['mm'].ttz, res['mm'].ttz_staterr,
+			res['em'].ttz, res['em'].ttz_staterr,
+			res['ee'].ttz, res['ee'].ttz_staterr))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 
