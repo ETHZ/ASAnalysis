@@ -923,7 +923,7 @@ class plotter :
 				# store WZ yields
 				res[ch_str][chan].wz           = wz
 				res[ch_str][chan].wz_err       = math.sqrt(wz_staterr2 + self.WZESyst2 * wz * wz)
-				res[ch_str][chan].wz_starerr   = math.sqrt(wz_staterr2)
+				res[ch_str][chan].wz_staterr   = math.sqrt(wz_staterr2)
 
 				# store ttW mc yields
 				res[ch_str][chan].ttw          = ttw
