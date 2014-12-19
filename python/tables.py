@@ -479,15 +479,15 @@ def make_YieldsTable(path, res, systematics, suffix = '') :
 		file.write('\t\\midrule\n')
 		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
 			('Total Fakes',) +
-			helper.get_roundedNumber(res['mm'].fake, res['mm'].fake_err) +
-			helper.get_roundedNumber(res['em'].fake, res['em'].fake_err) +
-			helper.get_roundedNumber(res['ee'].fake, res['ee'].fake_err)))
+			helper.get_roundedNumber(res['mm'].fake, res['mm'].fake_staterr) +
+			helper.get_roundedNumber(res['em'].fake, res['em'].fake_staterr) +
+			helper.get_roundedNumber(res['ee'].fake, res['ee'].fake_staterr)))
 		# charge mis-ID
 		file.write('\t\\midrule\n')
 		file.write('\t%-12s &                    & %8s +- %6s & %8s +- %6s \\\\\n' % (
 			('Charge MisID',) +
-			helper.get_roundedNumber(res['em'].cmid, res['em'].cmid_err) +
-			helper.get_roundedNumber(res['ee'].cmid, res['ee'].cmid_err)))
+			helper.get_roundedNumber(res['em'].cmid, res['em'].cmid_staterr) +
+			helper.get_roundedNumber(res['ee'].cmid, res['ee'].cmid_staterr)))
 		# rares
 		file.write('\t\\midrule\n')
 		for s in res['al'].rares :
