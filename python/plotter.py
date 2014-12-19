@@ -826,16 +826,6 @@ class plotter :
 #			print '%12s: %8d' % (name, n)
 #		for name, value in rares_mm.iteritems() :
 
-		################
-		# Observations #
-		################
-
-		print '[status] storing observations..'
-
-		for ch_str in res :
-			for chan in res[ch_str] :
-				res[ch_str][chan].set_observations()
-
 		#####################
 		# Fakes predictions #
 		#####################
@@ -875,10 +865,6 @@ class plotter :
 			res[ch_str]['ee'].nff_staterr = FR.getEENffEStat(); res[ch_str]['ee'].nff_systerr = self.FakeESyst*res[ch_str]['ee'].nff;
 
 			# store fake predictions
-			res[ch_str]['mm'].set_fakePredictions()
-			res[ch_str]['em'].set_fakePredictions()
-			res[ch_str]['ee'].set_fakePredictions()
-			res[ch_str]['al'].fake = res[ch_str]['mm'].fake + res[ch_str]['em'].fake + res[ch_str]['ee'].fake
 			res[ch_str]['al'].fake_err = math.sqrt(FR.getTotEStat()  *FR.getTotEStat()   + self.FakeESyst2*res[ch_str]['al'].fake*res[ch_str]['al'].fake)
 			res[ch_str]['mm'].fake_err = math.sqrt(FR.getMMTotEStat()*FR.getMMTotEStat() + self.FakeESyst2*res[ch_str]['mm'].fake*res[ch_str]['mm'].fake)
 			res[ch_str]['em'].fake_err = math.sqrt(FR.getEMTotEStat()*FR.getEMTotEStat() + self.FakeESyst2*res[ch_str]['em'].fake*res[ch_str]['em'].fake)
@@ -946,17 +932,6 @@ class plotter :
 				res[ch_str][chan].rare         = rare
 				res[ch_str][chan].rare_err     = math.sqrt(rare_staterr2 + self.RareESyst2 * rare * rare)
 				res[ch_str][chan].rare_staterr = math.sqrt(rare_staterr2)
-
-				# store ttW/Z mc yields
-				res[ch_str][chan].set_ttwzPredictions()
-
-		#####################
-		# Total backgrounds #
-		#####################
-
-		for ch_str in res :
-			for chan in res[ch_str] :
-				res[ch_str][chan].set_totBackground()
 
 		# return results only if they are not written to the Results tree
 		if not write_ResTree :

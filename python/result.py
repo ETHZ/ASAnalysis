@@ -2,7 +2,7 @@
 import math
 
 
-class result :
+class result(object) :
 
 	def __init__(self, chan, charge, chan_str) :
 
@@ -29,9 +29,6 @@ class result :
 
 		self.rares_staterr = {}
 
-		# observations
-		self.obs    = 0
-
 		# predictions
 		self.ttw         = 0.
 		self.ttw_err     = 0.
@@ -50,12 +47,6 @@ class result :
 		self.tth             = 0.
 		self.tth_err         = 0.
 
-		self.ttwz            = 0.
-		self.ttwz_err        = 0.
-		self.ttwz_staterr    = 0.
-		self.ttwz_Nmc        = 0
-
-		self.fake            = 0.
 		self.fake_err        = 0.
 		self.fake_staterr    = 0.
 
@@ -71,33 +62,51 @@ class result :
 		self.rare_err        = 0.
 		self.rare_staterr    = 0.
 
-		self.tot             = 0.
-		self.tot_err         = 0.
 		self.tot_staterr     = 0.
 
 
-#	def init_dict(self, dict, value) :
-#		dict['all'] = value
-#		dict['mm']  = value
-#		dict['em']  = value
-#		dict['ee']  = value
+	@property
+	def obs(self) :
+		return self.nt2
 
 
-	def set_observations(self) :
-		self.obs    = self.nt2
+	@property
+	def fake(self) :
+		fake = self.npf + self.nfp + self.nff
+		return fake
 
 
-	def set_fakePredictions(self) :
-		self.fake  = self.npf + self.nfp + self.nff
+	@property
+	def ttwz(self) :
+		ttwz = self.ttw + self.ttwz
+		return ttwz
 
 
-	def set_ttwzPredictions(self) :
-		self.ttwz         = self.ttw + self.ttwz
-		self.ttwz_err     = math.sqrt(self.ttw_err*self.ttw_err + self.ttz_err*self.ttz_err)
-		self.ttwz_staterr = math.sqrt(self.ttw_staterr*self.ttw_staterr + self.ttz_staterr*self.ttz_staterr)
-		self.ttwz_Nmc     = self.ttw_Nmc + self.ttz_Nmc
+	@property
+	def ttwz_err(self) :
+		ttwz_err = math.sqrt(self.ttw_err*self.ttw_err + self.ttz_err*self.ttz_err)
+		return ttwz_err
 
 
-	def set_totBackground(self) :
-		self.tot = self.fake + self.cmid + self.rare + self.wz + self.ttz
-		self.tot_err = math.sqrt(self.fake_err*self.fake_err + self.cmid_err*self.cmid_err + self.rare_err*self.rare_err + self.wz_err*self.wz_err + self.ttz_err*self.ttz_err)
+	@property
+	def ttwz_staterr(self) :
+		ttwz_staterr = math.sqrt(self.ttw_staterr*self.ttw_staterr + self.ttz_staterr*self.ttz_staterr)
+		return ttwz_staterr
+
+
+	@property
+	def ttwz_Nmc(self) :
+		ttwz_Nmc = self.ttw_Nmc + self.ttz_Nmc
+		return ttw_Nmc
+
+
+	@property
+	def tot(self) :
+		tot = self.fake + self.cmid + self.rare + self.wz + self.ttz
+		return tot
+
+
+	@property
+	def tot_err(self) :
+		tot_err = math.sqrt(self.fake_err*self.fake_err + self.cmid_err*self.cmid_err + self.rare_err*self.rare_err + self.wz_err*self.wz_err + self.ttz_err*self.ttz_err)
+		return tot_err
