@@ -687,6 +687,10 @@ class plotter :
 						if charge != 0 and event.Charge != charge : continue
 
 						# int
+						res[ch_str]['al'].npp += npp;
+						res[ch_str]['al'].npf += npf;
+						res[ch_str]['al'].nfp += nfp;
+						res[ch_str]['al'].nff += nff;
 						if event.TLCat is 0 : res[ch_str]['al'].nt2  += 1
 						if event.TLCat is 1 : res[ch_str]['al'].nt10 += 1
 						if event.TLCat is 2 : res[ch_str]['al'].nt01 += 1
