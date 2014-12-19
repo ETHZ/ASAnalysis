@@ -456,72 +456,65 @@ def make_YieldsTable(path, res, systematics, suffix = '') :
 		file.write('\tPrediction   &     {\\PGm\\PGm}     &      {\\Pe\\PGm}     &      {\\Pe\\Pe}      \\\\\n')
 		# fakes
 		file.write('\t\\midrule\n')
-#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'\\npp',
-			res['mm'].npp, res['mm'].npp_staterr, #res['mm'].npp_systerr,
-			res['em'].npp, res['em'].npp_staterr, #res['em'].npp_systerr,
-			res['ee'].npp, res['ee'].npp_staterr))#, res['ee'].npp_systerr))
-#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'\\npf',
-			res['mm'].npf, res['mm'].npf_staterr, #res['mm'].npf_systerr,
-			res['em'].npf, res['em'].npf_staterr, #res['em'].npf_systerr,
-			res['ee'].npf, res['ee'].npf_staterr))#, res['ee'].npf_systerr))
-#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'\\nfp',
-			res['mm'].nfp, res['mm'].nfp_staterr, #res['mm'].nfp_systerr,
-			res['em'].nfp, res['em'].nfp_staterr, #res['em'].nfp_systerr,
-			res['ee'].nfp, res['ee'].nfp_staterr))#, res['ee'].nfp_systerr))
-#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'\\nff',
-			res['mm'].nff, res['mm'].nff_staterr, #res['mm'].nff_systerr,
-			res['em'].nff, res['em'].nff_staterr, #res['em'].nff_systerr,
-			res['ee'].nff, res['ee'].nff_staterr))#, res['ee'].nff_systerr))
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\npp',) +
+			helper.get_roundedNumber(res['mm'].npp, res['mm'].npp_staterr) + #res['mm'].npp_systerr,
+			helper.get_roundedNumber(res['em'].npp, res['em'].npp_staterr) + #res['em'].npp_systerr,
+			helper.get_roundedNumber(res['ee'].npp, res['ee'].npp_staterr)))#, res['ee'].npp_systerr))
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\npf',) +
+			helper.get_roundedNumber(res['mm'].npf, res['mm'].npf_staterr) + #res['mm'].npf_systerr,
+			helper.get_roundedNumber(res['em'].npf, res['em'].npf_staterr) + #res['em'].npf_systerr,
+			helper.get_roundedNumber(res['ee'].npf, res['ee'].npf_staterr)))#, res['ee'].npf_systerr))
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\nfp',) +
+			helper.get_roundedNumber(res['mm'].nfp, res['mm'].nfp_staterr) + #res['mm'].nfp_systerr,
+			helper.get_roundedNumber(res['em'].nfp, res['em'].nfp_staterr) + #res['em'].nfp_systerr,
+			helper.get_roundedNumber(res['ee'].nfp, res['ee'].nfp_staterr)))#, res['ee'].nfp_systerr))
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\nff',) +
+			helper.get_roundedNumber(res['mm'].nff, res['mm'].nff_staterr) + #res['mm'].nff_systerr,
+			helper.get_roundedNumber(res['em'].nff, res['em'].nff_staterr) + #res['em'].nff_systerr,
+			helper.get_roundedNumber(res['ee'].nff, res['ee'].nff_staterr)))#, res['ee'].nff_systerr))
 		file.write('\t\\midrule\n')
-#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'Total Fakes',
-			res['mm'].fake, res['mm'].fake_err,
-			res['em'].fake, res['em'].fake_err,
-			res['ee'].fake, res['ee'].fake_err))
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('Total Fakes',) +
+			helper.get_roundedNumber(res['mm'].fake, res['mm'].fake_err) +
+			helper.get_roundedNumber(res['em'].fake, res['em'].fake_err) +
+			helper.get_roundedNumber(res['ee'].fake, res['ee'].fake_err)))
 		# charge mis-ID
 		file.write('\t\\midrule\n')
-#		file.write('\t%-12s &              & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-		file.write('\t%-12s &                    & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'Charge MisID',
-			res['em'].cmid, res['em'].cmid_err,
-			res['ee'].cmid, res['ee'].cmid_err))
+		file.write('\t%-12s &                    & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('Charge MisID',) +
+			helper.get_roundedNumber(res['em'].cmid, res['em'].cmid_err) +
+			helper.get_roundedNumber(res['ee'].cmid, res['ee'].cmid_err)))
 		# rares
 		file.write('\t\\midrule\n')
 		for s in res['al'].rares :
-#			file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-			file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-				s,
-				res['mm'].rares[s], res['mm'].rares_staterr[s],# systematics['rare']*res['mm'].rares[s],
-				res['em'].rares[s], res['em'].rares_staterr[s],# systematics['rare']*res['em'].rares[s],
-				res['ee'].rares[s], res['ee'].rares_staterr[s]))#, systematics['rare']*res['ee'].rares[s],
+			file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+				(s,) +
+				helper.get_roundedNumber(res['mm'].rares[s], res['mm'].rares_staterr[s]) +# systematics['rare']*res['mm'].rares[s],
+				helper.get_roundedNumber(res['em'].rares[s], res['em'].rares_staterr[s]) +# systematics['rare']*res['em'].rares[s],
+				helper.get_roundedNumber(res['ee'].rares[s], res['ee'].rares_staterr[s])))#, systematics['rare']*res['ee'].rares[s],
 		file.write('\t\\midrule\n')
-#		file.write('\t%-12s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'Rares',
-			res['mm'].rare, res['mm'].rare_staterr,# systematics['rare']*res['mm'].rare,
-			res['em'].rare, res['em'].rare_staterr,# systematics['rare']*res['em'].rare,
-			res['ee'].rare, res['ee'].rare_staterr))#, systematics['rare']*res['ee'].rare,
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('Rares',) +
+			helper.get_roundedNumber(res['mm'].rare, res['mm'].rare_staterr) +# systematics['rare']*res['mm'].rare,
+			helper.get_roundedNumber(res['em'].rare, res['em'].rare_staterr) +# systematics['rare']*res['em'].rare,
+			helper.get_roundedNumber(res['ee'].rare, res['ee'].rare_staterr)))#, systematics['rare']*res['ee'].rare,
 		file.write('\t\\midrule\n')
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'\\wz',
-			res['mm'].wz, res['mm'].wz_staterr,
-			res['em'].wz, res['em'].wz_staterr,
-			res['ee'].wz, res['ee'].wz_staterr))
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\wz',) +
+			helper.get_roundedNumber(res['mm'].wz, res['mm'].wz_staterr) +
+			helper.get_roundedNumber(res['em'].wz, res['em'].wz_staterr) +
+			helper.get_roundedNumber(res['ee'].wz, res['ee'].wz_staterr)))
 		file.write('\t\\midrule\n')
-		file.write('\t%-12s & %8.4g +- %6.2g & %8.4g +- %6.2g & %8.4g +- %6.2g \\\\\n' % (
-			'\\ttz',
-			res['mm'].ttz, res['mm'].ttz_staterr,
-			res['em'].ttz, res['em'].ttz_staterr,
-			res['ee'].ttz, res['ee'].ttz_staterr))
+		file.write('\t%-12s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\ttz',) +
+			helper.get_roundedNumber(res['mm'].ttz, res['mm'].ttz_staterr) +
+			helper.get_roundedNumber(res['em'].ttz, res['em'].ttz_staterr) +
+			helper.get_roundedNumber(res['ee'].ttz, res['ee'].ttz_staterr)))
+		print "res['em'].ttz", res['em'].ttz
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 
