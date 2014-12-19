@@ -57,9 +57,11 @@ class result :
 
 		self.fake            = 0.
 		self.fake_err        = 0.
+		self.fake_staterr    = 0.
 
 		self.cmid            = 0.
 		self.cmid_err        = 0.
+		self.cmid_staterr    = 0.
 
 		self.wz              = 0.
 		self.wz_err          = 0.

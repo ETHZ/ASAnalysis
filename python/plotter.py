@@ -577,6 +577,9 @@ class plotter :
 				res[ch_str]['al'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2 + nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
 				res[ch_str]['em'].cmid_err = math.sqrt(nt2_em_chmid_e1*nt2_em_chmid_e1 + nt2_em_chmid_e2*nt2_em_chmid_e2)
 				res[ch_str]['ee'].cmid_err = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_ee_chmid_e2*nt2_ee_chmid_e2)
+				res[ch_str]['al'].cmid_staterr = math.sqrt(nt2_ee_chmid_e1*nt2_ee_chmid_e1 + nt2_em_chmid_e1*nt2_em_chmid_e1)
+				res[ch_str]['em'].cmid_staterr = nt2_em_chmid_e1
+				res[ch_str]['ee'].cmid_staterr = nt2_ee_chmid_e1
 
 		else :
 			print '[status] skipped charge mis-ID prediction for systematics'
@@ -880,6 +883,10 @@ class plotter :
 			res[ch_str]['mm'].fake_err = math.sqrt(FR.getMMTotEStat()*FR.getMMTotEStat() + self.FakeESyst2*res[ch_str]['mm'].fake*res[ch_str]['mm'].fake)
 			res[ch_str]['em'].fake_err = math.sqrt(FR.getEMTotEStat()*FR.getEMTotEStat() + self.FakeESyst2*res[ch_str]['em'].fake*res[ch_str]['em'].fake)
 			res[ch_str]['ee'].fake_err = math.sqrt(FR.getEETotEStat()*FR.getEETotEStat() + self.FakeESyst2*res[ch_str]['ee'].fake*res[ch_str]['ee'].fake)
+			res[ch_str]['al'].fake_staterr = FR.getTotEStat()
+			res[ch_str]['mm'].fake_staterr = FR.getMMTotEStat()
+			res[ch_str]['em'].fake_staterr = FR.getEMTotEStat()
+			res[ch_str]['ee'].fake_staterr = FR.getEETotEStat()
 
 		#########
 		# Rares #
