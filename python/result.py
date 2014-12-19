@@ -78,7 +78,7 @@ class result(object) :
 
 	@property
 	def ttwz(self) :
-		ttwz = self.ttw + self.ttwz
+		ttwz = self.ttw + self.ttz
 		return ttwz
 
 
@@ -97,7 +97,7 @@ class result(object) :
 	@property
 	def ttwz_Nmc(self) :
 		ttwz_Nmc = self.ttw_Nmc + self.ttz_Nmc
-		return ttw_Nmc
+		return ttwz_Nmc
 
 
 	@property
