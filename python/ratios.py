@@ -206,10 +206,14 @@ class ratios :
 #		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
 		samples_wjets.append('WJets')
 		samples_zjets.append('DYJets')
+		samples_qcd = sample.sample.get_samples('QCD', self.samples)
 
 		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30')
 		(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT_MET30')
 		(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT_MET30')
+		(h_ntight_qcd  , h_nloose_qcd  ) = self.get_fRatioPlots(samples_qcd  , chan_str, 'MT_MET30')
+
+		self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd)
 
 		bin_min = h_ntight_data.FindBin(60.)
 		bin_max = h_ntight_data.FindBin(90.)-1
@@ -243,6 +247,38 @@ class ratios :
 				h_ntight.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar), scale)
 				h_nloose.Add(self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar), scale)
 		return (h_ntight, h_nloose)
+
+
+	def fit_fRatioPlots(self, h_data, h_wjets, h_zjets, h_qcd) :
+		var = ROOT.RooRealVar('var', 'var', 0., 200.)
+
+		rdh_data  = ROOT.RooDataHist('data' ,'data' , ROOT.RooArgList(var), h_data , 1.)
+		rdh_wjets = ROOT.RooDataHist('wjets','wjets', ROOT.RooArgList(var), h_wjets)
+		rdh_zjets = ROOT.RooDataHist('zjets','zjets', ROOT.RooArgList(var), h_zjets)
+		rdh_qcd   = ROOT.RooDataHist('qcd'  ,'qcd'  , ROOT.RooArgList(var), h_qcd  )
+
+		pdf_wjets = ROOT.RooHistPdf('wjets_pdf', 'wjets_pdf', ROOT.RooArgSet(var), rdh_wjets)
+		pdf_zjets = ROOT.RooHistPdf('zjets_pdf', 'zjets_pdf', ROOT.RooArgSet(var), rdh_zjets)
+		pdf_qcd   = ROOT.RooHistPdf('qcd_pdf'  , 'qcd_pdf'  , ROOT.RooArgSet(var), rdh_qcd  )
+
+		init_wjets = h_wjets.Integral()
+		init_zjets = h_zjets.Integral()
+		init_qcd   = h_qcd  .Integral()
+
+		n_wjets = ROOT.RooRealVar('n_wjets', 'number of wjets', init_wjets, 0.70*init_wjets, 1.30*init_wjets)
+		n_zjets = ROOT.RooRealVar('n_zjets', 'number of zjets', init_zjets, 0.70*init_zjets, 1.30*init_zjets)
+		n_qcd   = ROOT.RooRealVar('n_qcd'  , 'number of qcd'  , init_qcd  , 0.50*init_qcd  , 2.00*init_qcd  )
+
+		model = ROOT.RooAddPdf('model', 'model', ROOT.RooArgList(pdf_wjets, pdf_zjets, pdf_qcd), ROOT.RooArgList(n_wjets, n_zjets, n_qcd))
+
+		model.fitTo(rdh_data, ROOT.RooFit.SumW2Error(ROOT.kFALSE), ROOT.RooFit.Extended(), ROOT.RooFit.PrintLevel(-1))
+
+		scale = {}
+		scale['wjets'] = n_wjets.getVal() / init_wjets
+		scale['zjets'] = n_zjets.getVal() / init_zjets
+		scale['qcd'  ] = n_qcd  .getVal() / init_qcd
+
+		return scale
 
 
 	def get_fRatio(self, chan, pt, eta, datamc) :
