@@ -196,7 +196,7 @@ class ratios :
 		## }
 
 
-	def get_EWK_SF(self, samples_data, chan_str) :
+	def get_EWK_SF(self, samples_data, chan_str, do_fit = False) :
 		print '[status] calculating EWK scale factor for %s trigger..' % (chan_str)
 		samples_wjets = []
 		samples_zjets = []
@@ -213,19 +213,22 @@ class ratios :
 		(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT_MET30')
 		(h_ntight_qcd  , h_nloose_qcd  ) = self.get_fRatioPlots(samples_qcd  , chan_str, 'MT_MET30')
 
-		self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd)
+		if do_fit :
+			ratios = self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd)
+			return ratios
 
-		bin_min = h_ntight_data.FindBin(60.)
-		bin_max = h_ntight_data.FindBin(90.)-1
+		else :
+			bin_min = h_ntight_data.FindBin(60.)
+			bin_max = h_ntight_data.FindBin(90.)-1
 
-		n_data = h_ntight_data.Integral(bin_min, bin_max)
-		n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
+			n_data = h_ntight_data.Integral(bin_min, bin_max)
+			n_mc   = h_ntight_wjets.Integral(bin_min, bin_max) + h_ntight_zjets.Integral(bin_min, bin_max)
 
-		ratio = n_data / n_mc
+			ratio = n_data / n_mc
 
-		print '         SF = data / (WJets + DYJets) = %8.1f / %8.1f = %4.2f' % (n_data, n_mc, ratio)
+			print '         SF = data / (WJets + DYJets) = %8.1f / %8.1f = %4.2f' % (n_data, n_mc, ratio)
 
-		return ratio
+			return ratio
 
 
 	def get_fRatioPlots(self, samples, chan_str, ratiovar) :
