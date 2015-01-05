@@ -367,7 +367,7 @@ class ratios :
 		variables.append('ClosJetDR'  )
 		variables.append('AwayJetDR'  )
 
-		ewk_sf = self.get_EWK_SF(samples_data, ch_str)
+		ewk_sf = self.get_EWK_SF(samples_data, ch_str, True)
 
 		for var in variables :
 			self.make_controlPlot(samples_data, ch_str, var, 1.)
@@ -377,6 +377,7 @@ class ratios :
 	def make_controlPlot(self, samples_data, chan_str, ratiovar, EWK_SF = 1.) :
 		scale_str = ''
 		if EWK_SF == 1. : scale_str = 'unscaled/'
+		if type(EWK_SF) is dict : scale_str = 'fitted/'
 		subdir = 'RatioControlPlots/%s%s' % (scale_str, chan_str)
 		path = '%s%s/' % (self.path, subdir)
 		helper.mkdir(path)
@@ -400,11 +401,16 @@ class ratios :
 		(histos['tight']['data' ], histos['loose']['data' ]) = self.get_fRatioPlots(samples_data , chan_str, ratiovar)
 		(histos['tight']['wjets'], histos['loose']['wjets']) = self.get_fRatioPlots(samples_wjets, chan_str, ratiovar)
 		(histos['tight']['zjets'], histos['loose']['zjets']) = self.get_fRatioPlots(samples_zjets, chan_str, ratiovar)
-#		(histos['tight']['qcd'  ], histos['loose']['qcd'  ]) = self.get_fRatioPlots(samples_qcd  , chan_str, ratiovar)
+		(histos['tight']['qcd'  ], histos['loose']['qcd'  ]) = self.get_fRatioPlots(samples_qcd  , chan_str, ratiovar)
 
 		for tl in histos :
-			histos[tl]['wjets'].Scale(EWK_SF)
-			histos[tl]['zjets'].Scale(EWK_SF)
+			if type(EWK_SF) is dict :
+				histos[tl]['wjets'].Scale(EWK_SF['wjets'])
+				histos[tl]['zjets'].Scale(EWK_SF['zjets'])
+				histos[tl]['qcd'  ].Scale(EWK_SF['qcd'  ])
+			else :
+				histos[tl]['wjets'].Scale(EWK_SF)
+				histos[tl]['zjets'].Scale(EWK_SF)
 			for TeX_switch in [True, False] :
 				pl = ttvStyle.ttvStyle(lumi = lumi, cms_label = 0, TeX_switch = TeX_switch, short_names = False)
 				canvas = pl.get_canvas()
