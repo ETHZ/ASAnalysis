@@ -283,6 +283,17 @@ class ratios :
 
 		return scale
 
+		mc = ROOT.TObjArray(3)
+		mc.Add(h_wjets)
+		mc.Add(h_zjets)
+		mc.Add(h_qcd  )
+
+		fit = ROOT.TFractionFitter(h_data, mc)
+#		fit.Constrain(1,0.0,1.0);               // constrain fraction 1 to be between 0 and 1
+#		fit.SetRangeX(1,15);                    // use only the first 15 bins in the fit
+		status = fit.Fit()
+		print 'fit status:', status
+
 
 	def get_fRatio(self, chan, pt, eta, datamc) :
 		mu_flatout = 40.
