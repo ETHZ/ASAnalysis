@@ -378,6 +378,9 @@ void DiPhotonMiniTree::Begin(){
 
 void DiPhotonMiniTree::Analyze(){
 
+  // sanity check: be able to run on V03-09-03p1 and V03-10-04 at the same time
+  assert ( ( (fTR->PhoMatchedPFPhotonCand.size()>0) && (fTR->PhoMatchedPFElectronCand.size()>0)) || (fTR->PhoMatchedPFPhotonOrElectronCand.size()>0) );
+
   //  cout << endl << "-----------------------" << endl;
 
   float weight;
