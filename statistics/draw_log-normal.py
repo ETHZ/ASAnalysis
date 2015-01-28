@@ -26,14 +26,11 @@ for i, kappa in enumerate([1.10, 1.20, 1.33, 1.50]) :
 	func.SetMaximum(ymax)
 	func.SetLineColor(colors[i])
 	func.SetLineStyle(i+1)
-	print func.GetLineWidth()
 	func.DrawCopy('C')
 	legend.append([func, '\kappa = %4.2f' % kappa, 'l'])
 
 leg = pl.draw_legend(legend)
 leg.Draw()
-
-print canvas.ls()
 
 canvas.Update()
 pl.save_canvas(canvas, './', 'log-normal')
