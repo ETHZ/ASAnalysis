@@ -26,7 +26,8 @@ for i, kappa in enumerate([1.10, 1.20, 1.33, 1.50]) :
 	func.SetMaximum(ymax)
 	func.SetLineColor(colors[i])
 	func.SetLineStyle(i+1)
-	func.DrawCopy('C')
+	func.SetNpx(1000)
+	func.DrawCopy('LSAME')
 	legend.append([func, '\kappa = %4.2f' % kappa, 'l'])
 
 leg = pl.draw_legend(legend)
