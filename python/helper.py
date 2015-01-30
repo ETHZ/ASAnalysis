@@ -131,6 +131,23 @@ def get_roundedNumber(num, err) :
 	return (num_str, err_str)
 
 
+def get_roundedNumberErrors(num, errors) :
+	'''returns tuple of strings with rounded value and uncertainties'''
+	rnds = []
+	err_str = []
+	for err in errors :
+		rnd = get_signifErrDigits(err) - get_exponent(err) - 1
+		rnds.append(rnd)
+		if rnd < 0 : float_digits = 0
+		else       : float_digits = rnd
+		err_str.append(format(round(err, rnd), '.%df' % float_digits))
+	rnd = max(rnds)
+	if rnd < 0 : float_digits = 0
+	else       : float_digits = rnd
+	num_str = format(round(num, rnd), '.%df' % float_digits)
+	return (num_str,) + tuple(err_str)
+
+
 def save_object(obj, filepath) :
 	dir = os.path.dirname(filepath)
 	mkdir(dir)
