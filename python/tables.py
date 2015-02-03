@@ -63,7 +63,7 @@ def make_ObsPredTable(path, results) :
 	##//					   npf_em + nfp_em, sqrt(FR->getEMSingleEStat()*FR->getEMSingleEStat() + (npf_em+nfp_em)*(npf_em+nfp_em)*FakeESyst2),
 	##//					   npf_ee,          sqrt(FR->getEENpfEStat()   *FR->getEENpfEStat()    +  npf_ee*npf_ee*FakeESyst2),
 	##//					   npf_em + nfp_em + npf_mm + npf_ee, sqrt(FR->getTotSingleEStat()*FR->getTotSingleEStat() + nSF*nSF*FakeESyst2));
-		file.write('\t%-20s &      {-}     & %5.1f +- %3.1f & %5.1f +- %3.1f &      {-}     & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+		file.write('\t%-20s &      {--}    & %5.1f +- %3.1f & %5.1f +- %3.1f &      {--}    & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 			pl.get_processName('chmid'),
 			results['++']['em'].cmid, results['++']['em'].cmid_err,
 			results['++']['ee'].cmid, results['++']['ee'].cmid_err,
@@ -102,29 +102,21 @@ def make_ObsPredTable(path, results) :
 	##//							tth_nt2_ee + tth_nt2_mm + tth_nt2_em, sqrt(tth_nt2_mm_e1 + tth_nt2_ee_e1 + tth_nt2_em_e1 + RareESyst2*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)*(tth_nt2_ee + tth_nt2_mm + tth_nt2_em)));
 	##//	}
 		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-			'Total Bkg.',
+			'Total background',
 			results['++']['mm'].tot, results['++']['mm'].tot_err,
 			results['++']['em'].tot, results['++']['em'].tot_err,
 			results['++']['ee'].tot, results['++']['ee'].tot_err,
 			results['--']['mm'].tot, results['--']['mm'].tot_err,
 			results['--']['em'].tot, results['--']['em'].tot_err,
 			results['--']['ee'].tot, results['--']['ee'].tot_err))
-		file.write('\t{\\bf %-14s} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} \\\\\n' % (
-			pl.get_processName('obs'),
-			results['++']['mm'].obs,
-			results['++']['em'].obs,
-			results['++']['ee'].obs,
-			results['--']['mm'].obs,
-			results['--']['em'].obs,
-			results['--']['ee'].obs))
-		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-			'Obs.\\ $-$ Tot.\\ Bkg.',
-			results['++']['mm'].obs - results['++']['mm'].tot, results['++']['mm'].tot_err,
-			results['++']['em'].obs - results['++']['em'].tot, results['++']['em'].tot_err,
-			results['++']['ee'].obs - results['++']['ee'].tot, results['++']['ee'].tot_err,
-			results['--']['mm'].obs - results['--']['mm'].tot, results['--']['mm'].tot_err,
-			results['--']['em'].obs - results['--']['em'].tot, results['--']['em'].tot_err,
-			results['--']['ee'].obs - results['--']['ee'].tot, results['--']['ee'].tot_err))
+#		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+#			'Obs.\\ $-$ Tot.\\ Bkg.',
+#			results['++']['mm'].obs - results['++']['mm'].tot, results['++']['mm'].tot_err,
+#			results['++']['em'].obs - results['++']['em'].tot, results['++']['em'].tot_err,
+#			results['++']['ee'].obs - results['++']['ee'].tot, results['++']['ee'].tot_err,
+#			results['--']['mm'].obs - results['--']['mm'].tot, results['--']['mm'].tot_err,
+#			results['--']['em'].obs - results['--']['em'].tot, results['--']['em'].tot_err,
+#			results['--']['ee'].obs - results['--']['ee'].tot, results['--']['ee'].tot_err))
 		file.write('\t\\midrule\n')
 #		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 #			pl.get_processName('ttw') + ' (exp.)',
@@ -135,13 +127,29 @@ def make_ObsPredTable(path, results) :
 #			results['--']['em'].ttw, results['--']['em'].ttw_err,
 #			results['--']['ee'].ttw, results['--']['ee'].ttw_err))
 		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
-			pl.get_processName('ttw') + '{} (exp.)',
+			pl.get_processName('ttw') + '{} (expected)',
 			results['++']['mm'].ttw, math.sqrt(results['++']['mm'].ttw_staterr*results['++']['mm'].ttw_staterr + 0.08*0.08*results['++']['mm'].ttw*results['++']['mm'].ttw),
 			results['++']['em'].ttw, math.sqrt(results['++']['em'].ttw_staterr*results['++']['em'].ttw_staterr + 0.08*0.08*results['++']['em'].ttw*results['++']['em'].ttw),
 			results['++']['ee'].ttw, math.sqrt(results['++']['ee'].ttw_staterr*results['++']['ee'].ttw_staterr + 0.08*0.08*results['++']['ee'].ttw*results['++']['ee'].ttw),
 			results['--']['mm'].ttw, math.sqrt(results['--']['mm'].ttw_staterr*results['--']['mm'].ttw_staterr + 0.08*0.08*results['--']['mm'].ttw*results['--']['mm'].ttw),
 			results['--']['em'].ttw, math.sqrt(results['--']['em'].ttw_staterr*results['--']['em'].ttw_staterr + 0.08*0.08*results['--']['em'].ttw*results['--']['em'].ttw),
 			results['--']['ee'].ttw, math.sqrt(results['--']['ee'].ttw_staterr*results['--']['ee'].ttw_staterr + 0.08*0.08*results['--']['ee'].ttw*results['--']['ee'].ttw)))
+		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
+			'Total expected',
+			results['++']['mm'].tot_exp, results['++']['mm'].tot_exp_err,
+			results['++']['em'].tot_exp, results['++']['em'].tot_exp_err,
+			results['++']['ee'].tot_exp, results['++']['ee'].tot_exp_err,
+			results['--']['mm'].tot_exp, results['--']['mm'].tot_exp_err,
+			results['--']['em'].tot_exp, results['--']['em'].tot_exp_err,
+			results['--']['ee'].tot_exp, results['--']['ee'].tot_exp_err))
+		file.write('\t{\\bf %-14s} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} &  {\\bf %5d} \\\\\n' % (
+			pl.get_processName('obs'),
+			results['++']['mm'].obs,
+			results['++']['em'].obs,
+			results['++']['ee'].obs,
+			results['--']['mm'].obs,
+			results['--']['em'].obs,
+			results['--']['ee'].obs))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 
