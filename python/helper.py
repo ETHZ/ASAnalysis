@@ -121,10 +121,11 @@ def get_exponent(num) :
 	return exp
 
 
-def get_roundedNumber(num, err) :
-	err_precision = get_signifErrDigits(err)
-	rnd = err_precision - get_exponent(err) - 1
-	float_digits = rnd
+def get_roundedNumber(num, err, rnd = None, float_digits = None) :
+	if rnd == None :
+		rnd = get_signifErrDigits(err) - get_exponent(err) - 1
+	if float_digits == None :
+		float_digits = rnd
 	if float_digits < 0 : float_digits = 0
 	num_str = format(round(num, rnd), '.%df' % float_digits)
 	err_str = format(round(err, rnd), '.%df' % float_digits)
