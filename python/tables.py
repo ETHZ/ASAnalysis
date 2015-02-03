@@ -9,6 +9,8 @@ def make_ObsPredTable(path, results) :
 #		table_name = 'datacard_ssdl_ttW_' + results['Normal'][charge][chan].chan_str + '.txt'
 	table_name = 'ObsPredTable.tex'
 	table_path = path + 'IntPredictions/'
+	rnd = None
+	float_digits = None
 	helper.mkdir(table_path)
 	pl = ttvStyle.ttvStyle(TeX_switch = True)
 	print '[status] writing %s' % table_name
@@ -48,12 +50,12 @@ def make_ObsPredTable(path, results) :
 #		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 		file.write('\t%-20s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			(pl.get_processName('fake'),) +
-			helper.get_roundedNumber(results['++']['mm'].fake, results['++']['mm'].fake_err) +
-			helper.get_roundedNumber(results['++']['em'].fake, results['++']['em'].fake_err) +
-			helper.get_roundedNumber(results['++']['ee'].fake, results['++']['ee'].fake_err) +
-			helper.get_roundedNumber(results['--']['mm'].fake, results['--']['mm'].fake_err) +
-			helper.get_roundedNumber(results['--']['em'].fake, results['--']['em'].fake_err) +
-			helper.get_roundedNumber(results['--']['ee'].fake, results['--']['ee'].fake_err)))
+			helper.get_roundedNumber(results['++']['mm'].fake, results['++']['mm'].fake_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['em'].fake, results['++']['em'].fake_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].fake, results['++']['ee'].fake_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['mm'].fake, results['--']['mm'].fake_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].fake, results['--']['em'].fake_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].fake, results['--']['ee'].fake_err, rnd, float_digits)))
 	##//	fOUTSTREAM3 << Form("Double Fakes   & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \n",
 	##//					   nff_mm, sqrt(FR->getMMNffEStat()*FR->getMMNffEStat()+nff_mm*nff_mm*FakeESyst2),
 	##//					   nff_em, sqrt(FR->getEMNffEStat()*FR->getEMNffEStat()+nff_em*nff_em*FakeESyst2),
@@ -66,34 +68,34 @@ def make_ObsPredTable(path, results) :
 	##//					   npf_em + nfp_em + npf_mm + npf_ee, sqrt(FR->getTotSingleEStat()*FR->getTotSingleEStat() + nSF*nSF*FakeESyst2));
 		file.write('\t%-20s &      {--}     & %5s +- %4s & %5s +- %4s &      {--}     & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			(pl.get_processName('chmid'),) +
-			helper.get_roundedNumber(results['++']['em'].cmid, results['++']['em'].cmid_err) +
-			helper.get_roundedNumber(results['++']['ee'].cmid, results['++']['ee'].cmid_err) +
-			helper.get_roundedNumber(results['--']['em'].cmid, results['--']['em'].cmid_err) +
-			helper.get_roundedNumber(results['--']['ee'].cmid, results['--']['ee'].cmid_err)))
+			helper.get_roundedNumber(results['++']['em'].cmid, results['++']['em'].cmid_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].cmid, results['++']['ee'].cmid_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].cmid, results['--']['em'].cmid_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].cmid, results['--']['ee'].cmid_err, rnd, float_digits)))
 		file.write('\t%-20s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			(pl.get_processName('rare'),) +
-			helper.get_roundedNumber(results['++']['mm'].rare, results['++']['mm'].rare_err) +
-			helper.get_roundedNumber(results['++']['em'].rare, results['++']['em'].rare_err) +
-			helper.get_roundedNumber(results['++']['ee'].rare, results['++']['ee'].rare_err) +
-			helper.get_roundedNumber(results['--']['mm'].rare, results['--']['mm'].rare_err) +
-			helper.get_roundedNumber(results['--']['em'].rare, results['--']['em'].rare_err) +
-			helper.get_roundedNumber(results['--']['ee'].rare, results['--']['ee'].rare_err)))
+			helper.get_roundedNumber(results['++']['mm'].rare, results['++']['mm'].rare_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['em'].rare, results['++']['em'].rare_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].rare, results['++']['ee'].rare_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['mm'].rare, results['--']['mm'].rare_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].rare, results['--']['em'].rare_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].rare, results['--']['ee'].rare_err, rnd, float_digits)))
 		file.write('\t%-20s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			(pl.get_processName('wz'),) +
-			helper.get_roundedNumber(results['++']['mm'].wz, results['++']['mm'].wz_err) +
-			helper.get_roundedNumber(results['++']['em'].wz, results['++']['em'].wz_err) +
-			helper.get_roundedNumber(results['++']['ee'].wz, results['++']['ee'].wz_err) +
-			helper.get_roundedNumber(results['--']['mm'].wz, results['--']['mm'].wz_err) +
-			helper.get_roundedNumber(results['--']['em'].wz, results['--']['em'].wz_err) +
-			helper.get_roundedNumber(results['--']['ee'].wz, results['--']['ee'].wz_err)))
+			helper.get_roundedNumber(results['++']['mm'].wz, results['++']['mm'].wz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['em'].wz, results['++']['em'].wz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].wz, results['++']['ee'].wz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['mm'].wz, results['--']['mm'].wz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].wz, results['--']['em'].wz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].wz, results['--']['ee'].wz_err, rnd, float_digits)))
 		file.write('\t%-20s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			(pl.get_processName('ttz'),) +
-			helper.get_roundedNumber(results['++']['mm'].ttz, results['++']['mm'].ttz_err) +
-			helper.get_roundedNumber(results['++']['em'].ttz, results['++']['em'].ttz_err) +
-			helper.get_roundedNumber(results['++']['ee'].ttz, results['++']['ee'].ttz_err) +
-			helper.get_roundedNumber(results['--']['mm'].ttz, results['--']['mm'].ttz_err) +
-			helper.get_roundedNumber(results['--']['em'].ttz, results['--']['em'].ttz_err) +
-			helper.get_roundedNumber(results['--']['ee'].ttz, results['--']['ee'].ttz_err)))
+			helper.get_roundedNumber(results['++']['mm'].ttz, results['++']['mm'].ttz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['em'].ttz, results['++']['em'].ttz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].ttz, results['++']['ee'].ttz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['mm'].ttz, results['--']['mm'].ttz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].ttz, results['--']['em'].ttz_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].ttz, results['--']['ee'].ttz_err, rnd, float_digits)))
 	##//	if (separateTTH) {
 	##//		fOUTSTREAM3 << Form("ttH Prod.      & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \\midrule \n",
 	##//							tth_nt2_mm, sqrt(tth_nt2_mm_e1 + RareESyst2*tth_nt2_mm*tth_nt2_mm),
@@ -103,12 +105,12 @@ def make_ObsPredTable(path, results) :
 	##//	}
 		file.write('\t%-20s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			('Total background',) +
-			helper.get_roundedNumber(results['++']['mm'].tot, results['++']['mm'].tot_err) +
-			helper.get_roundedNumber(results['++']['em'].tot, results['++']['em'].tot_err) +
-			helper.get_roundedNumber(results['++']['ee'].tot, results['++']['ee'].tot_err) +
-			helper.get_roundedNumber(results['--']['mm'].tot, results['--']['mm'].tot_err) +
-			helper.get_roundedNumber(results['--']['em'].tot, results['--']['em'].tot_err) +
-			helper.get_roundedNumber(results['--']['ee'].tot, results['--']['ee'].tot_err)))
+			helper.get_roundedNumber(results['++']['mm'].tot, results['++']['mm'].tot_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['em'].tot, results['++']['em'].tot_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].tot, results['++']['ee'].tot_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['mm'].tot, results['--']['mm'].tot_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].tot, results['--']['em'].tot_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].tot, results['--']['ee'].tot_err, rnd, float_digits)))
 #		file.write('\t%-20s & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f & %5.1f +- %3.1f \\\\\n' % (
 #			'Obs.\\ $-$ Tot.\\ Bkg.',
 #			results['++']['mm'].obs - results['++']['mm'].tot, results['++']['mm'].tot_err,
@@ -128,20 +130,20 @@ def make_ObsPredTable(path, results) :
 #			results['--']['ee'].ttw, results['--']['ee'].ttw_err))
 		file.write('\t%-20s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			(pl.get_processName('ttw') + '{} (expected)',) +
-			helper.get_roundedNumber(results['++']['mm'].ttw, math.sqrt(results['++']['mm'].ttw_staterr*results['++']['mm'].ttw_staterr + 0.08*0.08*results['++']['mm'].ttw*results['++']['mm'].ttw)) +
-			helper.get_roundedNumber(results['++']['em'].ttw, math.sqrt(results['++']['em'].ttw_staterr*results['++']['em'].ttw_staterr + 0.08*0.08*results['++']['em'].ttw*results['++']['em'].ttw)) +
-			helper.get_roundedNumber(results['++']['ee'].ttw, math.sqrt(results['++']['ee'].ttw_staterr*results['++']['ee'].ttw_staterr + 0.08*0.08*results['++']['ee'].ttw*results['++']['ee'].ttw)) +
-			helper.get_roundedNumber(results['--']['mm'].ttw, math.sqrt(results['--']['mm'].ttw_staterr*results['--']['mm'].ttw_staterr + 0.08*0.08*results['--']['mm'].ttw*results['--']['mm'].ttw)) +
-			helper.get_roundedNumber(results['--']['em'].ttw, math.sqrt(results['--']['em'].ttw_staterr*results['--']['em'].ttw_staterr + 0.08*0.08*results['--']['em'].ttw*results['--']['em'].ttw)) +
-			helper.get_roundedNumber(results['--']['ee'].ttw, math.sqrt(results['--']['ee'].ttw_staterr*results['--']['ee'].ttw_staterr + 0.08*0.08*results['--']['ee'].ttw*results['--']['ee'].ttw))))
+			helper.get_roundedNumber(results['++']['mm'].ttw, math.sqrt(results['++']['mm'].ttw_staterr*results['++']['mm'].ttw_staterr + 0.08*0.08*results['++']['mm'].ttw*results['++']['mm'].ttw), rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['em'].ttw, math.sqrt(results['++']['em'].ttw_staterr*results['++']['em'].ttw_staterr + 0.08*0.08*results['++']['em'].ttw*results['++']['em'].ttw), rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].ttw, math.sqrt(results['++']['ee'].ttw_staterr*results['++']['ee'].ttw_staterr + 0.08*0.08*results['++']['ee'].ttw*results['++']['ee'].ttw), rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['mm'].ttw, math.sqrt(results['--']['mm'].ttw_staterr*results['--']['mm'].ttw_staterr + 0.08*0.08*results['--']['mm'].ttw*results['--']['mm'].ttw), rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].ttw, math.sqrt(results['--']['em'].ttw_staterr*results['--']['em'].ttw_staterr + 0.08*0.08*results['--']['em'].ttw*results['--']['em'].ttw), rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].ttw, math.sqrt(results['--']['ee'].ttw_staterr*results['--']['ee'].ttw_staterr + 0.08*0.08*results['--']['ee'].ttw*results['--']['ee'].ttw), rnd, float_digits)))
 		file.write('\t%-20s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s & %5s +- %4s \\\\\n' % (
 			('Total expected',) +
-			helper.get_roundedNumber(results['++']['mm'].tot_exp, results['++']['mm'].tot_exp_err) +
-			helper.get_roundedNumber(results['++']['em'].tot_exp, results['++']['em'].tot_exp_err) +
-			helper.get_roundedNumber(results['++']['ee'].tot_exp, results['++']['ee'].tot_exp_err) +
-			helper.get_roundedNumber(results['--']['mm'].tot_exp, results['--']['mm'].tot_exp_err) +
-			helper.get_roundedNumber(results['--']['em'].tot_exp, results['--']['em'].tot_exp_err) +
-			helper.get_roundedNumber(results['--']['ee'].tot_exp, results['--']['ee'].tot_exp_err)))
+			helper.get_roundedNumber(results['++']['mm'].tot_exp, results['++']['mm'].tot_exp_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['em'].tot_exp, results['++']['em'].tot_exp_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['++']['ee'].tot_exp, results['++']['ee'].tot_exp_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['mm'].tot_exp, results['--']['mm'].tot_exp_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['em'].tot_exp, results['--']['em'].tot_exp_err, rnd, float_digits) +
+			helper.get_roundedNumber(results['--']['ee'].tot_exp, results['--']['ee'].tot_exp_err, rnd, float_digits)))
 		file.write('\t{\\bf %-14s} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} \\\\\n' % (
 			pl.get_processName('obs'),
 			results['++']['mm'].obs,
