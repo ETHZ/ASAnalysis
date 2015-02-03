@@ -94,7 +94,6 @@ def make_ObsPredTable(path, results) :
 			helper.get_roundedNumber(results['--']['mm'].ttz, results['--']['mm'].ttz_err) +
 			helper.get_roundedNumber(results['--']['em'].ttz, results['--']['em'].ttz_err) +
 			helper.get_roundedNumber(results['--']['ee'].ttz, results['--']['ee'].ttz_err)))
-		file.write('\t\\midrule\n')
 	##//	if (separateTTH) {
 	##//		fOUTSTREAM3 << Form("ttH Prod.      & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f & %5.1f &$\\pm$ %5.1f \\\\ \\midrule \n",
 	##//							tth_nt2_mm, sqrt(tth_nt2_mm_e1 + RareESyst2*tth_nt2_mm*tth_nt2_mm),
