@@ -1426,11 +1426,12 @@ class plotter :
 			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
-		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
-#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
+		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
 
 
-	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False) :
+	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, pu_weight = True) :
 
 		nbins = settings['nbins']
 		min   = settings['min'  ]
@@ -1442,9 +1443,8 @@ class plotter :
 		pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 2, TeX_switch = False)
 		histos = {}
 
-		noPUWeight = False
-		weight_str = 'HLTSF*PUWeight'
-		if noPUWeight : weight_str = 'HLTSF'
+		weight_str = 'HLTSF'
+		if pu_weight : weight_str += '*PUWeight'
 
 		############################
 		# SETUP AND GET HISTOGRAMS #
@@ -1564,7 +1564,7 @@ class plotter :
 		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
 		prefix = ''
 		suffix = ''
-		if noPUWeight : suffix = '_woPUWeight'
+		if not pu_weight : suffix = '_noPUWeight'
 		helper.mkdir(path)
 		canvas.Update()
 		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
@@ -1573,6 +1573,7 @@ class plotter :
 		suffix += '_log'
 		canvas.Update()
 		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
+		canvas.Print('%sObsMC%s_%s%s.tex' % (path, prefix, var, suffix))
 
 
 
