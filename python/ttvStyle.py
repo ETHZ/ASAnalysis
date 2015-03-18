@@ -429,7 +429,8 @@ class ttvStyle(object) :
 			latex.DrawLatex(lumi_x, lumi_y, '%4.1f %s (8 TeV)' % (lumi, unit))
 
 
-	def get_maximum(self, histos, scale = 1.8, set_maximum = True) :
+	@staticmethod
+	def get_maximum(histos, scale = 1.8, set_maximum = True) :
 		'''returns maximum of a list of histograms'''
 		maximum = scale * max([histo.GetMaximum() for histo in histos])
 		if set_maximum :
