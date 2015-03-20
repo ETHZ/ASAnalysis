@@ -172,10 +172,10 @@ class plotter :
 #			self.plot_DiffMC(self.selections['1J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
-#			self.plot_DiffMC(self.selections['0J0bJOS'        ])
+			self.plot_DiffMC(self.selections['0J0bJOS'        ])
 #			self.plot_DiffMC(self.selections['3J1bJ'    ])
 #			self.plot_DiffMC(self.selections['3J1bJOS'    ])
-			self.plot_DiffMC(self.selections['3J0bJOS'    ])
+#			self.plot_DiffMC(self.selections['3J0bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
 
@@ -1427,7 +1427,7 @@ class plotter :
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
 #		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
-#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
 		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
 
 
@@ -1518,7 +1518,7 @@ class plotter :
 		processes.append('rare' )
 		processes.append('wz'   )
 		processes.append('qcd'  )
-		processes.append('miss' )
+#		processes.append('miss' )
 		processes.append('ttz'  )
 		processes.append('ttw'  )
 
