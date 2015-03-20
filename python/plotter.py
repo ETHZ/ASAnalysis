@@ -1595,12 +1595,14 @@ class plotter :
 		histo.Sumw2()
 		if not sel_str.startswith('&&') : sel_str = '&& ' + sel_str
 		for i, sample in enumerate(samples) :
-			print '[status] getting %s histogram from %s..' % (var, sample)
+			sys.stdout.write('[status] getting %s histogram from %-16s' % (var, sample + '..'))
+			sys.stdout.flush()
 			h_tmp_name = 'h_tmp_%d_%d' % (i, self.rand.Integer(10000))
 			h_tmp = ROOT.TH1D(h_tmp_name, h_tmp_name, settings['nbins'], settings['min'], settings['max'])
 			h_tmp.Sumw2()
 			tree.Draw(var+'>>'+h_tmp_name, '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str), 'goff')
 			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
+			print '%10d events' % histo.GetEntries()
 #			print '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str)
 #			print '%10s: %5e entries scaling with %e' % (sample, h_tmp.GetEntries(), self.lumi / self.samples[sample].getLumi())
 		return histo
