@@ -379,8 +379,10 @@ class ttvStyle(object) :
 
 	def draw_legend(self, entries) :
 		leg = ROOT.TLegend()
+		if self.TeX_switch : extra_space = ''
+		else               : extra_space = ' '
 		for entry in entries :
-			leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
+			leg.AddEntry(entry[0], extra_space + entry[1], entry[2])
 
 		# set position
 		width = 0.17
