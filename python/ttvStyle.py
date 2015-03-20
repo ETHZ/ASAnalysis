@@ -25,6 +25,9 @@ class ttvStyle(object) :
 	def set_style(self) :
 		'''make all the style settings'''
 
+		# PostScript output
+		if self.TeX_switch : self.ttvStyle.SetPaperSize(15., 15.)
+
 		# canvas
 		self.ttvStyle.SetCanvasBorderMode(0)
 		self.ttvStyle.SetCanvasColor(ROOT.kWhite)
