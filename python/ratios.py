@@ -234,6 +234,7 @@ class ratios :
 		for i, s in enumerate(samples) :
 			scale = lumi / self.samples[s].getLumi()
 			if self.samples[s].datamc == 0 : scale = 1.
+			print '%-12s: %f' % (s, self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Integral()*scale)
 			if i is 0 :
 				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar).Clone()
 				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Clone()
@@ -311,22 +312,22 @@ class ratios :
 
 	def make_controlPlots(self, samples_data, ch_str) :
 		variables = []
-		variables.append('NJets'      )
-		variables.append('HT'         )
-		variables.append('MaxJPt'     )
-		variables.append('NVertices'  )
-		variables.append('ClosJetPt'  )
-		variables.append('AwayJetPt'  )
-		variables.append('NBJets'     )
-		variables.append('MET'        )
+#		variables.append('NJets'      )
+#		variables.append('HT'         )
+#		variables.append('MaxJPt'     )
+#		variables.append('NVertices'  )
+#		variables.append('ClosJetPt'  )
+#		variables.append('AwayJetPt'  )
+#		variables.append('NBJets'     )
+#		variables.append('MET'        )
 		variables.append('MT'         )
-		variables.append('MET_noMTCut')
-		variables.append('MT_MET30'   )
-		variables.append('LepPt'      )
-		variables.append('LepEta'     )
-		variables.append('LepIso'     )
-		variables.append('ClosJetDR'  )
-		variables.append('AwayJetDR'  )
+#		variables.append('MET_noMTCut')
+#		variables.append('MT_MET30'   )
+#		variables.append('LepPt'      )
+#		variables.append('LepEta'     )
+#		variables.append('LepIso'     )
+#		variables.append('ClosJetDR'  )
+#		variables.append('AwayJetDR'  )
 
 		ewk_sf = self.get_EWK_SF(samples_data, ch_str)
 
@@ -347,6 +348,7 @@ class ratios :
 		samples_wjets = []
 		samples_zjets = []
 		samples_qcd = sample.sample.get_samples('QCD', self.samples) # TODO
+		print samples_qcd
 #		samples_qcd = []
 #		samples_qcd.append('MuEnr15')
 #		print samples_qcd
@@ -361,7 +363,7 @@ class ratios :
 		(histos['tight']['data' ], histos['loose']['data' ]) = self.get_fRatioPlots(samples_data , chan_str, ratiovar)
 		(histos['tight']['wjets'], histos['loose']['wjets']) = self.get_fRatioPlots(samples_wjets, chan_str, ratiovar)
 		(histos['tight']['zjets'], histos['loose']['zjets']) = self.get_fRatioPlots(samples_zjets, chan_str, ratiovar)
-#		(histos['tight']['qcd'  ], histos['loose']['qcd'  ]) = self.get_fRatioPlots(samples_qcd  , chan_str, ratiovar)
+		(histos['tight']['qcd'  ], histos['loose']['qcd'  ]) = self.get_fRatioPlots(samples_qcd  , chan_str, ratiovar)
 
 		for tl in histos :
 			histos[tl]['wjets'].Scale(EWK_SF)
