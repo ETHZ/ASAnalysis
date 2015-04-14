@@ -110,3 +110,22 @@ class result(object) :
 	def tot_err(self) :
 		tot_err = math.sqrt(self.fake_err*self.fake_err + self.cmid_err*self.cmid_err + self.rare_err*self.rare_err + self.wz_err*self.wz_err + self.ttz_err*self.ttz_err)
 		return tot_err
+
+
+	@property
+	def tot_exp(self) :
+		tot_exp = self.tot + self.ttw
+		return tot_exp
+
+
+	@property
+	def tot_exp_err(self) :
+		tot_exp_err = math.sqrt(self.tot_err*self.tot_err + self.ttw_statsysterr*self.ttw_statsysterr)
+		return tot_exp_err
+
+
+	@property
+	def ttw_statsysterr(self) :
+		'''statistical and systematic uncertainty without the cross section uncertainty'''
+		ttw_statsysterr = math.sqrt(self.ttw_staterr*self.ttw_staterr + 0.08*0.08*self.ttw*self.ttw)
+		return ttw_statsysterr

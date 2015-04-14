@@ -172,10 +172,10 @@ class plotter :
 #			self.plot_DiffMC(self.selections['1J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
-#			self.plot_DiffMC(self.selections['0J0bJOS'        ])
+			self.plot_DiffMC(self.selections['0J0bJOS'        ])
 #			self.plot_DiffMC(self.selections['3J1bJ'    ])
 #			self.plot_DiffMC(self.selections['3J1bJOS'    ])
-			self.plot_DiffMC(self.selections['3J0bJOS'    ])
+#			self.plot_DiffMC(self.selections['3J0bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
 
@@ -1426,11 +1426,12 @@ class plotter :
 			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
-		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
-#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
+		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
+		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
 
 
-	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False) :
+	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, pu_weight = True) :
 
 		nbins = settings['nbins']
 		min   = settings['min'  ]
@@ -1439,12 +1440,10 @@ class plotter :
 			min = min - (max-min)/nbins
 			nbins += 1
 
-		pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 2, TeX_switch = False)
 		histos = {}
 
-		noPUWeight = False
-		weight_str = 'HLTSF*PUWeight'
-		if noPUWeight : weight_str = 'HLTSF'
+		weight_str = 'HLTSF'
+		if pu_weight : weight_str += '*PUWeight'
 
 		############################
 		# SETUP AND GET HISTOGRAMS #
@@ -1519,7 +1518,7 @@ class plotter :
 		processes.append('rare' )
 		processes.append('wz'   )
 		processes.append('qcd'  )
-		processes.append('miss' )
+#		processes.append('miss' )
 		processes.append('ttz'  )
 		processes.append('ttw'  )
 
@@ -1529,50 +1528,57 @@ class plotter :
 				if 'h_bgtot' in histo.GetName() and process == 'ttw' : continue
 				histo.Add(histos[process])
 
-		canvas = pl.get_canvas(var)
-		canvas.cd()
+		set_maximum = True
 
-		# legend
-		leg_entries = []
-		leg_entries.append([histos['obs'], pl.get_processName('obs'), 'lp'])
-		for process in reversed(processes) :
-			histo = histos[process]
-			leg_entries.append([histo, pl.get_processName(process), 'f'])
-			histo.SetFillColor(pl.get_fillColor(process))
-			print process, pl.get_processName(process)
-		leg_entries.append([histos['pred'], 'MC uncertainty', 'fl'])
-		leg = pl.draw_legend(leg_entries)
+		for TeX_switch in [True, False] :
+			pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 2, TeX_switch = TeX_switch)
+			canvas = pl.get_canvas(var)
+			canvas.cd()
 
-		pl.get_maximum(histos.values())
+			# legend
+			leg_entries = []
+			leg_entries.append([histos['obs'], pl.get_processName('obs'), 'lp'])
+			for process in reversed(processes) :
+				histo = histos[process]
+				leg_entries.append([histo, pl.get_processName(process), 'f'])
+				histo.SetFillColor(pl.get_fillColor(process))
+				print process, pl.get_processName(process)
+			leg_entries.append([histos['pred'], 'MC uncertainty', 'fl'])
+			leg = pl.draw_legend(leg_entries)
 
-		histos['pred'].SetLineWidth(0)
-		histos['pred'].SetMarkerSize(0)
-		histos['pred'].SetFillColor(12)
-		histos['pred'].SetFillStyle(3005)
+			if set_maximum :
+				pl.get_maximum(histos.values())
+				set_maximum = False
 
-#		histos['obs'].SetMarkerStyle(20)
-#		histos['pred'].Draw()
-		histos['stack'].Draw('hist')
-		histos['stack'].GetXaxis().SetTitle(pl.get_varName(var))
-		histos['stack'].GetYaxis().SetTitle('Events')
-		leg.Draw()
-		histos['pred'].Draw('0 E2 same')
-#		histos['bgtot'].Draw('hist same')
-		histos['obs'  ].Draw('PE X0 same')
-		pl.draw_cmsLine()
+			histos['pred'].SetLineWidth(0)
+			histos['pred'].SetMarkerSize(0)
+			histos['pred'].SetFillColor(12)
+			histos['pred'].SetFillStyle(3005)
 
-		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
-		prefix = ''
-		suffix = ''
-		if noPUWeight : suffix = '_woPUWeight'
-		helper.mkdir(path)
-		canvas.Update()
-		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
-		canvas.Print('%sObsMC%s_%s%s.tex' % (path, prefix, var, suffix))
-		ROOT.gPad.SetLogy()
-		suffix += '_log'
-		canvas.Update()
-		canvas.Print('%sObsMC%s_%s%s.pdf' % (path, prefix, var, suffix))
+#			histos['obs'].SetMarkerStyle(20)
+#			histos['pred'].Draw()
+			histos['stack'].Draw('hist')
+			histos['stack'].GetXaxis().SetTitle(pl.get_varName(var))
+			histos['stack'].GetYaxis().SetTitle('Events')
+			leg.Draw()
+			histos['pred'].Draw('0 E2 same')
+#			histos['bgtot'].Draw('hist same')
+			histos['obs'  ].Draw('PE X0 same')
+			pl.draw_cmsLine()
+
+			path = '%sObsMCPlots/%s/' % (self.path, sel.name)
+			prefix = ''
+			suffix = ''
+			if not pu_weight : suffix = '_noPUWeight'
+			helper.mkdir(path)
+			canvas.Update()
+			if TeX_switch : format_str = 'tex'
+			else          : format_str = 'pdf'
+			canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
+			ROOT.gPad.SetLogy()
+			suffix += '_log'
+			canvas.Update()
+			canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
 
 
 
@@ -1589,12 +1595,14 @@ class plotter :
 		histo.Sumw2()
 		if not sel_str.startswith('&&') : sel_str = '&& ' + sel_str
 		for i, sample in enumerate(samples) :
-			print '[status] getting %s histogram from %s..' % (var, sample)
+			sys.stdout.write('[status] getting %s histogram from %-16s' % (var, sample + '..'))
+			sys.stdout.flush()
 			h_tmp_name = 'h_tmp_%d_%d' % (i, self.rand.Integer(10000))
 			h_tmp = ROOT.TH1D(h_tmp_name, h_tmp_name, settings['nbins'], settings['min'], settings['max'])
 			h_tmp.Sumw2()
 			tree.Draw(var+'>>'+h_tmp_name, '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str), 'goff')
 			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
+			print '%10d events' % histo.GetEntries()
 #			print '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str)
 #			print '%10s: %5e entries scaling with %e' % (sample, h_tmp.GetEntries(), self.lumi / self.samples[sample].getLumi())
 		return histo

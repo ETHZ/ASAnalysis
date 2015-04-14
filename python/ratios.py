@@ -32,6 +32,10 @@ class ratios :
 				EWK_SF['mu17'] = self.get_EWK_SF(mu17_samples, 'mu17')
 				EWK_SF['mu24'] = self.get_EWK_SF(mu24_samples, 'mu24')
 
+			else :
+				EWK_SF['mu_mc'] = self.get_EWK_SF(mu_samples, 'mu', datamc = datamc)
+				EWK_SF['el_mc'] = self.get_EWK_SF(el_samples, 'el', datamc = datamc)
+
 		print '[status] filling fake and prompt ratio histograms..'
 		print '         datamc: %d' % datamc
 		print '         mu samples: %s' % ', '.join(mu_samples)
@@ -48,23 +52,25 @@ class ratios :
 			print '         ElpRatio: %f +/- %f' % (self.ElpRatio, self.ElpRatioE)
 
 		else :
-			mu_samples_fRatio = mu_samples
-			el_samples_fRatio = el_samples
-			if applyEwkSubtr :
-				mu_samples_fRatio = filter(lambda sample : sample != 'WJets' and sample != 'DYJets', mu_samples)
-				el_samples_fRatio = filter(lambda sample : sample != 'WJets' and sample != 'DYJets', el_samples)
+#			mu_samples_fRatio = mu_samples
+#			el_samples_fRatio = el_samples
+#			if applyEwkSubtr :
+#				mu_samples_fRatio = filter(lambda sample : sample != 'WJets' and 'DYJets' not in sample, mu_samples)
+#				el_samples_fRatio = filter(lambda sample : sample != 'WJets' and 'DYJets' not in sample, el_samples)
 
-			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC, self.MufRatio_MC, self.MufRatioE_MC) = self.calculateRatio(mu_samples_fRatio, 'MM', 'SigSup')
-			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC, self.ElfRatio_MC, self.ElfRatioE_MC) = self.calculateRatio(el_samples_fRatio, 'EE', 'SigSup')
-			(self.h2_MupRatio_MC, self.h_MupRatio_pt_MC, self.h_MupRatio_eta_MC, self.h_MupRatio_nv_MC, self.MupRatio_MC, self.MupRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
-			(self.h2_ElpRatio_MC, self.h_ElpRatio_pt_MC, self.h_ElpRatio_eta_MC, self.h_ElpRatio_nv_MC, self.ElpRatio_MC, self.ElpRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
+#			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC, self.MufRatio_MC, self.MufRatioE_MC) = self.calculateRatio(mu_samples_fRatio, 'MM', 'SigSup')
+#			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC, self.ElfRatio_MC, self.ElfRatioE_MC) = self.calculateRatio(el_samples_fRatio, 'EE', 'SigSup')
+			(self.h2_MufRatio_MC, self.h_MufRatio_pt_MC, self.h_MufRatio_eta_MC, self.h_MufRatio_nv_MC, self.MufRatio_MC, self.MufRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'SigSup', applyEwkSubtr , EWK_SF, datamc)
+			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC, self.ElfRatio_MC, self.ElfRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF, datamc)
+			(self.h2_MupRatio_MC, self.h_MupRatio_pt_MC, self.h_MupRatio_eta_MC, self.h_MupRatio_nv_MC, self.MupRatio_MC, self.MupRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'ZDecay', datamc = datamc)
+			(self.h2_ElpRatio_MC, self.h_ElpRatio_pt_MC, self.h_ElpRatio_eta_MC, self.h_ElpRatio_nv_MC, self.ElpRatio_MC, self.ElpRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'ZDecay', datamc = datamc)
 			print '         MufRatio: %f +/- %f' % (self.MufRatio_MC, self.MufRatioE_MC)
 			print '         ElfRatio: %f +/- %f' % (self.ElfRatio_MC, self.ElfRatioE_MC)
 			print '         MupRatio: %f +/- %f' % (self.MupRatio_MC, self.MupRatioE_MC)
 			print '         ElpRatio: %f +/- %f' % (self.ElpRatio_MC, self.ElpRatioE_MC)
 
 
-	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = {}) :
+	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = {}, datamc = 0) :
 		'''
 		- sets up ratio histos
 		- calls get_TightLoose to get ntight and nloose histos
@@ -80,14 +86,14 @@ class ratios :
 
 			(h2_ntight_ewk, h2_nloose_ewk, h_ntight_nv_ewk, h_nloose_nv_ewk) = self.get_TightLoose(samples_ewk, chan_str, fp)
 
-			if chan_str is 'EE' :
+			if chan_str is 'EE' and datamc == 0 :
 				scale = EWK_SF['el'] * self.lumi_HLTEl17Jet30 / self.lumi  # MC samples are scaled to self.lumi. Rescale them now to prescaled triggers and apply correction factor
 				h2_ntight  .Add(h2_ntight_ewk  , (-1.) * scale)
 				h2_nloose  .Add(h2_nloose_ewk  , (-1.) * scale)
 				h_ntight_nv.Add(h_ntight_nv_ewk, (-1.) * scale)
 				h_nloose_nv.Add(h_nloose_nv_ewk, (-1.) * scale)
 
-			if chan_str is 'MM' :
+			if chan_str is 'MM' and datamc == 0 :
 				for pt_bin in range(1, h2_ntight.GetXaxis().GetNbins()+1) :
 					for eta_bin in range(1, h2_ntight.GetYaxis().GetNbins()+1) :
 						bin = h2_ntight.GetBin(pt_bin, eta_bin)
@@ -99,6 +105,16 @@ class ratios :
 #						print 'pt bin (%d) center: %f.3, eta bin (%d) center: %f.3, scale: %f' % (pt_bin, h2_ntight.GetXaxis().GetBinCenter(pt_bin), eta_bin, h2_ntight.GetYaxis().GetBinCenter(eta_bin), scale)
 						h2_ntight.AddBinContent(bin, (-1.) * scale * h2_ntight_ewk.GetBinContent(pt_bin, eta_bin))
 						h2_nloose.AddBinContent(bin, (-1.) * scale * h2_nloose_ewk.GetBinContent(pt_bin, eta_bin))
+
+			if datamc != 0 :
+				ewk_str = ''
+				if chan_str is 'EE' : ewk_str = 'el_mc'
+				if chan_str is 'MM' : ewk_str = 'mu_mc'
+				scale = EWK_SF[ewk_str]
+				h2_ntight  .Add(h2_ntight_ewk  , (-1.) * scale)
+				h2_nloose  .Add(h2_nloose_ewk  , (-1.) * scale)
+				h_ntight_nv.Add(h_ntight_nv_ewk, (-1.) * scale)
+				h_nloose_nv.Add(h_nloose_nv_ewk, (-1.) * scale)
 
 		h2_ratio   = h2_ntight  .Clone('h2_'+chan_str+'_'+fp+'_ratio_vs_pt_eta')
 		h_ratio_nv = h_ntight_nv.Clone('h_'+chan_str+'_'+fp+'_ratio_vs_nv')
@@ -199,7 +215,7 @@ class ratios :
 		## }
 
 
-	def get_EWK_SF(self, samples_data, chan_str, do_fit = False) :
+	def get_EWK_SF(self, samples_data, chan_str, datamc = 0, do_fit = False) :
 		print '[status] calculating EWK scale factor for %s trigger..' % (chan_str)
 		samples_wjets = []
 		samples_zjets = []
@@ -211,10 +227,10 @@ class ratios :
 		samples_zjets.append('DYJets')
 		samples_qcd = sample.sample.get_samples('QCD', self.samples)
 
-		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30')
-		(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT_MET30')
-		(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT_MET30')
-		(h_ntight_qcd  , h_nloose_qcd  ) = self.get_fRatioPlots(samples_qcd  , chan_str, 'MT_MET30')
+		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30', datamc)
+		(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT_MET30', datamc)
+		(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT_MET30', datamc)
+		(h_ntight_qcd  , h_nloose_qcd  ) = self.get_fRatioPlots(samples_qcd  , chan_str, 'MT_MET30', datamc)
 
 		if do_fit :
 			ratios = self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd, individual_fit = False)
@@ -236,16 +252,18 @@ class ratios :
 			return ratio
 
 
-	def get_fRatioPlots(self, samples, chan_str, ratiovar) :
+	def get_fRatioPlots(self, samples, chan_str, ratiovar, datamc = 0) :
 		'''gets ntight and loose histograms for various variables'''
 		## chan_str = 'mu', 'el', 'mu17', 'mu24'
 		lumi = self.lumi
-		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
-		if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
-		if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
+		if datamc == 0 :
+			if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
+			if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
+			if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
 		for i, s in enumerate(samples) :
 			scale = lumi / self.samples[s].getLumi()
 			if self.samples[s].datamc == 0 : scale = 1.
+			print '%-12s: %f' % (s, self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Integral()*scale)
 			if i is 0 :
 				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar).Clone()
 				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Clone()
@@ -361,42 +379,71 @@ class ratios :
 #			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   , self.ElpRatio   , self.ElpRatioE   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
 
 		for TeX_switch in [True, False] :
-			pl = ttvplot.ttvplot('%s%s' % (self.path, subdir), '2L', cms_label = 0, TeX_switch = TeX_switch)
-			pl.save_plot_1d(self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , pl.ttvStyle.get_varName('pTm'  ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', pl.ttvStyle.get_varName('etam' ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_MupRatio_pt , self.h_MupRatio_pt_MC , 'MupRatio_pt' , pl.ttvStyle.get_varName('pTm'  ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', pl.ttvStyle.get_varName('etam' ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , pl.ttvStyle.get_varName('pTe'  ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', pl.ttvStyle.get_varName('etae' ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_ElpRatio_pt , self.h_ElpRatio_pt_MC , 'ElpRatio_pt' , pl.ttvStyle.get_varName('pTe'  ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', pl.ttvStyle.get_varName('etae' ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('pratio'))
+			cms_label = 0
+			pl = ttvStyle.ttvStyle(cms_label = cms_label, TeX_switch = TeX_switch)
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', pl.get_varName('etam' ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_pt , self.h_MupRatio_pt_MC , 'MupRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', pl.get_varName('etam' ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', pl.get_varName('etae' ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_pt , self.h_ElpRatio_pt_MC , 'ElpRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', pl.get_varName('etae' ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('pratio'))
 		#pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
+
+
+	def save_ratio_plot(self, pl, path, h_data, h_mc, name = '', x_title = '', y_title = '', x_range = None) :
+		if name == '' : name = h_mc.GetName()
+		h_data = h_data.Clone()
+		h_mc   = h_mc  .Clone()
+		h_data.UseCurrentStyle()
+		h_mc  .UseCurrentStyle()
+		if not x_range is None :
+			h_data.SetAxisRange(x_range[0], x_range[1], 'X')
+			h_mc  .SetAxisRange(x_range[0], x_range[1], 'X')
+		h_mc.SetMarkerStyle(23)
+		h_mc.SetMarkerColor(ROOT.kRed)
+		h_mc.SetLineColor(ROOT.kRed)
+		h_data.SetMinimum(0.)
+		h_mc  .SetMinimum(0.)
+		pl.get_maximum([h_data, h_mc], scale = 1.4, set_maximum = True)
+		canvas = pl.get_canvas()
+		canvas.cd()
+		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'lp']]
+		leg = pl.draw_legend(leg_entries)
+		h_mc.Draw()
+		h_mc.GetXaxis().SetTitle(x_title)
+		h_mc.GetYaxis().SetTitle(y_title)
+		h_data.Draw('same pe')
+		pl.draw_cmsLine()
+		leg.Draw()
+		pl.save_canvas(canvas, path, name)
 
 
 	def make_controlPlots(self, samples_data, ch_str) :
 		variables = []
-		variables.append('NJets'      )
-		variables.append('HT'         )
-		variables.append('MaxJPt'     )
-		variables.append('NVertices'  )
-		variables.append('ClosJetPt'  )
-		variables.append('AwayJetPt'  )
-		variables.append('NBJets'     )
-		variables.append('MET'        )
+#		variables.append('NJets'      )
+#		variables.append('HT'         )
+#		variables.append('MaxJPt'     )
+#		variables.append('NVertices'  )
+#		variables.append('ClosJetPt'  )
+#		variables.append('AwayJetPt'  )
+#		variables.append('NBJets'     )
+#		variables.append('MET'        )
 		variables.append('MT'         )
-		variables.append('MET_noMTCut')
-		variables.append('MT_MET30'   )
-		variables.append('LepPt'      )
-		variables.append('LepEta'     )
-		variables.append('LepIso'     )
-		variables.append('ClosJetDR'  )
-		variables.append('AwayJetDR'  )
+#		variables.append('MET_noMTCut')
+#		variables.append('MT_MET30'   )
+#		variables.append('LepPt'      )
+#		variables.append('LepEta'     )
+#		variables.append('LepIso'     )
+#		variables.append('ClosJetDR'  )
+#		variables.append('AwayJetDR'  )
 
-		ewk_sf = self.get_EWK_SF(samples_data, ch_str, True)
+		ewk_sf = self.get_EWK_SF(samples_data, ch_str, do_fit = True)
 
 		for var in variables :
 			self.make_controlPlot(samples_data, ch_str, var, 1.)
@@ -416,6 +463,7 @@ class ratios :
 		samples_wjets = []
 		samples_zjets = []
 		samples_qcd = sample.sample.get_samples('QCD', self.samples) # TODO
+		print samples_qcd
 #		samples_qcd = []
 #		samples_qcd.append('MuEnr15')
 #		print samples_qcd

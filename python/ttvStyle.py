@@ -25,6 +25,9 @@ class ttvStyle(object) :
 	def set_style(self) :
 		'''make all the style settings'''
 
+		# PostScript output
+		if self.TeX_switch : self.ttvStyle.SetPaperSize(15., 15.)
+
 		# canvas
 		self.ttvStyle.SetCanvasBorderMode(0)
 		self.ttvStyle.SetCanvasColor(ROOT.kWhite)
@@ -376,8 +379,10 @@ class ttvStyle(object) :
 
 	def draw_legend(self, entries) :
 		leg = ROOT.TLegend()
+		if self.TeX_switch : extra_space = ''
+		else               : extra_space = ' '
 		for entry in entries :
-			leg.AddEntry(entry[0], ' ' + entry[1], entry[2])
+			leg.AddEntry(entry[0], extra_space + entry[1], entry[2])
 
 		# set position
 		width = 0.17
@@ -429,7 +434,8 @@ class ttvStyle(object) :
 			latex.DrawLatex(lumi_x, lumi_y, '%4.1f %s (8 TeV)' % (lumi, unit))
 
 
-	def get_maximum(self, histos, scale = 1.8, set_maximum = True) :
+	@staticmethod
+	def get_maximum(histos, scale = 1.8, set_maximum = True) :
 		'''returns maximum of a list of histograms'''
 		maximum = scale * max([histo.GetMaximum() for histo in histos])
 		if set_maximum :
