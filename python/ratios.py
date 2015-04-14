@@ -311,20 +311,49 @@ class ratios :
 #			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   , self.ElpRatio   , self.ElpRatioE   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
 
 		for TeX_switch in [True, False] :
-			pl = ttvplot.ttvplot('%s%s' % (self.path, subdir), '2L', cms_label = 0, TeX_switch = TeX_switch)
-			pl.save_plot_1d(self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , pl.ttvStyle.get_varName('pTm'  ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', pl.ttvStyle.get_varName('etam' ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_MupRatio_pt , self.h_MupRatio_pt_MC , 'MupRatio_pt' , pl.ttvStyle.get_varName('pTm'  ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', pl.ttvStyle.get_varName('etam' ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , pl.ttvStyle.get_varName('pTe'  ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', pl.ttvStyle.get_varName('etae' ), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('fratio'))
-			pl.save_plot_1d(self.h_ElpRatio_pt , self.h_ElpRatio_pt_MC , 'ElpRatio_pt' , pl.ttvStyle.get_varName('pTe'  ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', pl.ttvStyle.get_varName('etae' ), pl.ttvStyle.get_varName('pratio'))
-			pl.save_plot_1d(self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , pl.ttvStyle.get_varName('NVrtx'), pl.ttvStyle.get_varName('pratio'))
+			cms_label = 0
+			pl = ttvStyle.ttvStyle(cms_label = cms_label, TeX_switch = TeX_switch)
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', pl.get_varName('etam' ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_pt , self.h_MupRatio_pt_MC , 'MupRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', pl.get_varName('etam' ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', pl.get_varName('etae' ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_pt , self.h_ElpRatio_pt_MC , 'ElpRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', pl.get_varName('etae' ), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('pratio'))
 		#pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
+
+
+	def save_ratio_plot(self, pl, path, h_data, h_mc, name = '', x_title = '', y_title = '', x_range = None) :
+		if name == '' : name = h_mc.GetName()
+		h_data = h_data.Clone()
+		h_mc   = h_mc  .Clone()
+		h_data.UseCurrentStyle()
+		h_mc  .UseCurrentStyle()
+		if not x_range is None :
+			h_data.SetAxisRange(x_range[0], x_range[1], 'X')
+			h_mc  .SetAxisRange(x_range[0], x_range[1], 'X')
+		h_mc.SetMarkerStyle(23)
+		h_mc.SetMarkerColor(ROOT.kRed)
+		h_mc.SetLineColor(ROOT.kRed)
+		h_data.SetMinimum(0.)
+		h_mc  .SetMinimum(0.)
+		pl.get_maximum([h_data, h_mc], scale = 1.4, set_maximum = True)
+		canvas = pl.get_canvas()
+		canvas.cd()
+		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'lp']]
+		leg = pl.draw_legend(leg_entries)
+		h_mc.Draw()
+		h_mc.GetXaxis().SetTitle(x_title)
+		h_mc.GetYaxis().SetTitle(y_title)
+		h_data.Draw('same pe')
+		pl.draw_cmsLine()
+		leg.Draw()
+		pl.save_canvas(canvas, path, name)
 
 
 	def make_controlPlots(self, samples_data, ch_str) :
