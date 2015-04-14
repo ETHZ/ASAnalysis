@@ -6,7 +6,7 @@ import selection
 import helper
 import runCombine
 import ROOT
-import ttvplot
+import ttvStyle
 import copy
 import tables
 
@@ -179,7 +179,8 @@ class optcuts(plotter.plotter) :
 
 				helper.save_object(FoMs[FoM], signif_path)
 
-			self.plot_results(FoM, FoMs[FoM], self.get_chargeString(charge))
+			for TeX_switch in [True, False] :
+				self.plot_results(FoM, FoMs[FoM], self.get_chargeString(charge), TeX_switch)
 
 		table = []
 		for ieff in effs :
@@ -211,8 +212,8 @@ class optcuts(plotter.plotter) :
 		return ratio
 
 
-	def plot_results(self, FoM, results, charge_str) :
-		pl = ttvplot.ttvplot(self.cutspath, '2L', cms_label = 3)
+	def plot_results(self, FoM, results, charge_str, TeX_switch = False) :
+		pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 1, TeX_switch = TeX_switch)
 		canvas = pl.get_canvas()
 		canvas.cd()
 		scale = 1.
@@ -220,9 +221,9 @@ class optcuts(plotter.plotter) :
 		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 15, 0., 3.*scale)
 #		h2_axes_gr = ROOT.TH2D("axes_gr", "", 20, 0., 100., 12, 0., 2.4)
 		h2_axes_gr.Draw()
-		h2_axes_gr.GetXaxis().SetTitle('#varepsilon_{Signal} [%]')
-		h2_axes_gr.GetYaxis().SetTitle('#sigma_{expected}')
-		if FoM == 'XSecErr' :  h2_axes_gr.GetYaxis().SetTitle('Exp. Cross Section Error [fb]')
+		h2_axes_gr.GetXaxis().SetTitle(pl.get_varName('effSig'))
+		h2_axes_gr.GetYaxis().SetTitle(pl.get_varName('sigexp'))
+		if FoM == 'XSecErr' :  h2_axes_gr.GetYaxis().SetTitle(pl.get_varName('XSecErr'))
 		h2_axes_gr.GetXaxis().SetTitleOffset(1.25)
 		h2_axes_gr.GetYaxis().SetTitleOffset(1.25)
 		h2_axes_gr.GetXaxis().SetTitleSize(0.046)
@@ -250,12 +251,8 @@ class optcuts(plotter.plotter) :
 			leg_entries.append([gr_res[chan], chan, 'p'])
 		leg = pl.draw_legend(leg_entries)
 		pl.draw_cmsLine()
-#		raw_input('ok? ')
-#		raw_input('ok? ')
 
-		canvas.Print('%sSeff_vs_%s_%s.pdf' % (self.cutspath, FoM, charge_str))
-		canvas.Print('%sSeff_vs_%s_%s.png' % (self.cutspath, FoM, charge_str))
-#		canvas.Print('%stmp/test.png' % self.path)
+		pl.save_canvas(canvas, self.cutspath, 'Seff_vs_%s_%s' % (FoM, charge_str))
 
 
 if __name__ == '__main__' :
