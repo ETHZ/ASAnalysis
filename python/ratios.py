@@ -225,6 +225,7 @@ class ratios :
 #		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
 		samples_wjets.append('WJets')
 		samples_zjets.append('DYJets')
+#		samples_zjets.append('DYJets10To50')
 		samples_qcd = sample.sample.get_samples('QCD', self.samples)
 
 		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30', datamc)
