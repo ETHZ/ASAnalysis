@@ -234,8 +234,9 @@ class ratios :
 		(h_ntight_qcd  , h_nloose_qcd  ) = self.get_fRatioPlots(samples_qcd  , chan_str, 'MT_MET30', datamc)
 
 		if do_fit :
-			ratios = self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd, individual_fit = False)
-#			ratios = self.fit_fRatioPlots(h_nloose_data, h_nloose_wjets, h_nloose_zjets, h_nloose_qcd, individual_fit = False)
+			ratios = {}
+			ratios['tight'] = self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd, individual_fit = False)
+			ratios['loose'] = self.fit_fRatioPlots(h_nloose_data, h_nloose_wjets, h_nloose_zjets, h_nloose_qcd, individual_fit = False)
 			print ratios
 			return ratios
 
@@ -264,7 +265,7 @@ class ratios :
 		for i, s in enumerate(samples) :
 			scale = lumi / self.samples[s].getLumi()
 			if self.samples[s].datamc == 0 : scale = 1.
-			print '%-12s: %f' % (s, self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Integral()*scale)
+#			print '%-12s: %f' % (s, self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Integral()*scale)
 			if i is 0 :
 				h_ntight = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_ntight_'+ratiovar).Clone()
 				h_nloose = self.ssdlfile.Get(s+'/FRatioPlots/'+s+'_'+chan_str+'_nloose_'+ratiovar).Clone()
@@ -434,10 +435,10 @@ class ratios :
 #		variables.append('ClosJetPt'  )
 #		variables.append('AwayJetPt'  )
 #		variables.append('NBJets'     )
-#		variables.append('MET'        )
+		variables.append('MET'        )
 		variables.append('MT'         )
 #		variables.append('MET_noMTCut')
-#		variables.append('MT_MET30'   )
+		variables.append('MT_MET30'   )
 #		variables.append('LepPt'      )
 #		variables.append('LepEta'     )
 #		variables.append('LepIso'     )
@@ -483,12 +484,13 @@ class ratios :
 
 		for tl in histos :
 			if type(EWK_SF) is dict :
-				histos[tl]['wjets'].Scale(EWK_SF['wjets'])
-				histos[tl]['zjets'].Scale(EWK_SF['zjets'])
-				histos[tl]['qcd'  ].Scale(EWK_SF['qcd'  ])
+				histos[tl]['wjets'].Scale(EWK_SF[tl]['wjets'])
+				histos[tl]['zjets'].Scale(EWK_SF[tl]['zjets'])
+				histos[tl]['qcd'  ].Scale(EWK_SF[tl]['qcd'  ])
 			else :
 				histos[tl]['wjets'].Scale(EWK_SF)
 				histos[tl]['zjets'].Scale(EWK_SF)
+			maximum = ttvStyle.ttvStyle.get_maximum(histos[tl].values())
 			for TeX_switch in [True, False] :
 				pl = ttvStyle.ttvStyle(lumi = lumi, cms_label = 0, TeX_switch = TeX_switch, short_names = False)
 				canvas = pl.get_canvas()
@@ -504,7 +506,6 @@ class ratios :
 						hstack.Add(histos[tl][process])
 						leg_entries.append([histos[tl][process], pl.get_processName(process), 'f'])
 				leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
-				maximum = pl.get_maximum(histos[tl].values())
 				hstack.SetMaximum(maximum)
 				leg = pl.draw_legend(leg_entries)
 				hstack.Draw('hist')
