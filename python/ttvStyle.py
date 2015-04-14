@@ -275,6 +275,9 @@ class ttvStyle(object) :
 		self.var_names['AwayJetDR'  ] = 'Away jet DR'
 		self.var_names['fratio'     ] = 'f = N_{t}/N_{l}'
 		self.var_names['pratio'     ] = 'p = N_{t}/N_{l}'
+		self.var_names['effSig'     ] = '#varepsilon_{Signal} [%]'
+		self.var_names['sigexp'     ] = '#sigma_{expected}'
+		self.var_names['XSecErr'    ] = 'Exp. Cross Section Error [fb]'
 		if self.TeX_switch is True :
 			self.var_names['HT'    ] = '\\text{\\HT{} (\\si{\\giga\\electronvolt})}'
 			self.var_names['MET'   ] = '\\text{\\MET{} (\\si{\\giga\\electronvolt})}'
@@ -300,6 +303,9 @@ class ttvStyle(object) :
 			self.var_names['M3'    ] = '\\text{\\mbjj{} (\\si{\\giga\\electronvolt})}'
 			self.var_names['fratio'] = '\\fratio = \\nt / \\nl'
 			self.var_names['pratio'] = '\\pratio = \\nt / \\nl'
+			self.var_names['effSig'     ] = '\\text{\\effSig{} (\\si{\\percent})}'
+			self.var_names['sigexp'     ] = '\\sigexp'
+			self.var_names['XSecErr'    ] = '\\text{Exp. Cross Section Error (\\si{\\femto\\barn})}'
 
 
 	def get_fillColor(self, process) :
