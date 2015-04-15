@@ -77,8 +77,8 @@ class ratios :
 		'''
 
 		samples_ewk = []
-		samples_ewk.append('WJets')
-		samples_ewk.append('DYJets')
+		samples_ewk += sample.sample.get_samples('WJets' , self.samples)
+		samples_ewk += sample.sample.get_samples('DYJets', self.samples)
 
 		(h2_ntight, h2_nloose, h_ntight_nv, h_nloose_nv) = self.get_TightLoose(samples, chan_str, fp)
 
@@ -226,7 +226,6 @@ class ratios :
 		samples_wjets = sample.sample.get_samples('WJets' , self.samples)
 		samples_zjets = sample.sample.get_samples('DYJets', self.samples)
 		samples_qcd   = sample.sample.get_samples('QCD'   , self.samples)
-		if not do_fit : samples_zjets = ['DYJets'] # same zjets samples as used for paper
 #		samples_qcd = ['MuEnr15','QCDEM30', 'QCDEM80', 'QCDEM250', 'QCDEM350']
 
 		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30', datamc)
