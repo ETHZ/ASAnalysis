@@ -223,10 +223,11 @@ class ratios :
 #		if chan_str is 'el'   : samples_data = self.get_samples('DoubleEle')
 #		if chan_str is 'mu17' : samples_data = self.get_samples('DoubleMu')
 #		if chan_str is 'mu24' : samples_data = self.get_samples('SingleMu')
-		samples_wjets.append('WJets')
-		samples_zjets.append('DYJets')
-#		samples_zjets.append('DYJets10To50')
-		samples_qcd = sample.sample.get_samples('QCD', self.samples)
+		samples_wjets = sample.sample.get_samples('WJets' , self.samples)
+		samples_zjets = sample.sample.get_samples('DYJets', self.samples)
+		samples_qcd   = sample.sample.get_samples('QCD'   , self.samples)
+		if not do_fit : samples_zjets = ['DYJets'] # same zjets samples as used for paper
+#		samples_qcd = ['MuEnr15','QCDEM30', 'QCDEM80', 'QCDEM250', 'QCDEM350']
 
 		(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT_MET30', datamc)
 		(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT_MET30', datamc)
@@ -462,15 +463,10 @@ class ratios :
 		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
 		if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
 		if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
-		samples_wjets = []
-		samples_zjets = []
-		samples_qcd = sample.sample.get_samples('QCD', self.samples) # TODO
-		print samples_qcd
-#		samples_qcd = []
-#		samples_qcd.append('MuEnr15')
-#		print samples_qcd
-		samples_wjets.append('WJets')
-		samples_zjets.append('DYJets')
+		samples_wjets = sample.sample.get_samples('WJets' , self.samples)
+		samples_zjets = sample.sample.get_samples('DYJets', self.samples)
+		samples_qcd   = sample.sample.get_samples('QCD'   , self.samples)
+#		samples_zjets = ['DYJets']
 
 		histos = {}
 		histos['tight'] = {}
