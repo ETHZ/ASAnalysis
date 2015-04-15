@@ -236,8 +236,8 @@ class ratios :
 
 		if do_fit :
 			ratios = {}
-			ratios['tight'] = self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd, individual_fit = False)
-			ratios['loose'] = self.fit_fRatioPlots(h_nloose_data, h_nloose_wjets, h_nloose_zjets, h_nloose_qcd, individual_fit = False)
+			ratios['tight'] = self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd, individual_fit = True)
+			ratios['loose'] = self.fit_fRatioPlots(h_nloose_data, h_nloose_wjets, h_nloose_zjets, h_nloose_qcd, individual_fit = True)
 			print ratios
 			return ratios
 
