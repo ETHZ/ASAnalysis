@@ -7,7 +7,7 @@ import ttvStyle
 
 class ttvplot(object) :
 
-	def __init__(self, path, chan, lumi = 19500., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
+	def __init__(self, path, chan, lumi = -1., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
 		self.ttvStyle = ttvStyle.ttvStyle(lumi = lumi, cms_label = cms_label, TeX_switch = TeX_switch, short_names = short_names)
 		self.path = path
 		if not self.path.endswith('/') : self.path += '/'

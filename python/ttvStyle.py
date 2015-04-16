@@ -6,7 +6,7 @@ import helper
 
 class ttvStyle(object) :
 
-	def __init__(self, lumi = 19500., cms_label = 0, TeX_switch = False, short_names = False) :
+	def __init__(self, lumi = -1., cms_label = 0, TeX_switch = False, short_names = False) :
 		self.ttvStyle = ROOT.TStyle('ttvStyle','ttV Style')
 		self.lumi = lumi
 		self.cms_label = cms_label
