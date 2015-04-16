@@ -119,17 +119,6 @@ class plotter :
 		tables.make_SampleTable(self.path, [self.samples[name] for name in self.get_samples('Rare')], 'Irreducible')
 		tables.make_SampleTable(self.path, [self.samples[name] for name in self.get_samples('MC'  )], 'MC'         )
 
-		# selections
-		sels = {}
-#		sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
-#		sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
-#		sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
-#		sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
-#		sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
-		sels['final'    ] = self.selections['final'    ]
-#		sels['final++'  ] = self.selections['final++'  ]
-#		sels['final--'  ] = self.selections['final--'  ]
-
 		# charge mis-ID scale factor
 		self.chmid_sf = 1.62
 
@@ -195,6 +184,17 @@ class plotter :
 			if not os.path.exists(restree_path['3J1bJ']) :
 				copytree.copytree(restree_path['2J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
 
+			# selections
+			sels = {}
+#			sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
+#			sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
+#			sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
+#			sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
+#			sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
+			sels['final'    ] = self.selections['final'    ]
+#			sels['final++'  ] = self.selections['final++'  ]
+#			sels['final--'  ] = self.selections['final--'  ]
+
 			# produce differential predictions
 			for name, sel in sels.iteritems() :
 				res_path = restree_path['3J1bJ']
@@ -228,10 +228,21 @@ class plotter :
 			tables.make_YieldsTable(self.path, results_presel['Normal']['al'], systematics, '3J1bJ')
 
 		if IntMC :
-			print self.selections['3J1bJ'].get_selectionString()
-			results_mc_presel = self.make_IntPredictions(self.selections['3J1bJ'], self.path + 'IntPredictions/MC/3J1bJ', suffix = '_MC_3J1bJ', IntMC = True)
-			print results_mc_presel
-			tables.make_MCYieldsTable(self.path, results_mc_presel['al'], suffix = '3J1bJ')
+			# selections
+			sels = {}
+			sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
+#			sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
+#			sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
+			sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
+#			sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
+#			sels['final'    ] = self.selections['final'    ]
+#			sels['final++'  ] = self.selections['final++'  ]
+#			sels['final--'  ] = self.selections['final--'  ]
+
+			# produce differential predictions
+			for name, sel in sels.iteritems() :
+				results = self.make_IntPredictions(sel, self.path + 'IntPredictions/MC/%s' % name, suffix = '_MC_%s' % name, IntMC = True)
+				tables.make_MCYieldsTable(self.path, results['al'], suffix = name)
 
 
 	def skim_tree(self, syst = '', minNJ = 2) :
