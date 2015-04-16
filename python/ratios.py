@@ -234,6 +234,14 @@ class ratios :
 		(h_ntight_qcd  , h_nloose_qcd  ) = self.get_fRatioPlots(samples_qcd  , chan_str, 'MT_MET30', datamc)
 
 		if do_fit :
+#			(h_ntight_data , h_nloose_data ) = self.get_fRatioPlots(samples_data , chan_str, 'MT', datamc)
+#			(h_ntight_wjets, h_nloose_wjets) = self.get_fRatioPlots(samples_wjets, chan_str, 'MT', datamc)
+#			(h_ntight_zjets, h_nloose_zjets) = self.get_fRatioPlots(samples_zjets, chan_str, 'MT', datamc)
+#			(h_ntight_qcd  , h_nloose_qcd  ) = self.get_fRatioPlots(samples_qcd  , chan_str, 'MT', datamc)
+			h_nloose_data  = self.get_fRatioPlots(samples_data , chan_str, 'LepEta', datamc)[1]
+			h_nloose_wjets = self.get_fRatioPlots(samples_wjets, chan_str, 'LepEta', datamc)[1]
+			h_nloose_zjets = self.get_fRatioPlots(samples_zjets, chan_str, 'LepEta', datamc)[1]
+			h_nloose_qcd   = self.get_fRatioPlots(samples_qcd  , chan_str, 'LepEta', datamc)[1]
 			ratios = {}
 			ratios['tight'] = self.fit_fRatioPlots(h_ntight_data, h_ntight_wjets, h_ntight_zjets, h_ntight_qcd, individual_fit = True)
 			ratios['loose'] = self.fit_fRatioPlots(h_nloose_data, h_nloose_wjets, h_nloose_zjets, h_nloose_qcd, individual_fit = True)
@@ -436,11 +444,11 @@ class ratios :
 #		variables.append('AwayJetPt'  )
 #		variables.append('NBJets'     )
 		variables.append('MET'        )
-		variables.append('MT'         )
+#		variables.append('MT'         )
 #		variables.append('MET_noMTCut')
 		variables.append('MT_MET30'   )
 #		variables.append('LepPt'      )
-#		variables.append('LepEta'     )
+		variables.append('LepEta'     )
 #		variables.append('LepIso'     )
 #		variables.append('ClosJetDR'  )
 #		variables.append('AwayJetDR'  )
