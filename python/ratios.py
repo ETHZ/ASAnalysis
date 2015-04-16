@@ -470,6 +470,13 @@ class ratios :
 		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
 		if chan_str == 'mu17' : lumi = self.lumi_HLTMu17
 		if chan_str == 'mu24' : lumi = self.lumi_HLTMu24Eta2p1
+
+		processes = []
+		processes.append('wjets')
+		processes.append('zjets')
+		processes.append('qcd'  )
+		processes.append('data' )
+
 		samples_wjets = sample.sample.get_samples('WJets' , self.samples)
 		samples_zjets = sample.sample.get_samples('DYJets', self.samples)
 		samples_qcd   = sample.sample.get_samples('QCD'   , self.samples)
@@ -500,15 +507,15 @@ class ratios :
 
 				hstack = ROOT.THStack('hs_%s' % ratiovar, '%s' % ratiovar)
 				leg_entries = []
-				for process in histos[tl] :
+				for process in processes :
 					histos[tl][process].SetFillColor(pl.get_fillColor(process))
+					if not (process == 'data' or process == 'obs') :
+						hstack.Add(histos[tl][process])
+				for process in reversed(processes) :
 					if process == 'data' or process == 'obs' :
 						leg_entries.append([histos[tl][process], pl.get_processName('obs'), 'lp'])
-						data_index = len(leg_entries) - 1
 					else :
-						hstack.Add(histos[tl][process])
 						leg_entries.append([histos[tl][process], pl.get_processName(process), 'f'])
-				leg_entries[0], leg_entries[data_index] = leg_entries[data_index], leg_entries[0]
 				hstack.SetMaximum(maximum)
 				leg = pl.draw_legend(leg_entries)
 				hstack.Draw('hist')
