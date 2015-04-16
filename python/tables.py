@@ -529,6 +529,43 @@ def make_YieldsTable(path, res, systematics, suffix = '') :
 		file.write('\\end{tabular}\n')
 
 
+def make_MCYieldsTable(path, res, suffix = '') :
+	'''print all MC yields'''
+
+	if suffix != '' and not suffix.startswith('_') :
+		suffix = '_' + suffix
+
+	# data yields
+	table_name = 'MCYieldsTable%s.tex' % suffix
+	table_path = path + 'IntPredictions/'
+	helper.mkdir(table_path)
+	pl = ttvStyle.ttvStyle(TeX_switch = True)
+	print '[status] writing %s' % table_name
+	with open(table_path + table_name, 'w') as file :
+		timestamp = time.asctime()
+		file.write('%!TEX root = ../../Dissertation.tex\n')
+		file.write('\n')
+		file.write(providecommands())
+		file.write('\n\n')
+		file.write('\\begin{tabular}{\n')
+		file.write('\tl\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('}\n')
+		file.write('\t\\toprule\n')
+		file.write('\tYields & {\\PGm\\PGm} & {\\Pe\\PGm} & {\\Pe\\Pe} \\\\\n')
+		file.write('\t\\midrule\n')
+		for s in res['al'].mc :
+			file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+				(s,) +
+				helper.get_roundedNumber(res['mm'].mc[s], res['mm'].mc_staterr[s]) +# systematics['rare']*res['mm'].mc[s],
+				helper.get_roundedNumber(res['em'].mc[s], res['em'].mc_staterr[s]) +# systematics['rare']*res['em'].mc[s],
+				helper.get_roundedNumber(res['ee'].mc[s], res['ee'].mc_staterr[s])))#, systematics['rare']*res['ee'].mc[s],
+		file.write('\t\\bottomrule\n')
+		file.write('\\end{tabular}\n')
+
+
 def make_CutsTable(path, selections) :
 	'''
 	writes cuts table

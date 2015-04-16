@@ -64,6 +64,9 @@ class result(object) :
 
 		self.tot_staterr     = 0.
 
+		self.mc              = {}
+		self.mc_staterr      = {}
+
 
 	@property
 	def obs(self) :

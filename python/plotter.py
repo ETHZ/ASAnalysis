@@ -112,7 +112,7 @@ class plotter :
 		self.rand = ROOT.TRandom3(0)
 
 
-	def do_analysis(self, IntPred = True, DiffPred = False, DiffMC = False, RatioPlots = False, RatioControlPlots = False) :
+	def do_analysis(self, IntPred = True, DiffPred = False, IntMC = False, DiffMC = False, RatioPlots = False, RatioControlPlots = False) :
 		print '[status] starting analysis..'
 
 		# make table of samples
@@ -226,6 +226,12 @@ class plotter :
 			systematics['rare'] = self.RareESyst
 			tables.make_YieldsTable(self.path, results['Normal']['al'], systematics)
 			tables.make_YieldsTable(self.path, results_presel['Normal']['al'], systematics, '3J1bJ')
+
+		if IntMC :
+			print self.selections['3J1bJ'].get_selectionString()
+			results_mc_presel = self.make_IntPredictions(self.selections['3J1bJ'], self.path + 'IntPredictions/MC/3J1bJ', suffix = '_MC_3J1bJ', IntMC = True)
+			print results_mc_presel
+			tables.make_MCYieldsTable(self.path, results_mc_presel['al'], suffix = '3J1bJ')
 
 
 	def skim_tree(self, syst = '', minNJ = 2) :
@@ -451,7 +457,7 @@ class plotter :
 		foo = 0
 
 
-	def make_IntPredictions(self, sel, output_path, suffix = '', blind = False, noSyst = False) :
+	def make_IntPredictions(self, sel, output_path, suffix = '', blind = False, noSyst = False, IntMC = False) :
 		'''
 		makes predictions for all systematics with a given selection and returns a nested dictionary of result objects
 		results[SYST][CHARGE][FLAVOR]
@@ -466,6 +472,10 @@ class plotter :
 			print '[status] loading results of predictions from %s..' % (resultspath)
 			results = helper.load_object(resultspath)
 
+		elif IntMC :
+			results = self.make_IntMC(sel)
+			helper.save_object(results, resultspath)
+
 		else :
 			for syst in self.systflags :
 				if noSyst and syst != 'Normal' : continue
@@ -477,6 +487,8 @@ class plotter :
 				syst_sel.systflag = self.systflags[syst]
 				results[syst] = self.make_predictions(syst_sel, systpath, False)
 			helper.save_object(results, resultspath)
+
+		if IntMC : return results
 
 		# make datacards for each charge-flavor channel
 		datacards_6channels = []
@@ -1421,6 +1433,82 @@ class plotter :
 #		raw_input('ok? ')
 
 
+	def make_IntMC(self, sel) :
+		'''
+		loops over SigEvents tree and stores all MC yields for a given selection in a nested dictionary of result objects
+		res[CHARGE][CHANNEL]
+		'''
+
+		skimtree_path = '%sSSDLYields_%s.root' % (self.path, sel.name)
+		if not os.path.exists(skimtree_path) :
+			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
+		file = ROOT.TFile.Open(skimtree_path, 'READ')
+		tree = file.Get('SigEvents')
+		last_sample = ''
+		mc       = {}
+		mc_npass = {}
+		res      = {}
+		for ch_str, charge in self.charges.iteritems() :
+			res[ch_str] = {}
+			charge_str = ''
+			if charge > 0 : charge_str = '+'
+			if charge < 0 : charge_str = '-'
+			res[ch_str]['al'] = result.result('al', charge, 'int'+charge_str+charge_str)
+			res[ch_str]['mm'] = result.result('mm', charge, 'm'+charge_str+'m'+charge_str)
+			res[ch_str]['em'] = result.result('em', charge, 'e'+charge_str+'m'+charge_str)
+			res[ch_str]['ee'] = result.result('ee', charge, 'e'+charge_str+'e'+charge_str)
+
+		for event in tree :
+			if last_sample != str(event.SName) :
+				print '[status] processing %s..' % (event.SName)
+				last_sample = str(event.SName)
+
+			if not sel.passes_selection(event = event) : continue
+
+			# GET MC EVENTS
+			if event.SType > 5 and event.TLCat == 0 and event.Flavor < 3 :
+				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[str(event.SName)].getLumi()
+
+				if str(event.SName) not in mc :
+					mc      [str(event.SName)] = {}
+					mc_npass[str(event.SName)] = {}
+					for ch_str, charge in self.charges.iteritems() :
+						mc      [str(event.SName)][ch_str] = {}
+						mc_npass[str(event.SName)][ch_str] = {}
+						for chan in res[ch_str] :
+							mc      [str(event.SName)][ch_str][chan] = 0.
+							mc_npass[str(event.SName)][ch_str][chan] = 0
+
+				for ch_str, charge in self.charges.iteritems() :
+					if charge != 0 and event.Charge != charge : continue
+
+					mc      [str(event.SName)][ch_str]['al'] += scale
+					mc_npass[str(event.SName)][ch_str]['al'] += 1
+
+					if event.Flavor is 0 :
+						mc      [str(event.SName)][ch_str]['mm'] += scale
+						mc_npass[str(event.SName)][ch_str]['mm'] += 1
+
+					if event.Flavor is 1 :
+						mc      [str(event.SName)][ch_str]['em'] += scale
+						mc_npass[str(event.SName)][ch_str]['em'] += 1
+
+					if event.Flavor is 2 :
+						mc      [str(event.SName)][ch_str]['ee'] += scale
+						mc_npass[str(event.SName)][ch_str]['ee'] += 1
+
+		for ch_str in res :
+			for chan in res[ch_str] :
+				for s in mc :
+					scale = self.lumi / self.samples[s].getLumi()
+					staterr = scale * self.samples[s].getError(mc_npass[s][ch_str][chan])
+
+					res[ch_str][chan].mc[s]         = mc[s][ch_str][chan]
+					res[ch_str][chan].mc_staterr[s] = staterr
+
+		return res
+
+
 	def plot_DiffMC(self, sel) :
 		skimtree_path = '%sSSDLYields_%s.root' % (self.path, sel.name)
 		if not os.path.exists(skimtree_path) :
@@ -1643,6 +1731,7 @@ if __name__ == '__main__' :
 	selfile  = ''
 	IntPred  = False
 	DiffPred = False
+	IntMC    = False
 	DiffMC   = False
 	RatioPlots        = False
 	RatioControlPlots = False
@@ -1669,6 +1758,9 @@ if __name__ == '__main__' :
 	if ('--DiffPred' in args) :
 		DiffPred = True
 
+	if ('--IntMC' in args) :
+		IntMC = True
+
 	if ('--DiffMC' in args) :
 		DiffMC = True
 
@@ -1683,4 +1775,4 @@ if __name__ == '__main__' :
 			sys.exit(1)
 
 	pl = plotter(path, cardfile, selfile)
-	pl.do_analysis(IntPred, DiffPred, DiffMC, RatioPlots, RatioControlPlots)
+	pl.do_analysis(IntPred, DiffPred, IntMC, DiffMC, RatioPlots, RatioControlPlots)
