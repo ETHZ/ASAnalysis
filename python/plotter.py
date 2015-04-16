@@ -117,6 +117,7 @@ class plotter :
 
 		# make table of samples
 		tables.make_SampleTable(self.path, [self.samples[name] for name in self.get_samples('Rare')], 'Irreducible')
+		tables.make_SampleTable(self.path, [self.samples[name] for name in self.get_samples('MC'  )], 'MC'         )
 
 		# selections
 		sels = {}
