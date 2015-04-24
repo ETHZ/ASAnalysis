@@ -1285,7 +1285,7 @@ class plotter :
 		# getting histograms from results tree
 		tree.Draw(var_str+'>>'+h_obs_name  ,    'Weight*(ObsPred == 0 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_fake_name ,    'Weight*(ObsPred == 1 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var_str+'>>'+h_chmid_name,    'Weight*(ObsPred == 2 && %s)'               % sel.get_selectionString(ResTree = True), 'goff')
+		tree.Draw(var_str+'>>'+h_chmid_name,    'Weight*(ObsPred == 2 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_rare_name ,    'Weight*(ObsPred == 6 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_wz_name   ,    'Weight*(ObsPred == 3 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ttz_name  ,    'Weight*(ObsPred == 5 && TLCat == 0 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
@@ -1302,11 +1302,11 @@ class plotter :
 		tree.Draw(var_str+'>>'+h_ee_nt10_name,         '(ObsPred == 0 && TLCat == 1 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ee_nt01_name,         '(ObsPred == 0 && TLCat == 2 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
 		tree.Draw(var_str+'>>'+h_ee_nt0_name ,         '(ObsPred == 0 && TLCat == 3 && Flavor == 2 && %s)' % sel.get_selectionString(ResTree = True), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_em_BB_os_name, '%f*(ObsPred == 2 && BECat == 0 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_em_EE_os_name, '%f*(ObsPred == 2 && BECat == 1 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_BB_os_name, '%f*(ObsPred == 2 && BECat == 0 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_EB_os_name, '%f*(ObsPred == 2 && (BECat == 1 || BECat == 2) && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
-		tree.Draw(var_str+'>>'+h_nt2_ee_EE_os_name, '%f*(ObsPred == 2 && BECat == 3 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_em_BB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && BECat == 0 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_em_EE_os_name, '%f*(ObsPred == 2 && TLCat == 0 && BECat == 1 && Flavor == 1 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_BB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && BECat == 0 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_EB_os_name, '%f*(ObsPred == 2 && TLCat == 0 && (BECat == 1 || BECat == 2) && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
+		tree.Draw(var_str+'>>'+h_nt2_ee_EE_os_name, '%f*(ObsPred == 2 && TLCat == 0 && BECat == 3 && Flavor == 2 && %s)' % (noChargeSelFactor, sel.get_selectionString(ResTree = True)), 'goff')
 
 		if add_total_bin :
 			for key, histo in dict(histos.items() + h_tmp.items() + h_rares_npass.items()).iteritems() :
