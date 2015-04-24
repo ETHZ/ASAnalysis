@@ -421,7 +421,28 @@ class plotter :
 
 
 	def get_ChMisID_SF(self) :
-		foo = 0
+		print '[statur] getting charge mis-ID scale factor..'
+
+		self.skim_tree('Normal')  # makes sure the skimmed SigEvents tree exists
+		self.chmid_sf = 1.
+		sel = copy.deepcopy(self.selections['2JnobJ_ee'])
+		sel.mll = 80.
+		sel.maxMll = 100.
+		res = self.make_predictions(sel, self.path + 'SSDLYields_skim_Normal.root')
+
+		ch_str = 'al'
+		chan   = 'al'
+		num = res[ch_str][chan].obs - (res[ch_str][chan].tot_exp - res[ch_str][chan].cmid)
+		den = res[ch_str][chan].cmid
+#		num_err = math.sqrt(res[ch_str][chan].tot_exp_staterr**2 - res[ch_str][chan].cmid_staterr**2)
+		num_err = math.sqrt(res[ch_str][chan].tot_exp_err**2 - res[ch_str][chan].cmid_err**2) # take stat+syst error of all other estimations into account
+		den_err = res[ch_str][chan].cmid_staterr
+
+		ratio = num / den
+		ratio_err = ratio * math.sqrt((num_err/num)**2 + (den_err/den)**2)
+		print '         charge mis-ID SF: %4s +- %4s' % helper.get_roundedNumber(ratio, ratio_err)
+
+		return (ratio, ratio_err)
 
 
 	def calculateChMisIdProb(self, samples, chmid_reg, chmid_sf = 1.) :
