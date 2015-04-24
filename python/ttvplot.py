@@ -5,10 +5,10 @@ import helper
 import ttvStyle
 
 
-class ttvplot(object) :
+class ttvplot(ttvStyle.ttvStyle) :
 
 	def __init__(self, path, chan, lumi = -1., cms_label = 0, asymmErr = True, TeX_switch = False, short_names = False) :
-		self.ttvStyle = ttvStyle.ttvStyle(lumi = lumi, cms_label = cms_label, TeX_switch = TeX_switch, short_names = short_names)
+		ttvStyle.ttvStyle.__init__(self, lumi = lumi, cms_label = cms_label, TeX_switch = TeX_switch, short_names = short_names)
 		self.path = path
 		if not self.path.endswith('/') : self.path += '/'
 		if not os.path.exists(self.path) :
@@ -72,7 +72,7 @@ class ttvplot(object) :
 			histo.SetMinimum(0.)
 			histo.SetLineColor(1)
 			histo.SetLineWidth(1)
-			histo.SetFillColor(self.ttvStyle.get_fillColor(process))
+			histo.SetFillColor(self.get_fillColor(process))
 
 		# data histogram settings
 		self.apply_histoStyle(histos['obs'  ], 0)
@@ -90,30 +90,30 @@ class ttvplot(object) :
 
 		# legend
 		leg_entries = []
-		leg_entries.append([histos['obs'  ], self.ttvStyle.get_processName('obs'  ), 'lp'])
+		leg_entries.append([histos['obs'  ], self.get_processName('obs'  ), 'lp'])
 		if self.chan == '3L' :
-			leg_entries.append([histos['ttz'  ], self.ttvStyle.get_processName('ttz'  ), 'f'])
-			leg_entries.append([histos['ttw'  ], self.ttvStyle.get_processName('ttw'  ), 'f'])
-			leg_entries.append([histos['rare' ], self.ttvStyle.get_processName('rare' ), 'f'])
-			leg_entries.append([histos['btag' ], self.ttvStyle.get_processName('btag' ), 'f'])
+			leg_entries.append([histos['ttz'  ], self.get_processName('ttz'  ), 'f'])
+			leg_entries.append([histos['ttw'  ], self.get_processName('ttw'  ), 'f'])
+			leg_entries.append([histos['rare' ], self.get_processName('rare' ), 'f'])
+			leg_entries.append([histos['btag' ], self.get_processName('btag' ), 'f'])
 		if self.chan == '4L' :
-			leg_entries.append([histos['ttz'  ], self.ttvStyle.get_processName('ttz'  ), 'f'])
-			leg_entries.append([histos['ttw'  ], self.ttvStyle.get_processName('ttw'  ), 'f'])
-			leg_entries.append([histos['rare' ], self.ttvStyle.get_processName('rare' ), 'f'])
-			leg_entries.append([histos['zz'   ], self.ttvStyle.get_processName('zz'   ), 'f'])
+			leg_entries.append([histos['ttz'  ], self.get_processName('ttz'  ), 'f'])
+			leg_entries.append([histos['ttw'  ], self.get_processName('ttw'  ), 'f'])
+			leg_entries.append([histos['rare' ], self.get_processName('rare' ), 'f'])
+			leg_entries.append([histos['zz'   ], self.get_processName('zz'   ), 'f'])
 		if self.chan == '2L' :
-			leg_entries.append([histos['ttw'  ], self.ttvStyle.get_processName('ttw'  ), 'f'])
-			leg_entries.append([histos['ttz'  ], self.ttvStyle.get_processName('ttz'  ), 'f'])
-			leg_entries.append([histos['wz'   ], self.ttvStyle.get_processName('wz'   ), 'f'])
-			leg_entries.append([histos['rare' ], self.ttvStyle.get_processName('rare' ), 'f'])
-			leg_entries.append([histos['chmid'], self.ttvStyle.get_processName('chmid'), 'f'])
-		leg_entries.append([histos['fake' ], self.ttvStyle.get_processName('fake' ), 'f'])
+			leg_entries.append([histos['ttw'  ], self.get_processName('ttw'  ), 'f'])
+			leg_entries.append([histos['ttz'  ], self.get_processName('ttz'  ), 'f'])
+			leg_entries.append([histos['wz'   ], self.get_processName('wz'   ), 'f'])
+			leg_entries.append([histos['rare' ], self.get_processName('rare' ), 'f'])
+			leg_entries.append([histos['chmid'], self.get_processName('chmid'), 'f'])
+		leg_entries.append([histos['fake' ], self.get_processName('fake' ), 'f'])
 		if self.TeX_switch is False :
-			leg_entries.append([histos['bgtot'], self.ttvStyle.get_processName('bgtot'), 'l'])
+			leg_entries.append([histos['bgtot'], self.get_processName('bgtot'), 'l'])
 		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
-		leg = self.ttvStyle.draw_legend(leg_entries)
+		leg = self.draw_legend(leg_entries)
 
-		canvas = self.ttvStyle.get_canvas('C_ObsPred')
+		canvas = self.get_canvas('C_ObsPred')
 		canvas.cd()
 
 #		ROOT.gStyle.SetOptStat(0)
@@ -123,7 +123,7 @@ class ttvplot(object) :
 
 		# draw and set axis titles
 		hs_pred.Draw()
-		self.set_axisTitles(hs_pred, self.ttvStyle.get_varName(var), 'Events')
+		self.set_axisTitles(hs_pred, self.get_varName(var), 'Events')
 		#hs_pred.GetXaxis().SetNdivisions(206)
 		if var == 'Int' :
 			for bin in range(1, hs_pred.GetXaxis().GetNbins()+1) :
@@ -168,7 +168,7 @@ class ttvplot(object) :
 				hs_pred.GetXaxis().SetLabelSize(0.062)
 		elif not hs_pred.GetXaxis().IsVariableBinSize() and var != 'NVrtx' :
 			bin_width = hs_pred.GetXaxis().GetBinWidth(1)
-			hs_pred.GetYaxis().SetTitle(self.ttvStyle.get_eventsPerGeVString(bin_width))
+			hs_pred.GetYaxis().SetTitle(self.get_eventsPerGeVString(bin_width))
 		leg.Draw()
 		histos['pred'].Draw('0 E2 same')
 		if self.TeX_switch is False :
@@ -177,7 +177,7 @@ class ttvplot(object) :
 			gr_obs         .Draw('PE same')
 		else :
 			histos['obs'  ].Draw('PE X0 same')
-		self.ttvStyle.draw_cmsLine()
+		self.draw_cmsLine()
 #		raw_input('ok? ')
 
 		print self.TeX_switch
@@ -200,25 +200,25 @@ class ttvplot(object) :
 		maximum = scale * max(h_data.GetMaximum(), h_mc.GetMaximum())
 		h_data.SetMaximum(maximum)
 		h_mc  .SetMaximum(maximum)
-		canvas = self.ttvStyle.get_canvas()
+		canvas = self.get_canvas()
 		canvas.cd()
 		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'lp']]
-		leg = self.ttvStyle.draw_legend(leg_entries)
+		leg = self.draw_legend(leg_entries)
 		h_mc.Draw()
 		self.set_axisTitles(h_mc, x_title, y_title)
 		h_data.Draw('same pe')
-		self.ttvStyle.draw_cmsLine()
+		self.draw_cmsLine()
 		leg.Draw()
-		self.ttvStyle.save_canvas(canvas, self.path, name)
+		self.save_canvas(canvas, self.path, name)
 
 
 	def save_plot_2d(self, histo, name = '', x_title = '', y_title = '') :
 		if name == '' : name = histo.GetName()
-		canvas = self.ttvStyle.get_canvas()
+		canvas = self.get_canvas()
 		canvas.cd()
 		histo.Draw('colztext')
 		self.set_axisTitles(histo, x_title, y_title)
-		self.ttvStyle.draw_cmsLine()
+		self.draw_cmsLine()
 		canvas.Print('%s%s.pdf' % (self.path, name))
 		canvas.Print('%s%s.png' % (self.path, name))
 
