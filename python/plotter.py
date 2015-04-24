@@ -1463,6 +1463,7 @@ class plotter :
 		mc       = {}
 		mc_npass = {}
 		res      = {}
+		missing_samples = []
 		for ch_str, charge in self.charges.iteritems() :
 			res[ch_str] = {}
 			charge_str = ''
@@ -1479,6 +1480,12 @@ class plotter :
 				last_sample = str(event.SName)
 
 			if not sel.passes_selection(event = event) : continue
+
+			if str(event.SName) not in self.samples :
+				if str(event.SName) not in missing_samples :
+					print '[WARNING] %s was not found!' % str(event.SName)
+					missing_samples.append(str(event.SName))
+				continue
 
 			# GET MC EVENTS
 			if event.SType > 5 and event.TLCat == 0 and event.Flavor < 3 :

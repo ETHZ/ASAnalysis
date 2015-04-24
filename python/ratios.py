@@ -392,7 +392,7 @@ class ratios :
 			cms_label = 0
 			pl = ttvStyle.ttvStyle(cms_label = cms_label, TeX_switch = TeX_switch)
 			pl.lumi = self.lumi_HLTMu24Eta2p1
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('fratio'), [20., 59.])
 			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', pl.get_varName('etam' ), pl.get_varName('fratio'))
 			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
 			pl.lumi = self.lumi
@@ -400,7 +400,7 @@ class ratios :
 			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', pl.get_varName('etam' ), pl.get_varName('pratio'))
 			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('pratio'))
 			pl.lumi = self.lumi_HLTEl17Jet30
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('fratio'), [20., 59.])
 			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', pl.get_varName('etae' ), pl.get_varName('fratio'))
 			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
 			pl.lumi = self.lumi
