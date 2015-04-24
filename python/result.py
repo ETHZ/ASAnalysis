@@ -62,8 +62,6 @@ class result(object) :
 		self.rare_err        = 0.
 		self.rare_staterr    = 0.
 
-		self.tot_staterr     = 0.
-
 		self.mc              = {}
 		self.mc_staterr      = {}
 
@@ -116,6 +114,12 @@ class result(object) :
 
 
 	@property
+	def tot_staterr(self) :
+		tot_staterr = math.sqrt(self.fake_staterr**2 + self.cmid_staterr**2 + self.rare_staterr**2 + self.wz_staterr**2 + self.ttz_staterr**2)
+		return tot_staterr
+
+
+	@property
 	def tot_exp(self) :
 		tot_exp = self.tot + self.ttw
 		return tot_exp
@@ -125,6 +129,12 @@ class result(object) :
 	def tot_exp_err(self) :
 		tot_exp_err = math.sqrt(self.tot_err*self.tot_err + self.ttw_statsysterr*self.ttw_statsysterr)
 		return tot_exp_err
+
+
+	@property
+	def tot_exp_staterr(self) :
+		tot_exp_staterr = math.sqrt(self.tot_staterr**2 + self.ttw_staterr**2)
+		return tot_exp_staterr
 
 
 	@property
