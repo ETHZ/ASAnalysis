@@ -4,7 +4,7 @@ class selection :
 	'''define and store selections'''
 
 
-	def __init__(self, name, minHT = 0., maxHT = 8000., minMET = 0., maxMET = 8000, minNjets = 0, maxNjets = 99, minNbjetsL = 0, maxNbjetsL = 99, minNbjetsM = 0, maxNbjetsM = 99, minPt1 = 20., minPt2 = 20., minMTLep1 = 0., minMTLep2 = 0., maxMTLep1 = 8000., maxMTLep2 = 8000., applyZVeto = True, charge = 0, ttw = True, systflag = 0, flavor = -1, mll = 8., sname = '', TLCat = 0) :
+	def __init__(self, name, minHT = 0., maxHT = 8000., minMET = 0., maxMET = 8000., minNjets = 0, maxNjets = 99, minNbjetsL = 0, maxNbjetsL = 99, minNbjetsM = 0, maxNbjetsM = 99, minPt1 = 20., minPt2 = 20., minMTLep1 = 0., minMTLep2 = 0., maxMTLep1 = 8000., maxMTLep2 = 8000., applyZVeto = True, charge = 0, ttw = True, systflag = 0, flavor = -1, mll = 8., maxMll = 8000., sname = '', TLCat = 0) :
 		self.name       = name
 		self.minHT      = minHT
 		self.maxHT      = maxHT
@@ -28,6 +28,7 @@ class selection :
 		self.systflag   = systflag
 		self.flavor     = flavor     # -2: all, -1: same-sign, 0: mu-mu, 1: el-mu, 2: el-el, 3: mu-mu OS, 4: el-mu OS, 5: el-el OS
 		self.mll        = mll
+		self.maxMll     = maxMll
 		self.sname      = sname
 		self.TLCat      = TLCat
 
@@ -95,6 +96,7 @@ class selection :
 		if event.NbJmed < self.minNbjetsM : return False
 		if event.NbJmed > self.maxNbjetsM : return False
 		if event.Mll    < self.mll        : return False
+		if event.Mll    > self.maxMll     : return False
 		if max(event.pT1, event.pT2) < self.minPt1 : return False
 		if min(event.pT1, event.pT2) < self.minPt2 : return False
 		if event.MTLep1 < self.minMTLep1 : return False
@@ -120,6 +122,7 @@ class selection :
 		selectionString += ' && NbJmed >= %d' % (self.minNbjetsM)
 		selectionString += ' && NbJmed <= %d' % (self.maxNbjetsM)
 		selectionString += ' && Mll >= %f'    % (self.mll       )
+		selectionString += ' && Mll <= %f'    % (self.maxMll    )
 		selectionString += ' && TMath::Max(pT1,pT2) >= %f' % (self.minPt1)
 		selectionString += ' && TMath::Min(pT1,pT2) >= %f' % (self.minPt2)
 		selectionString += ' && MTLep1 >= %f' % (self.minMTLep1 )
