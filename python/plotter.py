@@ -174,24 +174,28 @@ class plotter :
 			# produce results tree
 			self.skim_tree('Normal')  # makes sure the skimmed SigEvents tree exists
 			restree_path = {}
-#			restree_path['1J0bJ'] = self.path + 'SSDLResults_1J0bJ.root'
+			restree_path['1J0bJ'] = self.path + 'SSDLResults_1J0bJ.root'
 			restree_path['2J0bJ'] = self.path + 'SSDLResults_2J0bJ.root'
 			restree_path['3J1bJ'] = self.path + 'SSDLResults_3J1bJ.root'
+			if '1J0bJ' in restree_path and not os.path.exists(restree_path['1J0bJ']) :
+				self.skim_tree('Normal', 1, '1Jskim')  # makes sure the skimmed SigEvents tree exists
+				self.make_predictions(self.selections['1J0bJ'], self.path + 'SSDLYields_1Jskim_Normal.root', True)
+				if not os.path.exists(restree_path['2J0bJ']) :
+					copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
 			if not os.path.exists(restree_path['2J0bJ']) :
 				self.make_predictions(self.selections['2J0bJ'], self.path + 'SSDLYields_skim_Normal.root', True)
-#			if not os.path.exists(restree_path['2J0bJ']) :
-#				copytree.copytree(restree_path['1J0bJ'], restree_path['2J0bJ'], 'Results', 'NJ > 1')
 			if not os.path.exists(restree_path['3J1bJ']) :
 				copytree.copytree(restree_path['2J0bJ'], restree_path['3J1bJ'], 'Results', 'NJ > 2 && NbJmed > 0')
 
 			# selections
 			sels = {}
 #			sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
+			sels['1JnobJ_ee'] = self.selections['1JnobJ_ee']
 #			sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
-#			sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
+			sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
 #			sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
 #			sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
-			sels['final'    ] = self.selections['final'    ]
+#			sels['final'    ] = self.selections['final'    ]
 #			sels['final++'  ] = self.selections['final++'  ]
 #			sels['final--'  ] = self.selections['final--'  ]
 
@@ -245,10 +249,10 @@ class plotter :
 				tables.make_MCYieldsTable(self.path, results['al'], suffix = name)
 
 
-	def skim_tree(self, syst = '', minNJ = 2) :
+	def skim_tree(self, syst = '', minNJ = 2, suffix = 'skim') :
 		'''skim SigEvents tree'''
 
-		skimtree_path = self.path + 'SSDLYields_skim.root'
+		skimtree_path = self.path + 'SSDLYields_%s.root' % suffix
 		if not os.path.exists(skimtree_path) :
 			print '[status] creating skimmed tree for di-boson, rare MC (SType 15) and data..'
 			print '         Data: same-sign, opposite-sign (em, ee), tight-tight, tight-loose, loose-tight, loose-loose events (only nominal, no systematics), NJ >= 2'
@@ -256,7 +260,7 @@ class plotter :
 			copytree.copytree(self.path + 'SSDLYields.root', skimtree_path, 'SigEvents', '(SType < 3 || SType == 15) && (SType < 3 || Flavor < 3) && (SType < 3 || TLCat == 0) && (SType > 2 || SystFlag == 0) && (Flavor != 3) && (NJ >= %d)' % minNJ)
 
 		if syst != '' :
-			systtree_path = self.path + 'SSDLYields_skim_' + syst + '.root'
+			systtree_path = self.path + 'SSDLYields_' + suffix + '_' + syst + '.root'
 
 			if not os.path.exists(systtree_path) :
 				print '[status] creating skimmed tree file for %s systematic..' % (syst)
