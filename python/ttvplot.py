@@ -16,9 +16,6 @@ class ttvplot(ttvStyle.ttvStyle) :
 		self.chan = chan
 		self.asymmErr = asymmErr
 
-		# random variable
-		self.rand = ROOT.TRandom3(0)
-
 
 	def save_plot(self, histos, var, prefix = '', suffix = '', charge_str = '') :
 		'''save plot with observation and predictions'''
