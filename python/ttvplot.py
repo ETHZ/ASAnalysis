@@ -15,7 +15,6 @@ class ttvplot(ttvStyle.ttvStyle) :
 			os.makedirs(self.path)
 		self.chan = chan
 		self.asymmErr = asymmErr
-		self.TeX_switch = TeX_switch
 
 		# random variable
 		self.rand = ROOT.TRandom3(0)
@@ -30,12 +29,11 @@ class ttvplot(ttvStyle.ttvStyle) :
 			histos_tmp[histo] = histos[histo].Clone()
 		histos = histos_tmp
 
-#		if selname != '' : selname += '_'
 		if prefix  != '' and not prefix.startswith('_') : prefix = '_' + prefix
 		if suffix  != '' and not suffix.startswith('_') : suffix = '_' + suffix
 
 		# data with asymmetric errors
-		gr_obs = helper.getGraphPoissonErrors_new(histos['obs'])
+#		gr_obs = helper.getGraphPoissonErrors_new(histos['obs'])
 
 		# adding predictions to stack
 		hs_pred = ROOT.THStack('hs_pred', 'hs_pred')
@@ -57,36 +55,14 @@ class ttvplot(ttvStyle.ttvStyle) :
 			hs_pred.Add(histos['rare' ])
 			hs_pred.Add(histos['ttz'  ])
 
-		# set minimum and maximum
-		scale = 1.8
-		if var == 'Int' : scale = 2.4
-		if var.endswith('TotalBin') : scale = 1.4
-		maximum = scale * max(histos['obs'].GetMaximum(), histos['pred'].GetMaximum())
-		gr_obs .SetMaximum(maximum)
-		hs_pred.SetMaximum(maximum)
-		gr_obs .SetMinimum(0.)
-		hs_pred.SetMinimum(0.)
+		# get canvas
+		canvas = self.get_canvas('C_ObsPred')
+		canvas.cd()
+		self.ttvStyle.cd()
 
+		# set styles
 		for process, histo in histos.iteritems() :
-			histo.SetMaximum(maximum)
-			histo.SetMinimum(0.)
-			histo.SetLineColor(1)
-			histo.SetLineWidth(1)
 			histo.SetFillColor(self.get_fillColor(process))
-
-		# data histogram settings
-		self.apply_histoStyle(histos['obs'  ], 0)
-		self.apply_histoStyle(gr_obs         , 0)
-		
-		# special settings for total BG line and uncertainty
-		histos['bgtot'].SetLineWidth(3)
-		histos['bgtot'].SetLineColor(1)
-#		histos['bgtot'].SetFillColor(12)
-		histos['bgtot'].SetFillStyle(0)
-
-		histos['pred' ].SetLineWidth(0)
-		histos['pred' ].SetFillColor(1)
-		histos['pred' ].SetFillStyle(3005)
 
 		# legend
 		leg_entries = []
@@ -113,16 +89,32 @@ class ttvplot(ttvStyle.ttvStyle) :
 		leg_entries.append([histos['pred' ], 'BG uncertainty'           , 'fl'])
 		leg = self.draw_legend(leg_entries)
 
-		canvas = self.get_canvas('C_ObsPred')
-		canvas.cd()
+		# set minimum and maximum
+		scale = 1.8
+		if var == 'Int' : scale = 2.4
+		if var.endswith('TotalBin') : scale = 1.4
+		maximum = self.get_maximum(histos.values() + [hs_pred,], scale = scale, set_maximum = True, minimum = 0.)
+#		gr_obs .SetMaximum(maximum)
+#		gr_obs .SetMinimum(0.)
 
-#		ROOT.gStyle.SetOptStat(0)
-		ROOT.gStyle.SetOptTitle(0)
-		ROOT.gStyle.SetEndErrorSize(0)  # set the size of the small line at the end of the error bars
-		ROOT.gPad.SetTicks(1,1)
+		# data histogram settings
+#		self.apply_histoStyle(histos['obs'  ], 0)
+#		self.apply_histoStyle(gr_obs         , 0)
+
+		# special settings for total BG line and uncertainty
+		histos['bgtot'].SetLineWidth(3)
+		histos['bgtot'].SetLineColor(1)
+#		histos['bgtot'].SetFillColor(12)
+		histos['bgtot'].SetFillStyle(0)
+
+		histos['pred' ].SetLineWidth(0)
+		histos['pred' ].SetMarkerSize(0)
+#		histos['pred' ].SetFillColor(1)
+		histos['pred' ].SetFillColor(12)
+		histos['pred' ].SetFillStyle(3005)
 
 		# draw and set axis titles
-		hs_pred.Draw()
+		hs_pred.Draw('hist')
 		self.set_axisTitles(hs_pred, self.get_varName(var), 'Events')
 		#hs_pred.GetXaxis().SetNdivisions(206)
 		if var == 'Int' :
@@ -174,20 +166,16 @@ class ttvplot(ttvStyle.ttvStyle) :
 		if self.TeX_switch is False :
 			histos['bgtot'].Draw('hist same')
 		if self.asymmErr :
-			gr_obs         .Draw('PE same')
+#			gr_obs         .Draw('PE same')
+			histos['obs'  ].SetBinErrorOption(ROOT.TH1.kPoisson)
+			histos['obs'  ].Draw('PE0 X0 same')
 		else :
 			histos['obs'  ].Draw('PE X0 same')
 		self.draw_cmsLine()
 #		raw_input('ok? ')
 
-		print self.TeX_switch
-		if self.TeX_switch :
-			canvas.Print('%sObsPred%s_%s%s.tex' % (self.path, prefix, var, suffix))
-		else :
-			canvas.Print('%sObsPred%s_%s%s.pdf' % (self.path, prefix, var, suffix))
-			canvas.Print('%sObsPred%s_%s%s.png' % (self.path, prefix, var, suffix))
-			canvas.Print('%sObsPred%s_%s%s.root' % (self.path, prefix, var, suffix))
-#		raw_input('ok? ')
+		canvas.Update()
+		self.save_canvas(canvas, self.path, 'ObsPred%s_%s%s' % (prefix, var, suffix))
 
 
 	def save_plot_1d(self, h_data, h_mc, name = '', x_title = '', y_title = '') :

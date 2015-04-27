@@ -1446,7 +1446,7 @@ class plotter :
 		histofile.Close()
 
 		if add_total_bin : var += '_TotalBin'
-		cms_label = 2
+		cms_label = 0
 		if   sel.flavor == -2 : prefix = 'OS'
 		elif sel.flavor == -1 : prefix = 'ALL'
 		elif sel.flavor ==  0 : prefix = 'MM'
@@ -1460,11 +1460,11 @@ class plotter :
 		if sel.name == 'final' : cms_label = 0
 #		cms_label = 2
 		for TeX_switch in [True, False] :
-			pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', self.lumi, cms_label, TeX_switch = TeX_switch)
+			pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', lumi = self.lumi, cms_label = cms_label, asymmErr = True, TeX_switch = TeX_switch)
 			pl.save_plot(histos, var, prefix = prefix, suffix = '', charge_str = charge_str)
 			# preliminary plots with suffix
 			pl.cms_label = 2
-			pl.save_plot(histos, var, prefix = prefix, suffix = 'preliminary', charge_str = charge_str)
+#			pl.save_plot(histos, var, prefix = prefix, suffix = 'preliminary', charge_str = charge_str)
 #		raw_input('ok? ')
 #		raw_input('ok? ')
 

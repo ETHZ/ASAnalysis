@@ -64,13 +64,13 @@ class ttvStyle(object) :
 #		# self.ttvStyle.SetLegoInnerR(Float_t rad = 0.5)
 #		# self.ttvStyle.SetNumberContours(Int_t number = 20)
 #
-#		self.ttvStyle.SetEndErrorSize(2)
+		self.ttvStyle.SetEndErrorSize(0)
 ##		self.ttvStyle.SetErrorMarker(20)
 #		#self.ttvStyle.SetErrorX(0.)
 #	
 		self.ttvStyle.SetMarkerStyle(20)
 		self.ttvStyle.SetMarkerColor(1)
-#		self.ttvStyle.SetMarkerSize(1.2)
+		self.ttvStyle.SetMarkerSize(1.1)
 #
 #		# fit/function
 ##		self.ttvStyle.SetOptFit(1)
@@ -441,10 +441,12 @@ class ttvStyle(object) :
 
 
 	@staticmethod
-	def get_maximum(histos, scale = 1.8, set_maximum = True) :
+	def get_maximum(histos, scale = 1.8, set_maximum = True, minimum = None) :
 		'''returns maximum of a list of histograms'''
 		maximum = scale * max([histo.GetMaximum() for histo in histos])
-		if set_maximum :
-			for histo in histos :
+		for histo in histos :
+			if set_maximum :
 				histo.SetMaximum(maximum)
+			if minimum != None :
+				histo.SetMinimum(minimum)
 		return maximum
