@@ -65,6 +65,26 @@ class result(object) :
 		self.mc              = {}
 		self.mc_staterr      = {}
 
+		self.ttbar             = 0.
+		self.ttbar_err         = 0.
+		self.ttbar_staterr     = 0.
+
+		self.singletop         = 0.
+		self.singletop_err     = 0.
+		self.singletop_staterr = 0.
+
+		self.wjets             = 0.
+		self.wjets_err         = 0.
+		self.wjets_staterr     = 0.
+
+		self.zjets             = 0.
+		self.zjets_err         = 0.
+		self.zjets_staterr     = 0.
+
+		self.other             = 0.
+		self.other_err         = 0.
+		self.other_staterr     = 0.
+
 
 	@property
 	def obs(self) :
