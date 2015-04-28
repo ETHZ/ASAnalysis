@@ -1544,104 +1544,66 @@ class plotter :
 			for chan in res[ch_str] :
 #				if ch_str != 'al' or chan != 'al' : continue
 
-				top       = 0.; top_staterr2       = 0.;
-				singleTop = 0.; singleTop_staterr2 = 0.;
-				wjets     = 0.; wjets_staterr2     = 0.;
-				zjets     = 0.; zjets_staterr2     = 0.;
-				rare      = 0.; rare_staterr2      = 0.;
-				wz        = 0.; wz_staterr2        = 0.;
-				ttw       = 0.; ttw_staterr2       = 0.;
-				ttz       = 0.; ttz_staterr2       = 0.;
-				other     = 0.; other_staterr2     = 0.;
-
 				for s in mc :
 					scale = self.lumi / self.samples[s].getLumi()
 					staterr = scale * self.samples[s].getError(mc_npass[s][ch_str][chan])
 
-					res[ch_str][chan].mc[s]         = mc[s][ch_str][chan]
-					res[ch_str][chan].mc_staterr[s] = staterr
-
 					if s in self.get_samples('Top') :
 						if s.startswith('Single') :
 							print 'ttbar: %s' % s
-							singleTop          += mc[s][ch_str][chan]
-							singleTop_staterr2 += staterr**2
+							sname = '\\singletop'
 						else :
 							print 'single top: %s' % s
-							top          += mc[s][ch_str][chan]
-							top_staterr2 += staterr**2
+							sname = '\\ttbar'
 
 					elif s in self.get_samples('WJets') :
 						print 'wjets: %s' % s
-						wjets          += mc[s][ch_str][chan]
-						wjets_staterr2 += staterr**2
+						sname = '\\wjets'
 
-					elif s in self.get_samples('DYJets') :
+					elif s in ['DYJets', 'DYJets10To50'] :
 						print 'zjets: %s' % s
-						zjets          += mc[s][ch_str][chan]
-						zjets_staterr2 += staterr**2
+						sname = '\\zjets'
 
-					elif s in self.get_samples('Rare') :
-						print 'rare: %s' % s
-						rare          += mc[s][ch_str][chan]
-						rare_staterr2 += staterr**2
+					elif s.startswith('GJets') :
+						print 'gjets: %s' % s
+						sname = '\\gjets'
+
+					elif s == 'WWTo2L2Nu' :
+						sname = '\\ww'
 
 					elif s == 'WZTo3LNu' :
-						wz += mc[s][ch_str][chan]
-						wz_staterr2 += staterr * staterr
+						sname = '\\wz'
+
+					elif s == 'ZZTo4L' :
+						sname = '\\zz'
 
 					elif s == 'TTbarW' :
-						ttw += mc[s][ch_str][chan]
-						ttw_staterr2 += staterr * staterr
+						sname = '\\ttw'
 
 					elif s == 'TTbarZ' :
-						ttz += mc[s][ch_str][chan]
-						ttz_staterr2 += staterr * staterr
+						sname = '\\ttz'
+
+					elif s in self.get_samples('TTH') :
+						sname = '\\ttH'
+
+					elif s in self.get_samples('Multiboson') :
+						sname = 'Triboson'
+
+					elif s in ['W+W+', 'W-W-'] :
+						sname = '\\WpmWpm'
+
+					elif s in ['WGstarTau', 'WGstarMu'] :
+						sname = '\\WGstar'
 
 					else :
-						print 'other: %s' % s
-						other          += mc[s][ch_str][chan]
-						other_staterr2 += staterr**2
+						sname = s
 
-				# store ttbar yields
-				res[ch_str][chan].ttbar         = top
-				res[ch_str][chan].ttbar_staterr = math.sqrt(top_staterr2)
+					if sname not in res[ch_str][chan].mc :
+						res[ch_str][chan].mc[sname]         = 0.
+						res[ch_str][chan].mc_staterr[sname] = 0.
 
-				# store single top yields
-				res[ch_str][chan].singletop         = singleTop
-				res[ch_str][chan].singletop_staterr = math.sqrt(singleTop_staterr2)
-
-				# store wjets yields
-				res[ch_str][chan].wjets         = wjets
-				res[ch_str][chan].wjets_staterr = math.sqrt(wjets_staterr2)
-
-				# store zjets yields
-				res[ch_str][chan].zjets         = zjets
-				res[ch_str][chan].zjets_staterr = math.sqrt(zjets_staterr2)
-
-				# store rare mc yields
-				res[ch_str][chan].rare         = rare
-				res[ch_str][chan].rare_err     = math.sqrt(rare_staterr2 + self.RareESyst2 * rare * rare)
-				res[ch_str][chan].rare_staterr = math.sqrt(rare_staterr2)
-
-				# store WZ yields
-				res[ch_str][chan].wz           = wz
-				res[ch_str][chan].wz_err       = math.sqrt(wz_staterr2 + self.WZESyst2 * wz * wz)
-				res[ch_str][chan].wz_staterr   = math.sqrt(wz_staterr2)
-
-				# store ttW mc yields
-				res[ch_str][chan].ttw          = ttw
-				res[ch_str][chan].ttw_err      = math.sqrt(ttw_staterr2 + self.TTWESyst2 * ttw * ttw)
-				res[ch_str][chan].ttw_staterr  = math.sqrt(ttw_staterr2)
-
-				# store ttZ mc yields
-				res[ch_str][chan].ttz          = ttz
-				res[ch_str][chan].ttz_err      = math.sqrt(ttz_staterr2 + self.TTZESyst2 * ttz * ttz)
-				res[ch_str][chan].ttz_staterr  = math.sqrt(ttz_staterr2)
-
-				# store other yields
-				res[ch_str][chan].other         = other
-				res[ch_str][chan].other_staterr = math.sqrt(other_staterr2)
+					res[ch_str][chan].mc[sname]         += mc[s][ch_str][chan]
+					res[ch_str][chan].mc_staterr[sname]  = math.sqrt(res[ch_str][chan].mc_staterr[sname]**2 + staterr**2)
 
 		return res
 

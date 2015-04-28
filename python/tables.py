@@ -535,6 +535,41 @@ def make_MCYieldsTable(path, res, suffix = '') :
 	if suffix != '' and not suffix.startswith('_') :
 		suffix = '_' + suffix
 
+	# sorted list of processes
+	processes = [
+			'\\ttbar',
+			'\\singletop',
+			'-----------',
+			'\\wjets',
+			'WbbJets',
+			'\\zjets',
+			'\\gjets',
+			'-----------',
+			'\\ww',
+			'\\wz',
+			'\\zz',
+			'\\WpmWpm',
+			'\\WGstar',
+			'-----------',
+			'\\ttz',
+			'TTbarG',
+			'\\ttH',
+			'TTbarWW',
+			'TbZ',
+			'-----------',
+			'Triboson',
+			'DPSWW',
+			'-----------',
+			'\\ttw'
+			]
+	sorted_processes = []
+	for s in processes :
+		if s in res['al'].mc or s == '-----------' :
+			sorted_processes.append(s)
+	for s in res['al'].mc :
+		if s not in sorted_processes :
+			sorted_processes.append(s)
+
 	# data yields
 	table_name = 'MCYieldsTable%s.tex' % suffix
 	table_path = path + 'IntPredictions/'
@@ -554,62 +589,17 @@ def make_MCYieldsTable(path, res, suffix = '') :
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('}\n')
 		file.write('\t\\toprule\n')
-		file.write('\tYields & {\\PGm\\PGm} & {\\Pe\\PGm} & {\\Pe\\Pe} \\\\\n')
+		file.write('\tProcess        &     {\\PGm\\PGm}     &      {\\Pe\\PGm}     &      {\\Pe\\Pe}      \\\\\n')
 		file.write('\t\\midrule\n')
-		for s in res['al'].mc :
-			file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-				(s,) +
-				helper.get_roundedNumber(res['mm'].mc[s], res['mm'].mc_staterr[s]) +# systematics['rare']*res['mm'].mc[s],
-				helper.get_roundedNumber(res['em'].mc[s], res['em'].mc_staterr[s]) +# systematics['rare']*res['em'].mc[s],
-				helper.get_roundedNumber(res['ee'].mc[s], res['ee'].mc_staterr[s])))#, systematics['rare']*res['ee'].mc[s],
-		file.write('\t\\midrule\n')
-		file.write('\t\\midrule\n')
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('ttbar',) +
-			helper.get_roundedNumber(res['mm'].ttbar, res['mm'].ttbar_staterr) +# systematics['rare']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].ttbar, res['em'].ttbar_staterr) +# systematics['rare']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].ttbar, res['ee'].ttbar_staterr)))#, systematics['rare']*res['ee'].mc[s],
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('Single Top',) +
-			helper.get_roundedNumber(res['mm'].singletop, res['mm'].singletop_staterr) +# systematics['rare']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].singletop, res['em'].singletop_staterr) +# systematics['rare']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].singletop, res['ee'].singletop_staterr)))#, systematics['rare']*res['ee'].mc[s],
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('\\wjets',) +
-			helper.get_roundedNumber(res['mm'].wjets, res['mm'].wjets_staterr) +# systematics['rare']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].wjets, res['em'].wjets_staterr) +# systematics['rare']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].wjets, res['ee'].wjets_staterr)))#, systematics['rare']*res['ee'].mc[s],
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('\\zjets',) +
-			helper.get_roundedNumber(res['mm'].zjets, res['mm'].zjets_staterr) +# systematics['rare']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].zjets, res['em'].zjets_staterr) +# systematics['rare']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].zjets, res['ee'].zjets_staterr)))#, systematics['rare']*res['ee'].mc[s],
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('Irreducible',) +
-			helper.get_roundedNumber(res['mm'].rare, res['mm'].rare_staterr) +# systematics['rare']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].rare, res['em'].rare_staterr) +# systematics['rare']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].rare, res['ee'].rare_staterr)))#, systematics['rare']*res['ee'].mc[s],
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('\\wz',) +
-			helper.get_roundedNumber(res['mm'].wz, res['mm'].wz_staterr) +# systematics['wz']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].wz, res['em'].wz_staterr) +# systematics['wz']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].wz, res['ee'].wz_staterr)))#, systematics['wz']*res['ee'].mc[s],
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('\\ttz',) +
-			helper.get_roundedNumber(res['mm'].ttz, res['mm'].ttz_staterr) +# systematics['\\ttz']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].ttz, res['em'].ttz_staterr) +# systematics['\\ttz']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].ttz, res['ee'].ttz_staterr)))#, systematics['\\ttz']*res['ee'].mc[s],
-		file.write('\t\\midrule\n')
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('\\ttw',) +
-			helper.get_roundedNumber(res['mm'].ttw, res['mm'].ttw_staterr) +# systematics['ttw']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].ttw, res['em'].ttw_staterr) +# systematics['ttw']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].ttw, res['ee'].ttw_staterr)))#, systematics['ttw']*res['ee'].mc[s],
-		file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-			('Others',) +
-			helper.get_roundedNumber(res['mm'].other, res['mm'].other_staterr) +# systematics['others']*res['mm'].mc[s],
-			helper.get_roundedNumber(res['em'].other, res['em'].other_staterr) +# systematics['others']*res['em'].mc[s],
-			helper.get_roundedNumber(res['ee'].other, res['ee'].other_staterr)))#, systematics['others']*res['ee'].mc[s],
+		for s in sorted_processes :
+			if s == '-----------' :
+				file.write('\t\\midrule\n')
+			else :
+				file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+					(s.replace('_', '\\_'),) +
+					helper.get_roundedNumber(res['mm'].mc[s], res['mm'].mc_staterr[s]) +# systematics['rare']*res['mm'].mc[s],
+					helper.get_roundedNumber(res['em'].mc[s], res['em'].mc_staterr[s]) +# systematics['rare']*res['em'].mc[s],
+					helper.get_roundedNumber(res['ee'].mc[s], res['ee'].mc_staterr[s])))#, systematics['rare']*res['ee'].mc[s],
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 
