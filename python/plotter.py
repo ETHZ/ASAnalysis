@@ -127,13 +127,20 @@ class plotter :
 #		EWK_SF['el']   = self.get_EWK_SF('el')
 #		EWK_SF['mu17'] = self.get_EWK_SF('mu17')
 #		EWK_SF['mu24'] = self.get_EWK_SF('mu24')
+#		mc_samples = filter(lambda sample : sample != 'MuEnr15' and 'QCD' not in sample, self.get_samples('MC'))
+#		mc_samples = filter(lambda sample : sample != 'MuEnr15', self.get_samples('MC'))
+#		mc_samples = filter(lambda sample : 'QCD' not in sample, self.get_samples('MC'))
+#		mc_samples = self.get_samples('MC')
 		if RatioPlots :
 			self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, False)
 			self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, False)
+#			self.fpr.fill_ratios(mc_samples                        , mc_samples                   , 1, False)
 			self.fpr.plot_ratios('Ratios_uncorrected')
 
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
-		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
+#		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
+		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, False)
+#		self.fpr.fill_ratios(mc_samples                        , mc_samples                   , 1, True)
 
 		if RatioControlPlots != False :
 			if RatioControlPlots == 'el' :
@@ -145,6 +152,12 @@ class plotter :
 
 		if RatioPlots :
 			self.fpr.plot_ratios()
+
+		if not os.path.exists(self.path + 'SSDLYields_TTJets.root') :
+			copytree.copytree(self.path + 'SSDLYields.root', self.path + 'SSDLYields_TTJets.root', 'SigEvents', 'SName == \"TTJets\" && SystFlag == 0 && NJ > 2')
+		closure_res = self.make_closureTest(['TTJets'], self.selections['3J1bJ'])
+		tables.make_YieldsTable(self.path + 'closure', closure_res['al'])
+		return
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
 #		c1.Divide(2, 2)
@@ -1857,6 +1870,158 @@ class plotter :
 
 	def make_KinPlots(self) :
 		foo = 0
+
+
+	def make_closureTest(self, samples, sel) :
+#		skimtree_path = '%sSSDLYields_%s.root' % (self.path, sel.name)
+		tree_path = '%sSSDLYields_TTJets.root' % self.path
+#		if not os.path.exists(skimtree_path) :
+#			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
+		file = ROOT.TFile.Open(tree_path, 'READ')
+		tree = file.Get('SigEvents')
+
+		##################
+		# INIT VARIABLES #
+		##################
+
+		FR = ROOT.FakeRatios()
+
+		res = {}
+		for ch_str, charge in self.charges.iteritems() :
+			res[ch_str] = {}
+			charge_str = ''
+			if charge > 0 : charge_str = '+'
+			if charge < 0 : charge_str = '-'
+			res[ch_str]['al'] = result.result('al', charge, 'int'+charge_str+charge_str)
+			res[ch_str]['mm'] = result.result('mm', charge, 'm'+charge_str+'m'+charge_str)
+			res[ch_str]['em'] = result.result('em', charge, 'e'+charge_str+'m'+charge_str)
+			res[ch_str]['ee'] = result.result('ee', charge, 'e'+charge_str+'e'+charge_str)
+
+		last_sample = ''
+
+		for event in tree :
+			if last_sample != str(event.SName) :
+				print '[status] processing %s..' % (event.SName)
+				last_sample = str(event.SName)
+
+			if not sel.passes_selection(event = event, ttLeptons = False, OSwoZVeto = True) : continue
+			chan = self.get_channelString(int(event.Flavor))
+
+			if str(event.SName) not in samples : continue
+			if event.Flavor > 2                : continue
+
+			# fake, prompt predictions
+			if chan is 'ElMu' :
+				f1 = self.fpr.get_fRatio('Muon', event.pT1, event.eta1, 0)
+				f2 = self.fpr.get_fRatio('Elec', event.pT2, event.eta2, 0)
+				p1 = self.fpr.get_pRatio('Muon', event.pT1, 0)
+				p2 = self.fpr.get_pRatio('Elec', event.pT2, 0)
+			else :
+				f1 = self.fpr.get_fRatio(chan, event.pT1, event.eta1, 0)
+				f2 = self.fpr.get_fRatio(chan, event.pT2, event.eta2, 0)
+				p1 = self.fpr.get_pRatio(chan, event.pT1, 0)
+				p2 = self.fpr.get_pRatio(chan, event.pT2, 0)
+
+			npp = FR.getWpp(event.TLCat, f1, f2, p1, p2)
+			npf = FR.getWpf(event.TLCat, f1, f2, p1, p2)
+			nfp = FR.getWfp(event.TLCat, f1, f2, p1, p2)
+			nff = FR.getWff(event.TLCat, f1, f2, p1, p2)
+
+			for ch_str, charge in self.charges.iteritems() :
+				if charge != 0 and event.Charge != charge : continue
+
+				# int
+				res[ch_str]['al'].npp += npp;
+				res[ch_str]['al'].npf += npf;
+				res[ch_str]['al'].nfp += nfp;
+				res[ch_str]['al'].nff += nff;
+				if event.TLCat is 0 : res[ch_str]['al'].nt2  += 1
+				if event.TLCat is 1 : res[ch_str]['al'].nt10 += 1
+				if event.TLCat is 2 : res[ch_str]['al'].nt01 += 1
+				if event.TLCat is 3 : res[ch_str]['al'].nt0  += 1
+
+				# MM
+				if event.Flavor is 0 :
+					res[ch_str]['mm'].npp += npp;
+					res[ch_str]['mm'].npf += npf;
+					res[ch_str]['mm'].nfp += nfp;
+					res[ch_str]['mm'].nff += nff;
+					if event.TLCat is 0 : res[ch_str]['mm'].nt2  += 1
+					if event.TLCat is 1 : res[ch_str]['mm'].nt10 += 1
+					if event.TLCat is 2 : res[ch_str]['mm'].nt01 += 1
+					if event.TLCat is 3 : res[ch_str]['mm'].nt0  += 1
+
+				# EM
+				if event.Flavor is 1 :
+					res[ch_str]['em'].npp += npp
+					res[ch_str]['em'].npf += npf
+					res[ch_str]['em'].nfp += nfp
+					res[ch_str]['em'].nff += nff
+					if event.TLCat is 0 : res[ch_str]['em'].nt2  += 1
+					if event.TLCat is 1 : res[ch_str]['em'].nt10 += 1
+					if event.TLCat is 2 : res[ch_str]['em'].nt01 += 1
+					if event.TLCat is 3 : res[ch_str]['em'].nt0  += 1
+
+				# EE
+				if event.Flavor is 2 :
+					res[ch_str]['ee'].npp += npp
+					res[ch_str]['ee'].npf += npf
+					res[ch_str]['ee'].nfp += nfp
+					res[ch_str]['ee'].nff += nff
+					if event.TLCat is 0 : res[ch_str]['ee'].nt2  += 1
+					if event.TLCat is 1 : res[ch_str]['ee'].nt10 += 1
+					if event.TLCat is 2 : res[ch_str]['ee'].nt01 += 1
+					if event.TLCat is 3 : res[ch_str]['ee'].nt0  += 1
+
+		#####################
+		# Fakes predictions #
+		#####################
+
+		print '[status] calculating fake predictions..'
+
+		FR.setNToyMCs(100)
+		FR.setAddESyst(self.FakeESyst)
+
+		# ratios with ewk subtraction
+		FR.setMFRatio(self.fpr.MufRatio_MC, self.fpr.MufRatioE_MC) # set error to pure statistical of ratio
+		FR.setEFRatio(self.fpr.ElfRatio_MC, self.fpr.ElfRatioE_MC)
+		FR.setMPRatio(self.fpr.MupRatio_MC, self.fpr.MupRatioE_MC)
+		FR.setEPRatio(self.fpr.ElpRatio_MC, self.fpr.ElpRatioE_MC)
+
+		for ch_str in self.charges :
+
+			FR.setMMNtl(res[ch_str]['mm'].nt2, res[ch_str]['mm'].nt10, res[ch_str]['mm'].nt01, res[ch_str]['mm'].nt0)
+			FR.setEMNtl(res[ch_str]['em'].nt2, res[ch_str]['em'].nt10, res[ch_str]['em'].nt01, res[ch_str]['em'].nt0)
+			FR.setEENtl(res[ch_str]['ee'].nt2, res[ch_str]['ee'].nt10, res[ch_str]['ee'].nt01, res[ch_str]['ee'].nt0)
+
+			# store stat and syst errors
+			res[ch_str]['mm'].npp_staterr = FR.getMMNppEStat(); res[ch_str]['mm'].npp_systerr = self.FakeESyst*res[ch_str]['mm'].npp;
+			res[ch_str]['em'].npp_staterr = FR.getEMNppEStat(); res[ch_str]['em'].npp_systerr = self.FakeESyst*res[ch_str]['em'].npp;
+			res[ch_str]['ee'].npp_staterr = FR.getEENppEStat(); res[ch_str]['ee'].npp_systerr = self.FakeESyst*res[ch_str]['ee'].npp;
+
+			res[ch_str]['mm'].npf_staterr = FR.getMMNpfEStat(); res[ch_str]['mm'].npf_systerr = self.FakeESyst*res[ch_str]['mm'].npf;
+			res[ch_str]['em'].npf_staterr = FR.getEMNpfEStat(); res[ch_str]['em'].npf_systerr = self.FakeESyst*res[ch_str]['em'].npf;
+			res[ch_str]['ee'].npf_staterr = FR.getEENpfEStat(); res[ch_str]['ee'].npf_systerr = self.FakeESyst*res[ch_str]['ee'].npf;
+
+			res[ch_str]['mm'].nfp_staterr = FR.getMMNfpEStat(); res[ch_str]['mm'].nfp_systerr = self.FakeESyst*res[ch_str]['mm'].nfp;
+			res[ch_str]['em'].nfp_staterr = FR.getEMNfpEStat(); res[ch_str]['em'].nfp_systerr = self.FakeESyst*res[ch_str]['em'].nfp;
+			res[ch_str]['ee'].nfp_staterr = FR.getEENfpEStat(); res[ch_str]['ee'].nfp_systerr = self.FakeESyst*res[ch_str]['ee'].nfp;
+
+			res[ch_str]['mm'].nff_staterr = FR.getMMNffEStat(); res[ch_str]['mm'].nff_systerr = self.FakeESyst*res[ch_str]['mm'].nff;
+			res[ch_str]['em'].nff_staterr = FR.getEMNffEStat(); res[ch_str]['em'].nff_systerr = self.FakeESyst*res[ch_str]['em'].nff;
+			res[ch_str]['ee'].nff_staterr = FR.getEENffEStat(); res[ch_str]['ee'].nff_systerr = self.FakeESyst*res[ch_str]['ee'].nff;
+
+			# store fake predictions
+			res[ch_str]['al'].fake_err = math.sqrt(FR.getTotEStat()  *FR.getTotEStat()   + self.FakeESyst2*res[ch_str]['al'].fake*res[ch_str]['al'].fake)
+			res[ch_str]['mm'].fake_err = math.sqrt(FR.getMMTotEStat()*FR.getMMTotEStat() + self.FakeESyst2*res[ch_str]['mm'].fake*res[ch_str]['mm'].fake)
+			res[ch_str]['em'].fake_err = math.sqrt(FR.getEMTotEStat()*FR.getEMTotEStat() + self.FakeESyst2*res[ch_str]['em'].fake*res[ch_str]['em'].fake)
+			res[ch_str]['ee'].fake_err = math.sqrt(FR.getEETotEStat()*FR.getEETotEStat() + self.FakeESyst2*res[ch_str]['ee'].fake*res[ch_str]['ee'].fake)
+			res[ch_str]['al'].fake_staterr = FR.getTotEStat()
+			res[ch_str]['mm'].fake_staterr = FR.getMMTotEStat()
+			res[ch_str]['em'].fake_staterr = FR.getEMTotEStat()
+			res[ch_str]['ee'].fake_staterr = FR.getEETotEStat()
+
+		return res
 
 
 if __name__ == '__main__' :

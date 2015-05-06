@@ -392,7 +392,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		file.write('\\end{tabular}\n')
 
 
-def make_YieldsTable(path, res, systematics, suffix = '') :
+def make_YieldsTable(path, res, systematics = {}, suffix = '') :
 	'''print all observations and predictions'''
 
 	if suffix != '' and not suffix.startswith('_') :
