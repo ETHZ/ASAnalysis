@@ -600,6 +600,13 @@ def make_MCYieldsTable(path, res, suffix = '') :
 					helper.get_roundedNumber(res['mm'].mc[s], res['mm'].mc_staterr[s]) +# systematics['rare']*res['mm'].mc[s],
 					helper.get_roundedNumber(res['em'].mc[s], res['em'].mc_staterr[s]) +# systematics['rare']*res['em'].mc[s],
 					helper.get_roundedNumber(res['ee'].mc[s], res['ee'].mc_staterr[s])))#, systematics['rare']*res['ee'].mc[s],
+		file.write('\t\\midrule\n')
+		#file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+		file.write('\t%-14s &   %6d           &   %6d           &   %6d           \\\\\n' % (
+			pl.get_processName('obs'),
+			res['mm'].obs,
+			res['em'].obs,
+			res['ee'].obs))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 

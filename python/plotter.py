@@ -1508,6 +1508,39 @@ class plotter :
 					missing_samples.append(str(event.SName))
 				continue
 
+			# GET ALL DATA EVENTS
+			if event.SType < 3 :
+				if event.Flavor < 3 :
+					for ch_str, charge in self.charges.iteritems() :
+						if charge != 0 and event.Charge != charge : continue
+
+						# int
+						if event.TLCat is 0 : res[ch_str]['al'].nt2  += 1
+						if event.TLCat is 1 : res[ch_str]['al'].nt10 += 1
+						if event.TLCat is 2 : res[ch_str]['al'].nt01 += 1
+						if event.TLCat is 3 : res[ch_str]['al'].nt0  += 1
+
+						# MM
+						if event.Flavor is 0 :
+							if event.TLCat is 0 : res[ch_str]['mm'].nt2  += 1
+							if event.TLCat is 1 : res[ch_str]['mm'].nt10 += 1
+							if event.TLCat is 2 : res[ch_str]['mm'].nt01 += 1
+							if event.TLCat is 3 : res[ch_str]['mm'].nt0  += 1
+
+						# EM
+						if event.Flavor is 1 :
+							if event.TLCat is 0 : res[ch_str]['em'].nt2  += 1
+							if event.TLCat is 1 : res[ch_str]['em'].nt10 += 1
+							if event.TLCat is 2 : res[ch_str]['em'].nt01 += 1
+							if event.TLCat is 3 : res[ch_str]['em'].nt0  += 1
+
+						# EE
+						if event.Flavor is 2 :
+							if event.TLCat is 0 : res[ch_str]['ee'].nt2  += 1
+							if event.TLCat is 1 : res[ch_str]['ee'].nt10 += 1
+							if event.TLCat is 2 : res[ch_str]['ee'].nt01 += 1
+							if event.TLCat is 3 : res[ch_str]['ee'].nt0  += 1
+
 			# GET MC EVENTS
 			if event.SType > 5 and event.TLCat == 0 and event.Flavor < 3 :
 				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[str(event.SName)].getLumi()
