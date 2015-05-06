@@ -560,7 +560,9 @@ def make_MCYieldsTable(path, res, suffix = '') :
 			'Triboson',
 			'DPSWW',
 			'-----------',
-			'\\ttw'
+			'\\ttw',
+			'-----------',
+			'tot'
 			]
 	sorted_processes = []
 	for s in processes :

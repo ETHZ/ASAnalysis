@@ -237,7 +237,7 @@ class plotter :
 			sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
 #			sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
 #			sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
-#			sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
+			sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
 #			sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
 #			sels['final'    ] = self.selections['final'    ]
 #			sels['final++'  ] = self.selections['final++'  ]
@@ -1631,12 +1631,13 @@ class plotter :
 					else :
 						sname = s
 
-					if sname not in res[ch_str][chan].mc :
-						res[ch_str][chan].mc[sname]         = 0.
-						res[ch_str][chan].mc_staterr[sname] = 0.
+					for name in [sname, 'tot'] :
+						if name not in res[ch_str][chan].mc :
+							res[ch_str][chan].mc[name]         = 0.
+							res[ch_str][chan].mc_staterr[name] = 0.
 
-					res[ch_str][chan].mc[sname]         += mc[s][ch_str][chan]
-					res[ch_str][chan].mc_staterr[sname]  = math.sqrt(res[ch_str][chan].mc_staterr[sname]**2 + staterr**2)
+						res[ch_str][chan].mc[name]         += mc[s][ch_str][chan]
+						res[ch_str][chan].mc_staterr[name]  = math.sqrt(res[ch_str][chan].mc_staterr[name]**2 + staterr**2)
 
 		return res
 
