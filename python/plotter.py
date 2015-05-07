@@ -138,8 +138,8 @@ class plotter :
 			self.fpr.plot_ratios('Ratios_uncorrected')
 
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
-#		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
-		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, False)
+		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, True)
+#		self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, False)
 #		self.fpr.fill_ratios(mc_samples                        , mc_samples                   , 1, True)
 
 		if RatioControlPlots != False :
@@ -154,9 +154,11 @@ class plotter :
 			self.fpr.plot_ratios()
 
 		if not os.path.exists(self.path + 'SSDLYields_TTJets.root') :
-			copytree.copytree(self.path + 'SSDLYields.root', self.path + 'SSDLYields_TTJets.root', 'SigEvents', 'SName == \"TTJets\" && SystFlag == 0 && NJ > 2')
+			copytree.copytree(self.path + 'SSDLYields.root', self.path + 'SSDLYields_TTJets.root', 'SigEvents', 'SName == \"TTJets\" && SystFlag == 0 && NJ > 1')
 		closure_res = self.make_closureTest(['TTJets'], self.selections['3J1bJ'])
-		tables.make_YieldsTable(self.path + 'closure', closure_res['al'])
+		tables.make_YieldsTable(self.path + 'closure/', closure_res['al'], suffix = '3J1bJ')
+#		closure_res = self.make_closureTest(['TTJets'], self.selections['2J0bJ'])
+#		tables.make_YieldsTable(self.path + 'closure/', closure_res['al'], suffix = '2J0bJ')
 		return
 
 #		c1 = ROOT.TCanvas("canvas", "canvas", 0, 0, 800, 800)
@@ -1912,13 +1914,13 @@ class plotter :
 
 			# fake, prompt predictions
 			if chan is 'ElMu' :
-				f1 = self.fpr.get_fRatio('Muon', event.pT1, event.eta1, 0)
-				f2 = self.fpr.get_fRatio('Elec', event.pT2, event.eta2, 0)
-				p1 = self.fpr.get_pRatio('Muon', event.pT1, 0)
-				p2 = self.fpr.get_pRatio('Elec', event.pT2, 0)
+				f1 = self.fpr.get_fRatio('Muon', event.pT1, event.eta1, 1)
+				f2 = self.fpr.get_fRatio('Elec', event.pT2, event.eta2, 1)
+				p1 = self.fpr.get_pRatio('Muon', event.pT1, 1)
+				p2 = self.fpr.get_pRatio('Elec', event.pT2, 1)
 			else :
-				f1 = self.fpr.get_fRatio(chan, event.pT1, event.eta1, 0)
-				f2 = self.fpr.get_fRatio(chan, event.pT2, event.eta2, 0)
+				f1 = self.fpr.get_fRatio(chan, event.pT1, event.eta1, 1)
+				f2 = self.fpr.get_fRatio(chan, event.pT2, event.eta2, 1)
 				p1 = self.fpr.get_pRatio(chan, event.pT1, 0)
 				p2 = self.fpr.get_pRatio(chan, event.pT2, 0)
 
