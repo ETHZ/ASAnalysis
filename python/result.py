@@ -16,6 +16,9 @@ class result(object) :
 		self.nt01 = 0.
 		self.nt0  = 0.
 
+		# uncertainty used for closure tests
+		self.nt2_staterr = 0.
+
 		# FR Predictions from event-by-event weights (pre stored)
 		self.npp = 0.; self.npp_staterr = 0.; self.npp_systerr = 0.;
 		self.npf = 0.; self.npf_staterr = 0.; self.npf_systerr = 0.;
