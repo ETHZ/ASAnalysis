@@ -392,7 +392,7 @@ def make_SystTable(path, results, chan, charge, systematics) :
 		file.write('\\end{tabular}\n')
 
 
-def make_YieldsTable(path, res, systematics, suffix = '') :
+def make_YieldsTable(path, res, systematics = {}, suffix = '') :
 	'''print all observations and predictions'''
 
 	if suffix != '' and not suffix.startswith('_') :
@@ -609,6 +609,53 @@ def make_MCYieldsTable(path, res, suffix = '') :
 			res['mm'].obs,
 			res['em'].obs,
 			res['ee'].obs))
+		file.write('\t\\bottomrule\n')
+		file.write('\\end{tabular}\n')
+
+
+def make_closureTable(path, res, prefix = '', suffix = '') :
+	'''create table of closure test results'''
+
+	if suffix != '' and not suffix.startswith('_') :
+		suffix = '_' + suffix
+
+	table_name = '%sClosure%s.tex' % (prefix, suffix)
+	table_path = path + 'ClosureTests/'
+	helper.mkdir(table_path)
+	pl = ttvStyle.ttvStyle(TeX_switch = True)
+	print '[status] writing %s' % table_name
+	with open(table_path + table_name, 'w') as file :
+		file.write('%!TEX root = ../../Dissertation.tex\n')
+		file.write('\n')
+		file.write(providecommands())
+		file.write('\n\n')
+		file.write('\\sisetup{separate-uncertainty}\n')
+		file.write('\n\n')
+		file.write('\\begin{tabular}{\n')
+		file.write('\tl\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('}\n')
+		file.write('\t\\toprule\n')
+		file.write('\t                &     {\\PGm\\PGm}     &      {\\Pe\\PGm}     &      {\\Pe\\Pe}      \\\\\n')
+		file.write('\t\\midrule\n')
+		file.write('\t%-15s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\nfake',) +
+			helper.get_roundedNumber(res['mm'].fake, res['mm'].fake_staterr) +
+			helper.get_roundedNumber(res['em'].fake, res['em'].fake_staterr) +
+			helper.get_roundedNumber(res['ee'].fake, res['ee'].fake_staterr)))
+		file.write('\t%-15s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('\\ntt',) +
+			helper.get_roundedNumber(res['mm'].nt2, res['mm'].nt2_staterr) +
+			helper.get_roundedNumber(res['em'].nt2, res['em'].nt2_staterr) +
+			helper.get_roundedNumber(res['ee'].nt2, res['ee'].nt2_staterr)))
+		file.write('\t\\midrule\n')
+		file.write('\t%-15s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+			('$\\nfake / \\ntt$',) +
+			helper.get_roundedNumber(*helper.ratio_withError(res['mm'].fake, res['mm'].fake_staterr, res['mm'].nt2, res['mm'].nt2_staterr)) +
+			helper.get_roundedNumber(*helper.ratio_withError(res['em'].fake, res['em'].fake_staterr, res['em'].nt2, res['em'].nt2_staterr)) +
+			helper.get_roundedNumber(*helper.ratio_withError(res['ee'].fake, res['ee'].fake_staterr, res['ee'].nt2, res['ee'].nt2_staterr))))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
 

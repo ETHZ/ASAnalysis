@@ -46,6 +46,16 @@ def ratioWithPoissErrors(numerator, denominator) :
 ## }
 
 
+def ratio_withError(numerator, numerator_err, denominator, denominator_err) :
+	num     = float(numerator      )
+	num_err = float(numerator_err  )
+	den     = float(denominator    )
+	den_err = float(denominator_err)
+	ratio     = num / den
+	ratio_err = ratio * (num_err/num) / (den_err/den)
+	return (ratio, ratio_err)
+
+
 def getGraphPoissonErrors(histo, nSigma = 1., xErrType = '0') :
 
 	graph = ROOT.TGraphAsymmErrors(0)
