@@ -52,8 +52,8 @@ class ratios :
 			print '         ElpRatio: %f +/- %f' % (self.ElpRatio, self.ElpRatioE)
 
 		else :
-#			mu_samples_fRatio = mu_samples
-#			el_samples_fRatio = el_samples
+#			mu_samples_fRatio = copy.deepcopy(mu_samples)
+#			el_samples_fRatio = copy.deepcopy(el_samples)
 #			if applyEwkSubtr :
 #				mu_samples_fRatio = filter(lambda sample : sample != 'WJets' and 'DYJets' not in sample, mu_samples)
 #				el_samples_fRatio = filter(lambda sample : sample != 'WJets' and 'DYJets' not in sample, el_samples)
@@ -438,7 +438,7 @@ class ratios :
 		pl.save_canvas(canvas, path, name)
 
 
-	def make_controlPlots(self, samples_data, ch_str) :
+	def make_controlPlots(self, samples_data, ch_str, datamc = 0) :
 		variables = []
 #		variables.append('NJets'      )
 #		variables.append('HT'         )
@@ -451,8 +451,8 @@ class ratios :
 #		variables.append('MT'         )
 #		variables.append('MET_noMTCut')
 		variables.append('MT_MET30'   )
-#		variables.append('LepPt'      )
-		variables.append('LepEta'     )
+		variables.append('LepPt'      )
+#		variables.append('LepEta'     )
 #		variables.append('LepIso'     )
 #		variables.append('ClosJetDR'  )
 #		variables.append('AwayJetDR'  )
@@ -460,15 +460,17 @@ class ratios :
 		ewk_sf = self.get_EWK_SF(samples_data, ch_str, do_fit = True)
 
 		for var in variables :
-			self.make_controlPlot(samples_data, ch_str, var, 1.)
-			self.make_controlPlot(samples_data, ch_str, var, ewk_sf)
+			self.make_controlPlot(samples_data, ch_str, var, EWK_SF = 1.    , datamc = datamc)
+			self.make_controlPlot(samples_data, ch_str, var, EWK_SF = ewk_sf, datamc = datamc)
 
 
-	def make_controlPlot(self, samples_data, chan_str, ratiovar, EWK_SF = 1.) :
+	def make_controlPlot(self, samples_data, chan_str, ratiovar, EWK_SF = 1., datamc = 0) :
+		mc_str = ''
+		if datamc != 0 : mc_str = 'MC_only/'
 		scale_str = ''
 		if EWK_SF == 1. : scale_str = 'unscaled/'
 		if type(EWK_SF) is dict : scale_str = 'fitted/'
-		subdir = 'RatioControlPlots/%s%s' % (scale_str, chan_str)
+		subdir = 'RatioControlPlots/%s%s%s' % (mc_str, scale_str, chan_str)
 		path = '%s%s/' % (self.path, subdir)
 		helper.mkdir(path)
 		if chan_str == 'el'   : lumi = self.lumi_HLTEl17Jet30
@@ -517,7 +519,8 @@ class ratios :
 						hstack.Add(histos[tl][process])
 				for process in reversed(processes) :
 					if process == 'data' or process == 'obs' :
-						leg_entries.append([histos[tl][process], pl.get_processName('obs'), 'lp'])
+						if datamc == 0 : leg_entries.append([histos[tl][process], pl.get_processName('obs'), 'lp'])
+						else           : leg_entries.append([histos[tl][process], 'Simulation'             , 'lp'])
 					else :
 						leg_entries.append([histos[tl][process], pl.get_processName(process), 'f'])
 				hstack.SetMaximum(maximum)

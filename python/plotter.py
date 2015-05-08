@@ -130,6 +130,7 @@ class plotter :
 		if RatioPlots :
 			self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, False)
 			self.fpr.fill_ratios(self.get_samples('MC')            , self.get_samples('MC')       , 1, False)
+			#self.fpr.fill_ratios(self.get_samples('QCD')            , self.get_samples('QCD')       , 1, False)
 			self.fpr.plot_ratios('Ratios_uncorrected')
 
 		self.fpr.fill_ratios(self.get_samples('SingleDoubleMu'), self.get_samples('DoubleEle'), 0, True)
@@ -138,6 +139,7 @@ class plotter :
 		if RatioControlPlots != False :
 			if RatioControlPlots == 'el' :
 				self.fpr.make_controlPlots(self.get_samples('DoubleEle'), RatioControlPlots)
+				self.fpr.make_controlPlots(self.get_samples('MC'), RatioControlPlots, datamc = 1)
 			if RatioControlPlots == 'mu17' :
 				self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), RatioControlPlots)
 			if RatioControlPlots == 'mu24' :
