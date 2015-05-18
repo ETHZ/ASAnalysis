@@ -222,6 +222,7 @@ class sample :
 		if channel == 'WZ'     : return ['WZTo3LNu']
 		if channel == 'TTH'    : return ['HWW', 'HZZ', 'HTauTau']
 		if channel == 'Multiboson' : return ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
+		if channel == 'ttbar'  : return ['TTJets']
 		samplelist = []
 		for name, sample in samples.iteritems() :
 			if   channel == 'DoubleMu' :

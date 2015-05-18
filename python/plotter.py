@@ -165,7 +165,7 @@ class plotter :
 #			self.plot_DiffMC(self.selections['2J0bJ'    ])
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
 			self.plot_DiffMC(self.selections['0J0bJOS'        ])
-#			self.plot_DiffMC(self.selections['3J1bJ'    ])
+			self.plot_DiffMC(self.selections['3J1bJ'    ])
 #			self.plot_DiffMC(self.selections['3J1bJOS'    ])
 #			self.plot_DiffMC(self.selections['3J0bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
@@ -1671,12 +1671,20 @@ class plotter :
 			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
-#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel))
-		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel))
-		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
+		if sel.minNjets < 1 :
+			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), plot_shapes = True)
+			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
+			return
+#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel), plot_shapes = True)
+		self.plot_ObsMC(tree, sel, 'pT2'  , config.get_histoBins('pT2'  , sel), plot_shapes = True)
+		settings = config.get_histoBins('HT'   , sel)
+		settings['nbins'] *= 2
+		self.plot_ObsMC(tree, sel, 'HT'   , settings                          , plot_shapes = True)
+#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), plot_shapes = True)
+#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
 
 
-	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, pu_weight = True) :
+	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, pu_weight = True, plot_shapes = False) :
 
 		nbins = settings['nbins']
 		min   = settings['min'  ]
@@ -1686,6 +1694,7 @@ class plotter :
 			nbins += 1
 
 		histos = {}
+		shapes = {}
 
 		weight_str = 'HLTSF'
 		if pu_weight : weight_str += '*PUWeight'
@@ -1739,6 +1748,7 @@ class plotter :
 		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
 		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
 		h_top_name   = 'h_top_'   + var + sel.name; histos['top'  ] = self.get_mcHistoFromTree(tree, self.get_samples('Top'   ), var_str, h_top_name  , settings, weight_str, sel.get_selectionString())
+		h_ttbar_name = 'h_ttbar_' + var + sel.name; shapes['ttbar'] = self.get_mcHistoFromTree(tree, self.get_samples('ttbar' ), var_str, h_ttbar_name, settings, weight_str, sel.get_selectionString())
 		h_zjets_name = 'h_zjets_' + var + sel.name; histos['zjets'] = self.get_mcHistoFromTree(tree, self.get_samples('DYJets'), var_str, h_zjets_name, settings, weight_str, sel.get_selectionString())
 		h_wjets_name = 'h_wjets_' + var + sel.name; histos['wjets'] = self.get_mcHistoFromTree(tree, self.get_samples('WJets' ), var_str, h_wjets_name, settings, weight_str, sel.get_selectionString())
 		h_rare_name  = 'h_rare_'  + var + sel.name; histos['rare' ] = self.get_mcHistoFromTree(tree, self.get_samples('Rare'  ), var_str, h_rare_name , settings, weight_str, sel.get_selectionString())
@@ -1824,6 +1834,42 @@ class plotter :
 			suffix += '_log'
 			canvas.Update()
 			canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
+
+			if plot_shapes :
+				pl.cms_label = 1
+				ROOT.gPad.SetLogy(0)
+				shapes['ttw'] = histos['ttw'].Clone()
+				leg_entries = []
+
+				for process in ['ttw', 'ttbar'] :
+					shape = shapes[process]
+					shape.Scale(1. / shape.Integral())
+					leg_entries.append([shape, pl.get_processName(process), 'f'])
+					shape.SetLineColor(pl.get_fillColor(process))
+					shape.SetFillColor(pl.get_fillColor(process))
+					shape.SetFillStyle(pl.get_fillStyle(process))
+
+				leg = pl.draw_legend(leg_entries)
+				pl.get_maximum(shapes.values())
+
+				shapes['ttw'  ].Draw('hist')
+				shapes['ttbar'].Draw('hist same')
+
+				shapes['ttw'  ].GetXaxis().SetTitle(pl.get_varName(var))
+				shapes['ttw'  ].GetYaxis().SetTitle('Normalised to Unity')
+
+				pl.draw_cmsLine()
+				leg.Draw()
+
+				path = '%sObsMCPlots/%s/Shapes/' % (self.path, sel.name)
+				prefix = ''
+				suffix = ''
+				if not pu_weight : suffix = '_noPUWeight'
+				helper.mkdir(path)
+				canvas.Update()
+				if TeX_switch : format_str = 'tex'
+				else          : format_str = 'pdf'
+				canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
 
 
 

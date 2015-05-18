@@ -222,12 +222,14 @@ class ttvStyle(object) :
 		self.process_names['zjets'] = 'DY+jets'
 		self.process_names['qcd'  ] = 'QCD'
 		self.process_names['top'  ] = 'Top'
+		self.process_names['ttbar'] = 't#bar{t}'
 		if TeX_switch is True :
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
 			self.process_names['wz'   ] = '\\wz'
 			self.process_names['wjets'] = '\\wjets'
 			self.process_names['zjets'] = '\\zjets'
+			self.process_names['ttbar'] = '\\ttbar'
 			if self.short_names is True :
 				self.process_names['fake' ] = 'Lept.\\ MisID'
 				self.process_names['chmid'] = 'Ch.\\ MisID'
@@ -312,6 +314,15 @@ class ttvStyle(object) :
 		if process in self.colors.keys() :
 			return self.colors[process]
 		return 2
+
+
+	def get_fillStyle(self, process) :
+		if process == 'ttw' :
+			return 3004
+		elif process == 'ttbar' :
+			return 3005
+		else :
+			return 1001
 
 
 	def get_varName(self, var) :
