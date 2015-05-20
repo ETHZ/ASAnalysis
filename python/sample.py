@@ -215,7 +215,7 @@ class sample :
 
 	@staticmethod
 	def get_samples(channel, samples) :
-		if channel == 'DYJets' or channel == 'zjets' : return ['DYJets', 'DYJets10To50']
+		if channel == 'DYJets' or channel == 'zjets' : return ['DYJets']#, 'DYJets10To50']
 		if channel == 'WJets'  or channel == 'wjets' : return ['WJets' ]
 		if channel == 'TTW'    or channel == 'ttw' : return ['TTbarW']
 		if channel == 'TTZ'    or channel == 'ttz' : return ['TTbarZ']
