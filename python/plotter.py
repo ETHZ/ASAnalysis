@@ -1849,13 +1849,6 @@ class plotter :
 				canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
 
 
-
-#		pl = ttvplot.ttvplot(self.path + 'ObsMCPlots/%s/'%sel.name, '2L', self.lumi, 2)
-#		pl.save_plot_1d(histos['obs'], histos['pred'], var)
-#		raw_input('ok? ')
-#		raw_input('ok? ')
-
-
 	def get_mcHistoFromTree(self, tree, samples, var, name, settings, weight = '1.', sel_str = '1==1') :
 		'''getting histogram for a list of samples'''
 
@@ -1871,34 +1864,7 @@ class plotter :
 			tree.Draw(var+'>>'+h_tmp_name, '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str), 'goff')
 			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
 			print '%10d events: %10.1f * %8.2f = %10.1f' % (h_tmp.GetEntries(), h_tmp.Integral(), self.lumi / self.samples[sample].getLumi(), self.lumi / self.samples[sample].getLumi() * h_tmp.Integral())
-#			print '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str)
-#			print '%10s: %5e entries scaling with %e' % (sample, h_tmp.GetEntries(), self.lumi / self.samples[sample].getLumi())
 		return histo
-
-		# getting remaining histograms
-#		tree.Draw(var_str+'>>'+h_tmp_name, 'HLTSF*PUWeight*(SName == \"%s\" && %s' % (top, sel.get_selectionString()))
-
-#		# getting histograms from results tree
-#		tree.Draw(var_str+'>>'+h_obs_name  , '%f*(SType < 3 && %s' % (1., sel.get_selectionString())
-#		tree.Draw(var_str+'>>'+h_top_name  , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
-#		tree.Draw(var_str+'>>'+h_zjets_name, '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
-#		tree.Draw(var_str+'>>'+h_wjets_name, '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
-#		tree.Draw(var_str+'>>'+h_rare_name , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
-#		tree.Draw(var_str+'>>'+h_wz_name   , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
-#		tree.Draw(var_str+'>>'+h_ttz_name  , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
-#		tree.Draw(var_str+'>>'+h_ttw_name  , '%f*(SType < 3 && %s' % (weight, sel.get_selectionString())
-				
-
-#		last_sample = ''
-#		for event in tree :
-#			if last_sample != str(event.SName) :
-#				print '[status] processing %s..' % (event.SName)
-#				last_sample = str(event.SName)
-#
-#			if not sel.passes_selection(event) : continue
-#
-#			# data
-#			if event.SType < 3 :
 
 
 	def make_KinPlots(self) :
