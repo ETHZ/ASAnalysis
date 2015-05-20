@@ -1718,8 +1718,8 @@ class plotter :
 		processes.append('ttw'  )
 
 		## printouts for debugging
-		for process in processes :
-			for sample in self.get_samples(process) : print self.samples[sample]
+#		for process in processes :
+#			for sample in self.get_samples(process) : print self.samples[sample]
 
 		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
 		for process in processes :
