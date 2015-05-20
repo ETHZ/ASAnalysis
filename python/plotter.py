@@ -512,10 +512,6 @@ class plotter :
 		return (chmid, chmide)
 
 
-	def makeRatioControlPlots(self) :
-		foo = 0
-
-
 	def make_IntPredictions(self, sel, output_path, suffix = '', blind = False, noSyst = False, IntMC = False) :
 		'''
 		makes predictions for all systematics with a given selection and returns a nested dictionary of result objects
@@ -1865,10 +1861,6 @@ class plotter :
 			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
 			print '%10d events: %10.1f * %8.2f = %10.1f' % (h_tmp.GetEntries(), h_tmp.Integral(), self.lumi / self.samples[sample].getLumi(), self.lumi / self.samples[sample].getLumi() * h_tmp.Integral())
 		return histo
-
-
-	def make_KinPlots(self) :
-		foo = 0
 
 
 	def make_closureTest(self, tree_path, samples, sel) :
