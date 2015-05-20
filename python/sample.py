@@ -215,14 +215,14 @@ class sample :
 
 	@staticmethod
 	def get_samples(channel, samples) :
-		if channel == 'DYJets' : return ['DYJets']#, 'DYJets10To50']
-		if channel == 'WJets'  : return ['WJets' ]
-		if channel == 'TTW'    : return ['TTbarW']
-		if channel == 'TTZ'    : return ['TTbarZ']
-		if channel == 'WZ'     : return ['WZTo3LNu']
-		if channel == 'TTH'    : return ['HWW', 'HZZ', 'HTauTau']
+		if channel == 'DYJets' or channel == 'zjets' : return ['DYJets', 'DYJets10To50']
+		if channel == 'WJets'  or channel == 'wjets' : return ['WJets' ]
+		if channel == 'TTW'    or channel == 'ttw' : return ['TTbarW']
+		if channel == 'TTZ'    or channel == 'ttz' : return ['TTbarZ']
+		if channel == 'WZ'     or channel == 'wz' : return ['WZTo3LNu']
+		if channel == 'TTH'    or channel == 'tth' : return ['HWW', 'HZZ', 'HTauTau']
+		if channel == 'TTJets' or channel == 'ttbar'  : return ['TTJets']
 		if channel == 'Multiboson' : return ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
-		if channel == 'ttbar'  : return ['TTJets']
 		samplelist = []
 		for name, sample in samples.iteritems() :
 			if   channel == 'DoubleMu' :
@@ -237,10 +237,10 @@ class sample :
 				if (sample.datamc == 0) and ((sample.channel == 0) or (sample.channel == 5)) : samplelist.append(sample.name)
 			elif channel == 'MC' :
 				if (sample.datamc > 0) : samplelist.append(sample.name)
-			elif channel == 'QCD' :
+			elif channel == 'QCD' or channel == 'qcd' :
 				if (sample.getType() == 1) : samplelist.append(sample.name)
-			elif channel == 'Top' :
+			elif channel == 'Top' or channel == 'top' :
 				if (sample.getType() == 2) : samplelist.append(sample.name)
-			elif channel == 'Rare' :
+			elif channel == 'Rare' or channel == 'rare' :
 				if (sample.getSampleType() == 15) and (sample.name != 'TTbarW') and (sample.name != 'TTbarZ') and (sample.name != 'WZTo3LNu') : samplelist.append(sample.name)
 		return samplelist

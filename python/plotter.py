@@ -1672,10 +1672,10 @@ class plotter :
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
 		if sel.minNjets < 1 :
-			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), plot_shapes = True)
+			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), plot_shapes = False)
 			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
 			return
-#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel), plot_shapes = True)
+#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel), plot_shapes = False)
 		self.plot_ObsMC(tree, sel, 'pT2'  , config.get_histoBins('pT2'  , sel), plot_shapes = True)
 		settings = config.get_histoBins('HT'   , sel)
 		settings['nbins'] *= 2
@@ -1697,6 +1697,7 @@ class plotter :
 		shapes = {}
 
 		weight_str = 'HLTSF'
+#		weight_str = 'LepSF'
 		if pu_weight : weight_str += '*PUWeight'
 
 		############################
@@ -1709,62 +1710,6 @@ class plotter :
 		elif var == 'Int'   : var_str = 'Flavor'
 		else                : var_str = var
 
-		## printouts for debugging
-		print self.samples['MuEnr15'].xsec
-		print self.samples['MuEnr15'].getLumi()
-		for sample in self.get_samples('Top'   ) : print self.samples[sample]
-		for sample in self.get_samples('DYJets') : print self.samples[sample]
-		for sample in self.get_samples('WJets' ) : print self.samples[sample]
-		for sample in self.get_samples('Rare'  ) : print self.samples[sample]
-		for sample in self.get_samples('WZ'    ) : print self.samples[sample]
-		for sample in self.get_samples('TTZ'   ) : print self.samples[sample]
-		for sample in self.get_samples('TTW'   ) : print self.samples[sample]
-		for sample in self.get_samples('QCD'   ) : print self.samples[sample]
-#		for sample in self.get_samples('QCD'   ) :
-#			print '%10s scale: %e' % (sample, (self.lumi/self.samples[sample].getLumi()))
-#		for sample in self.samples :
-#			print sample
-#		print self.samples.keys()
-		missing = []
-		for sample in self.samples :
-			if sample in self.get_samples('Top'   ) : continue
-			if sample in self.get_samples('DYJets') : continue
-			if sample in self.get_samples('WJets' ) : continue
-			if sample in self.get_samples('Rare'  ) : continue
-			if sample in self.get_samples('WZ'    ) : continue
-			if sample in self.get_samples('TTZ'   ) : continue
-			if sample in self.get_samples('TTW'   ) : continue
-			if sample in self.get_samples('QCD'   ) : continue
-			if sample in self.get_samples('DoubleMu' ) : continue
-			if sample in self.get_samples('DoubleEle') : continue
-			if sample in self.get_samples('MuEG'     ) : continue
-			if sample in self.get_samples('SingleMu' ) : continue
-			if sample in ['WJets2', 'WJets1'] : continue
-			missing.append(sample)
-		print missing
-#		return
-		## end of printouts
-
-		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
-		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
-		h_top_name   = 'h_top_'   + var + sel.name; histos['top'  ] = self.get_mcHistoFromTree(tree, self.get_samples('Top'   ), var_str, h_top_name  , settings, weight_str, sel.get_selectionString())
-		h_ttbar_name = 'h_ttbar_' + var + sel.name; shapes['ttbar'] = self.get_mcHistoFromTree(tree, self.get_samples('ttbar' ), var_str, h_ttbar_name, settings, weight_str, sel.get_selectionString())
-		h_zjets_name = 'h_zjets_' + var + sel.name; histos['zjets'] = self.get_mcHistoFromTree(tree, self.get_samples('DYJets'), var_str, h_zjets_name, settings, weight_str, sel.get_selectionString())
-		h_wjets_name = 'h_wjets_' + var + sel.name; histos['wjets'] = self.get_mcHistoFromTree(tree, self.get_samples('WJets' ), var_str, h_wjets_name, settings, weight_str, sel.get_selectionString())
-		h_rare_name  = 'h_rare_'  + var + sel.name; histos['rare' ] = self.get_mcHistoFromTree(tree, self.get_samples('Rare'  ), var_str, h_rare_name , settings, weight_str, sel.get_selectionString())
-		h_wz_name    = 'h_wz_'    + var + sel.name; histos['wz'   ] = self.get_mcHistoFromTree(tree, self.get_samples('WZ'    ), var_str, h_wz_name   , settings, weight_str, sel.get_selectionString())
-		h_ttz_name   = 'h_ttz_'   + var + sel.name; histos['ttz'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTZ'   ), var_str, h_ttz_name  , settings, weight_str, sel.get_selectionString())
-		h_ttw_name   = 'h_ttw_'   + var + sel.name; histos['ttw'  ] = self.get_mcHistoFromTree(tree, self.get_samples('TTW'   ), var_str, h_ttw_name  , settings, weight_str, sel.get_selectionString())
-		h_qcd_name   = 'h_qcd_'   + var + sel.name; histos['qcd'  ] = self.get_mcHistoFromTree(tree, self.get_samples('QCD'   ), var_str, h_qcd_name  , settings, weight_str, sel.get_selectionString())
-		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
-		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
-		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
-		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
-
-		# getting data
-		print '[status] getting %s histogram from data..' % var
-		tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
-
 		# processes
 		processes = []
 		processes.append('top'  )
@@ -1773,13 +1718,45 @@ class plotter :
 		processes.append('rare' )
 		processes.append('wz'   )
 		processes.append('qcd'  )
-#		processes.append('miss' )
 		processes.append('ttz'  )
 		processes.append('ttw'  )
+
+		## printouts for debugging
+		for process in processes :
+			for sample in self.get_samples(process) : print self.samples[sample]
+
+		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
+		for process in processes :
+			h_name   = 'h_%s_%s_%s' % (process, var, sel.name)
+			histos[process] = self.get_mcHistoFromTree(tree, self.get_samples(process), var_str, h_name, settings, weight_str, sel.get_selectionString())
+		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
+		h_ttbar_name = 'h_ttbar_' + var + sel.name; shapes['ttbar'] = self.get_mcHistoFromTree(tree, self.get_samples('ttbar' ), var_str, h_ttbar_name, settings, weight_str, sel.get_selectionString())
+		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
+		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
+		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
+
+		# missing samples
+		missing = []
+		for sample in self.samples :
+			if any([sample in self.get_samples(i) for i in processes]) : continue
+			if sample in self.get_samples('DoubleMu' ) : continue
+			if sample in self.get_samples('DoubleEle') : continue
+			if sample in self.get_samples('MuEG'     ) : continue
+			if sample in self.get_samples('SingleMu' ) : continue
+			if sample in ['WJets2', 'WJets1'] : continue
+			missing.append(sample)
+		print '[info] NOT considered samples: %s' % ', '.join(missing)
+		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
+#		processes.insert(0, 'miss')
+
+		# getting data
+		print '[status] getting %s histogram from data..' % var
+		tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
 
 		# adding mc samples
 		for histo in [histos['bgtot'], histos['pred'], histos['stack']] :
 			for process in processes :
+				if process not in histos : continue
 				if 'h_bgtot' in histo.GetName() and process == 'ttw' : continue
 				histo.Add(histos[process])
 
@@ -1794,10 +1771,10 @@ class plotter :
 			leg_entries = []
 			leg_entries.append([histos['obs'], pl.get_processName('obs'), 'lp'])
 			for process in reversed(processes) :
+				if process not in histos : continue
 				histo = histos[process]
 				leg_entries.append([histo, pl.get_processName(process), 'f'])
 				histo.SetFillColor(pl.get_fillColor(process))
-				print process, pl.get_processName(process)
 			leg_entries.append([histos['pred'], 'MC uncertainty', 'fl'])
 			leg = pl.draw_legend(leg_entries)
 
@@ -1893,7 +1870,7 @@ class plotter :
 			h_tmp.Sumw2()
 			tree.Draw(var+'>>'+h_tmp_name, '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str), 'goff')
 			histo.Add(h_tmp, self.lumi / self.samples[sample].getLumi())
-			print '%10d events' % histo.GetEntries()
+			print '%10d events: %10.1f * %8.2f = %10.1f' % (h_tmp.GetEntries(), h_tmp.Integral(), self.lumi / self.samples[sample].getLumi(), self.lumi / self.samples[sample].getLumi() * h_tmp.Integral())
 #			print '%s*(SName == \"%s\" %s)' % (weight, sample, sel_str)
 #			print '%10s: %5e entries scaling with %e' % (sample, h_tmp.GetEntries(), self.lumi / self.samples[sample].getLumi())
 		return histo
