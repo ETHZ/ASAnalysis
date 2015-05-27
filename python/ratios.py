@@ -534,7 +534,7 @@ class ratios :
 					y_title = pl.get_eventsPerGeVString(bin_width)
 				hstack.GetXaxis().SetTitle(pl.get_varName(ratiovar))
 				hstack.GetYaxis().SetTitle(y_title)
-				histos[tl]['data'].Draw('psame')
+				histos[tl]['data'].Draw('PE X0 same')
 				pl.draw_cmsLine()
 				canvas.cd()
 				leg.Draw()
