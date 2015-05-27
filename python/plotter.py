@@ -1668,8 +1668,8 @@ class plotter :
 		file = ROOT.TFile.Open(skimtree_path, 'READ')
 		tree = file.Get('SigEvents')
 		if sel.minNjets < 1 :
-			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), plot_shapes = False)
-			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
+			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), weight_str = 'LepSF', plot_shapes = False, pu_weight = True)
+			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), weight_str = 'LepSF', plot_shapes = False, pu_weight = False)
 			return
 #		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel), plot_shapes = False)
 		self.plot_ObsMC(tree, sel, 'pT2'  , config.get_histoBins('pT2'  , sel), plot_shapes = True)
@@ -1680,7 +1680,7 @@ class plotter :
 #		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
 
 
-	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, pu_weight = True, plot_shapes = False) :
+	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, weight_str = 'HLTSF', pu_weight = True, plot_shapes = False, plot_missing_samples = False) :
 
 		nbins = settings['nbins']
 		min   = settings['min'  ]
@@ -1692,8 +1692,6 @@ class plotter :
 		histos = {}
 		shapes = {}
 
-		weight_str = 'HLTSF'
-#		weight_str = 'LepSF'
 		if pu_weight : weight_str += '*PUWeight'
 
 		############################
@@ -1742,8 +1740,9 @@ class plotter :
 			if sample in ['WJets2', 'WJets1'] : continue
 			missing.append(sample)
 		print '[info] NOT considered samples: %s' % ', '.join(missing)
-		h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
-#		processes.insert(0, 'miss')
+		if plot_missing_samples :
+			h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
+			processes.insert(0, 'miss')
 
 		# getting data
 		print '[status] getting %s histogram from data..' % var
