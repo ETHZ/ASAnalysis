@@ -391,6 +391,7 @@ class ttvStyle(object) :
 	def save_canvas(self, canvas, path, file_name) :
 		if not path.endswith('/') : path += '/'
 		helper.mkdir(path)
+		canvas.Update()
 		if self.TeX_switch :
 			canvas.Print('%s%s.tex' % (path, file_name))
 		else :
