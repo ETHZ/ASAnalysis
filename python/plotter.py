@@ -166,6 +166,7 @@ class plotter :
 #			self.plot_DiffMC(self.selections['2J0bJOS'        ])
 			self.plot_DiffMC(self.selections['0J0bJOS'        ])
 			self.plot_DiffMC(self.selections['3J1bJ'    ])
+#			self.plot_DiffMC(self.selections['0J0bJOS_loose'  ])
 #			self.plot_DiffMC(self.selections['3J1bJOS'    ])
 #			self.plot_DiffMC(self.selections['3J0bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
