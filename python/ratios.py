@@ -514,6 +514,7 @@ class ratios :
 				hstack = ROOT.THStack('hs_%s' % ratiovar, '%s' % ratiovar)
 				leg_entries = []
 				for process in processes :
+					histos[tl][process].UseCurrentStyle()
 					histos[tl][process].SetFillColor(pl.get_fillColor(process))
 					if not (process == 'data' or process == 'obs') :
 						hstack.Add(histos[tl][process])
@@ -537,5 +538,6 @@ class ratios :
 				pl.draw_cmsLine()
 				canvas.cd()
 				leg.Draw()
-				canvas.UseCurrentStyle()
+#				canvas.UseCurrentStyle()
+				canvas.Update()
 				pl.save_canvas(canvas, path, 'N%s_%s' % (tl, ratiovar))
