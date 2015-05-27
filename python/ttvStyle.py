@@ -10,7 +10,7 @@ class ttvStyle(object) :
 		self.ttvStyle = ROOT.TStyle('ttvStyle','ttV Style')
 		self.lumi = lumi
 		self.cms_label = cms_label
-		self.TeX_switch = TeX_switch
+		self._TeX_switch = TeX_switch
 		self.short_names = short_names
 
 		# random variable
@@ -20,6 +20,11 @@ class ttvStyle(object) :
 		self.define_colors()
 		self.define_processNames(self.TeX_switch)
 		self.define_varNames()
+
+
+	@property
+	def TeX_switch(self) :
+		return self._TeX_switch
 
 
 	def set_style(self) :
