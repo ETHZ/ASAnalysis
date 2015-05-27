@@ -1759,7 +1759,7 @@ class plotter :
 		set_maximum = True
 
 		for TeX_switch in [True, False] :
-			pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 2, TeX_switch = TeX_switch)
+			pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 0, TeX_switch = TeX_switch)
 			canvas = pl.get_canvas(var)
 			canvas.cd()
 
