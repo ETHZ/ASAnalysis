@@ -312,7 +312,7 @@ class ttvStyle(object) :
 			self.var_names['pratio'] = '\\pratio = \\nt / \\nl'
 			self.var_names['effSig'     ] = '\\text{\\effSig{} (\\si{\\percent})}'
 			self.var_names['sigexp'     ] = '\\sigexp'
-			self.var_names['XSecErr'    ] = '\\text{Exp. Cross Section Error (\\si{\\femto\\barn})}'
+			self.var_names['XSecErr'    ] = '\\text{\xsecexperr{} (\\si{\\femto\\barn})}'
 
 
 	def get_fillColor(self, process) :
