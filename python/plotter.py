@@ -462,8 +462,7 @@ class plotter :
 		num_err = math.sqrt(res[ch_str][chan].tot_exp_err**2 - res[ch_str][chan].cmid_err**2) # take stat+syst error of all other estimations into account
 		den_err = res[ch_str][chan].cmid_staterr
 
-		ratio = num / den
-		ratio_err = ratio * math.sqrt((num_err/num)**2 + (den_err/den)**2)
+		(ratio, ratio_err) = helper.ratio_withError(num, num_err, den, den_err)
 		print '         charge mis-ID SF: %4s +- %4s' % helper.get_roundedNumber(ratio, ratio_err)
 
 		return (ratio, ratio_err)
