@@ -52,7 +52,7 @@ def ratio_withError(numerator, numerator_err, denominator, denominator_err) :
 	den     = float(denominator    )
 	den_err = float(denominator_err)
 	ratio     = num / den
-	ratio_err = ratio * (num_err/num) / (den_err/den)
+	ratio_err = ratio * math.sqrt((num_err/num)**2 + (den_err/den)**2)
 	return (ratio, ratio_err)
 
 
