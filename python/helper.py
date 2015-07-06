@@ -46,6 +46,16 @@ def ratioWithPoissErrors(numerator, denominator) :
 ## }
 
 
+def product_withError(factor1, factor1_err, factor2, factor2_err) :
+	fact1     = float(factor1    )
+	fact1_err = float(factor1_err)
+	fact2     = float(factor2    )
+	fact2_err = float(factor2_err)
+	prod      = fact1 * fact2
+	prod_err  = prod * math.sqrt((fact1_err/fact1)**2 + (fact2_err/fact2)**2)
+	return (prod, prod_err)
+
+
 def ratio_withError(numerator, numerator_err, denominator, denominator_err) :
 	num     = float(numerator      )
 	num_err = float(numerator_err  )
