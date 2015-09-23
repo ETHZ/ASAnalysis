@@ -229,11 +229,16 @@ class ttvStyle(object) :
 		self.process_names['top'  ] = 'Top'
 		self.process_names['ttbar'] = 't#bar{t}'
 		if TeX_switch is True :
+			self.process_names['obs'  ] = '\\data'
+			self.process_names['fake' ] = '\\fakes'
+			self.process_names['chmid'] = '\\cmid'
+			self.process_names['rare' ] = '\\irreducible'
 			self.process_names['ttz'  ] = '\\ttz'
 			self.process_names['ttw'  ] = '\\ttw'
 			self.process_names['wz'   ] = '\\wz'
 			self.process_names['wjets'] = '\\wjets'
 			self.process_names['zjets'] = '\\zjets'
+			self.process_names['qcd'  ] = '\\qcd'
 			self.process_names['ttbar'] = '\\ttbar'
 			if self.short_names is True :
 				self.process_names['fake' ] = 'Lept.\\ MisID'
