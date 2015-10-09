@@ -1673,6 +1673,7 @@ class plotter :
 			return
 #		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel), plot_shapes = False)
 		self.plot_ObsMC(tree, sel, 'pT2'  , config.get_histoBins('pT2'  , sel), plot_shapes = True)
+		self.plot_ObsMC(tree, sel, 'NbJmed', config.get_histoBins('NbJmed'  , sel), plot_shapes = True)
 		settings = config.get_histoBins('HT'   , sel)
 		settings['nbins'] *= 2
 		self.plot_ObsMC(tree, sel, 'HT'   , settings                          , plot_shapes = True)
