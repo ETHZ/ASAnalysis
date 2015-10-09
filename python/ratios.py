@@ -427,7 +427,13 @@ class ratios :
 		pl.get_maximum([h_data, h_mc], scale = 1.4, set_maximum = True)
 		canvas = pl.get_canvas()
 		canvas.cd()
-		leg_entries = [[h_data, 'Data', 'lp'], [h_mc, 'Simulation', 'lp']]
+		if pl.TeX_switch :
+			data_str = '\\data'
+			sim_str  = '\\simulation'
+		else :
+			data_str = 'Data'
+			sim_str  = 'Simulation'
+		leg_entries = [[h_data, data_str, 'lp'], [h_mc, sim_str, 'lp']]
 		leg = pl.draw_legend(leg_entries)
 		h_mc.Draw()
 		h_mc.GetXaxis().SetTitle(x_title)
