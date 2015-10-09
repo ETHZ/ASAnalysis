@@ -139,7 +139,7 @@ class plotter :
 		if RatioControlPlots != False :
 			if RatioControlPlots == 'el' :
 				self.fpr.make_controlPlots(self.get_samples('DoubleEle'), RatioControlPlots)
-				self.fpr.make_controlPlots(self.get_samples('MC'), RatioControlPlots, datamc = 1)
+				self.fpr.make_controlPlots(self.get_samples('MC'       ), RatioControlPlots, datamc = 1)
 			if RatioControlPlots == 'mu17' :
 				self.fpr.make_controlPlots(self.get_samples('DoubleMu' ), RatioControlPlots)
 			if RatioControlPlots == 'mu24' :
