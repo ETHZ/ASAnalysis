@@ -46,10 +46,10 @@ class ratios :
 			(self.h2_ElfRatio   , self.h_ElfRatio_pt   , self.h_ElfRatio_eta   , self.h_ElfRatio_nv   , self.ElfRatio   , self.ElfRatioE   ) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF)
 			(self.h2_MupRatio   , self.h_MupRatio_pt   , self.h_MupRatio_eta   , self.h_MupRatio_nv   , self.MupRatio   , self.MupRatioE   ) = self.calculateRatio(mu_samples, 'MM', 'ZDecay')
 			(self.h2_ElpRatio   , self.h_ElpRatio_pt   , self.h_ElpRatio_eta   , self.h_ElpRatio_nv   , self.ElpRatio   , self.ElpRatioE   ) = self.calculateRatio(el_samples, 'EE', 'ZDecay')
-			print '         MufRatio: %f +/- %f' % (self.MufRatio, self.MufRatioE)
-			print '         ElfRatio: %f +/- %f' % (self.ElfRatio, self.ElfRatioE)
-			print '         MupRatio: %f +/- %f' % (self.MupRatio, self.MupRatioE)
-			print '         ElpRatio: %f +/- %f' % (self.ElpRatio, self.ElpRatioE)
+			print '         MufRatio: %s +- %s' % helper.get_roundedNumber(self.MufRatio, self.MufRatioE)
+			print '         ElfRatio: %s +- %s' % helper.get_roundedNumber(self.ElfRatio, self.ElfRatioE)
+			print '         MupRatio: %s +- %s' % helper.get_roundedNumber(self.MupRatio, self.MupRatioE)
+			print '         ElpRatio: %s +- %s' % helper.get_roundedNumber(self.ElpRatio, self.ElpRatioE)
 
 		else :
 #			mu_samples_fRatio = copy.deepcopy(mu_samples)
@@ -64,10 +64,10 @@ class ratios :
 			(self.h2_ElfRatio_MC, self.h_ElfRatio_pt_MC, self.h_ElfRatio_eta_MC, self.h_ElfRatio_nv_MC, self.ElfRatio_MC, self.ElfRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'SigSup', applyEwkSubtr , EWK_SF, datamc)
 			(self.h2_MupRatio_MC, self.h_MupRatio_pt_MC, self.h_MupRatio_eta_MC, self.h_MupRatio_nv_MC, self.MupRatio_MC, self.MupRatioE_MC) = self.calculateRatio(mu_samples, 'MM', 'ZDecay', datamc = datamc)
 			(self.h2_ElpRatio_MC, self.h_ElpRatio_pt_MC, self.h_ElpRatio_eta_MC, self.h_ElpRatio_nv_MC, self.ElpRatio_MC, self.ElpRatioE_MC) = self.calculateRatio(el_samples, 'EE', 'ZDecay', datamc = datamc)
-			print '         MufRatio: %f +/- %f' % (self.MufRatio_MC, self.MufRatioE_MC)
-			print '         ElfRatio: %f +/- %f' % (self.ElfRatio_MC, self.ElfRatioE_MC)
-			print '         MupRatio: %f +/- %f' % (self.MupRatio_MC, self.MupRatioE_MC)
-			print '         ElpRatio: %f +/- %f' % (self.ElpRatio_MC, self.ElpRatioE_MC)
+			print '         MufRatio: %s +- %s' % helper.get_roundedNumber(self.MufRatio_MC, self.MufRatioE_MC)
+			print '         ElfRatio: %s +- %s' % helper.get_roundedNumber(self.ElfRatio_MC, self.ElfRatioE_MC)
+			print '         MupRatio: %s +- %s' % helper.get_roundedNumber(self.MupRatio_MC, self.MupRatioE_MC)
+			print '         ElpRatio: %s +- %s' % helper.get_roundedNumber(self.ElpRatio_MC, self.ElpRatioE_MC)
 
 
 	def calculateRatio(self, samples, chan_str, fp, applyEwkSubtr = False, EWK_SF = {}, datamc = 0) :
