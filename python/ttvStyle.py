@@ -3,6 +3,8 @@ import ROOT
 from array import array
 import helper
 import ConfigParser
+import os
+import sys
 
 
 class ttvStyle(object) :
@@ -29,6 +31,9 @@ class ttvStyle(object) :
 
 
 	def parse_styleSettings(self, config_file, style_name = 'ttvStyle', style_title = 'ttV Style') :
+		if not os.path.exists(config_file) :
+			print '[ERROR] %s does not exist!' % config_file
+			sys.exit(1)
 		style = ROOT.TStyle(style_name, style_title)
 		config = ConfigParser.ConfigParser()
 		config.optionxform = str # case sensitive options
