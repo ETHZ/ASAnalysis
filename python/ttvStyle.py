@@ -9,7 +9,9 @@ import sys
 
 class ttvStyle(object) :
 
-	def __init__(self, lumi = -1., cms_label = 0, TeX_switch = False, short_names = False, config_file = 'ttvStyle.cfg') :
+	def __init__(self, lumi = -1., cms_label = 0, TeX_switch = False, short_names = False, config_file = '') :
+		if config_file == '' :
+			config_file = '%s/ttvStyle.cfg' % os.path.dirname(os.path.realpath(__file__))
 		self.ttvStyle = self.parse_styleSettings(config_file, style_name = 'ttvStyle', style_title = 'ttV Style')
 		self.lumi = lumi
 		self.cms_label = cms_label
