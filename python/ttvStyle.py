@@ -2,12 +2,13 @@
 import ROOT
 from array import array
 import helper
+import ConfigParser
 
 
 class ttvStyle(object) :
 
-	def __init__(self, lumi = -1., cms_label = 0, TeX_switch = False, short_names = False) :
-		self.ttvStyle = ROOT.TStyle('ttvStyle','ttV Style')
+	def __init__(self, lumi = -1., cms_label = 0, TeX_switch = False, short_names = False, config_file = 'ttvStyle.cfg') :
+		self.ttvStyle = self.parse_styleSettings(config_file, style_name = 'ttvStyle', style_title = 'ttV Style')
 		self.lumi = lumi
 		self.cms_label = cms_label
 		self._TeX_switch = TeX_switch
@@ -27,133 +28,27 @@ class ttvStyle(object) :
 		return self._TeX_switch
 
 
+	def parse_styleSettings(self, config_file, style_name = 'ttvStyle', style_title = 'ttV Style') :
+		style = ROOT.TStyle(style_name, style_title)
+		config = ConfigParser.ConfigParser()
+		config.optionxform = str # case sensitive options
+		config.read(config_file)
+		for section in config.sections() :
+			for key, value_str in config.items(section) :
+				value = eval(value_str)
+				if type(value) is not tuple :
+					getattr(style, 'Set%s' % key)(value)
+				else :
+					getattr(style, 'Set%s' % key)(*value)
+		return style
+
+
 	def set_style(self) :
 		'''make all the style settings'''
 
 		# PostScript output
 		if self.TeX_switch : self.ttvStyle.SetPaperSize(15., 15.)
 
-		# canvas
-		self.ttvStyle.SetCanvasBorderMode(0)
-		self.ttvStyle.SetCanvasColor(ROOT.kWhite)
-		self.ttvStyle.SetCanvasDefH(600)
-		self.ttvStyle.SetCanvasDefW(600)
-		self.ttvStyle.SetCanvasDefX(0)
-		self.ttvStyle.SetCanvasDefY(0)
-
-		# pad
-#		self.ttvStyle.SetPadBorderMode(0)
-#		# self.ttvStyle.SetPadBorderSize(Width_t size = 1)
-#		self.ttvStyle.SetPadColor(ROOT.kWhite)
-#		self.ttvStyle.SetPadGridX(False)
-#		self.ttvStyle.SetPadGridY(False)
-#		self.ttvStyle.SetGridColor(0)
-#		self.ttvStyle.SetGridStyle(3)
-#		self.ttvStyle.SetGridWidth(1)
-
-		# frame
-		self.ttvStyle.SetFrameBorderMode(0)
-		self.ttvStyle.SetFrameBorderSize(1)
-		self.ttvStyle.SetFrameFillColor(0)
-		self.ttvStyle.SetFrameFillStyle(0)
-		self.ttvStyle.SetFrameLineColor(1)
-		self.ttvStyle.SetFrameLineStyle(1)
-		self.ttvStyle.SetFrameLineWidth(1)
-
-		# histo
-		self.ttvStyle.SetHistFillColor(63)
-		self.ttvStyle.SetHistFillStyle(1001) # 0: hollow, 1001: solid
-		self.ttvStyle.SetHistLineColor(1)
-		self.ttvStyle.SetHistLineStyle(0)
-		self.ttvStyle.SetHistLineWidth(1)
-#		# self.ttvStyle.SetLegoInnerR(Float_t rad = 0.5)
-#		# self.ttvStyle.SetNumberContours(Int_t number = 20)
-#
-		self.ttvStyle.SetEndErrorSize(0)
-##		self.ttvStyle.SetErrorMarker(20)
-#		#self.ttvStyle.SetErrorX(0.)
-#	
-		self.ttvStyle.SetMarkerStyle(20)
-		self.ttvStyle.SetMarkerColor(1)
-		self.ttvStyle.SetMarkerSize(1.1)
-#
-#		# fit/function
-##		self.ttvStyle.SetOptFit(1)
-		self.ttvStyle.SetOptFit(0)
-#		self.ttvStyle.SetFitFormat('5.4g')
-		self.ttvStyle.SetFuncColor(3)
-#		self.ttvStyle.SetFuncStyle(1)
-#		self.ttvStyle.SetFuncWidth(1)
-#
-#		# date
-#		self.ttvStyle.SetOptDate(0)
-#		# self.ttvStyle.SetDateX(Float_t x = 0.01)
-#		# self.ttvStyle.SetDateY(Float_t y = 0.01)
-
-		# statistics box
-#		self.ttvStyle.SetOptFile(0)
-		self.ttvStyle.SetOptStat(0)  # To display the mean and RMS:   SetOptStat('mr')
-		self.ttvStyle.SetStatColor(ROOT.kWhite)
-		self.ttvStyle.SetStatFont(42)
-		self.ttvStyle.SetStatFontSize(0.025)
-		self.ttvStyle.SetStatTextColor(1)
-#		self.ttvStyle.SetStatFormat('6.4g')
-		self.ttvStyle.SetStatBorderSize(0)
-#		self.ttvStyle.SetStatH(0.1)
-		self.ttvStyle.SetStatW(0.35)
-		self.ttvStyle.SetStatStyle(1001)
-		self.ttvStyle.SetStatX(0.9)
-		self.ttvStyle.SetStatY(0.9)
-
-		# margins
-		self.ttvStyle.SetPadTopMargin   (0.06)
-		self.ttvStyle.SetPadBottomMargin(0.14)
-		self.ttvStyle.SetPadLeftMargin  (0.14)
-		self.ttvStyle.SetPadRightMargin (0.06)
-
-		# global title
-		self.ttvStyle.SetOptTitle(0)
-		self.ttvStyle.SetTitleFont(42)
-		self.ttvStyle.SetTitleColor(1)
-#		self.ttvStyle.SetTitleTextColor(1)
-		self.ttvStyle.SetTitleFillColor(10)
-#		self.ttvStyle.SetTitleFontSize(0.05)
-#		# self.ttvStyle.SetTitleH(0)  # Set the height of the title box
-#		# self.ttvStyle.SetTitleW(0)  # Set the width of the title box
-#		# self.ttvStyle.SetTitleX(0)  # Set the position of the title box
-#		# self.ttvStyle.SetTitleY(0.985)  # Set the position of the title box
-#		# self.ttvStyle.SetTitleStyle(Style_t style = 1001)
-#		# self.ttvStyle.SetTitleBorderSize(2)
-#
-#		# axis titles
-#		self.ttvStyle.SetTitleColor(1, 'XYZ')
-		self.ttvStyle.SetTitleFont(42, 'XYZ')
-		self.ttvStyle.SetTitleSize(0.046, 'XYZ')
-#		self.ttvStyle.SetTitleXSize(0.02)  # Another way to set the size?
-#		self.ttvStyle.SetTitleYSize(0.02)
-#		self.ttvStyle.SetTitleXOffset(1.25)
-#		self.ttvStyle.SetTitleYOffset(1.25)
-		self.ttvStyle.SetTitleOffset(1.5, 'XYZ')  # Another way to set the Offset
-#
-#		# axis labels
-#		self.ttvStyle.SetLabelColor(1, 'XYZ')
-		self.ttvStyle.SetLabelFont(42, 'XYZ')
-		self.ttvStyle.SetLabelOffset(0.012, 'XYZ')
-		self.ttvStyle.SetLabelSize(0.04, 'XYZ')
-#
-#		# axis
-#		self.ttvStyle.SetAxisColor(1, 'XYZ')
-#		self.ttvStyle.SetStripDecimals(ROOT.kTRUE)
-#		self.ttvStyle.SetTickLength(0.03, 'XYZ')
-#		self.ttvStyle.SetNdivisions(510, 'XYZ')
-		self.ttvStyle.SetPadTickX(1)   # To get tick marks on the opposite side of the frame
-		self.ttvStyle.SetPadTickY(1)
-#
-#		# Change for log plots:
-#		self.ttvStyle.SetOptLogx(0)
-#		self.ttvStyle.SetOptLogy(0)
-#		self.ttvStyle.SetOptLogz(0)
-#
 #		# colors
 		self.ttvStyle.SetPalette(1)
 		stops = [0.00, 0.34, 0.61, 0.84, 1.00]
