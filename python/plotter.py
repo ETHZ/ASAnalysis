@@ -1466,11 +1466,11 @@ class plotter :
 
 		if add_total_bin : var += '_TotalBin'
 		cms_label = 0
-		if   sel.flavor == -2 : prefix = 'OS'
-		elif sel.flavor == -1 : prefix = 'ALL'
-		elif sel.flavor ==  0 : prefix = 'MM'
-		elif sel.flavor ==  1 : prefix = 'EM'
-		elif sel.flavor ==  2 : prefix = 'EE'
+		if   sel.flavor == -2 : prefix = '_OS'
+		elif sel.flavor == -1 : prefix = '_ALL'
+		elif sel.flavor ==  0 : prefix = '_MM'
+		elif sel.flavor ==  1 : prefix = '_EM'
+		elif sel.flavor ==  2 : prefix = '_EE'
 		else                  : prefix = ''
 		charge_str = ''
 		if sel.charge != 0 :
@@ -1478,6 +1478,14 @@ class plotter :
 			if sel.charge < 0 : charge_str = '^{-}'
 		if sel.name == 'final' : cms_label = 0
 #		cms_label = 2
+
+		# save histo data to table
+		suffix = ''
+		path = '%sObsPredPlots/%s/' % (self.path, sel.name)
+		helper.mkdir(path)
+		helper.save_histo2table(histos, ['obs', 'pred', 'fake', 'rare', 'chmid', 'wz', 'ttz', 'ttw'], '%sObsPred%s_%s%s.dat' % (path, prefix, var, suffix), self.lumi)
+
+		# save histo
 		for TeX_switch in [True, False] :
 			pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', lumi = self.lumi, cms_label = cms_label, asymmErr = True, TeX_switch = TeX_switch)
 			pl.save_plot(histos, var, prefix = prefix, suffix = '', charge_str = charge_str)
