@@ -1762,7 +1762,7 @@ class plotter :
 		if not pu_weight : suffix = '_noPUWeight'
 		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
 		helper.mkdir(path)
-		helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix))
+		helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), self.lumi)
 
 		set_maximum = True
 

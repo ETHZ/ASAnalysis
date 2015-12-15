@@ -169,23 +169,29 @@ def get_roundedNumberErrors(num, errors) :
 	return (num_str,) + tuple(err_str)
 
 
-def save_histo2table(histos, processes, path) :
+def save_histo2table(histos, processes, path, lumi = '') :
+	if lumi != '' :
+		lumi_str   = '\t%4.1f' % lumi
+		lumi_title = '\tlumi'
+	else :
+		lumi_str   = ''
+		lumi_title = ''
 	nbins = histos[processes[0]].GetNbinsX()
 	with open(path, 'w') as file :
-		file.write('binlow\tbincentre\t%s\t%s_err\n' % ('\t'.join(processes), '_err\t'.join(processes)))
+		file.write('binlow\tbincentre\t%s\t%s_err%s\n' % ('\t'.join(processes), '_err\t'.join(processes), lumi_title))
 		for bin in range(1, nbins+1) :
 			file.write('%f\t%f' % (histos[processes[0]].GetXaxis().GetBinLowEdge(bin), histos[processes[0]].GetXaxis().GetBinCenter(bin)))
 			for process in processes :
 				file.write('\t%f' % histos[process].GetBinContent(bin))
 			for process in processes :
 				file.write('\t%f' % histos[process].GetBinError(bin))
-			file.write('\n')
+			file.write('%s\n' % lumi_str)
 		file.write('%f\t%f' % (histos[processes[0]].GetXaxis().GetBinUpEdge(nbins), histos[processes[0]].GetXaxis().GetBinCenter(nbins)))
 		for process in processes :
 			file.write('\t%f' % histos[process].GetBinContent(nbins))
 		for process in processes :
 			file.write('\t%f' % histos[process].GetBinError(nbins))
-		file.write('\n')
+		file.write('%s\n' % lumi_str)
 
 
 def save_object(obj, filepath) :
