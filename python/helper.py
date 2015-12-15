@@ -169,6 +169,25 @@ def get_roundedNumberErrors(num, errors) :
 	return (num_str,) + tuple(err_str)
 
 
+def save_histo2table(histos, processes, path) :
+	nbins = histos[processes[0]].GetNbinsX()
+	with open(path, 'w') as file :
+		file.write('binlow\tbincentre\t%s\t%s_err\n' % ('\t'.join(processes), '_err\t'.join(processes)))
+		for bin in range(1, nbins+1) :
+			file.write('%f\t%f' % (histos[processes[0]].GetXaxis().GetBinLowEdge(bin), histos[processes[0]].GetXaxis().GetBinCenter(bin)))
+			for process in processes :
+				file.write('\t%f' % histos[process].GetBinContent(bin))
+			for process in processes :
+				file.write('\t%f' % histos[process].GetBinError(bin))
+			file.write('\n')
+		file.write('%f\t%f' % (histos[processes[0]].GetXaxis().GetBinUpEdge(nbins), histos[processes[0]].GetXaxis().GetBinCenter(nbins)))
+		for process in processes :
+			file.write('\t%f' % histos[process].GetBinContent(nbins))
+		for process in processes :
+			file.write('\t%f' % histos[process].GetBinError(nbins))
+		file.write('\n')
+
+
 def save_object(obj, filepath) :
 	dir = os.path.dirname(filepath)
 	mkdir(dir)
