@@ -1756,6 +1756,14 @@ class plotter :
 				if 'h_bgtot' in histo.GetName() and process == 'ttw' : continue
 				histo.Add(histos[process])
 
+		# save histo data to table
+		prefix = ''
+		suffix = ''
+		if not pu_weight : suffix = '_noPUWeight'
+		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
+		helper.mkdir(path)
+		helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix))
+
 		set_maximum = True
 
 		for TeX_switch in [True, False] :
@@ -1794,11 +1802,6 @@ class plotter :
 			histos['obs'  ].Draw('PE X0 same')
 			pl.draw_cmsLine()
 
-			path = '%sObsMCPlots/%s/' % (self.path, sel.name)
-			prefix = ''
-			suffix = ''
-			if not pu_weight : suffix = '_noPUWeight'
-			helper.mkdir(path)
 			canvas.Update()
 			if TeX_switch : format_str = 'tex'
 			else          : format_str = 'pdf'
