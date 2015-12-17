@@ -169,7 +169,7 @@ def get_roundedNumberErrors(num, errors) :
 	return (num_str,) + tuple(err_str)
 
 
-def save_histo2table(histos, processes, path, lumi = '') :
+def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '') :
 	if lumi != '' :
 		lumi_str   = '\t%4.1f' % lumi
 		lumi_title = '\tlumi'
@@ -178,7 +178,7 @@ def save_histo2table(histos, processes, path, lumi = '') :
 		lumi_title = ''
 	nbins = histos[processes[0]].GetNbinsX()
 	with open(path, 'w') as file :
-		file.write('binlow\tbincentre\t%s\t%s_err%s\n' % ('\t'.join(processes), '_err\t'.join(processes), lumi_title))
+		file.write('binlow\t%s\t%s\t%s_err%s\n' % (var, '\t'.join(processes), '_err\t'.join(processes), lumi_title))
 		for bin in range(1, nbins+1) :
 			file.write('%f\t%f' % (histos[processes[0]].GetXaxis().GetBinLowEdge(bin), histos[processes[0]].GetXaxis().GetBinCenter(bin)))
 			for process in processes :
