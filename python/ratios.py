@@ -512,6 +512,7 @@ class ratios :
 			else :
 				histos[tl]['wjets'].Scale(EWK_SF)
 				histos[tl]['zjets'].Scale(EWK_SF)
+			helper.save_histo2table(histos[tl], ['data', 'wjets', 'zjets', 'qcd'], '%sN%s_%s.dat' % (path, tl, ratiovar), ratiovar, lumi)
 			maximum = ttvStyle.ttvStyle.get_maximum(histos[tl].values())
 			for TeX_switch in [True, False] :
 				pl = ttvStyle.ttvStyle(lumi = lumi, cms_label = 0, TeX_switch = TeX_switch, short_names = False)
