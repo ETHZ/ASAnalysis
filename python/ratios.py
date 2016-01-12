@@ -392,28 +392,34 @@ class ratios :
 			cms_label = 0
 			pl = ttvStyle.ttvStyle(cms_label = cms_label, TeX_switch = TeX_switch)
 			pl.lumi = self.lumi_HLTMu24Eta2p1
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('fratio'), [20., 59.])
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', pl.get_varName('etam' ), pl.get_varName('fratio'))
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_pt , self.h_MufRatio_pt_MC , 'MufRatio_pt' , 'pTm'  , 'fratio', [20., 59.])
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_eta, self.h_MufRatio_eta_MC, 'MufRatio_eta', 'etam' , 'fratio')
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MufRatio_nv , self.h_MufRatio_nv_MC , 'MufRatio_nv' , 'NVrtx', 'fratio')
 			pl.lumi = self.lumi
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_pt , self.h_MupRatio_pt_MC , 'MupRatio_pt' , pl.get_varName('pTm'  ), pl.get_varName('pratio'))
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', pl.get_varName('etam' ), pl.get_varName('pratio'))
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_pt , self.h_MupRatio_pt_MC , 'MupRatio_pt' , 'pTm'  , 'pratio')
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_eta, self.h_MupRatio_eta_MC, 'MupRatio_eta', 'etam' , 'pratio')
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_MupRatio_nv , self.h_MupRatio_nv_MC , 'MupRatio_nv' , 'NVrtx', 'pratio')
 			pl.lumi = self.lumi_HLTEl17Jet30
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('fratio'), [20., 59.])
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', pl.get_varName('etae' ), pl.get_varName('fratio'))
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('fratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_pt , self.h_ElfRatio_pt_MC , 'ElfRatio_pt' , 'pTe'  , 'fratio', [20., 59.])
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_eta, self.h_ElfRatio_eta_MC, 'ElfRatio_eta', 'etae' , 'fratio')
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElfRatio_nv , self.h_ElfRatio_nv_MC , 'ElfRatio_nv' , 'NVrtx', 'fratio')
 			pl.lumi = self.lumi
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_pt , self.h_ElpRatio_pt_MC , 'ElpRatio_pt' , pl.get_varName('pTe'  ), pl.get_varName('pratio'))
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', pl.get_varName('etae' ), pl.get_varName('pratio'))
-			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , pl.get_varName('NVrtx'), pl.get_varName('pratio'))
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_pt , self.h_ElpRatio_pt_MC , 'ElpRatio_pt' , 'pTe'  , 'pratio')
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_eta, self.h_ElpRatio_eta_MC, 'ElpRatio_eta', 'etae' , 'pratio')
+			self.save_ratio_plot(pl, '%s%s' % (self.path, subdir), self.h_ElpRatio_nv , self.h_ElpRatio_nv_MC , 'ElpRatio_nv' , 'NVrtx', 'pratio')
 		#pl.save_plot_2d(self.h2_MufRatio, 'p_{T} [GeV]', '#eta')
 
 
-	def save_ratio_plot(self, pl, path, h_data, h_mc, name = '', x_title = '', y_title = '', x_range = None) :
+	def save_ratio_plot(self, pl, path, h_data, h_mc, name = '', x_var = '', y_var = '', x_range = None) :
 		if name == '' : name = h_mc.GetName()
+		x_title = pl.get_varName(x_var)
+		y_title = pl.get_varName(y_var)
 		h_data = h_data.Clone()
 		h_mc   = h_mc  .Clone()
+		histos = {}
+		histos['data'] = h_data
+		histos['mc'  ] = h_mc
+		helper.save_histo2table(histos = histos, processes = ['data', 'mc'], path = '%s/%s.dat' % (path, name), var = x_var, lumi = pl.lumi, last_bin = False)
 		h_data.UseCurrentStyle()
 		h_mc  .UseCurrentStyle()
 		if not x_range is None :
