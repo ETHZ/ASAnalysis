@@ -419,7 +419,7 @@ class ratios :
 		histos = {}
 		histos['data'] = h_data
 		histos['mc'  ] = h_mc
-		helper.save_histo2table(histos = histos, processes = ['data', 'mc'], path = '%s/%s.dat' % (path, name), var = x_var, lumi = pl.lumi, last_bin = False)
+		helper.save_histo2table(histos = histos, processes = ['data', 'mc'], path = '%s/%s.dat' % (path, name), var = x_var, lumi = pl.lumi, bin_width = False, last_bin = False)
 		h_data.UseCurrentStyle()
 		h_mc  .UseCurrentStyle()
 		if not x_range is None :
