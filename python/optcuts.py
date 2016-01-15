@@ -9,6 +9,7 @@ import ROOT
 import ttvStyle
 import copy
 import tables
+import csv
 
 
 class optcuts(plotter.plotter) :
@@ -138,9 +139,12 @@ class optcuts(plotter.plotter) :
 				efficiencies[ieff] = self.get_efficiency(self.path + 'SSDLYields_skim_Normal.root', sel, presel)
 			helper.save_object(efficiencies, efficiencies_path)
 
+		FoMs_list = ['ExpSign', 'XSecErr']
+		channels  = ['int', '3channels']
+		if charge == 0 : channels.append('6channels')
 		FoMs = {}
-		FoMs['ExpSign'] = {}
-		FoMs['XSecErr'] = {}
+		for FoM in FoMs_list :
+			FoMs[FoM] = {}
 
 		for FoM in FoMs :
 			signif_path = '%s%s_%s.pkl' % (self.cutspath, FoM, self.get_chargeString(charge))
@@ -156,9 +160,8 @@ class optcuts(plotter.plotter) :
 				print '========================='
 				print ''
 
-				FoMs[FoM]['int'      ] = {}
-				FoMs[FoM]['3channels'] = {}
-				if charge == 0 : FoMs[FoM]['6channels'] = {}
+				for chan in channels :
+					FoMs[FoM][chan] = {}
 				for ieff in effs :
 					# calculate efficiency of selection
 #					cuts = self.read_cuts(self.cutspath + 'cutsGA_Seff%d.txt' % (ieff))
@@ -195,6 +198,25 @@ class optcuts(plotter.plotter) :
 			       'results': results}
 			table.append(row)
 		tables.make_OptTable(self.cutspath, FoM, table, self.get_chargeString(charge))
+
+		with open('%sSeff_vs_ExpSign_XSecErr_%s.dat' % (self.cutspath, self.get_chargeString(charge)), 'wb') as csvfile :
+			writer = csv.writer(csvfile, delimiter = '\t')
+			row = ['sigeff']
+			for FoM in FoMs_list :
+				for chan in channels :
+					row.append('%s_%s' % (FoM, chan))
+			row.append('lumi')
+			writer.writerow(row)
+			for ieff in effs :
+				row = []
+				row.append(efficiencies[ieff][0])
+				for FoM in FoMs_list :
+					if FoM == 'XSecErr' : scale = 232.
+					else                : scale = 1.
+					for chan in channels :
+						row.append(FoMs[FoM][chan][ieff][1]*scale)
+				row.append(self.lumi)
+				writer.writerow(row)
 
 
 	def get_efficiency(self, path, sel, base_sel) :
