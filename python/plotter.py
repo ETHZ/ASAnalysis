@@ -1854,6 +1854,7 @@ class plotter :
 				if TeX_switch : format_str = 'tex'
 				else          : format_str = 'pdf'
 				canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
+				helper.save_histo2table(histos = shapes, processes = ['ttw', 'ttbar'], path = '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), var = var, lumi = self.lumi, bin_width = False, last_bin = True)
 
 
 	def get_mcHistoFromTree(self, tree, samples, var, name, settings, weight = '1.', sel_str = '1==1') :
