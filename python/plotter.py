@@ -1480,10 +1480,11 @@ class plotter :
 #		cms_label = 2
 
 		# save histo data to table
+		pl = ttvStyle.ttvStyle()
 		suffix = ''
 		path = '%sObsPredPlots/%s/' % (self.path, sel.name)
 		helper.mkdir(path)
-		helper.save_histo2table(histos, ['obs', 'pred', 'fake', 'rare', 'chmid', 'wz', 'ttz', 'ttw'], '%sObsPred%s_%s%s.dat' % (path, prefix, var, suffix), var, self.lumi)
+		helper.save_histo2table(histos = histos, processes = ['obs', 'pred', 'fake', 'rare', 'chmid', 'wz', 'ttz', 'ttw'], path = '%sObsPred%s_%s%s.dat' % (path, prefix, var, suffix), var = var, lumi = self.lumi, bin_width = pl.label_binWidth(var), asymmErr = ['obs'])
 
 		# save histo
 		for TeX_switch in [True, False] :

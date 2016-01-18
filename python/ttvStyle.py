@@ -264,6 +264,30 @@ class ttvStyle(object) :
 			return 'Events / %g GeV' % bin_width
 
 
+	def label_binWidth(self, var) :
+		variables = []
+		variables.append('HT'    )
+		variables.append('MET'   )
+		variables.append('pT'    )
+		variables.append('pT1'   )
+		variables.append('pT2'   )
+		variables.append('pTl'   )
+		variables.append('pTm'   )
+		variables.append('pTe'   )
+		variables.append('Mll'   )
+		variables.append('minMT' )
+		variables.append('M3'    )
+		variables.append('MaxJPt'     )
+		variables.append('ClosJetPt'  )
+		variables.append('AwayJetPt'  )
+		variables.append('MT'         )
+		variables.append('MET_noMTCut')
+		variables.append('MT_MET30'   )
+		variables.append('LepPt'      )
+		if var in variables : return True
+		else                : return False
+
+
 	@property
 	def cms_label(self) :
 		if   self._cms_label == 0 : return 'CMS'
