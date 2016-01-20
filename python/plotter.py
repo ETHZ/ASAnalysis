@@ -1610,10 +1610,10 @@ class plotter :
 
 					if s in self.get_samples('Top') :
 						if s.startswith('Single') :
-							print 'ttbar: %s' % s
+							print 'single top: %s' % s
 							sname = '\\singletop'
 						else :
-							print 'single top: %s' % s
+							print 'ttbar: %s' % s
 							sname = '\\ttbar'
 
 					elif s in self.get_samples('WJets') :
