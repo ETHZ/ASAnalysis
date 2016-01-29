@@ -1502,6 +1502,8 @@ class plotter :
 		res[CHARGE][CHANNEL]
 		'''
 
+		if sel.flavor < -1 or sel.flavor > 2 :
+			print '[WARNING] Yields split by charge doe not make sense for an opposite-sign selection!'
 		skimtree_path = '%sSSDLYields_%s.root' % (self.path, sel.name)
 		if not os.path.exists(skimtree_path) :
 			copytree.copytree('%sSSDLYields.root' % self.path, skimtree_path, 'SigEvents', sel.get_selectionString())
@@ -1522,6 +1524,7 @@ class plotter :
 			res[ch_str]['em'] = result.result('em', charge, 'e'+charge_str+'m'+charge_str)
 			res[ch_str]['ee'] = result.result('ee', charge, 'e'+charge_str+'e'+charge_str)
 
+		print '[status] looping over SigEvents tree from %s with %d events..' % (skimtree_path, tree.GetEntries())
 		for event in tree :
 			if last_sample != str(event.SName) :
 				print '[status] processing %s..' % (event.SName)
@@ -1537,39 +1540,38 @@ class plotter :
 
 			# GET ALL DATA EVENTS
 			if event.SType < 3 :
-				if event.Flavor < 3 :
-					for ch_str, charge in self.charges.iteritems() :
-						if charge != 0 and event.Charge != charge : continue
+				for ch_str, charge in self.charges.iteritems() :
+					if charge != 0 and event.Charge != charge : continue
 
-						# int
-						if event.TLCat is 0 : res[ch_str]['al'].nt2  += 1
-						if event.TLCat is 1 : res[ch_str]['al'].nt10 += 1
-						if event.TLCat is 2 : res[ch_str]['al'].nt01 += 1
-						if event.TLCat is 3 : res[ch_str]['al'].nt0  += 1
+					# int
+					if event.TLCat is 0 : res[ch_str]['al'].nt2  += 1
+					if event.TLCat is 1 : res[ch_str]['al'].nt10 += 1
+					if event.TLCat is 2 : res[ch_str]['al'].nt01 += 1
+					if event.TLCat is 3 : res[ch_str]['al'].nt0  += 1
 
-						# MM
-						if event.Flavor is 0 :
-							if event.TLCat is 0 : res[ch_str]['mm'].nt2  += 1
-							if event.TLCat is 1 : res[ch_str]['mm'].nt10 += 1
-							if event.TLCat is 2 : res[ch_str]['mm'].nt01 += 1
-							if event.TLCat is 3 : res[ch_str]['mm'].nt0  += 1
+					# MM
+					if event.Flavor is 0 or event.Flavor is 3 :
+						if event.TLCat is 0 : res[ch_str]['mm'].nt2  += 1
+						if event.TLCat is 1 : res[ch_str]['mm'].nt10 += 1
+						if event.TLCat is 2 : res[ch_str]['mm'].nt01 += 1
+						if event.TLCat is 3 : res[ch_str]['mm'].nt0  += 1
 
-						# EM
-						if event.Flavor is 1 :
-							if event.TLCat is 0 : res[ch_str]['em'].nt2  += 1
-							if event.TLCat is 1 : res[ch_str]['em'].nt10 += 1
-							if event.TLCat is 2 : res[ch_str]['em'].nt01 += 1
-							if event.TLCat is 3 : res[ch_str]['em'].nt0  += 1
+					# EM
+					if event.Flavor is 1 or event.Flavor is 4 :
+						if event.TLCat is 0 : res[ch_str]['em'].nt2  += 1
+						if event.TLCat is 1 : res[ch_str]['em'].nt10 += 1
+						if event.TLCat is 2 : res[ch_str]['em'].nt01 += 1
+						if event.TLCat is 3 : res[ch_str]['em'].nt0  += 1
 
-						# EE
-						if event.Flavor is 2 :
-							if event.TLCat is 0 : res[ch_str]['ee'].nt2  += 1
-							if event.TLCat is 1 : res[ch_str]['ee'].nt10 += 1
-							if event.TLCat is 2 : res[ch_str]['ee'].nt01 += 1
-							if event.TLCat is 3 : res[ch_str]['ee'].nt0  += 1
+					# EE
+					if event.Flavor is 2 or event.Flavor is 5 :
+						if event.TLCat is 0 : res[ch_str]['ee'].nt2  += 1
+						if event.TLCat is 1 : res[ch_str]['ee'].nt10 += 1
+						if event.TLCat is 2 : res[ch_str]['ee'].nt01 += 1
+						if event.TLCat is 3 : res[ch_str]['ee'].nt0  += 1
 
 			# GET MC EVENTS
-			if event.SType > 5 and event.TLCat == 0 and event.Flavor < 3 :
+			if event.SType > 5 and event.TLCat == 0 :
 				scale = event.PUWeight * event.HLTSF * self.lumi / self.samples[str(event.SName)].getLumi()
 
 				if str(event.SName) not in mc :
@@ -1588,15 +1590,15 @@ class plotter :
 					mc      [str(event.SName)][ch_str]['al'] += scale
 					mc_npass[str(event.SName)][ch_str]['al'] += 1
 
-					if event.Flavor is 0 :
+					if event.Flavor is 0 or event.Flavor is 3 :
 						mc      [str(event.SName)][ch_str]['mm'] += scale
 						mc_npass[str(event.SName)][ch_str]['mm'] += 1
 
-					if event.Flavor is 1 :
+					if event.Flavor is 1 or event.Flavor is 4 :
 						mc      [str(event.SName)][ch_str]['em'] += scale
 						mc_npass[str(event.SName)][ch_str]['em'] += 1
 
-					if event.Flavor is 2 :
+					if event.Flavor is 2 or event.Flavor is 5 :
 						mc      [str(event.SName)][ch_str]['ee'] += scale
 						mc_npass[str(event.SName)][ch_str]['ee'] += 1
 
