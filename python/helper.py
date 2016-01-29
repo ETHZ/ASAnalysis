@@ -169,6 +169,19 @@ def get_roundedNumberErrors(num, errors) :
 	return (num_str,) + tuple(err_str)
 
 
+def get_deltaPhi(phi1, phi2) :
+	result = phi1 - phi2
+	while result >   math.pi : result -= 2*math.pi
+	while result <= -math.pi : result += 2*math.pi
+	return abs(result)
+
+
+def get_deltaR(eta1, eta2, phi1, phi2) :
+	deta = eta1 - eta2
+	dphi = get_deltaPhi(phi1, phi2)
+	return math.sqrt(deta**2 + dphi**2)
+
+
 def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_width = True, last_bin = True) :
 	if lumi != '' :
 		lumi_str   = '\t%4.1f' % lumi
