@@ -30,8 +30,6 @@ class plotter :
 		self.ssdlfile = ROOT.TFile.Open(self.path + 'SSDLYields.root', 'READ')
 		if self.ssdlfile == None :
 			sys.exit(1)
-		self.sigtree = self.ssdlfile.Get('SigEvents')
-		print '[status] loaded SigEventsTree with %d events' % (self.sigtree.GetEntries())
 
 		ROOT.gSystem.Load('./FakeRatios.so')
 
