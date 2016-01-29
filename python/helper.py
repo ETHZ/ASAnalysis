@@ -182,16 +182,23 @@ def get_deltaR(eta1, eta2, phi1, phi2) :
 	return math.sqrt(deta**2 + dphi**2)
 
 
-def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_width = True, last_bin = True) :
+def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_width = True, last_bin = True, asymmErr = False) :
 	if lumi != '' :
 		lumi_str   = '\t%4.1f' % lumi
 		lumi_title = '\tlumi'
 	else :
 		lumi_str   = ''
 		lumi_title = ''
+	if asymmErr != False :
+		histos_tmp = {}
+		for process in asymmErr :
+			histos_tmp[process] = histos[process].Clone()
+			histos_tmp[process].SetBinErrorOption(ROOT.TH1.kPoisson)
 	nbins = histos[processes[0]].GetNbinsX()
 	with open(path, 'w') as file :
 		file.write('binlow\t%s\t%s\t%s_err' % (var, '\t'.join(processes), '_err\t'.join(processes)))
+		if asymmErr != False :
+			file.write('\t%s_uerr\t%s_derr' % ('\t_uerr'.join(asymmErr), '_derr\t'.join(asymmErr)))
 		if bin_width : file.write('\tbinwidth')
 		file.write('%s\n' % lumi_title)
 		for bin in range(1, nbins+1) :
@@ -200,6 +207,11 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 				file.write('\t%f' % histos[process].GetBinContent(bin))
 			for process in processes :
 				file.write('\t%f' % histos[process].GetBinError(bin))
+			if asymmErr != False :
+				for process in asymmErr :
+					file.write('\t%f' % histos_tmp[process].GetBinErrorUp(bin))
+				for process in asymmErr :
+					file.write('\t%f' % histos_tmp[process].GetBinErrorLow(bin))
 			if bin_width :
 				file.write('\t%f' % histos[processes[0]].GetBinWidth(bin))
 			file.write('%s\n' % lumi_str)
@@ -209,6 +221,11 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 				file.write('\t%f' % histos[process].GetBinContent(nbins))
 			for process in processes :
 				file.write('\t%f' % histos[process].GetBinError(nbins))
+			if asymmErr != False :
+				for process in asymmErr :
+					file.write('\t%f' % histos_tmp[process].GetBinErrorUp(nbins))
+				for process in asymmErr :
+					file.write('\t%f' % histos_tmp[process].GetBinErrorLow(nbins))
 			if bin_width :
 				file.write('\t%f' % histos[processes[0]].GetBinWidth(nbins))
 			file.write('%s\n' % lumi_str)
