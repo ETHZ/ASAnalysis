@@ -1679,18 +1679,25 @@ class plotter :
 			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), weight_str = 'LepSF', plot_shapes = False, pu_weight = True)
 			self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), weight_str = 'LepSF', plot_shapes = False, pu_weight = False)
 			return
-#		self.plot_ObsMC(tree, sel, 'Mll', config.get_histoBins('Mll', sel), plot_shapes = False)
-		self.plot_ObsMC(tree, sel, 'pT2'  , config.get_histoBins('pT2'  , sel), plot_shapes = True)
-		self.plot_ObsMC(tree, sel, 'NbJmed', config.get_histoBins('NbJmed'  , sel), plot_shapes = True)
-		settings = config.get_histoBins('HT'   , sel)
-		settings['nbins'] *= 2
-		self.plot_ObsMC(tree, sel, 'HT'   , settings                          , plot_shapes = True)
-#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), plot_shapes = True)
-#		self.plot_ObsMC(tree, sel, 'NVrtx', config.get_histoBins('NVrtx', sel), pu_weight = False)
+		vars = []
+#		vars.append('Mll'     )
+		vars.append('pT2'     )
+		vars.append('NbJmed'  )
+		vars.append('HT'      )
+#		vars.append('NVrtx'   )
+		vars.append('PFIso1'  )
+#		vars.append('PFIso2'  )
+		for var in vars :
+			settings = config.get_histoBins(var, sel)
+			if var == 'HT' :
+				settings['nbins'] *= 2
+			self.plot_ObsMC(tree, sel, var, settings, plot_shapes = ['ttw', 'ttbar'], pu_weight = True)
+#			self.plot_ObsMC(tree, sel, var, settings, plot_shapes = ['ttbar', 'qcd'], pu_weight = True)
 
 
 	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, weight_str = 'HLTSF', pu_weight = True, plot_shapes = False, plot_missing_samples = False) :
 
+		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
 		nbins = settings['nbins']
 		min   = settings['min'  ]
 		max   = settings['max'  ]
@@ -1733,10 +1740,18 @@ class plotter :
 			h_name   = 'h_%s_%s_%s' % (process, var, sel.name)
 			histos[process] = self.get_mcHistoFromTree(tree, self.get_samples(process), var_str, h_name, settings, weight_str, sel.get_selectionString())
 		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
-		h_ttbar_name = 'h_ttbar_' + var + sel.name; shapes['ttbar'] = self.get_mcHistoFromTree(tree, self.get_samples('ttbar' ), var_str, h_ttbar_name, settings, weight_str, sel.get_selectionString())
 		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
 		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
 		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
+
+		# histograms for shape plots
+		if plot_shapes != False :
+			for process in plot_shapes :
+				if process in histos :
+					shapes[process] = histos[process].Clone()
+				else :
+					h_name   = 'h_%s_%s_%s' % (process, var, sel.name)
+					shapes[process] = self.get_mcHistoFromTree(tree, self.get_samples(process), var_str, h_name, settings, weight_str, sel.get_selectionString())
 
 		# missing samples
 		missing = []
@@ -1768,7 +1783,6 @@ class plotter :
 		prefix = ''
 		suffix = ''
 		if not pu_weight : suffix = '_noPUWeight'
-		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
 		helper.mkdir(path)
 		helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), var, self.lumi)
 
@@ -1819,13 +1833,17 @@ class plotter :
 			canvas.Update()
 			canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
 
-			if plot_shapes :
+		if plot_shapes != False :
+			for TeX_switch in [True, False] :
+				pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 0, TeX_switch = TeX_switch)
+				canvas = pl.get_canvas(var)
+				canvas.cd()
+
 				pl.cms_label = 1
 				ROOT.gPad.SetLogy(0)
-				shapes['ttw'] = histos['ttw'].Clone()
 				leg_entries = []
 
-				for process in ['ttw', 'ttbar'] :
+				for process in plot_shapes :
 					shape = shapes[process]
 					shape.Scale(1. / shape.Integral())
 					leg_entries.append([shape, pl.get_processName(process), 'f'])
@@ -1836,25 +1854,31 @@ class plotter :
 				leg = pl.draw_legend(leg_entries)
 				pl.get_maximum(shapes.values())
 
-				shapes['ttw'  ].Draw('hist')
-				shapes['ttbar'].Draw('hist same')
+				for index, process in enumerate(plot_shapes) :
+					if index == 0 : draw_option = 'PE'
+					else          : draw_option = 'PE same'
+					shapes[process].Draw(draw_option)
 
-				shapes['ttw'  ].GetXaxis().SetTitle(pl.get_varName(var))
-				shapes['ttw'  ].GetYaxis().SetTitle('Normalised to Unity')
+				shapes[plot_shapes[0]].GetXaxis().SetTitle(pl.get_varName(var))
+				shapes[plot_shapes[0]].GetYaxis().SetTitle('Normalised to Unity')
 
 				pl.draw_cmsLine()
 				leg.Draw()
 
-				path = '%sObsMCPlots/%s/Shapes/' % (self.path, sel.name)
+				shapes_path = '%sShapes/' % path
 				prefix = ''
 				suffix = ''
 				if not pu_weight : suffix = '_noPUWeight'
-				helper.mkdir(path)
+				helper.mkdir(shapes_path)
 				canvas.Update()
 				if TeX_switch : format_str = 'tex'
 				else          : format_str = 'pdf'
-				canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
-				helper.save_histo2table(histos = shapes, processes = ['ttw', 'ttbar'], path = '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), var = var, lumi = self.lumi, bin_width = False, last_bin = True)
+				canvas.Print('%sObsMC%s_%s%s.%s' % (shapes_path, prefix, var, suffix, format_str))
+				helper.save_histo2table(histos = shapes, processes = plot_shapes, path = '%sObsMC%s_%s%s.dat' % (shapes_path, prefix, var, suffix), var = var, lumi = self.lumi, bin_width = False, last_bin = True)
+				ROOT.gPad.SetLogy()
+				suffix += '_log'
+				canvas.Update()
+				canvas.Print('%sObsMC%s_%s%s.%s' % (shapes_path, prefix, var, suffix, format_str))
 
 
 	def get_mcHistoFromTree(self, tree, samples, var, name, settings, weight = '1.', sel_str = '1==1') :
