@@ -110,7 +110,7 @@ class plotter :
 		self.rand = ROOT.TRandom3(0)
 
 
-	def do_analysis(self, IntPred = True, DiffPred = False, IntMC = False, DiffMC = False, RatioPlots = False, RatioControlPlots = False, FakeClosure = False) :
+	def do_analysis(self, IntPred = True, DiffPred = False, IntMC = False, DiffMC = False, RatioPlots = False, RatioControlPlots = False, FakeClosure = False, SLPlots = False) :
 		print '[status] starting analysis..'
 
 		# make table of samples
@@ -269,6 +269,14 @@ class plotter :
 				closure_res = self.make_closureTest(ttbartree_path[name], ['TTJets'], sel)
 #				tables.make_YieldsTable(self.path + 'closure/', closure_res['al'], suffix = name)
 				tables.make_closureTable(self.path, closure_res['al'], prefix = 'Fake', suffix = name)
+
+		if SLPlots :
+			sl_path = self.path + 'SLYields.root'
+			var_sel_str = []
+			var_sel_str.append(['ElPFIso', 'NEls == 1'])
+			var_sel_str.append(['MuPFIso', 'NMus == 1'])
+			for [var, sel_str] in var_sel_str :
+				self.plot_SL(sl_path, var, sel_str)
 
 
 	def skim_tree(self, syst = '', minNJ = 2, suffix = 'skim') :
@@ -1882,6 +1890,28 @@ class plotter :
 				canvas.Print('%sObsMC%s_%s%s.%s' % (shapes_path, prefix, var, suffix, format_str))
 
 
+	def plot_SL(self, sl_path, var, sel_str) :
+		sl_file = ROOT.TFile.Open(sl_path, 'READ')
+		tree = sl_file.Get('SLEvents')
+		path = '%sSLPlots/Shapes/' % self.path
+		helper.mkdir(path)
+
+		# processes
+		processes = ['ttbar', 'qcd']
+
+		# get histograms from tree
+		histos = {}
+		settings = config.get_histoBins(var)
+		for process in processes :
+			h_name = 'h_%s_%s' % (process, var)
+			histos[process] = self.get_mcHistoFromTree(tree = tree, samples = self.get_samples(process), var = var, name = h_name, settings = settings, sel_str = sel_str)
+			histos[process].Scale(1./histos[process].Integral())
+
+		helper.save_histo2table(histos = histos, processes = processes, path = '%sSLPlot_%s.dat' % (path, var), var = var)
+
+		sl_file.Close()
+
+
 	def get_mcHistoFromTree(self, tree, samples, var, name, settings, weight = '1.', sel_str = '1==1') :
 		'''getting histogram for a list of samples'''
 
@@ -2124,6 +2154,7 @@ if __name__ == '__main__' :
 	RatioPlots        = False
 	RatioControlPlots = False
 	FakeClosure = False
+	SLPlots = False
 
 	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) :
 		print 'usage: plotter.py -b <OPTIONS>'
@@ -2197,5 +2228,8 @@ if __name__ == '__main__' :
 	if ('--FakeClosure' in args) :
 		FakeClosure = True
 
+	if ('--SLPlots' in args) :
+		SLPlots = True
+
 	pl = plotter(path, cardfile, selfile)
-	pl.do_analysis(IntPred = IntPred, DiffPred = DiffPred, IntMC = IntMC, DiffMC = DiffMC, RatioPlots = RatioPlots, RatioControlPlots = RatioControlPlots, FakeClosure = FakeClosure)
+	pl.do_analysis(IntPred = IntPred, DiffPred = DiffPred, IntMC = IntMC, DiffMC = DiffMC, RatioPlots = RatioPlots, RatioControlPlots = RatioControlPlots, FakeClosure = FakeClosure, SLPlots = SLPlots)
