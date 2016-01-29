@@ -327,7 +327,7 @@ class plotter :
 				xsec = -1.
 				if len(splitline) == 5 :
 					xsec = float(splitline[4])
-				samples[name] = sample.sample(name = name, datamc = datamc, channel = channel, xsec = xsec, ngen = -1)
+				samples[name] = sample.sample(name = name, datamc = datamc, channel = channel, xsec = xsec, ngen = -1, inputfile = inputfile)
 				if verbose > 0 : print samples[name]
 		self.read_ngen(samples)
 		return samples

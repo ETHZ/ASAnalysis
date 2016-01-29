@@ -6,12 +6,13 @@ class sample :
 	'''stores informations and numbers about a sample'''
 
 
-	def __init__(self, name, datamc = -1, channel = -1, xsec = -1, ngen = -1) :
+	def __init__(self, name, datamc = -1, channel = -1, xsec = -1, ngen = -1, inputfile = '') :
 		self.name    = name
 		self.datamc  = datamc
 		self.channel = channel
 		self.xsec    = xsec
 		self.ngen    = ngen
+		self.inputfile = inputfile
 
 		self.qcd     = ['QCD', 'MuEnr15', 'MuEnr10', 'MuEnr20', 'MuEnr30']
 		self.top     = ['SingleT', 'TTJets']
