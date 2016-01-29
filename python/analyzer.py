@@ -19,8 +19,8 @@ class analyzer :
 		helper.mkdir(self.path)
 		self.pl = plotter.plotter(ssdl_path, cardfile)
 		self.samples = self.pl.readDatacard(cardfile = cardfile, verbose = 0, event_count = True)
-		for s in self.samples :
-			print self.samples[s]
+#		for s in self.samples :
+#			print self.samples[s]
 		self.histos = {}
 		if not suffix.startswith('_') and suffix != '' :
 			suffix = '_' + suffix
@@ -88,6 +88,7 @@ class analyzer :
 #			self.analyze_tree(s)
 		self.analyze_tree(s, file_name)
 		self.slFile.Close()
+		print '[status] done.'
 
 
 	def analyze_tree(self, s, file_name = '') :
@@ -274,5 +275,5 @@ if __name__ == '__main__' :
 	else :
 		filename = ''
 
-	dp = analyzer(path = output_path, ssdl_path = path, cardfile = cardfile, suffix = 'test')
+	dp = analyzer(path = output_path, ssdl_path = path, cardfile = cardfile, suffix = suffix)
 	dp.do_analysis(sample, filename)
