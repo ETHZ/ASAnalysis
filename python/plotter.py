@@ -292,7 +292,7 @@ class plotter :
 				copytree.copytree(skimtree_path, systtree_path, 'SigEvents', 'SystFlag == %d && NJ >= %d' % (self.systflags[syst], minNJ))
 
 
-	def readDatacard(self, cardfile, verbose = 0) :
+	def readDatacard(self, cardfile, verbose = 0, event_count = True) :
 		'''
 		reads datacard file
 
@@ -329,7 +329,7 @@ class plotter :
 					xsec = float(splitline[4])
 				samples[name] = sample.sample(name = name, datamc = datamc, channel = channel, xsec = xsec, ngen = -1, inputfile = inputfile)
 				if verbose > 0 : print samples[name]
-		self.read_ngen(samples)
+		if event_count : self.read_ngen(samples)
 		return samples
 
 
