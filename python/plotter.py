@@ -1838,9 +1838,8 @@ class plotter :
 			else          : format_str = 'pdf'
 			canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
 			ROOT.gPad.SetLogy()
-			suffix += '_log'
 			canvas.Update()
-			canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
+			canvas.Print('%sObsMC%s_%s%s_log.%s' % (path, prefix, var, suffix, format_str))
 
 		if plot_shapes != False :
 			for TeX_switch in [True, False] :
@@ -1885,9 +1884,8 @@ class plotter :
 				canvas.Print('%sObsMC%s_%s%s.%s' % (shapes_path, prefix, var, suffix, format_str))
 				helper.save_histo2table(histos = shapes, processes = plot_shapes, path = '%sObsMC%s_%s%s.dat' % (shapes_path, prefix, var, suffix), var = var, lumi = self.lumi, bin_width = False, last_bin = True)
 				ROOT.gPad.SetLogy()
-				suffix += '_log'
 				canvas.Update()
-				canvas.Print('%sObsMC%s_%s%s.%s' % (shapes_path, prefix, var, suffix, format_str))
+				canvas.Print('%sObsMC%s_%s%s_log.%s' % (shapes_path, prefix, var, suffix, format_str))
 
 
 	def plot_SL(self, sl_path, var, sel_str) :
