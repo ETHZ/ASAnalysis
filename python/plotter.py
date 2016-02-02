@@ -1864,8 +1864,8 @@ class plotter :
 				pl.get_maximum(shapes.values())
 
 				for index, process in enumerate(plot_shapes) :
-					if index == 0 : draw_option = 'PE'
-					else          : draw_option = 'PE same'
+					if index == 0 : draw_option = 'hist'
+					else          : draw_option = 'hist same'
 					shapes[process].Draw(draw_option)
 
 				shapes[plot_shapes[0]].GetXaxis().SetTitle(pl.get_varName(var))
