@@ -22,7 +22,9 @@ class selection :
 		self.minMTLep2  = minMTLep2
 		self.maxMTLep1  = maxMTLep1
 		self.maxMTLep2  = maxMTLep2
-		self.applyZVeto = applyZVeto
+		if   applyZVeto == True  : self.applyZVeto = 1
+		elif applyZVeto == False : self.applyZVeto = 0
+		else                     : self.applyZVeto = applyZVeto
 		self.charge     = charge     # 0: all, +1: ++, -1: --
 		self.ttw        = ttw
 		self.systflag   = systflag
@@ -42,11 +44,12 @@ class selection :
 		printout += '\n   %3d   <= N b-tags medium   <= %4d'   % (self.minNbjetsM, self.maxNbjetsM)
 		printout += '\n   %5.1f <= lead. lept. pT'             % (self.minPt1    )
 		printout += '\n   %5.1f <= sublead. lept. pT'          % (self.minPt2    )
-		if self.applyZVeto  : printout += '\n   Z veto'
-		if self.charge > 0  : printout += '\n   only l+l+ events'
-		if self.charge < 0  : printout += '\n   only l-l- events'
-		if self.flavor > -1 : printout += '\n   flavor = %d' % (self.flavor)
-		printout                       += '\n   systflag = %d' % (self.systflag)
+		if self.applyZVeto ==  1 : printout += '\n   Z veto'
+		if self.applyZVeto == -1 : printout += '\n   inverse Z veto'
+		if self.charge > 0       : printout += '\n   only l+l+ events'
+		if self.charge < 0       : printout += '\n   only l-l- events'
+		if self.flavor > -1      : printout += '\n   flavor = %d' % (self.flavor)
+		printout                            += '\n   systflag = %d' % (self.systflag)
 		printout += '\n'
 		return printout
 
@@ -79,12 +82,13 @@ class selection :
 
 
 	def passes_selection(self, event, ttLeptons = True, noChargeSel = False, OSwoZVeto = False) :
-		if event.SystFlag != self.systflag                                                   : return False
-		if not (OSwoZVeto and event.Flavor > 2) and self.applyZVeto and event.PassZVeto == 0 : return False
-		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)            : return False
-		if self.TLCat > -1 and ttLeptons and event.TLCat > 0                                 : return False
-		if self.flavor > -1  and event.Flavor != self.flavor                                 : return False
-		if self.flavor == -1 and event.Flavor > 2 and not (OSwoZVeto)                        : return False
+		if event.SystFlag != self.systflag                                                         : return False
+		if not (OSwoZVeto and event.Flavor > 2) and self.applyZVeto ==  1 and event.PassZVeto == 0 : return False
+		if not (OSwoZVeto and event.Flavor > 2) and self.applyZVeto == -1 and event.PassZVeto != 0 : return False
+		if self.charge != 0 and event.Charge != self.charge and not (noChargeSel)                  : return False
+		if self.TLCat > -1 and ttLeptons and event.TLCat > 0                                       : return False
+		if self.flavor > -1  and event.Flavor != self.flavor                                       : return False
+		if self.flavor == -1 and event.Flavor > 2 and not (OSwoZVeto)                              : return False
 		if event.HT     < self.minHT      : return False
 		if event.HT     > self.maxHT      : return False
 		if event.MET    < self.minMET     : return False
@@ -132,11 +136,12 @@ class selection :
 		selectionString += ' && SystFlag == %d'            % (self.systflag)
 		if not ResTree :
 			if OS_data[0] < 0 :
-				if self.applyZVeto   : selectionString += ' && PassZVeto != 0'
-				if self.charge != 0  : selectionString += ' && Charge == %d' % (self.charge)
+				if self.applyZVeto ==  1         : selectionString += ' && PassZVeto != 0'
+				if self.applyZVeto == -1         : selectionString += ' && PassZVeto == 0'
+				if self.charge != 0              : selectionString += ' && Charge == %d' % (self.charge)
 				if self.TLCat > -1 and ttLeptons : selectionString += ' && TLCat == %d' % (self.TLCat)
-				if self.flavor > -1  : selectionString += ' && Flavor == %d' % (self.flavor)
-				if self.flavor == -1 : selectionString += ' && Flavor < 3'
+				if self.flavor > -1              : selectionString += ' && Flavor == %d' % (self.flavor)
+				if self.flavor == -1             : selectionString += ' && Flavor < 3'
 			else :
 				if OS_data[1] < 0 : return -1
 				selectionString += ' && SType < 3'
