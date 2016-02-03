@@ -249,6 +249,11 @@ class plotter :
 #			sels['final'    ] = self.selections['final'    ]
 #			sels['final++'  ] = self.selections['final++'  ]
 #			sels['final--'  ] = self.selections['final--'  ]
+#			sels['2J0bJOS'  ] = self.selections['2J0bJOS'  ]
+#			sels['3J1bJOS'  ] = self.selections['3J1bJOS'  ]
+#			sels['4J2bJOS'  ] = self.selections['4J2bJOS'  ]
+#			sels['2J0bJOS_ZVeto'] = self.selections['2J0bJOS_ZVeto']
+#			sels['2J0bJ_noZVeto'] = self.selections['2J0bJ_noZVeto']
 
 			# produce differential predictions
 			for name, sel in sels.iteritems() :
