@@ -169,6 +169,12 @@ class plotter :
 #			self.plot_DiffMC(self.selections['3J0bJOS'    ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId'   ])
 #			self.plot_DiffMC(self.selections['ZElElChMisId_SS'])
+#			self.plot_DiffMC(self.selections['ZMuMu'])
+#			self.plot_DiffMC(self.selections['ZElEl'])
+#			self.plot_DiffMC(self.selections['ZMuMu_0J'])
+#			self.plot_DiffMC(self.selections['ZElEl_0J'])
+#			self.plot_DiffMC(self.selections['ZMuMu_0J_noMETCut'])
+#			self.plot_DiffMC(self.selections['ZElEl_0J_noMETCut'])
 
 
 		if DiffPred :
@@ -1696,6 +1702,8 @@ class plotter :
 #		vars.append('NVrtx'   )
 		vars.append('PFIso1'  )
 #		vars.append('PFIso2'  )
+		vars.append('NJ'      )
+		vars.append('MET'     )
 		for var in vars :
 			settings = config.get_histoBins(var, sel)
 			if var == 'HT' :
