@@ -276,7 +276,7 @@ class plotter :
 			var_sel_str.append(['ElPFIso', 'NEls == 1'])
 			var_sel_str.append(['MuPFIso', 'NMus == 1'])
 			for [var, sel_str] in var_sel_str :
-				self.plot_SL(sl_path, var, sel_str)
+				self.plot_SL(sl_path, var, sel_str, True)
 
 
 	def skim_tree(self, syst = '', minNJ = 2, suffix = 'skim') :
@@ -1888,7 +1888,7 @@ class plotter :
 				canvas.Print('%sObsMC%s_%s%s_log.%s' % (shapes_path, prefix, var, suffix, format_str))
 
 
-	def plot_SL(self, sl_path, var, sel_str) :
+	def plot_SL(self, sl_path, var, sel_str, ttbar_true = False) :
 		sl_file = ROOT.TFile.Open(sl_path, 'READ')
 		tree = sl_file.Get('SLEvents')
 		path = '%sSLPlots/Shapes/' % self.path
@@ -1906,6 +1906,16 @@ class plotter :
 			histos[process] = self.get_mcHistoFromTree(tree = tree, samples = self.get_samples(process), var = var, name = h_name, settings = settings, sel_str = sel_str)
 			scale[process] = 1./histos[process].Integral()
 			histos[process].Scale(scale[process])
+
+		if ttbar_true :
+			if 'El' in var : sel_str += ' && IsSignalElectron == 1'
+			if 'Mu' in var : sel_str += ' && IsSignalMuon == 1'
+
+			process = 'ttbar_true'
+			h_name  = 'h_ttbar_true_%s' % var
+			histos[process] = self.get_mcHistoFromTree(tree = tree, samples = self.get_samples('ttbar'), var = var, name = h_name, settings = settings, sel_str = sel_str)
+			histos[process].Scale(scale['ttbar'])
+			processes.append(process)
 
 		helper.save_histo2table(histos = histos, processes = processes, path = '%sSLPlot_%s.dat' % (path, var), var = var)
 
