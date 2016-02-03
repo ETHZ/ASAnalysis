@@ -1899,11 +1899,13 @@ class plotter :
 
 		# get histograms from tree
 		histos = {}
+		scale = {}
 		settings = config.get_histoBins(var)
 		for process in processes :
 			h_name = 'h_%s_%s' % (process, var)
 			histos[process] = self.get_mcHistoFromTree(tree = tree, samples = self.get_samples(process), var = var, name = h_name, settings = settings, sel_str = sel_str)
-			histos[process].Scale(1./histos[process].Integral())
+			scale[process] = 1./histos[process].Integral()
+			histos[process].Scale(scale[process])
 
 		helper.save_histo2table(histos = histos, processes = processes, path = '%sSLPlot_%s.dat' % (path, var), var = var)
 
