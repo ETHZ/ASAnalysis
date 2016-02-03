@@ -1717,7 +1717,7 @@ class plotter :
 #			self.plot_ObsMC(tree, sel, var, settings, plot_shapes = ['ttbar', 'qcd'], pu_weight = True)
 
 
-	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, weight_str = 'HLTSF', pu_weight = True, plot_shapes = False, plot_missing_samples = False) :
+	def plot_ObsMC(self, tree, sel, var, settings, add_total_bin = False, weight_str = 'HLTSF', pu_weight = True, plot_shapes = False, plot_missing_samples = False, only_shapes = False) :
 
 		path = '%sObsMCPlots/%s/' % (self.path, sel.name)
 		nbins = settings['nbins']
@@ -1742,32 +1742,109 @@ class plotter :
 		elif var == 'Int'   : var_str = 'Flavor'
 		else                : var_str = var
 
-		# processes
-		processes = []
-		processes.append('top'  )
-		processes.append('zjets')
-		processes.append('wjets')
-		processes.append('rare' )
-		processes.append('wz'   )
-		processes.append('qcd'  )
-		processes.append('ttz'  )
-		processes.append('ttw'  )
+		if not only_shapes :
 
-		## printouts for debugging
-#		for process in processes :
-#			for sample in self.get_samples(process) : print self.samples[sample]
+			# processes
+			processes = []
+			processes.append('top'  )
+			processes.append('zjets')
+			processes.append('wjets')
+			processes.append('rare' )
+			processes.append('wz'   )
+			processes.append('qcd'  )
+			processes.append('ttz'  )
+			processes.append('ttw'  )
 
-		# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
-		for process in processes :
-			h_name   = 'h_%s_%s_%s' % (process, var, sel.name)
-			histos[process] = self.get_mcHistoFromTree(tree, self.get_samples(process), var_str, h_name, settings, weight_str, sel.get_selectionString())
-		h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
-		h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
-		h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
-		h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
+			# setup histograms for observation, fakes, chmid, wz, ttw, ttz and rare
+			for process in processes :
+				h_name   = 'h_%s_%s_%s' % (process, var, sel.name)
+				histos[process] = self.get_mcHistoFromTree(tree, self.get_samples(process), var_str, h_name, settings, weight_str, sel.get_selectionString())
+			h_obs_name   = 'h_obs_'   + var + sel.name; histos['obs'  ] = ROOT.TH1D(h_obs_name  , h_obs_name  , nbins, min, max)
+			h_bgtot_name = 'h_bgtot_' + var + sel.name; histos['bgtot'] = ROOT.TH1D(h_bgtot_name, h_bgtot_name, nbins, min, max)
+			h_pred_name  = 'h_pred_'  + var + sel.name; histos['pred' ] = ROOT.TH1D(h_pred_name , h_pred_name , nbins, min, max); histos['pred' ].Sumw2()
+			h_stack_name = 'h_stack_' + var + sel.name; histos['stack'] = ROOT.THStack(h_stack_name, h_stack_name)
 
-		# histograms for shape plots
+			# missing samples
+			missing = []
+			for sample in self.samples :
+				if any([sample in self.get_samples(i) for i in processes]) : continue
+				if sample in self.get_samples('DoubleMu' ) : continue
+				if sample in self.get_samples('DoubleEle') : continue
+				if sample in self.get_samples('MuEG'     ) : continue
+				if sample in self.get_samples('SingleMu' ) : continue
+				if sample in ['WJets2', 'WJets1'] : continue
+				missing.append(sample)
+			print '[info] NOT considered samples: %s' % ', '.join(missing)
+			if plot_missing_samples :
+				h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
+				processes.insert(0, 'miss')
+
+			# getting data
+			print '[status] getting %s histogram from data..' % var
+			tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
+
+			# adding mc samples
+			for histo in [histos['bgtot'], histos['pred'], histos['stack']] :
+				for process in processes :
+					if process not in histos : continue
+					if 'h_bgtot' in histo.GetName() and process == 'ttw' : continue
+					histo.Add(histos[process])
+
+			# save histo data to table
+			prefix = ''
+			suffix = ''
+			if not pu_weight : suffix = '_noPUWeight'
+			helper.mkdir(path)
+			helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), var, self.lumi)
+
+			set_maximum = True
+
+			for TeX_switch in [True, False] :
+				pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 0, TeX_switch = TeX_switch)
+				canvas = pl.get_canvas(var)
+				canvas.cd()
+
+				# legend
+				leg_entries = []
+				leg_entries.append([histos['obs'], pl.get_processName('obs'), 'lp'])
+				for process in reversed(processes) :
+					if process not in histos : continue
+					histo = histos[process]
+					leg_entries.append([histo, pl.get_processName(process), 'f'])
+					histo.SetFillColor(pl.get_fillColor(process))
+				leg_entries.append([histos['pred'], 'MC uncertainty', 'fl'])
+				leg = pl.draw_legend(leg_entries)
+
+				if set_maximum :
+					pl.get_maximum(histos.values())
+					set_maximum = False
+
+				histos['pred'].SetLineWidth(0)
+				histos['pred'].SetMarkerSize(0)
+				histos['pred'].SetFillColor(12)
+				histos['pred'].SetFillStyle(3005)
+
+#				histos['obs'].SetMarkerStyle(20)
+#				histos['pred'].Draw()
+				histos['stack'].Draw('hist')
+				histos['stack'].GetXaxis().SetTitle(pl.get_varName(var))
+				histos['stack'].GetYaxis().SetTitle('Events')
+				leg.Draw()
+				histos['pred'].Draw('0 E2 same')
+#				histos['bgtot'].Draw('hist same')
+				histos['obs'  ].Draw('PE X0 same')
+				pl.draw_cmsLine()
+
+				canvas.Update()
+				if TeX_switch : format_str = 'tex'
+				else          : format_str = 'pdf'
+				canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
+				ROOT.gPad.SetLogy()
+				canvas.Update()
+				canvas.Print('%sObsMC%s_%s%s_log.%s' % (path, prefix, var, suffix, format_str))
+
 		if plot_shapes != False :
+		# histograms for shape plots
 			for process in plot_shapes :
 				if process in histos :
 					shapes[process] = histos[process].Clone()
@@ -1775,86 +1852,6 @@ class plotter :
 					h_name   = 'h_%s_%s_%s' % (process, var, sel.name)
 					shapes[process] = self.get_mcHistoFromTree(tree, self.get_samples(process), var_str, h_name, settings, weight_str, sel.get_selectionString())
 
-		# missing samples
-		missing = []
-		for sample in self.samples :
-			if any([sample in self.get_samples(i) for i in processes]) : continue
-			if sample in self.get_samples('DoubleMu' ) : continue
-			if sample in self.get_samples('DoubleEle') : continue
-			if sample in self.get_samples('MuEG'     ) : continue
-			if sample in self.get_samples('SingleMu' ) : continue
-			if sample in ['WJets2', 'WJets1'] : continue
-			missing.append(sample)
-		print '[info] NOT considered samples: %s' % ', '.join(missing)
-		if plot_missing_samples :
-			h_miss_name  = 'h_miss_'  + var + sel.name; histos['miss' ] = self.get_mcHistoFromTree(tree, missing                   , var_str, h_miss_name , settings, weight_str, sel.get_selectionString())
-			processes.insert(0, 'miss')
-
-		# getting data
-		print '[status] getting %s histogram from data..' % var
-		tree.Draw(var_str+'>>'+h_obs_name, 'SType < 3 && %s' % sel.get_selectionString(), 'goff')
-
-		# adding mc samples
-		for histo in [histos['bgtot'], histos['pred'], histos['stack']] :
-			for process in processes :
-				if process not in histos : continue
-				if 'h_bgtot' in histo.GetName() and process == 'ttw' : continue
-				histo.Add(histos[process])
-
-		# save histo data to table
-		prefix = ''
-		suffix = ''
-		if not pu_weight : suffix = '_noPUWeight'
-		helper.mkdir(path)
-		helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), var, self.lumi)
-
-		set_maximum = True
-
-		for TeX_switch in [True, False] :
-			pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 0, TeX_switch = TeX_switch)
-			canvas = pl.get_canvas(var)
-			canvas.cd()
-
-			# legend
-			leg_entries = []
-			leg_entries.append([histos['obs'], pl.get_processName('obs'), 'lp'])
-			for process in reversed(processes) :
-				if process not in histos : continue
-				histo = histos[process]
-				leg_entries.append([histo, pl.get_processName(process), 'f'])
-				histo.SetFillColor(pl.get_fillColor(process))
-			leg_entries.append([histos['pred'], 'MC uncertainty', 'fl'])
-			leg = pl.draw_legend(leg_entries)
-
-			if set_maximum :
-				pl.get_maximum(histos.values())
-				set_maximum = False
-
-			histos['pred'].SetLineWidth(0)
-			histos['pred'].SetMarkerSize(0)
-			histos['pred'].SetFillColor(12)
-			histos['pred'].SetFillStyle(3005)
-
-#			histos['obs'].SetMarkerStyle(20)
-#			histos['pred'].Draw()
-			histos['stack'].Draw('hist')
-			histos['stack'].GetXaxis().SetTitle(pl.get_varName(var))
-			histos['stack'].GetYaxis().SetTitle('Events')
-			leg.Draw()
-			histos['pred'].Draw('0 E2 same')
-#			histos['bgtot'].Draw('hist same')
-			histos['obs'  ].Draw('PE X0 same')
-			pl.draw_cmsLine()
-
-			canvas.Update()
-			if TeX_switch : format_str = 'tex'
-			else          : format_str = 'pdf'
-			canvas.Print('%sObsMC%s_%s%s.%s' % (path, prefix, var, suffix, format_str))
-			ROOT.gPad.SetLogy()
-			canvas.Update()
-			canvas.Print('%sObsMC%s_%s%s_log.%s' % (path, prefix, var, suffix, format_str))
-
-		if plot_shapes != False :
 			for TeX_switch in [True, False] :
 				pl = ttvStyle.ttvStyle(lumi = self.lumi, cms_label = 0, TeX_switch = TeX_switch)
 				canvas = pl.get_canvas(var)
