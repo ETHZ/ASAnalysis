@@ -285,7 +285,11 @@ class plotter :
 			sl_path = self.path + 'SLYields.root'
 			var_sel_str = []
 			var_sel_str.append(['ElPFIso', 'NEls == 1'])
+			var_sel_str.append(['ElD0'   , 'NEls == 1'])
+			var_sel_str.append(['ElDz'   , 'NEls == 1'])
 			var_sel_str.append(['MuPFIso', 'NMus == 1'])
+			var_sel_str.append(['MuD0'   , 'NMus == 1'])
+			var_sel_str.append(['MuDz'   , 'NMus == 1'])
 			for [var, sel_str] in var_sel_str :
 				self.plot_SL(sl_path, var, sel_str, True)
 
