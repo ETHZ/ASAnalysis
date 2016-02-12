@@ -560,6 +560,8 @@ def make_MCYieldsTable(path, res, suffix = '') :
 			'\\triboson',
 			'\\DPSWW',
 			'-----------',
+			'bg',
+			'-----------',
 			'\\ttw',
 			'-----------',
 			'tot'
@@ -589,28 +591,34 @@ def make_MCYieldsTable(path, res, suffix = '') :
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
+		file.write('\tS[table-number-alignment = center, table-format = 2.1, table-figures-uncertainty = 2]\n')
 		file.write('}\n')
 		file.write('\t\\toprule\n')
-		file.write('\tProcess        &     {\\PGm\\PGm}     &      {\\Pe\\PGm}     &      {\\Pe\\Pe}      \\\\\n')
+		file.write('\tProcess        &     {\\PGm\\PGm}     &      {\\Pe\\PGm}     &      {\\Pe\\Pe}      &       {Sum}        \\\\\n')
 		file.write('\t\\midrule\n')
 		for s in sorted_processes :
 			if s == '-----------' :
 				file.write('\t\\midrule\n')
 			else :
-				file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
+				file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
 					(s.replace('_', '\\_'),) +
 					helper.get_roundedNumber(res['mm'].mc[s], res['mm'].mc_staterr[s]) +# systematics['rare']*res['mm'].mc[s],
 					helper.get_roundedNumber(res['em'].mc[s], res['em'].mc_staterr[s]) +# systematics['rare']*res['em'].mc[s],
-					helper.get_roundedNumber(res['ee'].mc[s], res['ee'].mc_staterr[s])))#, systematics['rare']*res['ee'].mc[s],
+					helper.get_roundedNumber(res['ee'].mc[s], res['ee'].mc_staterr[s]) +#, systematics['rare']*res['ee'].mc[s],
+					helper.get_roundedNumber(res['al'].mc[s], res['al'].mc_staterr[s])))#, systematics['rare']*res['al'].mc[s],
 		file.write('\t\\midrule\n')
 		#file.write('\t%-14s & %8s +- %6s & %8s +- %6s & %8s +- %6s \\\\\n' % (
-		file.write('\t%-14s &   %6d           &   %6d           &   %6d           \\\\\n' % (
+		file.write('\t%-14s &   %6d           &   %6d           &   %6d           &   %6d           \\\\\n' % (
 			pl.get_processName('obs'),
 			res['mm'].obs,
 			res['em'].obs,
-			res['ee'].obs))
+			res['ee'].obs,
+			res['al'].obs))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
+		print res['mm'].mc['\\gjets'], res['mm'].mc_staterr['\\gjets']
+		if '\\wjets' in res['mm'].mc :
+			print res['mm'].mc['\\wjets'], res['mm'].mc_staterr['\\wjets']
 
 
 def make_closureTable(path, res, prefix = '', suffix = '') :

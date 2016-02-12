@@ -1697,7 +1697,8 @@ class plotter :
 					else :
 						sname = s
 
-					for name in [sname, 'tot'] :
+					for name in [sname, 'tot', 'bg'] :
+						if name == 'bg' and s == 'TTbarW' : continue
 						if name not in res[ch_str][chan].mc :
 							res[ch_str][chan].mc[name]         = 0.
 							res[ch_str][chan].mc_staterr[name] = 0.
