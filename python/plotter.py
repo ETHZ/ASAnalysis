@@ -1671,13 +1671,28 @@ class plotter :
 						sname = '\\ttH'
 
 					elif s in self.get_samples('Multiboson') :
-						sname = 'Triboson'
+						sname = '\\triboson'
 
 					elif s in ['W+W+', 'W-W-'] :
 						sname = '\\WpmWpm'
 
 					elif s in ['WGstarTau', 'WGstarMu'] :
 						sname = '\\WGstar'
+
+					elif s == 'WbbJets' :
+						sname = '\\WbbJets'
+
+					elif s == 'TTbarG' :
+						sname = '\\TTbarG'
+
+					elif s == 'TTbarWW' :
+						sname = '\\TTbarWW'
+
+					elif s == 'DPSWW' :
+						sname = '\\DPSWW'
+
+					elif s == 'TbZ' :
+						sname = '\\TbZ'
 
 					else :
 						sname = s
