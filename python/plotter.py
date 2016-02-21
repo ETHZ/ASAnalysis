@@ -1634,22 +1634,22 @@ class plotter :
 
 					if s in self.get_samples('Top') :
 						if s.startswith('Single') :
-							print 'single top: %s' % s
+							#print 'single top: %s' % s
 							sname = '\\singletop'
 						else :
-							print 'ttbar: %s' % s
+							#print 'ttbar: %s' % s
 							sname = '\\ttbar'
 
 					elif s in self.get_samples('WJets') :
-						print 'wjets: %s' % s
+						#print 'wjets: %s' % s
 						sname = '\\wjets'
 
 					elif s in ['DYJets', 'DYJets10To50'] :
-						print 'zjets: %s' % s
+						#print 'zjets: %s' % s
 						sname = '\\zjets'
 
 					elif s.startswith('GJets') :
-						print 'gjets: %s' % s
+						#print 'gjets: %s' % s
 						sname = '\\gjets'
 
 					elif s == 'WWTo2L2Nu' :
@@ -1674,6 +1674,7 @@ class plotter :
 						sname = '\\triboson'
 
 					elif s in ['W+W+', 'W-W-'] :
+						#print 'W+-W+-: %s' % s
 						sname = '\\WpmWpm'
 
 					elif s in ['WGstarTau', 'WGstarMu'] :
