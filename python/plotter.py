@@ -1815,8 +1815,10 @@ class plotter :
 			prefix = ''
 			suffix = ''
 			if not pu_weight : suffix = '_noPUWeight'
+			if var == 'NVrtx' : bin_width = False
+			else              : bin_width = True
 			helper.mkdir(path)
-			helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), var, self.lumi)
+			helper.save_histo2table(histos, processes+['obs', 'pred'], '%sObsMC%s_%s%s.dat' % (path, prefix, var, suffix), var, self.lumi, bin_width)
 
 			set_maximum = True
 

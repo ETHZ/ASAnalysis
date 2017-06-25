@@ -11,7 +11,7 @@ def get_histoBins(var, sel = '') :
 		elif var == 'pT1'    : histo_settings['nbins'] =  9; histo_settings['min'] =  20.; histo_settings['max'] = 200.;
 		elif var == 'pT2'    : histo_settings['nbins'] =  8; histo_settings['min'] =  20.; histo_settings['max'] = 100.;
 		elif var == 'Mll'    : histo_settings['nbins'] = 14; histo_settings['min'] =  20.; histo_settings['max'] = 300.;
-		elif var == 'NVrtx'  : histo_settings['nbins'] = 40; histo_settings['min'] =   0.; histo_settings['max'] =  40.;
+		elif var == 'NVrtx'  : histo_settings['nbins'] = 40; histo_settings['min'] =  0.5; histo_settings['max'] = 40.5;
 		elif var == 'minMT'  : histo_settings['nbins'] = 20; histo_settings['min'] =   0.; histo_settings['max'] = 400.;
 		elif var == 'M3'     : histo_settings['nbins'] = 12; histo_settings['min'] =   0.; histo_settings['max'] = 600.;
 		elif var == 'Int'    : histo_settings['nbins'] =  3; histo_settings['min'] =   0.; histo_settings['max'] =   3.;
