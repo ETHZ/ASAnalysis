@@ -17,6 +17,7 @@ def get_histoBins(var, sel = '') :
 		elif var == 'Int'    : histo_settings['nbins'] =  3; histo_settings['min'] =   0.; histo_settings['max'] =   3.;
 		elif var == 'CFChan' : histo_settings['nbins'] =  6; histo_settings['min'] =   0.; histo_settings['max'] =   6.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 		elif var == 'Charge' : histo_settings['nbins'] =  2; histo_settings['min'] =  -2.; histo_settings['max'] =   2.;  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
+		elif var == 'ElPFIso' : histo_settings['nbins'] = 12; histo_settings['min'] = 0.; histo_settings['max'] = 0.6;
 		elif 'PFIso' in var : histo_settings['nbins'] = 20; histo_settings['min'] = 0.; histo_settings['max'] = 1.;
 		elif 'D0'    in var : histo_settings['nbins'] = 20; histo_settings['min'] = -0.01; histo_settings['max'] = 0.01;
 		elif 'Dz'    in var : histo_settings['nbins'] = 20; histo_settings['min'] = -0.20; histo_settings['max'] = 0.20;
