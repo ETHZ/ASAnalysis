@@ -1504,6 +1504,11 @@ class plotter :
 		elif sel.flavor ==  1 : prefix = '_EM'
 		elif sel.flavor ==  2 : prefix = '_EE'
 		else                  : prefix = ''
+		var_tabstr = var
+		if var == 'Mll' :
+			if   sel.flavor == 0 or sel.flavor == 3 : var_tabstr = 'Mmm'
+			elif sel.flavor == 1 or sel.flavor == 4 : var_tabstr = 'Mem'
+			elif sel.flavor == 2 or sel.flavor == 5 : var_tabstr = 'Mee'
 		charge_str = ''
 		if sel.charge != 0 :
 			if sel.charge > 0 : charge_str = '^{+}'
@@ -1517,7 +1522,7 @@ class plotter :
 		if noChMisIDSF : suffix = '_noChMisIDSF'
 		path = '%sObsPredPlots/%s/' % (self.path, sel.name)
 		helper.mkdir(path)
-		helper.save_histo2table(histos = histos, processes = ['obs', 'pred', 'fake', 'rare', 'chmid', 'wz', 'ttz', 'ttw'], path = '%sObsPred%s_%s%s.dat' % (path, prefix, var, suffix), var = var, lumi = self.lumi, bin_width = pl.label_binWidth(var), asymmErr = ['obs'])
+		helper.save_histo2table(histos = histos, processes = ['obs', 'pred', 'fake', 'rare', 'chmid', 'wz', 'ttz', 'ttw'], path = '%sObsPred%s_%s%s.dat' % (path, prefix, var, suffix), var = var_tabstr, lumi = self.lumi, bin_width = pl.label_binWidth(var), asymmErr = ['obs'])
 
 		# save histo
 		for TeX_switch in [True, False] :
