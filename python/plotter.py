@@ -198,11 +198,11 @@ class plotter :
 			sels = {}
 #			sels['1J0bJ'    ] = self.selections['1J0bJ'    ]
 			sels['1JnobJ_ee'] = self.selections['1JnobJ_ee']
-#			sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
+			sels['2J0bJ'    ] = self.selections['2J0bJ'    ]
 			sels['2JnobJ_ee'] = self.selections['2JnobJ_ee']
 #			sels['3J1bJ'    ] = self.selections['3J1bJ'    ]
 #			sels['3J1bJ_ee' ] = self.selections['3J1bJ_ee' ]
-#			sels['final'    ] = self.selections['final'    ]
+			sels['final'    ] = self.selections['final'    ]
 #			sels['final++'  ] = self.selections['final++'  ]
 #			sels['final--'  ] = self.selections['final--'  ]
 
