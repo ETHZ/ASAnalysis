@@ -144,7 +144,7 @@ def make_ObsPredTable(path, results) :
 			helper.get_roundedNumber(results['--']['mm'].tot_exp, results['--']['mm'].tot_exp_err, rnd, float_digits) +
 			helper.get_roundedNumber(results['--']['em'].tot_exp, results['--']['em'].tot_exp_err, rnd, float_digits) +
 			helper.get_roundedNumber(results['--']['ee'].tot_exp, results['--']['ee'].tot_exp_err, rnd, float_digits)))
-		file.write('\t{\\bf %-14s} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} &  {\\bf %6d} \\\\\n' % (
+		file.write('\t%-20s & %5d         & %5d         & %5d         & %5d         & %5d         & %5d         \\\\\n' % (
 			pl.get_processName('obs'),
 			results['++']['mm'].obs,
 			results['++']['em'].obs,
