@@ -240,6 +240,7 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 			file.write('%s\n' % lumi_str)
 
 	# save histogram as CSV table
+	if not asymmErr : asymmErr = []
 	entries = {}
 	for process in processes :
 		# sanity check
@@ -261,11 +262,13 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 				entries['stat_err'][0] = 0.026 * lumi
 
 	# save CSV table
-	columns = ['binlow', var] + processes + ['%s_err' % process for process in processes] + ['stat',]
+	columns = ['binlow', var] + processes + ['%s_err' % process for process in processes] + ['%s_uerr' % process for process in asymmErr] + ['%s_derr' % process for process in asymmErr] + ['stat',]
 	tables.write_CSVTable(entries, columns, filename, path)
 
 
 def get_arraysFromHisto(histo, var_str = 'bin_centre', data_str = 'bin_content', last_bin = False) :
+	histo_tmp = histo.Clone()
+	histo_tmp.SetBinErrorOption(ROOT.TH1.kPoisson)
 	entries = {}
 	entries['binlow'            ] = []
 	entries[             var_str] = []
@@ -279,15 +282,15 @@ def get_arraysFromHisto(histo, var_str = 'bin_centre', data_str = 'bin_content',
 		entries[             var_str].append(histo.GetXaxis().GetBinCenter  (ibin))
 		entries['%s'      % data_str].append(histo           .GetBinContent (ibin))
 		entries['%s_err'  % data_str].append(histo           .GetBinError   (ibin))
-		entries['%s_uerr' % data_str].append(histo           .GetBinErrorUp (ibin))
-		entries['%s_derr' % data_str].append(histo           .GetBinErrorLow(ibin))
+		entries['%s_uerr' % data_str].append(histo_tmp       .GetBinErrorUp (ibin))
+		entries['%s_derr' % data_str].append(histo_tmp       .GetBinErrorLow(ibin))
 	if last_bin :
 		entries['binlow'            ].append(histo.GetXaxis().GetBinUpEdge  (nbins))
 		entries[             var_str].append(float('nan')                          )
 		entries['%s'      % data_str].append(histo           .GetBinContent (nbins))
 		entries['%s_err'  % data_str].append(histo           .GetBinError   (nbins))
-		entries['%s_uerr' % data_str].append(histo           .GetBinErrorUp (nbins))
-		entries['%s_derr' % data_str].append(histo           .GetBinErrorLow(nbins))
+		entries['%s_uerr' % data_str].append(histo_tmp       .GetBinErrorUp (nbins))
+		entries['%s_derr' % data_str].append(histo_tmp       .GetBinErrorLow(nbins))
 	for entry in entries :
 		entries[entry] = np.array(entries[entry])
 	return entries
