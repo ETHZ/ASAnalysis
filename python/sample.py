@@ -216,7 +216,10 @@ class sample :
 
 	@staticmethod
 	def get_samples(channel, samples) :
-		if channel == 'DYJets' or channel == 'zjets' : return ['DYJets']#, 'DYJets10To50']
+		include_DYJets10To50 = False
+		if channel == 'DYJets' or channel == 'zjets' :
+			if include_DYJets10To50 : return ['DYJets', 'DYJets10To50']
+			else                    : return ['DYJets']
 		if channel == 'WJets'  or channel == 'wjets' : return ['WJets' ]
 		if channel == 'TTW'    or channel == 'ttw' : return ['TTbarW']
 		if channel == 'TTZ'    or channel == 'ttz' : return ['TTbarZ']
@@ -226,6 +229,7 @@ class sample :
 		if channel == 'Multiboson' : return ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 		samplelist = []
 		for name, sample in samples.iteritems() :
+			if not include_DYJets10To50 and sample.name == 'DYJets10To50' : continue
 			if   channel == 'DoubleMu' :
 				if (sample.datamc == 0) and (sample.channel == 0) : samplelist.append(sample.name)
 			elif channel == 'DoubleEle' :
