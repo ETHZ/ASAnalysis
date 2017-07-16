@@ -1237,6 +1237,7 @@ class plotter :
 		vars.append('pT1'   )
 		vars.append('pT2'   )
 		vars.append('Mll'   )
+		vars.append('Mll_noChMisIDSF')
 		vars.append('NVrtx' )
 		vars.append('minMT' )
 		vars.append('M3'    )
@@ -1256,13 +1257,17 @@ class plotter :
 			if var.endswith('_TotalBin') :
 				var = var.split('_')[0]
 				add_total_bin = True
+			noChMisIDSF = False
+			if var.endswith('_noChMisIDSF') :
+				var = var.split('_')[0]
+				noChMisIDSF = True
 			histo_bins = config.get_histoBins(var, sel)
-			self.plot_ObsPred(restree, sel, var, histo_bins, add_total_bin)
+			self.plot_ObsPred(restree, sel, var, histo_bins, add_total_bin, noChMisIDSF)
 
 		resfile.Close()
 
 
-	def plot_ObsPred(self, tree, sel, var, settings, add_total_bin = False) :
+	def plot_ObsPred(self, tree, sel, var, settings, add_total_bin = False, noChMisIDSF = False) :
 
 		nbins = settings['nbins']
 		min   = settings['min'  ]
@@ -1374,6 +1379,12 @@ class plotter :
 				sum = histo.Integral()
 				histo.SetBinContent(1, sum)
 
+		if noChMisIDSF :
+			histos['chmid'].Scale(1./self.chmid_sf)
+			chmid_sf = 1.
+		else :
+			chmid_sf = self.chmid_sf
+
 		# adding background predictions
 		histos['bgtot'].Add(histos['fake' ])
 		histos['bgtot'].Add(histos['chmid'])
@@ -1402,9 +1413,9 @@ class plotter :
 		FR.setMPRatio(self.fpr.MupRatio, self.fpr.MupRatioE)
 		FR.setEPRatio(self.fpr.ElpRatio, self.fpr.ElpRatioE)
 
-		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', self.chmid_sf)
-		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', self.chmid_sf)
-		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', self.chmid_sf)
+		(fbb, fbbE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'BB', chmid_sf)
+		(feb, febE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EB', chmid_sf)
+		(fee, feeE) = self.calculateChMisIdProb(self.get_samples('DoubleEle'), 'EE', chmid_sf)
 
 		for bin in range(1, histos['bgtot'].GetNbinsX()+1) :
 			err2 = 0.
@@ -1503,6 +1514,7 @@ class plotter :
 		# save histo data to table
 		pl = ttvStyle.ttvStyle()
 		suffix = ''
+		if noChMisIDSF : suffix = '_noChMisIDSF'
 		path = '%sObsPredPlots/%s/' % (self.path, sel.name)
 		helper.mkdir(path)
 		helper.save_histo2table(histos = histos, processes = ['obs', 'pred', 'fake', 'rare', 'chmid', 'wz', 'ttz', 'ttw'], path = '%sObsPred%s_%s%s.dat' % (path, prefix, var, suffix), var = var, lumi = self.lumi, bin_width = pl.label_binWidth(var), asymmErr = ['obs'])
@@ -1510,7 +1522,7 @@ class plotter :
 		# save histo
 		for TeX_switch in [True, False] :
 			pl = ttvplot.ttvplot(self.path + 'ObsPredPlots/%s/'%sel.name, '2L', lumi = self.lumi, cms_label = cms_label, asymmErr = True, TeX_switch = TeX_switch)
-			pl.save_plot(histos, var, prefix = prefix, suffix = '', charge_str = charge_str)
+			pl.save_plot(histos, var, prefix = prefix, suffix = suffix, charge_str = charge_str)
 			# preliminary plots with suffix
 			pl.cms_label = 2
 #			pl.save_plot(histos, var, prefix = prefix, suffix = 'preliminary', charge_str = charge_str)
