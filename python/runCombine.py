@@ -62,6 +62,7 @@ def printLaTeX(obsSignif, obsPValue, expSignif, expPValue, sigStrength, loStat, 
 	print '\\newcommand{\\ttWCrossSection'+channel+'}   {%.0f  \\,\\,\\,^{+%.0f}_{-%.0f} \\,\\,\\,\\mathrm{(stat)} \\,\\,\\,  ^{+%.0f}_{-%.0f}\\,\\,\\, \\mathrm{(syst)} \\,\\,\\,  \\mathrm{fb}}' % (sigStrength*xsec, hiStat*xsec, loStat*xsec, hiSyst*xsec, loSyst*xsec)
 #	print '\\renewcommand{\\ttWCrossSection}   {', sigStrength*xsec, '  \\,\\,\\,^{+', hiStat*xsec, '}_{-', loStat*xsec, '} \\,\\,\\,\\mathrm{(stat)} \\,\\,\\,  ^{+', hiSyst*xsec, '}_{-', loSyst*xsec, '}\\,\\,\\, \mathrm{(syst)} \\,\\,\\,  \\mathrm{pb}}'
 	print 'sigma = %.0f +%.0f -%.0f (stat) +%.0f -%.0f (syst)' % (sigStrength*xsec, hiStat*xsec, loStat*xsec, hiSyst*xsec, loSyst*xsec)
+	print 'sigma = %.1f +%.1f -%.1f (tot)'                     % (sigStrength*xsec, math.sqrt(hiStat**2 + hiSyst**2)*xsec, math.sqrt(loStat**2 + loSyst**2)*xsec)
 	print '\nrounded:'
 	print 'sigma = %s +%s -%s (stat) +%s -%s (syst)' % helper.get_roundedNumberErrors(sigStrength*xsec, [hiStat*xsec, loStat*xsec, hiSyst*xsec, loSyst*xsec])
 	print '{%s}{+%s}{-%s}{+%s}{-%s}' % helper.get_roundedNumberErrors(sigStrength*xsec, [hiStat*xsec, loStat*xsec, hiSyst*xsec, loSyst*xsec])
