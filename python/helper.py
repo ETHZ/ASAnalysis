@@ -4,6 +4,9 @@ import pickle
 import os
 import ROOT
 from array import array
+import tables
+import numpy as np
+import copy
 
 
 def ratioWithBinomErrors(numerator, denominator) :
@@ -183,6 +186,12 @@ def get_deltaR(eta1, eta2, phi1, phi2) :
 
 
 def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_width = True, last_bin = True, asymmErr = False) :
+	filepath = copy.deepcopy(path)
+	path = '/'.join(filepath.split('/')[:-1])
+	filename = filepath.split('/')[-1]
+	if filename.endswith('.dat') :
+		filename = filename.rstrip('dat').rstrip('.')
+	mkdir(path)
 	if lumi != '' :
 		lumi_str   = '\t%4.1f' % lumi
 		lumi_title = '\tlumi'
@@ -195,7 +204,7 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 			histos_tmp[process] = histos[process].Clone()
 			histos_tmp[process].SetBinErrorOption(ROOT.TH1.kPoisson)
 	nbins = histos[processes[0]].GetNbinsX()
-	with open(path, 'w') as file :
+	with open(filepath, 'w') as file :
 		file.write('binlow\t%s\t%s\t%s_err' % (var, '\t'.join(processes), '_err\t'.join(processes)))
 		if asymmErr != False :
 			file.write('\t%s_uerr\t%s_derr' % ('\t_uerr'.join(asymmErr), '_derr\t'.join(asymmErr)))
@@ -229,6 +238,53 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 			if bin_width :
 				file.write('\t%f' % histos[processes[0]].GetBinWidth(nbins))
 			file.write('%s\n' % lumi_str)
+
+	# save histogram as CSV table
+	entries = {}
+	for process in processes :
+		# sanity check
+		if (
+				histos[process].GetNbinsX()                                          != histos[processes[0]].GetNbinsX() or
+				histos[process].GetXaxis().GetBinLowEdge(1)                          != histos[processes[0]].GetXaxis().GetBinLowEdge(1) or
+				histos[process].GetXaxis().GetBinUpEdge(histos[process].GetNbinsX()) != histos[processes[0]].GetXaxis().GetBinUpEdge(histos[processes[0]].GetNbinsX())
+				) :
+			print '[ERROR] histograms %s and %s have inconsistent binning!' % (process, processes[0])
+			sys.exit(1)
+
+		# get arrays from histogram
+		entries.update(get_arraysFromHisto(histo = histos[process], var_str = var, data_str = process, last_bin = last_bin))
+
+	# save CSV table
+	columns = ['binlow', var] + processes + ['%s_err' % process for process in processes]
+	tables.write_CSVTable(entries, columns, filename, path)
+
+
+def get_arraysFromHisto(histo, var_str = 'bin_centre', data_str = 'bin_content', last_bin = False) :
+	entries = {}
+	entries['binlow'            ] = []
+	entries[             var_str] = []
+	entries['%s'      % data_str] = []
+	entries['%s_err'  % data_str] = []
+	entries['%s_uerr' % data_str] = []
+	entries['%s_derr' % data_str] = []
+	nbins = histo.GetNbinsX()
+	for ibin in range(1, nbins+1) :
+		entries['binlow'            ].append(histo.GetXaxis().GetBinLowEdge (ibin))
+		entries[             var_str].append(histo.GetXaxis().GetBinCenter  (ibin))
+		entries['%s'      % data_str].append(histo           .GetBinContent (ibin))
+		entries['%s_err'  % data_str].append(histo           .GetBinError   (ibin))
+		entries['%s_uerr' % data_str].append(histo           .GetBinErrorUp (ibin))
+		entries['%s_derr' % data_str].append(histo           .GetBinErrorLow(ibin))
+	if last_bin :
+		entries['binlow'            ].append(histo.GetXaxis().GetBinUpEdge  (nbins))
+		entries[             var_str].append(float('nan')                          )
+		entries['%s'      % data_str].append(histo           .GetBinContent (nbins))
+		entries['%s_err'  % data_str].append(histo           .GetBinError   (nbins))
+		entries['%s_uerr' % data_str].append(histo           .GetBinErrorUp (nbins))
+		entries['%s_derr' % data_str].append(histo           .GetBinErrorLow(nbins))
+	for entry in entries :
+		entries[entry] = np.array(entries[entry])
+	return entries
 
 
 def save_object(obj, filepath) :

@@ -3,6 +3,7 @@ import helper
 import time
 import ttvStyle
 import math
+import numpy as np
 
 
 def make_ObsPredTable(path, results) :
@@ -871,6 +872,53 @@ def make_SampleTable(path, samples, name = '') :
 				s.getLumi() / 1000.))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
+
+
+def write_CSVTable(entries, columns, filename, path) :
+	if len(columns) == 0 :
+		print '[WARNING] No columns! Skipping empty table..'
+		return
+
+	if not path.endswith('/') : path += '/'
+	if not filename.endswith('.csv') : filename += '.csv'
+	filepath = '%s%s' % (path, filename)
+
+	print '[status] writing table %s..' % filepath
+
+	# define column widths
+	column_widths = {}
+	for column in columns :
+		if type(entries[column][0]) is str or type(entries[column][0]) is np.string_ :
+			min_width = max([len(i) for i in entries[column]])
+		elif any(entry < 0 for entry in entries[column]) :
+			min_width = 13
+		else :
+			min_width = 12
+		if len(column) > min_width :
+			column_widths[column] = len(column)
+		else :
+			column_widths[column] = min_width
+
+	# write table
+	with open('%s' % filepath, 'w') as file :
+		row_str = ''
+		for column in columns :
+			if row_str != '' : row_str += ', '
+			tmp_str = '%*s' % (column_widths[column], column)
+			row_str += tmp_str
+		row_str += '\n'
+		file.write(row_str)
+		for i in range(len(entries[columns[0]])) :
+			row_str = ''
+			for column in columns :
+				if row_str != '' : row_str += ', '
+				if type(entries[column][i]) is str or type(entries[column][i]) is np.string_ :
+					tmp_str = '%*s' % (column_widths[column], entries[column][i])
+				else :
+					tmp_str = '%*e' % (column_widths[column], entries[column][i])
+				row_str += tmp_str
+			row_str += '\n'
+			file.write(row_str)
 
 
 def providecommands() :
