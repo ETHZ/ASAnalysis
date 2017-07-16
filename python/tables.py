@@ -153,7 +153,7 @@ def make_ObsPredTable(path, results) :
 			results['--']['em'].obs,
 			results['--']['ee'].obs))
 		file.write('\t\\bottomrule\n')
-		file.write('\\end{tabular}\n')
+		file.write('\\end{tabular}%\n')
 
 
 def make_SystTable(path, results, chan, charge, systematics) :
@@ -664,7 +664,7 @@ def make_closureTable(path, res, prefix = '', suffix = '') :
 			helper.get_roundedNumber(*helper.ratio_withError(res['em'].fake, res['em'].fake_staterr, res['em'].nt2, res['em'].nt2_staterr)) +
 			helper.get_roundedNumber(*helper.ratio_withError(res['ee'].fake, res['ee'].fake_staterr, res['ee'].nt2, res['ee'].nt2_staterr))))
 		file.write('\t\\bottomrule\n')
-		file.write('\\end{tabular}\n')
+		file.write('\\end{tabular}%\n')
 
 
 def make_CutsTable(path, selections) :
