@@ -253,9 +253,15 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 
 		# get arrays from histogram
 		entries.update(get_arraysFromHisto(histo = histos[process], var_str = var, data_str = process, last_bin = last_bin))
+		if not 'stat' in entries.keys() :
+			entries['stat']     = np.zeros(len(entries['binlow']))
+			entries['stat_err'] = np.zeros(len(entries['binlow']))
+			if lumi != '' :
+				entries['stat'    ][0] = lumi
+				entries['stat_err'][0] = 0.026 * lumi
 
 	# save CSV table
-	columns = ['binlow', var] + processes + ['%s_err' % process for process in processes]
+	columns = ['binlow', var] + processes + ['%s_err' % process for process in processes] + ['stat',]
 	tables.write_CSVTable(entries, columns, filename, path)
 
 
