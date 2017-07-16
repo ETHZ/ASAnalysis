@@ -1250,7 +1250,7 @@ class plotter :
 		resfile = ROOT.TFile.Open(treepath, 'READ')
 		restree = resfile.Get('Results')
 
-		print '[status] getting plots from %s tree for' % (restree.GetName()), vars
+		print '[status] getting plots from %s tree for' % (restree.GetName()), ', '.join(vars)
 
 		for var in vars :
 			add_total_bin = False
