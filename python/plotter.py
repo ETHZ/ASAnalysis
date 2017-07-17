@@ -2216,7 +2216,7 @@ if __name__ == '__main__' :
 	FakeClosure = False
 	SLPlots = False
 
-	if ('--help' in args) or ('-h' in args) or ('-d' not in args) or ('-c' not in args) :
+	if ('--help' in args) or ('-h' in args) or ('-d' not in args) :
 		print 'usage: plotter.py -b <OPTIONS>'
 		print ''
 		print '\t-d <DIRECTORY OF SSDLYields.root>'
@@ -2258,6 +2258,8 @@ if __name__ == '__main__' :
 	if ('-c' in args) and (args[args.index('-c')+1] != '') :
 		cardfile = str(args[args.index('-c')+1])
 		print cardfile
+	else :
+		cardfile = '%s/DataCard_SSDL.dat' % path
 
 	if ('-s' in args) and (args[args.index('-s')+1] != '') :
 		selfile = str(args[args.index('-s')+1])
