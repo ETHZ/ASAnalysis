@@ -838,6 +838,9 @@ def make_OptTable(path, FoM, table, charge_str) :
 def make_SampleTable(path, samples, name = '') :
 	'''list all samples'''
 
+	if len(samples) == 0 :
+		print '[WARNING] no samples provided for %s table!' % name
+		return
 	table_name = '%sSamples.tex' % name
 	table_path = path
 	if not table_path.endswith('/') : table_path += '/'

@@ -23,6 +23,15 @@ class ratios :
 
 
 	def fill_ratios(self, mu_samples, el_samples, datamc, applyEwkSubtr = False) :
+		print applyEwkSubtr
+		if len(mu_samples) == 0 or len(el_samples) == 0 or (applyEwkSubtr and ('WJets' not in self.samples or 'DYJets' not in self.samples)) :
+			print '[WARNING] Check sample list!'
+			print '          datamc: %d' % datamc
+			print '          mu samples: %s' % ', '.join(mu_samples)
+			print '          el samples: %s' % ', '.join(el_samples)
+			print '          Ratios are not filled!'
+			return
+
 		EWK_SF = {}
 		if applyEwkSubtr :
 			if datamc is 0 :
