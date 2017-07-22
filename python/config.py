@@ -21,6 +21,7 @@ def get_histoBins(var, sel = '') :
 		elif 'PFIso' in var : histo_settings['nbins'] = 20; histo_settings['min'] = 0.; histo_settings['max'] = 1.;
 		elif 'D0'    in var : histo_settings['nbins'] = 20; histo_settings['min'] = -0.01; histo_settings['max'] = 0.01;
 		elif 'Dz'    in var : histo_settings['nbins'] = 20; histo_settings['min'] = -0.20; histo_settings['max'] = 0.20;
+		elif var == 'Flavor': histo_settings['nbins'] =  6; histo_settings['min'] = 0.;    histo_settings['max'] = 5.;
 
 		if sel != '' :
 			if sel.name.startswith('1J') :
