@@ -1245,6 +1245,9 @@ class plotter :
 		vars.append('CFChan_TotalBin')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 		vars.append('Charge')  # ChMisID prediction is not totally correct and it's statistical uncertainty a bit too large. Since not all OS events are considered and diveded by 2, but only the ones in the according charge channel.
 
+		if sel.name == '1JnobJ' or sel.name == '2JnobJ' :
+			vars = ['Mll', 'Mll_noChMisIDSF']
+
 		print '[status] open Results tree from %s' % (treepath)
 		resfile = ROOT.TFile.Open(treepath, 'READ')
 		restree = resfile.Get('Results')
