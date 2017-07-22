@@ -67,6 +67,7 @@ class result(object) :
 
 		self.mc              = {}
 		self.mc_staterr      = {}
+		self.mc_xsec         = {}
 
 
 	@property

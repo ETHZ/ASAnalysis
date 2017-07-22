@@ -1564,6 +1564,15 @@ class plotter :
 			res[ch_str]['mm'] = result.result('mm', charge, 'm'+charge_str+'m'+charge_str)
 			res[ch_str]['em'] = result.result('em', charge, 'e'+charge_str+'m'+charge_str)
 			res[ch_str]['ee'] = result.result('ee', charge, 'e'+charge_str+'e'+charge_str)
+		for s in self.samples :
+			mc      [s] = {}
+			mc_npass[s] = {}
+			for ch_str, charge in self.charges.iteritems() :
+				mc      [s][ch_str] = {}
+				mc_npass[s][ch_str] = {}
+				for chan in res[ch_str] :
+					mc      [s][ch_str][chan] = 0.
+					mc_npass[s][ch_str][chan] = 0
 
 		print '[status] looping over SigEvents tree from %s with %d events..' % (skimtree_path, tree.GetEntries())
 		for event in tree :
@@ -1722,9 +1731,11 @@ class plotter :
 						if name not in res[ch_str][chan].mc :
 							res[ch_str][chan].mc[name]         = 0.
 							res[ch_str][chan].mc_staterr[name] = 0.
+							res[ch_str][chan].mc_xsec[name]    = 0.
 
 						res[ch_str][chan].mc[name]         += mc[s][ch_str][chan]
 						res[ch_str][chan].mc_staterr[name]  = math.sqrt(res[ch_str][chan].mc_staterr[name]**2 + staterr**2)
+						res[ch_str][chan].mc_xsec[name]    += pl.samples[s].xsec
 
 		return res
 
