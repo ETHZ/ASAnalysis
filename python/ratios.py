@@ -146,36 +146,12 @@ class ratios :
 		(ratio, ratioe) = helper.ratioWithBinomErrors(ntight, nloose)
 
 		return (h2_ratio, h_ratio_pt, h_ratio_eta, h_ratio_nv, ratio, ratioe)
-		## 	TString name = "";
-		## 	if (fp == SigSup) name += "F";
-		## 	if (fp == ZDecay) name += "P";
-		## 	name += h_2d->GetName();
-		## 
-		## 	/*
-		## 	for(size_t i = 0; i < samples.size(); ++i){
-		## 		int sample = samples[i];
-		## 		name += "_";
-		## 		name += fSamples[sample]->sname;
-		## 	}
-		## 	*/
-		## 	//FIXME: add something to distinguish between data and mc plots
-		## 	//if() name += "_data";
-		## 
-		## 	if (applyEwkSubtr) name += "_EWKCorrected";
-		## 	if(output){
-		## //	if (fp == SigSup) {
-		## 		fOutputSubDir = "Ratios/";
-		## 		printObject(h_2d,     TString("Ratio")    + name, "colz text");
-		## 		printObject(h_pt,     TString("RatioPt")  + name, "PE1");
-		## 		printObject(h_eta,    TString("RatioEta") + name, "PE1");
-		## 		printObject(H_ntight, TString("NTight")   + name, "colz text");
-		## 		printObject(H_nloose, TString("NLoose")   + name, "colz text");
-		## 		fOutputSubDir = "";
-		## 	}
 
 
 	def get_TightLoose(self, samples, chan_str, fp, sf = 1., sf_dict = {}) :
-		## chan_str: 'MM', 'EE'
+		'''
+		chan_str: 'MM', 'EE'
+		'''
 
 		for i, s in enumerate(samples) :
 			scale = 1.
@@ -209,19 +185,6 @@ class ratios :
 				h_total_nv .Add(h_nloose_nv, scale)
 
 		return (h2_passed, h2_total, h_passed_nv, h_total_nv)
-		## 	TString name = "";
-		## 	for(size_t i = 0; i < samples.size(); ++i){
-		## 		int sample = samples[i];
-		## 		if(i > 0) name += "_";
-		## 		name += fSamples[sample]->sname;
-		## 	}
-		## 	/*
-		## 	if(output){
-		## 		printObject(h_passed, TString("Passed") + name, "colz");
-		## 		printObject(h_total,  TString("Total")  + name, "colz");
-		## 	}
-		## 	*/	
-		## }
 
 
 	def get_EWK_SF(self, samples_data, chan_str, datamc = 0, do_fit = False) :
