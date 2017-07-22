@@ -616,9 +616,6 @@ def make_MCYieldsTable(path, res, suffix = '') :
 			res['al'].obs))
 		file.write('\t\\bottomrule\n')
 		file.write('\\end{tabular}\n')
-		print res['mm'].mc['\\gjets'], res['mm'].mc_staterr['\\gjets']
-		if '\\wjets' in res['mm'].mc :
-			print res['mm'].mc['\\wjets'], res['mm'].mc_staterr['\\wjets']
 
 
 def make_closureTable(path, res, prefix = '', suffix = '') :
