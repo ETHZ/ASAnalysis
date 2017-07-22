@@ -18,6 +18,7 @@ import tables
 import copy
 import ttvStyle
 import ConfigParser
+import fakeratios
 
 
 class plotter :
@@ -30,8 +31,6 @@ class plotter :
 		self.ssdlfile = ROOT.TFile.Open(self.path + 'SSDLYields.root', 'READ')
 		if self.ssdlfile == None :
 			sys.exit(1)
-
-		ROOT.gSystem.Load('./FakeRatios.so')
 
 		# samples
 		self.samples = self.readDatacard(cardfile)
@@ -604,7 +603,7 @@ class plotter :
 		# INIT VARIABLES #
 		##################
 
-		FR = ROOT.FakeRatios()
+		FR = fakeratios.FakeRatios()
 
 		res = {}
 		for ch_str, charge in self.charges.iteritems() :
@@ -1404,7 +1403,7 @@ class plotter :
 		# ERRORS #
 		##########
 
-		FR = ROOT.FakeRatios()
+		FR = fakeratios.FakeRatios()
 		FR.setNToyMCs(100)
 		FR.setAddESyst(self.FakeESyst)
 
@@ -2000,7 +1999,7 @@ class plotter :
 		# INIT VARIABLES #
 		##################
 
-		FR = ROOT.FakeRatios()
+		FR = fakeratios.FakeRatios()
 
 		nt2_npass = {}
 		nt10_npass = {}
