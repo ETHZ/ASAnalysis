@@ -185,7 +185,7 @@ def get_deltaR(eta1, eta2, phi1, phi2) :
 	return math.sqrt(deta**2 + dphi**2)
 
 
-def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_width = True, last_bin = True, asymmErr = False) :
+def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_width = True, last_bin = True, asymmErr = False, x_range = None) :
 	filepath = copy.deepcopy(path)
 	path = '/'.join(filepath.split('/')[:-1])
 	filename = filepath.split('/')[-1]
@@ -253,7 +253,7 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 			sys.exit(1)
 
 		# get arrays from histogram
-		entries.update(get_arraysFromHisto(histo = histos[process], var_str = var, data_str = process, last_bin = last_bin))
+		entries.update(get_arraysFromHisto(histo = histos[process], var_str = var, data_str = process, last_bin = last_bin, x_range = x_range))
 		if not 'stat' in entries.keys() :
 			entries['stat']     = np.zeros(len(entries['binlow']))
 			entries['stat_err'] = np.zeros(len(entries['binlow']))
@@ -266,7 +266,7 @@ def save_histo2table(histos, processes, path, var = 'bincentre', lumi = '', bin_
 	tables.write_CSVTable(entries, columns, filename, path)
 
 
-def get_arraysFromHisto(histo, var_str = 'bin_centre', data_str = 'bin_content', last_bin = False) :
+def get_arraysFromHisto(histo, var_str = 'bin_centre', data_str = 'bin_content', last_bin = False, x_range = None) :
 	histo_tmp = histo.Clone()
 	histo_tmp.SetBinErrorOption(ROOT.TH1.kPoisson)
 	entries = {}
@@ -276,8 +276,13 @@ def get_arraysFromHisto(histo, var_str = 'bin_centre', data_str = 'bin_content',
 	entries['%s_err'  % data_str] = []
 	entries['%s_uerr' % data_str] = []
 	entries['%s_derr' % data_str] = []
-	nbins = histo.GetNbinsX()
-	for ibin in range(1, nbins+1) :
+	if x_range == None :
+		first_bin = 1
+		nbins = histo.GetNbinsX()
+	else :
+		first_bin = histo.FindBin(x_range[0])
+		nbins     = histo.FindBin(x_range[1])
+	for ibin in range(first_bin, nbins+1) :
 		entries['binlow'            ].append(histo.GetXaxis().GetBinLowEdge (ibin))
 		entries[             var_str].append(histo.GetXaxis().GetBinCenter  (ibin))
 		entries['%s'      % data_str].append(histo           .GetBinContent (ibin))
