@@ -106,7 +106,7 @@ class sample :
 		if channel == 'TTZ'    or channel == 'ttz' : return ['TTbarZ']
 		if channel == 'WZ'     or channel == 'wz' : return ['WZTo3LNu']
 		if channel == 'TTH'    or channel == 'tth' : return ['HWW', 'HZZ', 'HTauTau']
-		if channel == 'TTJets' or channel == 'ttbar'  : return ['TTJets']
+		if channel == 'TTJets' or channel == 'ttbar'  : return [s for s in samples if s.startswith('TTJets')]
 		if channel == 'Multiboson' : return ['WWW', 'WWZ', 'WZZ', 'ZZZ', 'WWG']
 		samplelist = []
 		for name, sample in samples.iteritems() :
