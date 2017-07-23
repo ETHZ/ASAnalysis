@@ -1767,7 +1767,6 @@ class plotter :
 #		vars.append('PFIso2'  )
 		vars.append('NJ'      )
 		vars.append('MET'     )
-		vars.append('CFChan'  )
 		vars.append('Flavor'  )
 		for var in vars :
 			settings = config.get_histoBins(var, sel)
