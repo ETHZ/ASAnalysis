@@ -1,3 +1,9 @@
 **.pyc
 plots
 **roostats-*
+OPT_ttW/optcuts*
+**.root
+**.o
+**.so
+**.swp
+**.DS_store
