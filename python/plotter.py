@@ -361,7 +361,13 @@ class plotter :
 
 
 	def get_samples(self, channel) :
-		return sample.sample.get_samples(channel, self.samples)
+		samples = []
+		for s in sample.sample.get_samples(channel, self.samples) :
+			if s in self.samples.keys() :
+				samples.append(s)
+			else :
+				print '[WARNING] The sample %s was not loaded and will be ignored. Check your datacard!' % s
+		return samples
 
 
 	def read_selections(self, path) :
